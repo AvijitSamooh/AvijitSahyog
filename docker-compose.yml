@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: avijit-sahyog-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-avijit_sahyog}
+      POSTGRES_USER: ${POSTGRES_USER:-avijit}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-avijit_dev}
+
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-avijit} -d ${POSTGRES_DB:-avijit_sahyog}"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
