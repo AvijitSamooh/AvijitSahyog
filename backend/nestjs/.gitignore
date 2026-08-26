@@ -1,0 +1,15 @@
+# Environment
+.env
+.env.*
+
+# Prisma generated client
+src/generated/prisma/
+
+# Build output
+dist/
+
+# Tests / coverage
+coverage/
+
+# Dependencies
+node_modules/
