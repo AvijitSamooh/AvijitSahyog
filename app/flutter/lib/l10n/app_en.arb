@@ -17,5 +17,11 @@
   "languageEnglish": "English",
   "languageHindi": "Hindi",
   "languageMarathi": "Marathi",
-  "languageGujarati": "Gujarati"
+  "languageGujarati": "Gujarati",
+  "causesTitle": "Causes",
+  "causesLoadError": "Unable to load causes.",
+  "causeLoadError": "Unable to load this cause.",
+  "noCauses": "No causes are available.",
+  "retry": "Retry",
+  "affiliatedOrganisations": "Affiliated organisations"
 }
