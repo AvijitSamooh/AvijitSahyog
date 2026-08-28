@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../l10n/app_localizations.dart';
+import '../models/organisation.dart';
 import '../providers/causes_providers.dart';
 
 class CauseDetailPage extends ConsumerWidget {
@@ -66,7 +67,7 @@ class CauseDetailPage extends ConsumerWidget {
     );
   }
 
-  String? _organisationSubtitle(dynamic organisation) {
+  Widget? _organisationSubtitle(Organisation organisation) {
     final parts = <String>[];
 
     if (organisation.city != null && organisation.city!.isNotEmpty) {
@@ -76,6 +77,6 @@ class CauseDetailPage extends ConsumerWidget {
       parts.add(organisation.state!);
     }
 
-    return parts.isEmpty ? null : parts.join(', ');
+    return parts.isEmpty ? null : Text(parts.join(', '));
   }
 }
