@@ -1,19 +1,16 @@
 {
-  "appName": "Avijit Sahyog",
-  "home": "Home",
-  "causes": "Causes",
-  "settings": "Settings",
-  "welcomeTitle": "Make giving simple and meaningful",
-  "welcomeSubtitle": "Discover causes, support organisations and build a habit of giving.",
-  "exploreCauses": "Explore Causes",
-  "yourGiving": "Your Giving",
-  "comingSoon": "Coming soon",
-  "backendConnected": "Connected",
+  "@@locale": "en",
+  "appTitle": "Avijit Sahyog",
+  "checkingBackend": "Checking backend...",
   "backendUnavailable": "Backend unavailable",
-  "checkingBackend": "Checking connection...",
-  "language": "Language",
-  "english": "English",
-  "hindi": "Hindi",
-  "marathi": "Marathi",
-  "gujarati": "Gujarati"
+  "backendStatus": "{status} — {service}",
+  "@backendStatus": {
+    "description": "Verified backend health status shown in the development shell.",
+    "placeholders": {
+      "status": {},
+      "service": {}
+    }
+  },
+  "welcomeTitle": "Welcome to Avijit Sahyog",
+  "welcomeSubtitle": "Simple, transparent and meaningful giving."
 }

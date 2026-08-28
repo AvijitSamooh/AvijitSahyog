@@ -24,25 +24,16 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Avijit Sahyog',
-      debugShowCheckedModeBanner: false,
-
-      theme: AppTheme.light(),
-
-      locale: _locale,
-
+      onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-
-      home: HomePage(
-        onLocaleChanged: setLocale,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepOrange,
+        ),
+        useMaterial3: true,
       ),
+      home: const HomePage(),
     );
   }
 }
