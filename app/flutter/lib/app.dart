@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'features/home/home_page.dart';
-import 'features/settings/settings_page.dart';
 import 'l10n/app_localizations.dart';
 
 class AvijitSahyogApp extends StatefulWidget {
@@ -62,11 +61,7 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
         ),
         useMaterial3: true,
       ),
-      routes: {
-        '/': (_) => HomePage(onLocaleChanged: setLocale),
-        '/settings': (_) => SettingsPage(onLocaleChanged: setLocale),
-      },
-      initialRoute: '/',
+      home: HomePage(onLocaleChanged: setLocale),
     );
   }
 }
