@@ -1,0 +1,19 @@
+{
+  "appName": "Avijit Sahyog",
+  "home": "Home",
+  "causes": "Causes",
+  "settings": "Settings",
+  "welcomeTitle": "Make giving simple and meaningful",
+  "welcomeSubtitle": "Discover causes, support organisations and build a habit of giving.",
+  "exploreCauses": "Explore Causes",
+  "yourGiving": "Your Giving",
+  "comingSoon": "Coming soon",
+  "backendConnected": "Connected",
+  "backendUnavailable": "Backend unavailable",
+  "checkingBackend": "Checking connection...",
+  "language": "Language",
+  "english": "English",
+  "hindi": "Hindi",
+  "marathi": "Marathi",
+  "gujarati": "Gujarati"
+}

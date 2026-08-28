@@ -1,0 +1,19 @@
+{
+  "appName": "અવિજિત સહયોગ",
+  "home": "હોમ",
+  "causes": "કાર્યો",
+  "settings": "સેટિંગ્સ",
+  "welcomeTitle": "દાનને સરળ અને અર્થપૂર્ણ બનાવો",
+  "welcomeSubtitle": "કાર્યોને જાણો, સંસ્થાઓને સહયોગ આપો અને દાનની ટેવ બનાવો.",
+  "exploreCauses": "કાર્યો જુઓ",
+  "yourGiving": "તમારું દાન",
+  "comingSoon": "ટૂંક સમયમાં",
+  "backendConnected": "કનેક્ટેડ",
+  "backendUnavailable": "બેકએન્ડ ઉપલબ્ધ નથી",
+  "checkingBackend": "કનેક્શન તપાસી રહ્યા છીએ...",
+  "language": "ભાષા",
+  "english": "અંગ્રેજી",
+  "hindi": "હિન્દી",
+  "marathi": "મરાઠી",
+  "gujarati": "ગુજરાતી"
+}

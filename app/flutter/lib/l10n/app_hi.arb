@@ -1,0 +1,19 @@
+{
+  "appName": "अविजित सहयोग",
+  "home": "होम",
+  "causes": "कारण",
+  "settings": "सेटिंग्स",
+  "welcomeTitle": "दान को सरल और सार्थक बनाएं",
+  "welcomeSubtitle": "कारणों को जानें, संस्थाओं का सहयोग करें और दान की आदत बनाएं।",
+  "exploreCauses": "कारण देखें",
+  "yourGiving": "आपका दान",
+  "comingSoon": "जल्द आ रहा है",
+  "backendConnected": "कनेक्टेड",
+  "backendUnavailable": "बैकएंड उपलब्ध नहीं है",
+  "checkingBackend": "कनेक्शन जांच रहे हैं...",
+  "language": "भाषा",
+  "english": "अंग्रेज़ी",
+  "hindi": "हिंदी",
+  "marathi": "मराठी",
+  "gujarati": "गुजराती"
+}
