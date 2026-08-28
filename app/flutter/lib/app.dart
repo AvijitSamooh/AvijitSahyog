@@ -14,6 +14,16 @@ class AvijitSahyogApp extends StatefulWidget {
 class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
   static const _localeKey = 'selected_locale';
 
+  static const _maroon = Color(0xFF6E1A14);
+  static const _maroonDark = Color(0xFF4C120D);
+  static const _saffron = Color(0xFFF5A623);
+  static const _gold = Color(0xFFC89B3C);
+  static const _cream = Color(0xFFFFF8ED);
+  static const _creamSoft = Color(0xFFF9F2E8);
+  static const _text = Color(0xFF39271C);
+  static const _textSoft = Color(0xFF6B4F36);
+  static const _line = Color(0xFFE8DCC8);
+
   Locale? _locale;
 
   @override
@@ -48,6 +58,99 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
     await preferences.setString(_localeKey, locale.languageCode);
   }
 
+  ThemeData _buildTheme() {
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: _maroon,
+      brightness: Brightness.light,
+    ).copyWith(
+      primary: _maroon,
+      onPrimary: Colors.white,
+      secondary: _saffron,
+      onSecondary: _maroonDark,
+      surface: Colors.white,
+      onSurface: _text,
+      outline: _line,
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: colorScheme,
+      scaffoldBackgroundColor: _cream,
+      fontFamily: 'Poppins',
+      appBarTheme: const AppBarTheme(
+        backgroundColor: _maroon,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: false,
+        titleTextStyle: TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      cardTheme: CardThemeData(
+        color: Colors.white,
+        elevation: 0,
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+          side: const BorderSide(color: _line),
+        ),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: _maroon,
+          foregroundColor: Colors.white,
+          minimumSize: const Size(0, 50),
+          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: _maroon,
+        ),
+      ),
+      dividerTheme: const DividerThemeData(
+        color: _line,
+        space: 1,
+      ),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        color: _maroon,
+      ),
+      textTheme: const TextTheme(
+        headlineSmall: TextStyle(
+          color: _maroon,
+          fontSize: 28,
+          fontWeight: FontWeight.w700,
+          height: 1.2,
+        ),
+        titleLarge: TextStyle(
+          color: _maroon,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+        ),
+        titleMedium: TextStyle(
+          color: _text,
+          fontSize: 17,
+          fontWeight: FontWeight.w600,
+        ),
+        bodyLarge: TextStyle(
+          color: _text,
+          fontSize: 16,
+          height: 1.6,
+        ),
+        bodyMedium: TextStyle(
+          color: _textSoft,
+          fontSize: 14,
+          height: 1.55,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -55,12 +158,7 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepOrange,
-        ),
-        useMaterial3: true,
-      ),
+      theme: _buildTheme(),
       home: HomePage(onLocaleChanged: setLocale),
     );
   }
