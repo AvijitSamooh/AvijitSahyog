@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/network/api_client.dart';
 import '../../l10n/app_localizations.dart';
+import '../causes/presentation/causes_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({
@@ -112,18 +113,42 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: Center(
-        child: _isCheckingBackend
-            ? Text(l10n.checkingBackend)
-            : _status == null
-                ? Text(l10n.backendUnavailable)
-                : Text(
-                    l10n.backendStatus(
-                      _status!.split(' — ').first,
-                      _status!.split(' — ').skip(1).join(' — '),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
+      body: ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          Text(
+            l10n.welcomeTitle,
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          const SizedBox(height: 8),
+          Text(l10n.welcomeSubtitle),
+          const SizedBox(height: 28),
+          FilledButton.icon(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const CausesPage()),
+              );
+            },
+            icon: const Icon(Icons.volunteer_activism),
+            label: Text(l10n.causesTitle),
+          ),
+          const SizedBox(height: 24),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: _isCheckingBackend
+                  ? Text(l10n.checkingBackend)
+                  : _status == null
+                      ? Text(l10n.backendUnavailable)
+                      : Text(
+                          l10n.backendStatus(
+                            _status!.split(' — ').first,
+                            _status!.split(' — ').skip(1).join(' — '),
+                          ),
+                        ),
+            ),
+          ),
+        ],
       ),
     );
   }
