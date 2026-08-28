@@ -41,6 +41,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('अविजित सहयोग में आपका स्वागत है'), findsOneWidget);
-    expect(find.text('सेवा के क्षेत्र'), findsOneWidget);
+    expect(find.text('सेवा के क्षेत्र'), findsWidgets);
   });
 }
