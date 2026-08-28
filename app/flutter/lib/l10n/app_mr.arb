@@ -17,5 +17,11 @@
   "languageEnglish": "इंग्रजी",
   "languageHindi": "हिंदी",
   "languageMarathi": "मराठी",
-  "languageGujarati": "गुजराती"
+  "languageGujarati": "गुजराती",
+  "causesTitle": "सेवेची क्षेत्रे",
+  "causesLoadError": "सेवेची क्षेत्रे लोड करता आली नाहीत.",
+  "causeLoadError": "हे सेवा क्षेत्र लोड करता आले नाही.",
+  "noCauses": "कोणतेही सेवा क्षेत्र उपलब्ध नाही.",
+  "retry": "पुन्हा प्रयत्न करा",
+  "affiliatedOrganisations": "संलग्न संस्था"
 }
