@@ -20,9 +20,12 @@ class CauseDetailPage extends ConsumerWidget {
       causeProvider((slug: slug, languageCode: languageCode)),
     );
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text(l10n.causesTitle),
+      ),
       body: causeAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(
@@ -35,32 +38,125 @@ class CauseDetailPage extends ConsumerWidget {
           ),
         ),
         data: (cause) => ListView(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
           children: [
-            Text(
-              cause.name,
-              style: Theme.of(context).textTheme.headlineSmall,
+            Container(
+              padding: const EdgeInsets.all(22),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF6E1A14), Color(0xFF4C120D)],
+                ),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: const Color(0xFFC89B3C)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    '✦',
+                    style: TextStyle(
+                      color: Color(0xFFF5A623),
+                      fontSize: 24,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    cause.name,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      color: Colors.white,
+                      fontSize: 28,
+                    ),
+                  ),
+                  if (cause.description?.isNotEmpty == true) ...[
+                    const SizedBox(height: 10),
+                    Text(
+                      cause.description!,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: Colors.white.withOpacity(0.88),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
             ),
-            if (cause.description?.isNotEmpty == true) ...[
-              const SizedBox(height: 12),
-              Text(cause.description!),
-            ],
             if (cause.organisations.isNotEmpty) ...[
-              const SizedBox(height: 28),
+              const SizedBox(height: 30),
               Text(
                 l10n.affiliatedOrganisations,
-                style: Theme.of(context).textTheme.titleLarge,
+                style: theme.textTheme.titleLarge,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 6),
+              Text(
+                l10n.welcomeSubtitle,
+                style: theme.textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 14),
               ...cause.organisations.map(
-                (organisation) => Card(
-                  child: ListTile(
-                    title: Text(organisation.name),
-                    subtitle: _organisationSubtitle(organisation),
-                  ),
+                (organisation) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _OrganisationCard(organisation: organisation),
                 ),
               ),
             ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OrganisationCard extends StatelessWidget {
+  const _OrganisationCard({required this.organisation});
+
+  final Organisation organisation;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final location = _organisationSubtitle(organisation);
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                color: const Color(0xFFFCE8C9),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: const Icon(
+                Icons.account_balance_rounded,
+                color: Color(0xFF6E1A14),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(organisation.name, style: theme.textTheme.titleMedium),
+                  if (location != null) ...[
+                    const SizedBox(height: 5),
+                    location,
+                  ],
+                  if (organisation.description?.isNotEmpty == true) ...[
+                    const SizedBox(height: 7),
+                    Text(
+                      organisation.description!,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ],
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -77,6 +173,14 @@ class CauseDetailPage extends ConsumerWidget {
       parts.add(organisation.state!);
     }
 
-    return parts.isEmpty ? null : Text(parts.join(', '));
+    if (parts.isEmpty) return null;
+
+    return Text(
+      parts.join(', '),
+      style: const TextStyle(
+        color: Color(0xFF9A574C),
+        fontWeight: FontWeight.w500,
+      ),
+    );
   }
 }
