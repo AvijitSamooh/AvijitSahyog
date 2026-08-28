@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { CreateDonationDto } from './dto/create-donation.dto';
+import type { CreateDonationDto } from './dto/create-donation.dto';
 import { DonationsService } from './donations.service';
 
 @Controller('donations')
