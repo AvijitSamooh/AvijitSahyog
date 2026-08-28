@@ -50,7 +50,12 @@ class CauseDetailPage extends ConsumerWidget {
               const SizedBox(height: 14),
               ...cause.organisations.map((organisation) => Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: _OrganisationCard(organisation: organisation, causeId: cause.id, causeName: cause.name),
+                child: _OrganisationCard(
+                  organisation: organisation,
+                  causeId: cause.id,
+                  causeName: cause.name,
+                  organisations: cause.organisations,
+                ),
               )),
             ],
           ],
@@ -61,10 +66,17 @@ class CauseDetailPage extends ConsumerWidget {
 }
 
 class _OrganisationCard extends StatelessWidget {
-  const _OrganisationCard({required this.organisation, required this.causeId, required this.causeName});
+  const _OrganisationCard({
+    required this.organisation,
+    required this.causeId,
+    required this.causeName,
+    required this.organisations,
+  });
+
   final Organisation organisation;
   final String causeId;
   final String causeName;
+  final List<Organisation> organisations;
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +105,12 @@ class _OrganisationCard extends StatelessWidget {
             width: double.infinity,
             child: FilledButton.icon(
               key: const ValueKey('cause_organisation_donate'),
-              onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => DonationPage(causeId: causeId, causeName: causeName, organisation: organisation))),
+              onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => DonationPage(
+                causeId: causeId,
+                causeName: causeName,
+                organisation: organisation,
+                organisations: organisations,
+              ))),
               icon: const Icon(Icons.favorite_rounded, size: 18),
               label: Text(l10n.donateNow),
             ),
