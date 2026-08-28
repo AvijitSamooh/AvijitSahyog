@@ -12,5 +12,10 @@
     }
   },
   "welcomeTitle": "અવિજિત સહયોગમાં આપનું સ્વાગત છે",
-  "welcomeSubtitle": "સરળ, પારદર્શક અને અર્થપૂર્ણ સહયોગ."
+  "welcomeSubtitle": "સરળ, પારદર્શક અને અર્થપૂર્ણ સહયોગ.",
+  "language": "ભાષા",
+  "languageEnglish": "અંગ્રેજી",
+  "languageHindi": "હિન્દી",
+  "languageMarathi": "મરાઠી",
+  "languageGujarati": "ગુજરાતી"
 }
