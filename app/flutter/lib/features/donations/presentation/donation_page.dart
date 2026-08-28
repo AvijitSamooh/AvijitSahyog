@@ -7,10 +7,18 @@ import '../models/create_donation.dart';
 import '../providers/donation_providers.dart';
 
 class DonationPage extends ConsumerStatefulWidget {
-  const DonationPage({super.key, required this.causeId, required this.causeName, required this.organisation});
+  const DonationPage({
+    super.key,
+    required this.causeId,
+    required this.causeName,
+    required this.organisation,
+    required this.organisations,
+  });
+
   final String causeId;
   final String causeName;
   final Organisation organisation;
+  final List<Organisation> organisations;
 
   @override
   ConsumerState<DonationPage> createState() => _DonationPageState();
@@ -18,43 +26,148 @@ class DonationPage extends ConsumerStatefulWidget {
 
 class _DonationPageState extends ConsumerState<DonationPage> {
   final _amountController = TextEditingController();
+  final Map<String, TextEditingController> _allocationControllers = {};
   int? _selectedAmount;
   bool _submitting = false;
   static const _amounts = [100, 500, 1000, 2000];
 
   @override
-  void dispose() { _amountController.dispose(); super.dispose(); }
+  void initState() {
+    super.initState();
+    for (final organisation in widget.organisations) {
+      _allocationControllers[organisation.id] = TextEditingController(text: '0');
+    }
+  }
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    for (final controller in _allocationControllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  double _number(String value) => double.tryParse(value.trim()) ?? 0;
+
+  double get _totalAmount => _number(_amountController.text);
+
+  double get _allocatedAmount => _allocationControllers.values.fold(
+        0,
+        (sum, controller) => sum + _number(controller.text),
+      );
+
+  double get _remainingAmount => _totalAmount - _allocatedAmount;
+
+  bool get _amountSelected => _totalAmount > 0;
+
+  bool get _allocationComplete =>
+      _amountSelected && _remainingAmount.abs() < 0.005;
+
+  void _selectAmount(int amount) {
+    setState(() {
+      _selectedAmount = amount;
+      _amountController.text = amount.toString();
+      _resetAllocations();
+    });
+  }
+
+  void _resetAllocations() {
+    for (final controller in _allocationControllers.values) {
+      controller.text = '0';
+    }
+  }
+
+  void _onTotalChanged(String value) {
+    final parsed = double.tryParse(value.trim());
+    setState(() {
+      _selectedAmount = parsed != null && _amounts.contains(parsed.toInt()) ? parsed.toInt() : null;
+      _resetAllocations();
+    });
+  }
+
+  void _onAllocationChanged(String organisationId, String value) {
+    final entered = _number(value);
+    final others = _allocatedAmount - _number(_allocationControllers[organisationId]!.text);
+    final maximum = _totalAmount - others;
+
+    if (entered > maximum && _totalAmount > 0) {
+      _allocationControllers[organisationId]!.text = maximum.toStringAsFixed(0);
+      _allocationControllers[organisationId]!.selection = TextSelection.fromPosition(
+        TextPosition(offset: _allocationControllers[organisationId]!.text.length),
+      );
+    }
+    setState(() {});
+  }
 
   Future<void> _submit() async {
-    final amount = _amountController.text.trim();
-    final value = DecimalAmount.tryParse(amount);
     final l10n = AppLocalizations.of(context)!;
-    if (value == null || value <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.donationInvalidAmount)));
+    final total = _totalAmount;
+    if (total <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.donationInvalidAmount)),
+      );
       return;
     }
+
+    if (!_allocationComplete) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please distribute the complete donation amount before continuing.')),
+      );
+      return;
+    }
+
+    final allocations = <CreateDonationAllocation>[];
+    for (final organisation in widget.organisations) {
+      final amount = _number(_allocationControllers[organisation.id]!.text);
+      if (amount > 0) {
+        allocations.add(CreateDonationAllocation(
+          causeId: widget.causeId,
+          organisationId: organisation.id,
+          amount: amount.toStringAsFixed(2),
+        ));
+      }
+    }
+
     setState(() => _submitting = true);
     try {
-      await ref.read(donationRepositoryProvider).createDonation(CreateDonation(amount: amount, causeId: widget.causeId, organisationId: widget.organisation.id));
+      await ref.read(donationRepositoryProvider).createDonation(
+            CreateDonation(
+              amount: total.toStringAsFixed(2),
+              allocations: allocations,
+            ),
+          );
       if (!mounted) return;
-      await showDialog<void>(context: context, builder: (context) => AlertDialog(
-        title: Text(l10n.donationCreatedTitle),
-        content: Text(l10n.donationCreatedMessage),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.done))],
-      ));
+      await showDialog<void>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(l10n.donationCreatedTitle),
+          content: Text(l10n.donationCreatedMessage),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(l10n.done),
+            ),
+          ],
+        ),
+      );
       if (mounted) Navigator.pop(context);
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.donationCreateError)));
-    } finally { if (mounted) setState(() => _submitting = false); }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.donationCreateError)),
+      );
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
   }
-
-  void _selectAmount(int amount) { setState(() { _selectedAmount = amount; _amountController.text = amount.toString(); }); }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final remaining = _remainingAmount;
+
     return Scaffold(
       appBar: AppBar(title: Text(l10n.donateTitle)),
       body: ListView(
@@ -63,17 +176,24 @@ class _DonationPageState extends ConsumerState<DonationPage> {
           Container(
             padding: const EdgeInsets.all(22),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF6E1A14), Color(0xFF4C120D)]),
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFF6E1A14), Color(0xFF4C120D)],
+              ),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(color: const Color(0xFFC89B3C)),
             ),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('दान', style: TextStyle(color: Color(0xFFF5A623), fontWeight: FontWeight.w700, fontSize: 14)),
-              const SizedBox(height: 8),
-              Text(widget.organisation.name, style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white, fontSize: 25)),
-              const SizedBox(height: 6),
-              Text(widget.causeName, style: TextStyle(color: Colors.white.withValues(alpha: 0.82), fontSize: 14)),
-            ]),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('दान', style: TextStyle(color: Color(0xFFF5A623), fontWeight: FontWeight.w700, fontSize: 14)),
+                const SizedBox(height: 8),
+                Text(widget.causeName, style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white, fontSize: 25)),
+                const SizedBox(height: 6),
+                Text('आपका कुल सहयोग पहले चुनें, फिर उसे संस्थाओं में बाँटें।', style: TextStyle(color: Colors.white.withValues(alpha: 0.82), fontSize: 14)),
+              ],
+            ),
           ),
           const SizedBox(height: 28),
           Text(l10n.chooseAmount, style: theme.textTheme.titleLarge),
@@ -82,7 +202,12 @@ class _DonationPageState extends ConsumerState<DonationPage> {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: _amounts.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 2.5),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 2.5,
+            ),
             itemBuilder: (context, index) {
               final amount = _amounts[index];
               final selected = _selectedAmount == amount;
@@ -104,13 +229,78 @@ class _DonationPageState extends ConsumerState<DonationPage> {
             key: const ValueKey('donation_amount_input'),
             controller: _amountController,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            onChanged: (_) => setState(() => _selectedAmount = null),
-            decoration: InputDecoration(labelText: l10n.customAmount, prefixText: '₹ ', filled: true, fillColor: Colors.white, border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Color(0xFFE8DCC8))), enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Color(0xFFE8DCC8)))),
+            onChanged: _onTotalChanged,
+            decoration: InputDecoration(
+              labelText: l10n.customAmount,
+              prefixText: '₹ ',
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+            ),
           ),
-          const SizedBox(height: 26),
+          const SizedBox(height: 30),
+          Text('वितरण', style: theme.textTheme.titleLarge),
+          const SizedBox(height: 6),
+          Text(
+            _amountSelected ? '₹ ${remaining.toStringAsFixed(0)} शेष राशि वितरित करें' : 'पहले कुल सहयोग राशि चुनें',
+            style: theme.textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 14),
+          ...widget.organisations.map((organisation) {
+            final controller = _allocationControllers[organisation.id]!;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(organisation.name, style: theme.textTheme.titleMedium),
+                            if (organisation.city != null) Text('${organisation.city}, ${organisation.state ?? ''}'.trim()),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      SizedBox(
+                        width: 120,
+                        child: TextField(
+                          key: ValueKey('donation_allocation_${organisation.id}'),
+                          controller: controller,
+                          enabled: _amountSelected,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          onChanged: (value) => _onAllocationChanged(organisation.id, value),
+                          decoration: const InputDecoration(prefixText: '₹ ', isDense: true),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: _allocationComplete ? const Color(0xFFE9F5E9) : const Color(0xFFFCE8C9),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('वितरित: ₹ ${_allocatedAmount.toStringAsFixed(0)}'),
+                Text('कुल: ₹ ${_totalAmount.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.w700)),
+              ],
+            ),
+          ),
+          const SizedBox(height: 18),
           FilledButton.icon(
             key: const ValueKey('donation_submit'),
-            onPressed: _submitting ? null : _submit,
+            onPressed: _submitting || !_allocationComplete ? null : _submit,
             icon: _submitting ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.favorite_rounded),
             label: Text(l10n.donateNow),
           ),
@@ -121,5 +311,3 @@ class _DonationPageState extends ConsumerState<DonationPage> {
     );
   }
 }
-
-class DecimalAmount { static double? tryParse(String value) => double.tryParse(value); }
