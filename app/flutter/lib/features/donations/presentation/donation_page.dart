@@ -87,6 +87,7 @@ class _DonationPageState extends ConsumerState<DonationPage> {
               final amount = _amounts[index];
               final selected = _selectedAmount == amount;
               return OutlinedButton(
+                key: ValueKey('donation_amount_$amount'),
                 onPressed: () => _selectAmount(amount),
                 style: OutlinedButton.styleFrom(
                   backgroundColor: selected ? const Color(0xFFFCE8C9) : Colors.white,
@@ -100,6 +101,7 @@ class _DonationPageState extends ConsumerState<DonationPage> {
           ),
           const SizedBox(height: 22),
           TextField(
+            key: const ValueKey('donation_amount_input'),
             controller: _amountController,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             onChanged: (_) => setState(() => _selectedAmount = null),
@@ -107,6 +109,7 @@ class _DonationPageState extends ConsumerState<DonationPage> {
           ),
           const SizedBox(height: 26),
           FilledButton.icon(
+            key: const ValueKey('donation_submit'),
             onPressed: _submitting ? null : _submit,
             icon: _submitting ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.favorite_rounded),
             label: Text(l10n.donateNow),
