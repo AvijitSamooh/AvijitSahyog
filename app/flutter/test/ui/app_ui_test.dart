@@ -37,9 +37,9 @@ void main() {
 
     await tester.tap(find.byIcon(Icons.language_rounded));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('हिन्दी'));
+    await tester.tap(find.text('Hindi'));
     await tester.pumpAndSettle();
 
-    expect(find.text('सेवा के लिए दान करें'), findsOneWidget);
+    expect(find.text('सहयोग जारी रखें'), findsOneWidget);
   });
 }
