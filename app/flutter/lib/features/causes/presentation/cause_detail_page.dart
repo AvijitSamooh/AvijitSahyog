@@ -89,11 +89,15 @@ class _OrganisationCard extends StatelessWidget {
             ])),
           ]),
           const SizedBox(height: 14),
-          SizedBox(width: double.infinity, child: FilledButton.icon(
-            onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => DonationPage(causeId: causeId, causeName: causeName, organisation: organisation))),
-            icon: const Icon(Icons.favorite_rounded, size: 18),
-            label: Text(l10n.donateNow),
-          )),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              key: const ValueKey('cause_organisation_donate'),
+              onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => DonationPage(causeId: causeId, causeName: causeName, organisation: organisation))),
+              icon: const Icon(Icons.favorite_rounded, size: 18),
+              label: Text(l10n.donateNow),
+            ),
+          ),
         ]),
       ),
     );
