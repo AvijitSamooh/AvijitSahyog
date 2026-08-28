@@ -70,6 +70,9 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  AppLocalizations l10n(WidgetTester tester) =>
+      AppLocalizations.of(tester.element(find.byType(Scaffold).first))!;
+
   testWidgets('home page renders the main donation entry point', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
     await tester.pump();
@@ -103,6 +106,7 @@ void main() {
 
     expect(find.text('अविजित सहयोग में आपका स्वागत है'), findsOneWidget);
     expect(find.text('सेवा के क्षेत्र'), findsWidgets);
+    expect(find.text('राशि चुनें'), findsWidgets);
   });
 
   testWidgets('causes page displays mocked causes', (tester) async {
@@ -168,7 +172,7 @@ void main() {
 
     expect(find.byType(DonationPage), findsOneWidget);
     expect(find.text('Seva Trust'), findsOneWidget);
-    expect(find.text('Choose amount'), findsOneWidget);
+    expect(find.text(l10n(tester).chooseAmount), findsOneWidget);
   });
 
   testWidgets('preset donation amount can be selected', (tester) async {
@@ -228,7 +232,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('donation_submit')));
     await tester.pump();
 
-    expect(find.text('Please enter a valid donation amount.'), findsOneWidget);
+    expect(find.text(l10n(tester).donationInvalidAmount), findsOneWidget);
     expect(repository.lastDonation, isNull);
   });
 
@@ -252,6 +256,6 @@ void main() {
     expect(repository.lastDonation!.amount, '1500');
     expect(repository.lastDonation!.causeId, 'cause-1');
     expect(repository.lastDonation!.organisationId, 'org-1');
-    expect(find.text('Donation created'), findsOneWidget);
+    expect(find.text(l10n(tester).donationCreatedTitle), findsOneWidget);
   });
 }
