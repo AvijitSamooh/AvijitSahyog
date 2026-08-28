@@ -25,12 +25,23 @@ const _organisation = Organisation(
   state: 'Maharashtra',
 );
 
+const _organisationTwo = Organisation(
+  id: 'org-2',
+  slug: 'shiksha-trust',
+  name: 'Shiksha Trust',
+  description: 'A second sample organisation used by allocation tests.',
+  city: 'Mumbai',
+  state: 'Maharashtra',
+);
+
+const _organisations = [_organisation, _organisationTwo];
+
 const _cause = Cause(
   id: 'cause-1',
   slug: 'education',
   name: 'Education',
   description: 'Support education initiatives.',
-  organisations: [_organisation],
+  organisations: _organisations,
 );
 
 class _FakeDonationsRepository extends DonationsRepository {
@@ -80,6 +91,7 @@ void main() {
         causeId: 'cause-1',
         causeName: 'Education',
         organisation: _organisation,
+        organisations: _organisations,
       ),
       overrides: overrides,
     );
@@ -184,10 +196,10 @@ void main() {
 
     expect(find.text('Seva Trust'), findsOneWidget);
     expect(find.text('Pune, Maharashtra'), findsOneWidget);
-    expect(find.byKey(const ValueKey('cause_organisation_donate')), findsOneWidget);
+    expect(find.byKey(const ValueKey('cause_organisation_donate_org-1')), findsOneWidget);
   });
 
-  testWidgets('organisation donate button opens donation page', (tester) async {
+  testWidgets('organisation pay button opens donation page', (tester) async {
     await pumpApp(
       tester,
       home: const CauseDetailPage(slug: 'education'),
@@ -197,7 +209,7 @@ void main() {
       ],
     );
 
-    await tester.tap(find.byKey(const ValueKey('cause_organisation_donate')));
+    await tester.tap(find.byKey(const ValueKey('cause_organisation_donate_org-1')));
     await tester.pumpAndSettle();
 
     expect(find.byType(DonationPage), findsOneWidget);
@@ -213,30 +225,33 @@ void main() {
     expect(amountField, findsOneWidget);
   });
 
-  testWidgets('preset donation amount can be selected', (tester) async {
+  testWidgets('allocation is hidden until a total amount is selected', (tester) async {
+    await pumpDonationPage(tester);
+
+    expect(find.text('वितरण'), findsNothing);
+    expect(find.byKey(const ValueKey('donation_submit')), findsNothing);
+    expect(find.byKey(const ValueKey('donation_allocation_org-1')), findsNothing);
+  });
+
+  testWidgets('preset amount selects total and preselects originating organisation', (tester) async {
     await pumpDonationPage(tester);
 
     final preset = find.byKey(const ValueKey('donation_amount_500'));
-    await tester.scrollUntilVisible(
-      preset,
-      400,
-      scrollable: find.byType(Scrollable).first,
-    );
-    expect(preset, findsOneWidget);
-
     await tester.tap(preset);
     await tester.pump();
 
     final amountField = find.byKey(const ValueKey('donation_amount_input'));
-    await tester.scrollUntilVisible(
-      amountField,
-      400,
-      scrollable: find.byType(Scrollable).first,
-    );
     expect(tester.widget<TextField>(amountField).controller?.text, '500');
+
+    final firstAllocation = find.byKey(const ValueKey('donation_allocation_org-1'));
+    final secondAllocation = find.byKey(const ValueKey('donation_allocation_org-2'));
+    expect(firstAllocation, findsOneWidget);
+    expect(secondAllocation, findsOneWidget);
+    expect(tester.widget<TextField>(firstAllocation).controller?.text, '500');
+    expect(tester.widget<TextField>(secondAllocation).controller?.text, '0');
   });
 
-  testWidgets('custom donation amount can be entered', (tester) async {
+  testWidgets('custom donation amount can be entered and allocation appears', (tester) async {
     await pumpDonationPage(tester);
 
     final amountField = find.byKey(const ValueKey('donation_amount_input'));
@@ -244,6 +259,49 @@ void main() {
     await tester.pump();
 
     expect(tester.widget<TextField>(amountField).controller?.text, '1750');
+    expect(find.byKey(const ValueKey('donation_allocation_org-1')), findsOneWidget);
+    expect(
+      tester.widget<TextField>(find.byKey(const ValueKey('donation_allocation_org-1'))).controller?.text,
+      '1750',
+    );
+  });
+
+  testWidgets('allocation can be redistributed between organisations', (tester) async {
+    await pumpDonationPage(tester);
+
+    await tester.tap(find.byKey(const ValueKey('donation_amount_1000')));
+    await tester.pump();
+
+    final first = find.byKey(const ValueKey('donation_allocation_org-1'));
+    final second = find.byKey(const ValueKey('donation_allocation_org-2'));
+
+    await tester.enterText(first, '700');
+    await tester.pump();
+    await tester.enterText(second, '300');
+    await tester.pump();
+
+    expect(tester.widget<TextField>(first).controller?.text, '700');
+    expect(tester.widget<TextField>(second).controller?.text, '300');
+    expect(find.byKey(const ValueKey('donation_submit')), findsOneWidget);
+    expect(tester.widget<FilledButton>(find.byKey(const ValueKey('donation_submit'))).onPressed, isNotNull);
+  });
+
+  testWidgets('allocation cannot exceed selected total', (tester) async {
+    await pumpDonationPage(tester);
+
+    await tester.tap(find.byKey(const ValueKey('donation_amount_500')));
+    await tester.pump();
+
+    final first = find.byKey(const ValueKey('donation_allocation_org-1'));
+    final second = find.byKey(const ValueKey('donation_allocation_org-2'));
+
+    await tester.enterText(first, '400');
+    await tester.pump();
+    await tester.enterText(second, '300');
+    await tester.pump();
+
+    expect(tester.widget<TextField>(first).controller?.text, '400');
+    expect(tester.widget<TextField>(second).controller?.text, '100');
   });
 
   testWidgets('invalid donation amount is rejected', (tester) async {
@@ -255,38 +313,46 @@ void main() {
 
     final amountField = find.byKey(const ValueKey('donation_amount_input'));
     await tester.enterText(amountField, '0');
-    await scrollToSubmit(tester);
-    await tester.tap(find.byKey(const ValueKey('donation_submit')));
     await tester.pump();
 
-    expect(find.text(l10n(tester).donationInvalidAmount), findsOneWidget);
+    expect(find.byKey(const ValueKey('donation_submit')), findsNothing);
     expect(repository.lastDonation, isNull);
   });
 
-  testWidgets('valid donation is submitted and confirmation is shown', (tester) async {
+  testWidgets('valid distributed donation is submitted with all allocations', (tester) async {
     final repository = _FakeDonationsRepository();
     await pumpDonationPage(
       tester,
       overrides: [donationRepositoryProvider.overrideWithValue(repository)],
     );
 
-    final amountField = find.byKey(const ValueKey('donation_amount_input'));
-    await tester.enterText(amountField, '1500');
-    await scrollToSubmit(tester);
-    await tester.tap(find.byKey(const ValueKey('donation_submit')));
+    await tester.tap(find.byKey(const ValueKey('donation_amount_1000')));
+    await tester.pump();
 
-    // Do not use pumpAndSettle here. The donation page contains a scrollable
-    // list and the submission opens a modal route; settling the entire tree can
-    // wait indefinitely for animation/scroll activity that is irrelevant to
-    // the behaviour being tested. A few deterministic pumps are sufficient to
-    // let the fake repository resolve and the dialog route appear.
+    final first = find.byKey(const ValueKey('donation_allocation_org-1'));
+    final second = find.byKey(const ValueKey('donation_allocation_org-2'));
+    await tester.enterText(first, '700');
+    await tester.pump();
+    await tester.enterText(second, '300');
+    await tester.pump();
+
+    final submit = find.byKey(const ValueKey('donation_submit'));
+    await tester.scrollUntilVisible(
+      submit,
+      400,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(submit);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
 
     expect(repository.lastDonation, isNotNull);
-    expect(repository.lastDonation!.amount, '1500');
-    expect(repository.lastDonation!.causeId, 'cause-1');
-    expect(repository.lastDonation!.organisationId, 'org-1');
+    expect(repository.lastDonation!.amount, '1000.00');
+    expect(repository.lastDonation!.allocations, hasLength(2));
+    expect(repository.lastDonation!.allocations[0].organisationId, 'org-1');
+    expect(repository.lastDonation!.allocations[0].amount, '700.00');
+    expect(repository.lastDonation!.allocations[1].organisationId, 'org-2');
+    expect(repository.lastDonation!.allocations[1].amount, '300.00');
     expect(find.text(l10n(tester).donationCreatedTitle), findsOneWidget);
   });
 }
