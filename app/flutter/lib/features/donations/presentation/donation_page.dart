@@ -108,8 +108,9 @@ class _DonationPageState extends ConsumerState<DonationPage> {
   void _onAllocationChanged(String organisationId, String value) {
     final controller = _allocationControllers[organisationId]!;
     final entered = _number(value);
-    final previous = _previousAllocations[organisationId] ?? 0;
-    final otherAllocated = _allocatedAmount - previous;
+    final otherAllocated = _previousAllocations.entries
+        .where((entry) => entry.key != organisationId)
+        .fold<double>(0, (sum, entry) => sum + entry.value);
     final maximum = (_totalAmount - otherAllocated).clamp(0, _totalAmount);
     final adjusted = entered.clamp(0, maximum);
 
