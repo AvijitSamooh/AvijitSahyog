@@ -12,5 +12,10 @@
     }
   },
   "welcomeTitle": "अविजित सहयोगमध्ये आपले स्वागत आहे",
-  "welcomeSubtitle": "सोपे, पारदर्शक आणि अर्थपूर्ण योगदान."
+  "welcomeSubtitle": "सोपे, पारदर्शक आणि अर्थपूर्ण योगदान.",
+  "language": "भाषा",
+  "languageEnglish": "इंग्रजी",
+  "languageHindi": "हिंदी",
+  "languageMarathi": "मराठी",
+  "languageGujarati": "गुजराती"
 }
