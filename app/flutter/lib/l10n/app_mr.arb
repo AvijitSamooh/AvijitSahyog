@@ -1,0 +1,16 @@
+{
+  "@@locale": "mr",
+  "appTitle": "अविजित सहयोग",
+  "checkingBackend": "बॅकएंडची तपासणी सुरू आहे...",
+  "backendUnavailable": "बॅकएंड उपलब्ध नाही",
+  "backendStatus": "{status} — {service}",
+  "@backendStatus": {
+    "description": "विकास अवस्थेत दाखवला जाणारा सत्यापित बॅकएंड आरोग्य स्थिती संदेश.",
+    "placeholders": {
+      "status": {},
+      "service": {}
+    }
+  },
+  "welcomeTitle": "अविजित सहयोगमध्ये आपले स्वागत आहे",
+  "welcomeSubtitle": "सोपे, पारदर्शक आणि अर्थपूर्ण योगदान."
+}
