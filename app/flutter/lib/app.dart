@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'features/home/home_page.dart';
+import 'l10n/app_localizations.dart';
 
 class AvijitSahyogApp extends StatelessWidget {
   const AvijitSahyogApp({super.key});
@@ -8,7 +9,9 @@ class AvijitSahyogApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Avijit Sahyog',
+      onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.deepOrange,
