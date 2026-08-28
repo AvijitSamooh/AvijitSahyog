@@ -17,9 +17,7 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
   static const _maroon = Color(0xFF6E1A14);
   static const _maroonDark = Color(0xFF4C120D);
   static const _saffron = Color(0xFFF5A623);
-  static const _gold = Color(0xFFC89B3C);
   static const _cream = Color(0xFFFFF8ED);
-  static const _creamSoft = Color(0xFFF9F2E8);
   static const _text = Color(0xFF39271C);
   static const _textSoft = Color(0xFF6B4F36);
   static const _line = Color(0xFFE8DCC8);
@@ -88,7 +86,7 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
           fontWeight: FontWeight.w700,
         ),
       ),
-      cardTheme: CardThemeData(
+      cardTheme: CardTheme(
         color: Colors.white,
         elevation: 0,
         margin: EdgeInsets.zero,
