@@ -85,10 +85,9 @@ void main() {
     );
 
     expect(find.byType(DonationPage), findsOneWidget);
-    expect(find.byKey(const ValueKey('donation_submit')), findsOneWidget);
 
     // DonationPage uses a ListView. Widgets below the viewport are lazily
-    // built, so make the amount field visible before asserting on it.
+    // built, so make the amount field visible before interacting with it.
     final amountField = find.byKey(const ValueKey('donation_amount_input'));
     await tester.scrollUntilVisible(
       amountField,
@@ -96,6 +95,16 @@ void main() {
       scrollable: find.byType(Scrollable).first,
     );
     expect(amountField, findsOneWidget);
+  }
+
+  Future<void> scrollToSubmit(WidgetTester tester) async {
+    final submit = find.byKey(const ValueKey('donation_submit'));
+    await tester.scrollUntilVisible(
+      submit,
+      400,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(submit, findsOneWidget);
   }
 
   testWidgets('home page renders the main donation entry point', (tester) async {
@@ -248,6 +257,7 @@ void main() {
 
     final amountField = find.byKey(const ValueKey('donation_amount_input'));
     await tester.enterText(amountField, '0');
+    await scrollToSubmit(tester);
     await tester.tap(find.byKey(const ValueKey('donation_submit')));
     await tester.pump();
 
@@ -264,6 +274,7 @@ void main() {
 
     final amountField = find.byKey(const ValueKey('donation_amount_input'));
     await tester.enterText(amountField, '1500');
+    await scrollToSubmit(tester);
     await tester.tap(find.byKey(const ValueKey('donation_submit')));
     await tester.pumpAndSettle();
 
