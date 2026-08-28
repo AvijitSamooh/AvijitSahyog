@@ -6,10 +6,7 @@
   "backendStatus": "{status} — {service}",
   "@backendStatus": {
     "description": "विकास अवस्थेत दाखवला जाणारा सत्यापित बॅकएंड आरोग्य स्थिती संदेश.",
-    "placeholders": {
-      "status": {},
-      "service": {}
-    }
+    "placeholders": { "status": {}, "service": {} }
   },
   "welcomeTitle": "अविजित सहयोगमध्ये आपले स्वागत आहे",
   "welcomeSubtitle": "सोपे, पारदर्शक आणि अर्थपूर्ण योगदान.",
@@ -23,5 +20,15 @@
   "causeLoadError": "हे सेवा क्षेत्र लोड करता आले नाही.",
   "noCauses": "कोणतेही सेवा क्षेत्र उपलब्ध नाही.",
   "retry": "पुन्हा प्रयत्न करा",
-  "affiliatedOrganisations": "संलग्न संस्था"
+  "affiliatedOrganisations": "संलग्न संस्था",
+  "donateTitle": "योगदान करा",
+  "chooseAmount": "रक्कम निवडा",
+  "customAmount": "स्वतःची रक्कम",
+  "donateNow": "योगदान सुरू ठेवा",
+  "donationInvalidAmount": "कृपया शून्यापेक्षा जास्त योग्य रक्कम भरा.",
+  "donationCreateError": "तुमचे योगदान नोंदवता आले नाही. कृपया पुन्हा प्रयत्न करा.",
+  "donationCreatedTitle": "योगदान नोंदवले गेले",
+  "donationCreatedMessage": "तुमचे योगदान नोंदवले गेले आहे. पुढील टप्प्यात पेमेंट जोडले जाईल.",
+  "donationPaymentLater": "या योगदान प्रक्रियेची पडताळणी झाल्यानंतर पेमेंटची सुविधा जोडली जाईल.",
+  "done": "पूर्ण"
 }
