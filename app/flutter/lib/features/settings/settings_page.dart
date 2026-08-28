@@ -16,7 +16,7 @@ class SettingsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.settings),
+        title: Text(l10n.language),
       ),
       body: ListView(
         padding: const EdgeInsets.all(20),
@@ -26,28 +26,24 @@ class SettingsPage extends StatelessWidget {
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 12),
-
           _languageTile(
             context,
-            label: l10n.english,
+            label: l10n.languageEnglish,
             locale: const Locale('en'),
           ),
-
           _languageTile(
             context,
-            label: l10n.hindi,
+            label: l10n.languageHindi,
             locale: const Locale('hi'),
           ),
-
           _languageTile(
             context,
-            label: l10n.marathi,
+            label: l10n.languageMarathi,
             locale: const Locale('mr'),
           ),
-
           _languageTile(
             context,
-            label: l10n.gujarati,
+            label: l10n.languageGujarati,
             locale: const Locale('gu'),
           ),
         ],
