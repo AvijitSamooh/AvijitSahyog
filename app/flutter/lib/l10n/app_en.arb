@@ -12,5 +12,10 @@
     }
   },
   "welcomeTitle": "Welcome to Avijit Sahyog",
-  "welcomeSubtitle": "Simple, transparent and meaningful giving."
+  "welcomeSubtitle": "Simple, transparent and meaningful giving.",
+  "language": "Language",
+  "languageEnglish": "English",
+  "languageHindi": "Hindi",
+  "languageMarathi": "Marathi",
+  "languageGujarati": "Gujarati"
 }
