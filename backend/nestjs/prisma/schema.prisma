@@ -10,11 +10,9 @@ datasource db {
 // -----------------------------------------------------------------------------
 // Content / discovery domain
 // -----------------------------------------------------------------------------
-//
-// These models intentionally cover only the Causes + Organisations slice of
-// the product. Donation/payment models will be introduced separately so that
-// financial state does not get coupled to content management.
-//
+// These models intentionally cover only the Causes + Organisations slice.
+// Donation/payment models will be introduced separately so financial state
+// stays decoupled from content management.
 
 model Language {
   id          String   @id @default(uuid()) @db.Uuid
@@ -40,7 +38,7 @@ model Cause {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  translations CauseTranslation[]
+  translations  CauseTranslation[]
   organisations OrganisationCause[]
 
   @@index([isActive, displayOrder])
@@ -63,24 +61,24 @@ model CauseTranslation {
 }
 
 model Organisation {
-  id          String   @id @default(uuid()) @db.Uuid
-  slug        String   @unique @db.VarChar(120)
-  logoUrl     String?  @db.VarChar(1000)
-  websiteUrl  String?  @db.VarChar(1000)
-  phone       String?  @db.VarChar(30)
-  email       String?  @db.VarChar(320)
-  address     String?  @db.Text
-  city        String?  @db.VarChar(100)
-  state       String?  @db.VarChar(100)
-  country     String   @default("IN") @db.VarChar(2)
-  latitude    Decimal? @db.Decimal(9, 6)
-  longitude   Decimal? @db.Decimal(9, 6)
-  isActive    Boolean  @default(true)
-  displayOrder Int     @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String   @id @default(uuid()) @db.Uuid
+  slug         String   @unique @db.VarChar(120)
+  logoUrl      String?  @db.VarChar(1000)
+  websiteUrl   String?  @db.VarChar(1000)
+  phone        String?  @db.VarChar(30)
+  email        String?  @db.VarChar(320)
+  address      String?  @db.Text
+  city         String?  @db.VarChar(100)
+  state        String?  @db.VarChar(100)
+  country      String   @default("IN") @db.VarChar(2)
+  latitude     Decimal? @db.Decimal(9, 6)
+  longitude    Decimal? @db.Decimal(9, 6)
+  isActive     Boolean  @default(true)
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  translations CauseOrganisationTranslationPlaceholder[]
+  translations OrganisationTranslation[]
   causes       OrganisationCause[]
 
   @@index([isActive, displayOrder])
@@ -104,7 +102,7 @@ model OrganisationTranslation {
 }
 
 model OrganisationCause {
-  id             String   @id @default(uuid()) @db.Uuid
+  id             String   @id @default(uuid())
   organisationId String   @db.Uuid
   causeId        String   @db.Uuid
   isActive       Boolean  @default(true)
