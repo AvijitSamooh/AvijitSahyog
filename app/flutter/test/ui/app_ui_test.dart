@@ -86,8 +86,6 @@ void main() {
 
     expect(find.byType(DonationPage), findsOneWidget);
 
-    // DonationPage uses a ListView. Widgets below the viewport are lazily
-    // built, so make the amount field visible before interacting with it.
     final amountField = find.byKey(const ValueKey('donation_amount_input'));
     await tester.scrollUntilVisible(
       amountField,
@@ -276,7 +274,14 @@ void main() {
     await tester.enterText(amountField, '1500');
     await scrollToSubmit(tester);
     await tester.tap(find.byKey(const ValueKey('donation_submit')));
-    await tester.pumpAndSettle();
+
+    // Do not use pumpAndSettle here. The donation page contains a scrollable
+    // list and the submission opens a modal route; settling the entire tree can
+    // wait indefinitely for animation/scroll activity that is irrelevant to
+    // the behaviour being tested. A few deterministic pumps are sufficient to
+    // let the fake repository resolve and the dialog route appear.
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
 
     expect(repository.lastDonation, isNotNull);
     expect(repository.lastDonation!.amount, '1500');
