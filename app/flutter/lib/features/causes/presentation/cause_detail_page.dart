@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../l10n/app_localizations.dart';
+import '../../donations/presentation/donation_page.dart';
 import '../models/organisation.dart';
 import '../providers/causes_providers.dart';
 
@@ -96,7 +97,11 @@ class CauseDetailPage extends ConsumerWidget {
               ...cause.organisations.map(
                 (organisation) => Padding(
                   padding: const EdgeInsets.only(bottom: 12),
-                  child: _OrganisationCard(organisation: organisation),
+                  child: _OrganisationCard(
+                    organisation: organisation,
+                    causeId: cause.id,
+                    causeName: cause.name,
+                  ),
                 ),
               ),
             ],
@@ -108,53 +113,84 @@ class CauseDetailPage extends ConsumerWidget {
 }
 
 class _OrganisationCard extends StatelessWidget {
-  const _OrganisationCard({required this.organisation});
+  const _OrganisationCard({
+    required this.organisation,
+    required this.causeId,
+    required this.causeName,
+  });
 
   final Organisation organisation;
+  final String causeId;
+  final String causeName;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final location = _organisationSubtitle(organisation);
 
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Row(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: 46,
-              height: 46,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFCE8C9),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: const Icon(
-                Icons.account_balance_rounded,
-                color: Color(0xFF6E1A14),
-              ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFCE8C9),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: const Icon(
+                    Icons.account_balance_rounded,
+                    color: Color(0xFF6E1A14),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(organisation.name, style: theme.textTheme.titleMedium),
+                      if (location != null) ...[
+                        const SizedBox(height: 5),
+                        location,
+                      ],
+                      if (organisation.description?.isNotEmpty == true) ...[
+                        const SizedBox(height: 7),
+                        Text(
+                          organisation.description!,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(organisation.name, style: theme.textTheme.titleMedium),
-                  if (location != null) ...[
-                    const SizedBox(height: 5),
-                    location,
-                  ],
-                  if (organisation.description?.isNotEmpty == true) ...[
-                    const SizedBox(height: 7),
-                    Text(
-                      organisation.description!,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodyMedium,
+            const SizedBox(height: 14),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => DonationPage(
+                        causeId: causeId,
+                        causeName: causeName,
+                        organisation: organisation,
+                      ),
                     ),
-                  ],
-                ],
+                  );
+                },
+                icon: const Icon(Icons.favorite_rounded, size: 18),
+                label: Text(l10n.donateNow),
               ),
             ),
           ],
