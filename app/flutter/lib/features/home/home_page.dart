@@ -266,38 +266,41 @@ class _LanguageSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFFFFF8ED),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
-      child: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 42,
-              height: 4,
-              decoration: BoxDecoration(
-                color: const Color(0xFFCBB083),
-                borderRadius: BorderRadius.circular(4),
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Color(0xFFFFF8ED),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 42,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFCBB083),
+                  borderRadius: BorderRadius.circular(4),
+                ),
               ),
-            ),
-            const SizedBox(height: 18),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                l10n.language,
-                style: Theme.of(context).textTheme.titleLarge,
+              const SizedBox(height: 18),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  l10n.language,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            _option(context, l10n.languageEnglish, 'en'),
-            _option(context, l10n.languageHindi, 'hi'),
-            _option(context, l10n.languageMarathi, 'mr'),
-            _option(context, l10n.languageGujarati, 'gu'),
-          ],
+              const SizedBox(height: 8),
+              _option(context, l10n.languageEnglish, 'en'),
+              _option(context, l10n.languageHindi, 'hi'),
+              _option(context, l10n.languageMarathi, 'mr'),
+              _option(context, l10n.languageGujarati, 'gu'),
+            ],
+          ),
         ),
       ),
     );
@@ -306,18 +309,21 @@ class _LanguageSheet extends StatelessWidget {
   Widget _option(BuildContext context, String label, String code) {
     final selected = code == currentLocale;
 
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Icon(
-        selected
-            ? Icons.radio_button_checked_rounded
-            : Icons.radio_button_unchecked_rounded,
-        color: selected
-            ? const Color(0xFF6E1A14)
-            : const Color(0xFF9A574C),
+    return Material(
+      color: Colors.transparent,
+      child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: Icon(
+          selected
+              ? Icons.radio_button_checked_rounded
+              : Icons.radio_button_unchecked_rounded,
+          color: selected
+              ? const Color(0xFF6E1A14)
+              : const Color(0xFF9A574C),
+        ),
+        title: Text(label),
+        onTap: () => Navigator.pop(context, Locale(code)),
       ),
-      title: Text(label),
-      onTap: () => Navigator.pop(context, Locale(code)),
     );
   }
 }
