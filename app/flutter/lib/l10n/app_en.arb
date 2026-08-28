@@ -6,10 +6,7 @@
   "backendStatus": "{status} — {service}",
   "@backendStatus": {
     "description": "Verified backend health status shown in the development shell.",
-    "placeholders": {
-      "status": {},
-      "service": {}
-    }
+    "placeholders": { "status": {}, "service": {} }
   },
   "welcomeTitle": "Welcome to Avijit Sahyog",
   "welcomeSubtitle": "Simple, transparent and meaningful giving.",
@@ -23,5 +20,15 @@
   "causeLoadError": "Unable to load this cause.",
   "noCauses": "No causes are available.",
   "retry": "Retry",
-  "affiliatedOrganisations": "Affiliated organisations"
+  "affiliatedOrganisations": "Affiliated organisations",
+  "donateTitle": "Make a contribution",
+  "chooseAmount": "Choose an amount",
+  "customAmount": "Custom amount",
+  "donateNow": "Continue with donation",
+  "donationInvalidAmount": "Please enter a valid amount greater than zero.",
+  "donationCreateError": "We could not record your donation. Please try again.",
+  "donationCreatedTitle": "Donation recorded",
+  "donationCreatedMessage": "Your contribution has been recorded. Payment will be added in the next step.",
+  "donationPaymentLater": "Payment processing will be added after this donation flow is verified.",
+  "done": "Done"
 }
