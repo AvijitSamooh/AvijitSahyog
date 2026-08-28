@@ -15,7 +15,7 @@ void main() {
 
     expect(find.byType(AvijitSahyogApp), findsOneWidget);
     expect(find.byIcon(Icons.language_rounded), findsOneWidget);
-    expect(find.text('Causes'), findsOneWidget);
+    expect(find.widgetWithText(FilledButton, 'Causes'), findsOneWidget);
   });
 
   testWidgets('language selector opens and shows all supported languages', (tester) async {
@@ -40,6 +40,7 @@ void main() {
     await tester.tap(find.text('Hindi'));
     await tester.pumpAndSettle();
 
-    expect(find.text('सहयोग जारी रखें'), findsOneWidget);
+    expect(find.text('अविजित सहयोग में आपका स्वागत है'), findsOneWidget);
+    expect(find.text('सेवा के क्षेत्र'), findsOneWidget);
   });
 }
