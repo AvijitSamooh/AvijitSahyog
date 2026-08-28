@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/network/api_client.dart';
+import '../../l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,7 +13,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final ApiClient _apiClient = ApiClient();
 
-  String _status = 'Checking backend...';
+  String? _status;
+  bool _isCheckingBackend = true;
 
   @override
   void initState() {
@@ -28,12 +30,14 @@ class _HomePageState extends State<HomePage> {
 
       setState(() {
         _status = '${result['status']} — ${result['service']}';
+        _isCheckingBackend = false;
       });
-    } catch (error) {
+    } catch (_) {
       if (!mounted) return;
 
       setState(() {
-        _status = 'Backend unavailable';
+        _status = null;
+        _isCheckingBackend = false;
       });
     }
   }
@@ -46,15 +50,24 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Avijit Sahyog'),
+        title: Text(l10n.appTitle),
       ),
       body: Center(
-        child: Text(
-          _status,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
+        child: _isCheckingBackend
+            ? Text(l10n.checkingBackend)
+            : _status == null
+                ? Text(l10n.backendUnavailable)
+                : Text(
+                    l10n.backendStatus(
+                      _status!.split(' — ').first,
+                      _status!.split(' — ').skip(1).join(' — '),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
       ),
     );
   }
