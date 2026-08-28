@@ -104,7 +104,7 @@ class _OrganisationCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: FilledButton.icon(
-              key: const ValueKey('cause_organisation_donate'),
+              key: ValueKey('cause_organisation_donate_${organisation.id}'),
               onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => DonationPage(
                 causeId: causeId,
                 causeName: causeName,
