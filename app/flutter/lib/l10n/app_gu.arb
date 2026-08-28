@@ -1,0 +1,16 @@
+{
+  "@@locale": "gu",
+  "appTitle": "અવિજિત સહયોગ",
+  "checkingBackend": "બેકએન્ડ તપાસી રહ્યા છીએ...",
+  "backendUnavailable": "બેકએન્ડ ઉપલબ્ધ નથી",
+  "backendStatus": "{status} — {service}",
+  "@backendStatus": {
+    "description": "વિકાસ સ્થિતિમાં દર્શાવાતી ચકાસાયેલ બેકએન્ડ આરોગ્ય સ્થિતિ.",
+    "placeholders": {
+      "status": {},
+      "service": {}
+    }
+  },
+  "welcomeTitle": "અવિજિત સહયોગમાં આપનું સ્વાગત છે",
+  "welcomeSubtitle": "સરળ, પારદર્શક અને અર્થપૂર્ણ સહયોગ."
+}
