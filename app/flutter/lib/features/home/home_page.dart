@@ -60,6 +60,13 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.appTitle),
+        actions: [
+          IconButton(
+            tooltip: l10n.settings,
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () => Navigator.pushNamed(context, '/settings'),
+          ),
+        ],
       ),
       body: Center(
         child: _isCheckingBackend
