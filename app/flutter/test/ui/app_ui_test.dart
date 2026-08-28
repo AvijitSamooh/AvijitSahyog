@@ -154,7 +154,7 @@ void main() {
 
     expect(find.text('Seva Trust'), findsOneWidget);
     expect(find.text('Pune, Maharashtra'), findsOneWidget);
-    expect(find.text('Donate'), findsOneWidget);
+    expect(find.widgetWithText(FilledButton, 'Donate now'), findsOneWidget);
   });
 
   testWidgets('organisation donate button opens donation page', (tester) async {
@@ -168,7 +168,7 @@ void main() {
     );
 
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Donate'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Donate now'));
     await tester.pumpAndSettle();
 
     expect(find.byType(DonationPage), findsOneWidget);
@@ -186,11 +186,13 @@ void main() {
       ),
     );
 
-    await tester.tap(find.text('₹ 500'));
+    final preset = find.widgetWithText(OutlinedButton, '₹ 500');
+    expect(preset, findsOneWidget);
+
+    await tester.tap(preset);
     await tester.pump();
 
-    final amountField = find.byType(TextField);
-    expect(amountField, findsOneWidget);
+    expect(find.widgetWithText(OutlinedButton, '₹ 500'), findsOneWidget);
     expect(find.text('500'), findsOneWidget);
   });
 
@@ -204,7 +206,9 @@ void main() {
       ),
     );
 
-    await tester.enterText(find.byType(TextField), '1750');
+    final amountField = find.byType(TextField);
+    expect(amountField, findsOneWidget);
+    await tester.enterText(amountField, '1750');
     await tester.pump();
 
     expect(find.text('1750'), findsOneWidget);
@@ -223,7 +227,7 @@ void main() {
     );
 
     await tester.enterText(find.byType(TextField), '0');
-    await tester.tap(find.text('Donate now'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Donate now'));
     await tester.pump();
 
     expect(find.text('Please enter a valid donation amount.'), findsOneWidget);
@@ -243,7 +247,7 @@ void main() {
     );
 
     await tester.enterText(find.byType(TextField), '1500');
-    await tester.tap(find.text('Donate now'));
+    await tester.tap(find.widgetWithText(FilledButton, 'Donate now'));
     await tester.pumpAndSettle();
 
     expect(repository.lastDonation, isNotNull);
