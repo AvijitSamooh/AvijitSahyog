@@ -19,23 +19,15 @@ class CreateDonationAllocation {
 class CreateDonation {
   const CreateDonation({
     required this.amount,
-    required this.causeId,
-    required this.organisationId,
+    required this.allocations,
   });
 
   final String amount;
-  final String causeId;
-  final String organisationId;
+  final List<CreateDonationAllocation> allocations;
 
   Map<String, dynamic> toJson() => {
         'amount': amount,
         'currency': 'INR',
-        'allocations': [
-          CreateDonationAllocation(
-            causeId: causeId,
-            organisationId: organisationId,
-            amount: amount,
-          ).toJson(),
-        ],
+        'allocations': allocations.map((allocation) => allocation.toJson()).toList(),
       };
 }
