@@ -84,10 +84,18 @@ void main() {
       overrides: overrides,
     );
 
-    // Guard the tests against accidentally running against a different route.
     expect(find.byType(DonationPage), findsOneWidget);
-    expect(find.byKey(const ValueKey('donation_amount_input')), findsOneWidget);
     expect(find.byKey(const ValueKey('donation_submit')), findsOneWidget);
+
+    // DonationPage uses a ListView. Widgets below the viewport are lazily
+    // built, so make the amount field visible before asserting on it.
+    final amountField = find.byKey(const ValueKey('donation_amount_input'));
+    await tester.scrollUntilVisible(
+      amountField,
+      400,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(amountField, findsOneWidget);
   }
 
   testWidgets('home page renders the main donation entry point', (tester) async {
@@ -121,8 +129,6 @@ void main() {
     await tester.tap(find.text('Hindi'));
     await tester.pumpAndSettle();
 
-    // This test is intentionally limited to content owned by the Home page.
-    // Donation-page strings belong to the donation tests below.
     expect(find.text('अविजित सहयोग में आपका स्वागत है'), findsOneWidget);
   });
 
@@ -190,19 +196,36 @@ void main() {
     expect(find.byType(DonationPage), findsOneWidget);
     expect(find.text('Seva Trust'), findsOneWidget);
     expect(find.text(l10n(tester).chooseAmount), findsOneWidget);
-    expect(find.byKey(const ValueKey('donation_amount_input')), findsOneWidget);
+
+    final amountField = find.byKey(const ValueKey('donation_amount_input'));
+    await tester.scrollUntilVisible(
+      amountField,
+      400,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(amountField, findsOneWidget);
   });
 
   testWidgets('preset donation amount can be selected', (tester) async {
     await pumpDonationPage(tester);
 
     final preset = find.byKey(const ValueKey('donation_amount_500'));
-    final amountField = find.byKey(const ValueKey('donation_amount_input'));
-
+    await tester.scrollUntilVisible(
+      preset,
+      400,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(preset, findsOneWidget);
+
     await tester.tap(preset);
     await tester.pump();
 
+    final amountField = find.byKey(const ValueKey('donation_amount_input'));
+    await tester.scrollUntilVisible(
+      amountField,
+      400,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(tester.widget<TextField>(amountField).controller?.text, '500');
   });
 
@@ -223,7 +246,8 @@ void main() {
       overrides: [donationRepositoryProvider.overrideWithValue(repository)],
     );
 
-    await tester.enterText(find.byKey(const ValueKey('donation_amount_input')), '0');
+    final amountField = find.byKey(const ValueKey('donation_amount_input'));
+    await tester.enterText(amountField, '0');
     await tester.tap(find.byKey(const ValueKey('donation_submit')));
     await tester.pump();
 
@@ -238,7 +262,8 @@ void main() {
       overrides: [donationRepositoryProvider.overrideWithValue(repository)],
     );
 
-    await tester.enterText(find.byKey(const ValueKey('donation_amount_input')), '1500');
+    final amountField = find.byKey(const ValueKey('donation_amount_input'));
+    await tester.enterText(amountField, '1500');
     await tester.tap(find.byKey(const ValueKey('donation_submit')));
     await tester.pumpAndSettle();
 
