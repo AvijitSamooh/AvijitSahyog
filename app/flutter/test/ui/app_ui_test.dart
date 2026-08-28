@@ -61,12 +61,13 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
           theme: ThemeData(useMaterial3: true),
           home: home ?? const AvijitSahyogApp(),
         ),
       ),
     );
-    await tester.pump();
+    await tester.pumpAndSettle();
   }
 
   testWidgets('home page renders the main donation entry point', (tester) async {
@@ -113,8 +114,6 @@ void main() {
       ],
     );
 
-    await tester.pumpAndSettle();
-
     expect(find.text('Education'), findsWidgets);
     expect(find.text('Support education initiatives.'), findsOneWidget);
     expect(find.byIcon(Icons.volunteer_activism_rounded), findsOneWidget);
@@ -131,7 +130,6 @@ void main() {
       ],
     );
 
-    await tester.pumpAndSettle();
     await tester.tap(find.text('Education').first);
     await tester.pumpAndSettle();
 
@@ -150,11 +148,9 @@ void main() {
       ],
     );
 
-    await tester.pumpAndSettle();
-
     expect(find.text('Seva Trust'), findsOneWidget);
     expect(find.text('Pune, Maharashtra'), findsOneWidget);
-    expect(find.widgetWithText(FilledButton, 'Donate now'), findsOneWidget);
+    expect(find.byKey(const ValueKey('cause_organisation_donate')), findsOneWidget);
   });
 
   testWidgets('organisation donate button opens donation page', (tester) async {
@@ -167,8 +163,7 @@ void main() {
       ],
     );
 
-    await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(FilledButton, 'Donate now'));
+    await tester.tap(find.byKey(const ValueKey('cause_organisation_donate')));
     await tester.pumpAndSettle();
 
     expect(find.byType(DonationPage), findsOneWidget);
@@ -186,14 +181,16 @@ void main() {
       ),
     );
 
-    final preset = find.widgetWithText(OutlinedButton, '₹ 500');
+    final preset = find.byKey(const ValueKey('donation_amount_500'));
+    final amountField = find.byKey(const ValueKey('donation_amount_input'));
     expect(preset, findsOneWidget);
+    expect(amountField, findsOneWidget);
 
     await tester.tap(preset);
     await tester.pump();
 
-    expect(find.widgetWithText(OutlinedButton, '₹ 500'), findsOneWidget);
-    expect(find.text('500'), findsOneWidget);
+    final field = tester.widget<TextField>(amountField);
+    expect(field.controller?.text, '500');
   });
 
   testWidgets('custom donation amount can be entered', (tester) async {
@@ -206,12 +203,13 @@ void main() {
       ),
     );
 
-    final amountField = find.byType(TextField);
+    final amountField = find.byKey(const ValueKey('donation_amount_input'));
     expect(amountField, findsOneWidget);
     await tester.enterText(amountField, '1750');
     await tester.pump();
 
-    expect(find.text('1750'), findsOneWidget);
+    final field = tester.widget<TextField>(amountField);
+    expect(field.controller?.text, '1750');
   });
 
   testWidgets('invalid donation amount is rejected', (tester) async {
@@ -226,8 +224,8 @@ void main() {
       overrides: [donationRepositoryProvider.overrideWithValue(repository)],
     );
 
-    await tester.enterText(find.byType(TextField), '0');
-    await tester.tap(find.widgetWithText(FilledButton, 'Donate now'));
+    await tester.enterText(find.byKey(const ValueKey('donation_amount_input')), '0');
+    await tester.tap(find.byKey(const ValueKey('donation_submit')));
     await tester.pump();
 
     expect(find.text('Please enter a valid donation amount.'), findsOneWidget);
@@ -246,8 +244,8 @@ void main() {
       overrides: [donationRepositoryProvider.overrideWithValue(repository)],
     );
 
-    await tester.enterText(find.byType(TextField), '1500');
-    await tester.tap(find.widgetWithText(FilledButton, 'Donate now'));
+    await tester.enterText(find.byKey(const ValueKey('donation_amount_input')), '1500');
+    await tester.tap(find.byKey(const ValueKey('donation_submit')));
     await tester.pumpAndSettle();
 
     expect(repository.lastDonation, isNotNull);
