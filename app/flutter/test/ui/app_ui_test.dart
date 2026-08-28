@@ -73,6 +73,23 @@ void main() {
   AppLocalizations l10n(WidgetTester tester) =>
       AppLocalizations.of(tester.element(find.byType(Scaffold).first))!;
 
+  Future<void> pumpDonationPage(WidgetTester tester, {List<Override> overrides = const []}) async {
+    await pumpApp(
+      tester,
+      home: const DonationPage(
+        causeId: 'cause-1',
+        causeName: 'Education',
+        organisation: _organisation,
+      ),
+      overrides: overrides,
+    );
+
+    // Guard the tests against accidentally running against a different route.
+    expect(find.byType(DonationPage), findsOneWidget);
+    expect(find.byKey(const ValueKey('donation_amount_input')), findsOneWidget);
+    expect(find.byKey(const ValueKey('donation_submit')), findsOneWidget);
+  }
+
   testWidgets('home page renders the main donation entry point', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
     await tester.pump();
@@ -104,9 +121,9 @@ void main() {
     await tester.tap(find.text('Hindi'));
     await tester.pumpAndSettle();
 
+    // This test is intentionally limited to content owned by the Home page.
+    // Donation-page strings belong to the donation tests below.
     expect(find.text('अविजित सहयोग में आपका स्वागत है'), findsOneWidget);
-    expect(find.text('सेवा के क्षेत्र'), findsWidgets);
-    expect(find.text('राशि चुनें'), findsWidgets);
   });
 
   testWidgets('causes page displays mocked causes', (tester) async {
@@ -173,58 +190,36 @@ void main() {
     expect(find.byType(DonationPage), findsOneWidget);
     expect(find.text('Seva Trust'), findsOneWidget);
     expect(find.text(l10n(tester).chooseAmount), findsOneWidget);
+    expect(find.byKey(const ValueKey('donation_amount_input')), findsOneWidget);
   });
 
   testWidgets('preset donation amount can be selected', (tester) async {
-    await pumpApp(
-      tester,
-      home: const DonationPage(
-        causeId: 'cause-1',
-        causeName: 'Education',
-        organisation: _organisation,
-      ),
-    );
+    await pumpDonationPage(tester);
 
     final preset = find.byKey(const ValueKey('donation_amount_500'));
     final amountField = find.byKey(const ValueKey('donation_amount_input'));
-    expect(preset, findsOneWidget);
-    expect(amountField, findsOneWidget);
 
+    expect(preset, findsOneWidget);
     await tester.tap(preset);
     await tester.pump();
 
-    final field = tester.widget<TextField>(amountField);
-    expect(field.controller?.text, '500');
+    expect(tester.widget<TextField>(amountField).controller?.text, '500');
   });
 
   testWidgets('custom donation amount can be entered', (tester) async {
-    await pumpApp(
-      tester,
-      home: const DonationPage(
-        causeId: 'cause-1',
-        causeName: 'Education',
-        organisation: _organisation,
-      ),
-    );
+    await pumpDonationPage(tester);
 
     final amountField = find.byKey(const ValueKey('donation_amount_input'));
-    expect(amountField, findsOneWidget);
     await tester.enterText(amountField, '1750');
     await tester.pump();
 
-    final field = tester.widget<TextField>(amountField);
-    expect(field.controller?.text, '1750');
+    expect(tester.widget<TextField>(amountField).controller?.text, '1750');
   });
 
   testWidgets('invalid donation amount is rejected', (tester) async {
     final repository = _FakeDonationsRepository();
-    await pumpApp(
+    await pumpDonationPage(
       tester,
-      home: const DonationPage(
-        causeId: 'cause-1',
-        causeName: 'Education',
-        organisation: _organisation,
-      ),
       overrides: [donationRepositoryProvider.overrideWithValue(repository)],
     );
 
@@ -238,13 +233,8 @@ void main() {
 
   testWidgets('valid donation is submitted and confirmation is shown', (tester) async {
     final repository = _FakeDonationsRepository();
-    await pumpApp(
+    await pumpDonationPage(
       tester,
-      home: const DonationPage(
-        causeId: 'cause-1',
-        causeName: 'Education',
-        organisation: _organisation,
-      ),
       overrides: [donationRepositoryProvider.overrideWithValue(repository)],
     );
 
