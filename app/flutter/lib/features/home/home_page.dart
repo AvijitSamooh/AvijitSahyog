@@ -134,7 +134,7 @@ class _HomePageState extends State<HomePage> {
                   Text(
                     l10n.welcomeSubtitle,
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.88),
+                      color: Colors.white.withOpacity(0.88),
                     ),
                   ),
                   const SizedBox(height: 22),
@@ -172,7 +172,9 @@ class _HomePageState extends State<HomePage> {
                   child: _QuickInfoCard(
                     icon: Icons.translate_rounded,
                     title: l10n.language,
-                    subtitle: '${Localizations.localeOf(context).languageCode.toUpperCase()}',
+                    subtitle: Localizations.localeOf(context)
+                        .languageCode
+                        .toUpperCase(),
                   ),
                 ),
               ],
