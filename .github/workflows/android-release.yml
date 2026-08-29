@@ -1,0 +1,75 @@
+name: Android Release Bundle
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  build-android:
+    name: Build Signed Android App Bundle
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app/flutter
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate localizations
+        run: flutter gen-l10n
+
+      - name: Verify code
+        run: |
+          flutter analyze
+          flutter test
+
+      - name: Decode Android upload keystore
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/avijit-sahyog-upload.jks
+
+      - name: Create signing properties
+        env:
+          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          cat > android/key.properties <<EOF
+          storePassword=$ANDROID_STORE_PASSWORD
+          keyPassword=$ANDROID_KEY_PASSWORD
+          keyAlias=$ANDROID_KEY_ALIAS
+          storeFile=app/avijit-sahyog-upload.jks
+          EOF
+
+      - name: Build signed app bundle
+        run: flutter build appbundle --release
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: avijit-sahyog-release-aab
+          path: app/flutter/build/app/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+          retention-days: 30
