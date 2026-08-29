@@ -259,10 +259,21 @@ void main() {
     expect(tester.widget<TextField>(amountField).controller?.text, '500');
 
     final firstAllocation = find.byKey(const ValueKey('donation_allocation_org-1'));
-    final secondAllocation = find.byKey(const ValueKey('donation_allocation_org-2'));
+    await tester.scrollUntilVisible(
+      firstAllocation,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(firstAllocation, findsOneWidget);
-    expect(secondAllocation, findsOneWidget);
     expect(tester.widget<TextField>(firstAllocation).controller?.text, '500');
+
+    final secondAllocation = find.byKey(const ValueKey('donation_allocation_org-2'));
+    await tester.scrollUntilVisible(
+      secondAllocation,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(secondAllocation, findsOneWidget);
     expect(tester.widget<TextField>(secondAllocation).controller?.text, '0');
   });
 
@@ -273,9 +284,18 @@ void main() {
     await enterVisibleText(tester, amountField, '1750');
 
     expect(tester.widget<TextField>(amountField).controller?.text, '1750');
-    expect(find.byKey(const ValueKey('donation_allocation_org-1')), findsOneWidget);
+
+    final firstAllocation = find.byKey(
+      const ValueKey('donation_allocation_org-1'),
+    );
+    await tester.scrollUntilVisible(
+      firstAllocation,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(firstAllocation, findsOneWidget);
     expect(
-      tester.widget<TextField>(find.byKey(const ValueKey('donation_allocation_org-1'))).controller?.text,
+      tester.widget<TextField>(firstAllocation).controller?.text,
       '1750',
     );
   });
