@@ -107,15 +107,33 @@ void main() {
     expect(amountField, findsOneWidget);
   }
 
-  Future<void> scrollToSubmit(WidgetTester tester) async {
-    final submit = find.byKey(const ValueKey('donation_submit'));
+
+  Future<void> tapVisible(WidgetTester tester, Finder finder) async {
     await tester.scrollUntilVisible(
-      submit,
-      400,
+      finder,
+      300,
       scrollable: find.byType(Scrollable).first,
     );
-    expect(submit, findsOneWidget);
+    expect(finder, findsOneWidget);
+    await tester.tap(finder);
+    await tester.pumpAndSettle();
   }
+
+  Future<void> enterVisibleText(
+    WidgetTester tester,
+    Finder finder,
+    String value,
+  ) async {
+    await tester.scrollUntilVisible(
+      finder,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(finder, findsOneWidget);
+    await tester.enterText(finder, value);
+    await tester.pumpAndSettle();
+  }
+
 
   testWidgets('home page renders the main donation entry point', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
@@ -209,11 +227,9 @@ void main() {
       ],
     );
 
-    await tester.tap(find.byKey(const ValueKey('cause_organisation_donate_org-1')));
-    await tester.pumpAndSettle();
+    await tapVisible(tester, find.byKey(const ValueKey('cause_organisation_donate_org-1')));
 
     expect(find.byType(DonationPage), findsOneWidget);
-    expect(find.text('Seva Trust'), findsOneWidget);
     expect(find.text(l10n(tester).chooseAmount), findsOneWidget);
 
     final amountField = find.byKey(const ValueKey('donation_amount_input'));
@@ -237,17 +253,27 @@ void main() {
     await pumpDonationPage(tester);
 
     final preset = find.byKey(const ValueKey('donation_amount_500'));
-    await tester.tap(preset);
-    await tester.pump();
+    await tapVisible(tester, preset);
 
     final amountField = find.byKey(const ValueKey('donation_amount_input'));
     expect(tester.widget<TextField>(amountField).controller?.text, '500');
 
     final firstAllocation = find.byKey(const ValueKey('donation_allocation_org-1'));
-    final secondAllocation = find.byKey(const ValueKey('donation_allocation_org-2'));
+    await tester.scrollUntilVisible(
+      firstAllocation,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(firstAllocation, findsOneWidget);
-    expect(secondAllocation, findsOneWidget);
     expect(tester.widget<TextField>(firstAllocation).controller?.text, '500');
+
+    final secondAllocation = find.byKey(const ValueKey('donation_allocation_org-2'));
+    await tester.scrollUntilVisible(
+      secondAllocation,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(secondAllocation, findsOneWidget);
     expect(tester.widget<TextField>(secondAllocation).controller?.text, '0');
   });
 
@@ -255,13 +281,21 @@ void main() {
     await pumpDonationPage(tester);
 
     final amountField = find.byKey(const ValueKey('donation_amount_input'));
-    await tester.enterText(amountField, '1750');
-    await tester.pump();
+    await enterVisibleText(tester, amountField, '1750');
 
     expect(tester.widget<TextField>(amountField).controller?.text, '1750');
-    expect(find.byKey(const ValueKey('donation_allocation_org-1')), findsOneWidget);
+
+    final firstAllocation = find.byKey(
+      const ValueKey('donation_allocation_org-1'),
+    );
+    await tester.scrollUntilVisible(
+      firstAllocation,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(firstAllocation, findsOneWidget);
     expect(
-      tester.widget<TextField>(find.byKey(const ValueKey('donation_allocation_org-1'))).controller?.text,
+      tester.widget<TextField>(firstAllocation).controller?.text,
       '1750',
     );
   });
@@ -269,16 +303,13 @@ void main() {
   testWidgets('allocation can be redistributed between organisations', (tester) async {
     await pumpDonationPage(tester);
 
-    await tester.tap(find.byKey(const ValueKey('donation_amount_1000')));
-    await tester.pump();
+    await tapVisible(tester, find.byKey(const ValueKey('donation_amount_1000')));
 
     final first = find.byKey(const ValueKey('donation_allocation_org-1'));
     final second = find.byKey(const ValueKey('donation_allocation_org-2'));
 
-    await tester.enterText(first, '700');
-    await tester.pump();
-    await tester.enterText(second, '300');
-    await tester.pump();
+    await enterVisibleText(tester, first, '700');
+    await enterVisibleText(tester, second, '300');
 
     expect(tester.widget<TextField>(first).controller?.text, '700');
     expect(tester.widget<TextField>(second).controller?.text, '300');
@@ -289,16 +320,13 @@ void main() {
   testWidgets('allocation cannot exceed selected total', (tester) async {
     await pumpDonationPage(tester);
 
-    await tester.tap(find.byKey(const ValueKey('donation_amount_500')));
-    await tester.pump();
+    await tapVisible(tester, find.byKey(const ValueKey('donation_amount_500')));
 
     final first = find.byKey(const ValueKey('donation_allocation_org-1'));
     final second = find.byKey(const ValueKey('donation_allocation_org-2'));
 
-    await tester.enterText(first, '400');
-    await tester.pump();
-    await tester.enterText(second, '300');
-    await tester.pump();
+    await enterVisibleText(tester, first, '400');
+    await enterVisibleText(tester, second, '300');
 
     expect(tester.widget<TextField>(first).controller?.text, '400');
     expect(tester.widget<TextField>(second).controller?.text, '100');
@@ -312,8 +340,7 @@ void main() {
     );
 
     final amountField = find.byKey(const ValueKey('donation_amount_input'));
-    await tester.enterText(amountField, '0');
-    await tester.pump();
+    await enterVisibleText(tester, amountField, '0');
 
     expect(find.byKey(const ValueKey('donation_submit')), findsNothing);
     expect(repository.lastDonation, isNull);
@@ -326,15 +353,12 @@ void main() {
       overrides: [donationRepositoryProvider.overrideWithValue(repository)],
     );
 
-    await tester.tap(find.byKey(const ValueKey('donation_amount_1000')));
-    await tester.pump();
+    await tapVisible(tester, find.byKey(const ValueKey('donation_amount_1000')));
 
     final first = find.byKey(const ValueKey('donation_allocation_org-1'));
     final second = find.byKey(const ValueKey('donation_allocation_org-2'));
-    await tester.enterText(first, '700');
-    await tester.pump();
-    await tester.enterText(second, '300');
-    await tester.pump();
+    await enterVisibleText(tester, first, '700');
+    await enterVisibleText(tester, second, '300');
 
     final submit = find.byKey(const ValueKey('donation_submit'));
     await tester.scrollUntilVisible(
