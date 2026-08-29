@@ -53,3 +53,6 @@ app.*.map.json
 
 # Local Flutter/Dart tooling
 devtools_options.yaml
+# Temporary Android signing material (never commit)
+avijit-keystore-base64.txt
+*.base64
