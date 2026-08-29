@@ -5,8 +5,14 @@ import 'package:http/http.dart' as http;
 class ApiClient {
   ApiClient({
     http.Client? client,
-    this.baseUrl = 'http://localhost:3000',
-  }) : _client = client ?? http.Client();
+    this.baseUrl = const String.fromEnvironment(
+      'API_BASE_URL',
+      defaultValue: 'http://localhost:3000',
+    ),
+  })  : _client = client ?? http.Client(),
+        baseUrl = baseUrl.endsWith('/')
+            ? baseUrl.substring(0, baseUrl.length - 1)
+            : baseUrl;
 
   final http.Client _client;
   final String baseUrl;
