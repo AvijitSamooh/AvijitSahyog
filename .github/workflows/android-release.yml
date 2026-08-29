@@ -60,7 +60,7 @@ jobs:
           storePassword=$ANDROID_STORE_PASSWORD
           keyPassword=$ANDROID_KEY_PASSWORD
           keyAlias=$ANDROID_KEY_ALIAS
-          storeFile=app/avijit-sahyog-upload.jks
+          storeFile=avijit-sahyog-upload.jks
           EOF
 
       - name: Build signed app bundle
