@@ -46,11 +46,10 @@ See [docs/iteration-plan.md](docs/iteration-plan.md).
 - PostgreSQL
 
 ### Infrastructure
-- Google Cloud Run
-- Cloud Storage
-- Firebase Authentication
-- Firebase Cloud Messaging
-- Firebase Crashlytics
+- Vercel (Flutter Web)
+- Render (NestJS API)
+- Neon (PostgreSQL)
+- GitHub Actions (CI)
 
 ### Payments
 - UPI Intent for initial one-time donations
@@ -73,3 +72,42 @@ the donation domain.
 - Causes and organisations are data-driven rather than hard-coded.
 - Start with a modular monolith; introduce additional infrastructure only
   when scale requires it.
+
+## Deployment Environments
+
+The application is environment-configured so the same codebase can run locally,
+on the web, and on Android.
+
+### Flutter API configuration
+
+The API URL is supplied at build/run time using Dart defines:
+
+```bash
+# Local development
+flutter run --dart-define=API_BASE_URL=http://localhost:3000
+
+# Production
+flutter build web --dart-define=API_BASE_URL=https://YOUR_RENDER_API_URL
+```
+
+The production API URL will be configured in Vercel and the Android release
+pipeline; it is intentionally not hard-coded in source.
+
+### Backend environment variables
+
+The NestJS service expects:
+
+- `DATABASE_URL` — PostgreSQL connection string supplied by Neon
+- `PORT` — HTTP port supplied by the hosting platform (defaults to 3000 locally)
+- `CORS_ORIGINS` — comma-separated list of allowed frontend origins
+
+Production database migrations use:
+
+```bash
+npm run prisma:deploy
+```
+
+The health endpoint is available at `GET /health` and verifies both API and
+database connectivity.
+
+> Never commit production secrets or connection strings to Git.
