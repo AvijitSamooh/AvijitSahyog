@@ -107,15 +107,6 @@ void main() {
     expect(amountField, findsOneWidget);
   }
 
-  Future<void> scrollToSubmit(WidgetTester tester) async {
-    final submit = find.byKey(const ValueKey('donation_submit'));
-    await tester.scrollUntilVisible(
-      submit,
-      400,
-      scrollable: find.byType(Scrollable).first,
-    );
-    expect(submit, findsOneWidget);
-  }
 
   testWidgets('home page renders the main donation entry point', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
