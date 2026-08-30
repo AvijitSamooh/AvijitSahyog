@@ -5,9 +5,10 @@ import { CausesModule } from './causes/causes.module';
 import { DonationsModule } from './donations/donations.module';
 import { OrganisationsModule } from './organisations/organisations.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { BeneficiariesModule } from './beneficiaries/beneficiaries.module';
 
 @Module({
-  imports: [PrismaModule, CausesModule, OrganisationsModule, DonationsModule],
+  imports: [PrismaModule, CausesModule, OrganisationsModule, DonationsModule, BeneficiariesModule],
   controllers: [AppController],
   providers: [AppService],
 })
