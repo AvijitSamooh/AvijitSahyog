@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import { Decimal } from '@prisma/client/runtime/library';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateDonationDto } from './dto/create-donation.dto';
 
@@ -60,7 +61,7 @@ export class DonationsService {
 
   private decimal(value: string, fieldName: string) {
     try {
-      return new Prisma.Decimal(value);
+      return new Decimal(value);
     } catch {
       throw new BadRequestException(`${fieldName} must be a valid decimal amount`);
     }
