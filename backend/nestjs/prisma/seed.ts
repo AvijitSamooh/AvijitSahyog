@@ -242,6 +242,39 @@ async function main() {
     }
   }
 
+
+  const beneficiarySeeds = [
+    { name: 'Rahul Kumar', cause: 'education', organisation: 'demo-education-support', year: 2025, amount: '25000', order: 1, story: 'Educational support helped Rahul continue his studies and move forward with confidence.' },
+    { name: 'Priya Sharma', cause: 'healthcare', organisation: 'demo-healthcare-support', year: 2024, amount: '18000', order: 2, story: 'Timely medical support helped Priya focus on recovery and regain stability.' },
+    { name: 'Amit Patel', cause: 'education', organisation: 'demo-education-support', year: 2025, amount: '12000', order: 3, story: 'Learning support gave Amit an opportunity to continue building skills for a brighter future.' },
+  ];
+
+  for (const beneficiary of beneficiarySeeds) {
+    const existing = await prisma.beneficiary.findFirst({
+      where: { name: beneficiary.name, causeId: causeIds.get(beneficiary.cause)! },
+      select: { id: true },
+    });
+    const organisation = await prisma.organisation.findUnique({
+      where: { slug: beneficiary.organisation },
+      select: { id: true },
+    });
+    const data = {
+      name: beneficiary.name,
+      story: beneficiary.story,
+      supportedYear: beneficiary.year,
+      contributionAmount: beneficiary.amount,
+      causeId: causeIds.get(beneficiary.cause)!,
+      organisationId: organisation?.id,
+      isActive: true,
+      displayOrder: beneficiary.order,
+    };
+    if (existing) {
+      await prisma.beneficiary.update({ where: { id: existing.id }, data });
+    } else {
+      await prisma.beneficiary.create({ data });
+    }
+  }
+
   console.log('Database seed completed successfully.');
 }
 
