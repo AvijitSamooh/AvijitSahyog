@@ -7,10 +7,9 @@ import '../models/create_donation.dart';
 import '../providers/donation_providers.dart';
 
 class DonationPage extends ConsumerStatefulWidget {
-  const DonationPage({super.key, required this.causeId, required this.causeName, required this.organisation, required this.organisations});
+  const DonationPage({super.key, required this.causeId, required this.causeName, required this.organisations});
   final String causeId;
   final String causeName;
-  final Organisation organisation;
   final List<Organisation> organisations;
   @override ConsumerState<DonationPage> createState() => _DonationPageState();
 }
@@ -33,7 +32,7 @@ class _DonationPageState extends ConsumerState<DonationPage> {
   bool get _allocationComplete => _amountSelected && _remainingAmount.abs() < 0.005;
 
   void _selectAmount(int amount) { setState(() { _selectedAmount = amount; _amountController.text = amount.toString(); _setInitialAllocation(); }); }
-  void _setInitialAllocation() { for (final o in widget.organisations) { final double value = o.id == widget.organisation.id ? _totalAmount : 0.0; _allocationControllers[o.id]!.text = value.toStringAsFixed(0); _previousAllocations[o.id] = value; } }
+  void _setInitialAllocation() { for (final o in widget.organisations) { _allocationControllers[o.id]!.text = '0'; _previousAllocations[o.id] = 0; } }
   void _resetAllocations() { for (final c in _allocationControllers.values) { c.text = '0'; } for (final id in _previousAllocations.keys) { _previousAllocations[id] = 0.0; } }
   void _onTotalChanged(String value) { final parsed = double.tryParse(value.trim()); setState(() { _selectedAmount = parsed != null && _amounts.contains(parsed.toInt()) ? parsed.toInt() : null; if (parsed != null && parsed > 0) { _setInitialAllocation(); } else { _resetAllocations(); } }); }
   void _onAllocationChanged(String id, String value) { final controller = _allocationControllers[id]!; final entered = _number(value); final otherAllocated = _previousAllocations.entries.where((e) => e.key != id).fold<double>(0.0, (sum, e) => sum + e.value); final double maximum = (_totalAmount - otherAllocated).clamp(0.0, _totalAmount).toDouble(); final double adjusted = entered.clamp(0.0, maximum).toDouble(); if (adjusted != entered) { controller.text = adjusted.toStringAsFixed(0); controller.selection = TextSelection.fromPosition(TextPosition(offset: controller.text.length)); } _previousAllocations[id] = adjusted; setState(() {}); }
