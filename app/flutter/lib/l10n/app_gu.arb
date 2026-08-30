@@ -29,5 +29,56 @@
   "navHome": "હોમ",
   "navCauses": "સેવા ક્ષેત્રો",
   "navImpact": "અસર",
-  "navSettings": "સેટિંગ્સ"
+  "navSettings": "સેટિંગ્સ",
+  "causesLoadError": "સેવાના ક્ષેત્રો લોડ કરી શકાયા નથી.",
+  "causeLoadError": "આ સેવા ક્ષેત્ર લોડ કરી શકાયું નથી.",
+  "noCauses": "કોઈ સેવા ક્ષેત્ર ઉપલબ્ધ નથી.",
+  "retry": "ફરી પ્રયાસ કરો",
+  "affiliatedOrganisations": "સંલગ્ન સંસ્થાઓ",
+  "donateTitle": "યોગદાન આપો",
+  "chooseAmount": "રકમ પસંદ કરો",
+  "customAmount": "તમારી રકમ",
+  "donateNow": "યોગદાન સાથે આગળ વધો",
+  "donationInvalidAmount": "કૃપા કરીને શૂન્યથી વધુ માન્ય રકમ દાખલ કરો.",
+  "donationCreateError": "તમારું યોગદાન નોંધાઈ શક્યું નથી. કૃપા કરીને ફરી પ્રયાસ કરો.",
+  "donationCreatedTitle": "યોગદાન નોંધાયું",
+  "donationCreatedMessage": "તમારું યોગદાન નોંધાયું છે. આગામી પગલામાં ચુકવણી ઉમેરવામાં આવશે.",
+  "donationPaymentLater": "આ યોગદાન પ્રક્રિયાની ચકાસણી પછી ચુકવણીની સુવિધા ઉમેરવામાં આવશે.",
+  "done": "પૂર્ણ",
+  "causesSubtitle": "અર્થપૂર્ણ કાર્યને ટેકો આપો અને બદલાવ લાવો.",
+  "homeWelcome": "અવિજિત સહયોગમાં આપનું સ્વાગત છે",
+  "homeIntro": "એક સાથે આવો, અર્થપૂર્ણ કાર્યોને ટેકો આપો અને સ્થાયી અસર ઊભી કરો.",
+  "homeExploreCausesSubtitle": "તમે જે સેવા ક્ષેત્રોને ટેકો આપી શકો છો અને તેમની પાછળનું કાર્ય જાણો.",
+  "homeExploreImpactSubtitle": "જે લોકો અને સમુદાયોના જીવનને સહયોગ મળ્યો છે તેમને જાણો.",
+  "explore": "જુઓ",
+  "homeHeroTitle": "સાથે મળીને આપણે કરુણાને વધુ દૂર સુધી પહોંચાડી શકીએ છીએ.",
+  "homeHeroSubtitle": "મહત્વપૂર્ણ કાર્યોને ટેકો આપો. તમારું યોગદાન કેવો બદલાવ લાવે છે તે જુઓ.",
+  "givingQuote": "ભેટનું મૂલ્ય તમારા હાથમાંથી શું ગયું તેનાથી નહીં, પરંતુ તેનાથી કોઈના જીવનમાં શું બદલાવ આવ્યો તેનાથી માપવામાં આવે છે.",
+  "givingQuoteAttribution": "— નિઃસ્વાર્થ આપવાની ભાવના",
+  "impactSortNewest": "નવતમ",
+  "impactSortName": "નામ A–Z",
+  "impactSortHighest": "સૌથી વધુ રકમ",
+  "impactSortLowest": "સૌથી ઓછી રકમ",
+  "impactLoadError": "હાલમાં અસરની વાર્તાઓ લોડ કરી શકાઈ નથી.",
+  "tryAgain": "ફરી પ્રયાસ કરો",
+  "supportedIn": "{year} માં સહાય",
+  "@supportedIn": {
+    "placeholders": {
+      "year": {}
+    }
+  },
+  "contributionAmount": "₹{amount} યોગદાન",
+  "@contributionAmount": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "viewStory": "વાર્તા જુઓ →",
+  "impactStoryTitle": "અસરની વાર્તા",
+  "theirStory": "તેમની વાર્તા",
+  "supportedThrough": "દ્વારા સહાય",
+  "contribution": "યોગદાન",
+  "impactDefaultStory": "દરેક યોગદાન પાછળ એક માનવીય વાર્તા હોય છે. આ સહયોગે એક તક ઊભી કરી અને એક જીવનને આગળ વધવામાં મદદ કરી.",
+  "impactThankYou": "આવી વાર્તાઓનો ભાગ બનવા બદલ આભાર. તમારી ઉદારતા કરુણાને અર્થપૂર્ણ અસરમાં ફેરવે છે.",
+  "supportedInLabel": "સહાય મળી"
 }
