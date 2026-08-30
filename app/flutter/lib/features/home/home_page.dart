@@ -147,7 +147,7 @@ class _HeroSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 560,
+      height: 590,
       child: Container(
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
@@ -380,12 +380,10 @@ class _LanguageSheet extends StatelessWidget {
     ];
 
     return Material(
-      color: Colors.transparent,
+      color: const Color(0xFFFFF8ED),
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+      clipBehavior: Clip.antiAlias,
       child: Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFFFFF8ED),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-        ),
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
         child: SafeArea(
           child: Column(
