@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../l10n/app_localizations.dart';
 import '../../donations/presentation/donation_page.dart';
 import '../models/organisation.dart';
 import '../providers/causes_providers.dart';
@@ -20,7 +19,7 @@ class CauseDetailPage extends ConsumerWidget {
       appBar: AppBar(title: const Text('Cause Details')),
       body: causeAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) => const _CauseErrorState(),
+        error: (_, _) => const _CauseErrorState(),
         data: (cause) => ListView(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
           children: [
