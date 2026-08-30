@@ -17,5 +17,17 @@
   "languageEnglish": "અંગ્રેજી",
   "languageHindi": "હિન્દી",
   "languageMarathi": "મરાઠી",
-  "languageGujarati": "ગુજરાતી"
+  "languageGujarati": "ગુજરાતી",
+  "causesTitle": "સેવાના ક્ષેત્રો",
+  "homeExploreCauses": "સેવાના ક્ષેત્રો જુઓ",
+  "homeImpact": "અમારી અસર જુઓ",
+  "impactTitle": "અમારી અસર",
+  "impactSubtitle": "તમારા સહયોગથી સ્પર્શાયેલા જીવન.",
+  "impactSearch": "નામથી શોધો",
+  "impactSort": "ક્રમબદ્ધ કરો",
+  "impactNoResults": "કોઈ લાભાર્થી મળ્યો નથી.",
+  "navHome": "હોમ",
+  "navCauses": "સેવા ક્ષેત્રો",
+  "navImpact": "અસર",
+  "navSettings": "સેટિંગ્સ"
 }
