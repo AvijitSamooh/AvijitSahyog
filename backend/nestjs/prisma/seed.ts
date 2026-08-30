@@ -244,9 +244,60 @@ async function main() {
 
 
   const beneficiarySeeds = [
-    { name: 'Rahul Kumar', cause: 'education', organisation: 'demo-education-support', year: 2025, amount: '25000', order: 1, story: 'Educational support helped Rahul continue his studies and move forward with confidence.' },
-    { name: 'Priya Sharma', cause: 'healthcare', organisation: 'demo-healthcare-support', year: 2024, amount: '18000', order: 2, story: 'Timely medical support helped Priya focus on recovery and regain stability.' },
-    { name: 'Amit Patel', cause: 'education', organisation: 'demo-education-support', year: 2025, amount: '12000', order: 3, story: 'Learning support gave Amit an opportunity to continue building skills for a brighter future.' },
+    {
+      name: 'Rahul Kumar',
+      cause: 'education',
+      organisation: 'demo-education-support',
+      year: 2025,
+      amount: '25000',
+      order: 1,
+      story: 'Educational support helped Rahul continue his studies and move forward with confidence.',
+    },
+    {
+      name: 'Amit Patel',
+      cause: 'education',
+      organisation: 'demo-education-support',
+      year: 2025,
+      amount: '12000',
+      order: 2,
+      story: 'Learning support gave Amit an opportunity to continue building skills for a brighter future.',
+    },
+    {
+      name: 'Priya Sharma',
+      cause: 'healthcare',
+      organisation: 'demo-healthcare-support',
+      year: 2024,
+      amount: '18000',
+      order: 3,
+      story: 'Timely medical support helped Priya focus on recovery and regain stability.',
+    },
+    {
+      name: 'Sanjay Mehta',
+      cause: 'healthcare',
+      organisation: 'demo-healthcare-support',
+      year: 2023,
+      amount: '30000',
+      order: 4,
+      story: 'Medical assistance helped Sanjay access essential treatment during a difficult time.',
+    },
+    {
+      name: 'Gopal Care Initiative',
+      cause: 'jeev-daya',
+      organisation: 'demo-animal-welfare',
+      year: 2025,
+      amount: '15000',
+      order: 5,
+      story: 'Support contributed to food, care and protection for animals in need.',
+    },
+    {
+      name: 'Seva Community Project',
+      cause: 'community-support',
+      organisation: 'demo-community-support',
+      year: 2024,
+      amount: '20000',
+      order: 6,
+      story: 'Community support helped provide practical assistance to families facing hardship.',
+    },
   ];
 
   for (const beneficiary of beneficiarySeeds) {
