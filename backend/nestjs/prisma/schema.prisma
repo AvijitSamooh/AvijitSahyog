@@ -144,7 +144,6 @@ model Donation {
   updatedAt   DateTime       @updatedAt
 
   allocations DonationAllocation[]
-  beneficiaries Beneficiary[]
 
   @@index([status, createdAt])
 }
