@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/beneficiary.dart';
 import 'impact_page.dart' show beneficiaryImage;
+import '../../../l10n/app_localizations.dart';
 
 class BeneficiaryDetailPage extends StatelessWidget {
   const BeneficiaryDetailPage({super.key, required this.beneficiary});
@@ -9,8 +10,9 @@ class BeneficiaryDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Impact Story')),
+      appBar: AppBar(title: Text(l10n.impactStoryTitle)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 36),
         children: [
@@ -23,22 +25,22 @@ class BeneficiaryDetailPage extends StatelessWidget {
           const SizedBox(height: 8),
           Chip(label: Text(beneficiary.cause)),
           const SizedBox(height: 20),
-          _Stat(label: 'Supported in', value: beneficiary.supportedYear.toString(), icon: Icons.calendar_today_rounded),
-          _Stat(label: 'Contribution', value: '₹${beneficiary.contributionAmount.toStringAsFixed(0)}', icon: Icons.volunteer_activism_rounded),
+          _Stat(label: l10n.supportedInLabel, value: beneficiary.supportedYear.toString(), icon: Icons.calendar_today_rounded),
+          _Stat(label: l10n.contribution, value: '₹${beneficiary.contributionAmount.toStringAsFixed(0)}', icon: Icons.volunteer_activism_rounded),
           if (beneficiary.organisationName != null)
-            _Stat(label: 'Supported through', value: beneficiary.organisationName!, icon: Icons.account_balance_rounded),
+            _Stat(label: l10n.supportedThrough, value: beneficiary.organisationName!, icon: Icons.account_balance_rounded),
           const SizedBox(height: 26),
-          Text('Their Story', style: theme.textTheme.titleLarge),
+          Text(l10n.theirStory, style: theme.textTheme.titleLarge),
           const SizedBox(height: 10),
           Text(
-            beneficiary.story ?? 'Every contribution has a human story behind it. This support helped create an opportunity and move one life forward.',
+            beneficiary.story ?? l10n.impactDefaultStory,
             style: theme.textTheme.bodyLarge?.copyWith(height: 1.6),
           ),
           const SizedBox(height: 28),
           Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(color: const Color(0xFFFFF8ED), borderRadius: BorderRadius.circular(18)),
-            child: const Text('Thank you for being part of stories like this. Your generosity helps turn compassion into meaningful impact.'),
+            child: Text(l10n.impactThankYou),
           ),
         ],
       ),

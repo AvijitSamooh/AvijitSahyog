@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/beneficiary.dart';
+import '../../../l10n/app_localizations.dart';
 import '../providers/beneficiaries_providers.dart';
 import 'beneficiary_detail_page.dart';
 
@@ -50,19 +51,19 @@ class _ImpactPageState extends ConsumerState<ImpactPage> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
         children: [
-          Text('Lives touched through your contributions.', style: Theme.of(context).textTheme.bodyLarge),
+          Text(AppLocalizations.of(context)!.impactSubtitle, style: Theme.of(context).textTheme.bodyLarge),
           const SizedBox(height: 20),
           TextField(
             key: const ValueKey('beneficiary_search'),
             controller: _search,
             onChanged: (_) => setState(() {}),
-            decoration: const InputDecoration(prefixIcon: Icon(Icons.search), hintText: 'Search by name', border: OutlineInputBorder()),
+            decoration: InputDecoration(prefixIcon: const Icon(Icons.search), hintText: AppLocalizations.of(context)!.impactSearch, border: const OutlineInputBorder()),
           ),
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
             key: const ValueKey('beneficiary_sort'),
             initialValue: _sort,
-            decoration: const InputDecoration(labelText: 'Sort', border: OutlineInputBorder()),
+            decoration: InputDecoration(labelText: AppLocalizations.of(context)!.impactSort, border: const OutlineInputBorder()),
             items: const ['Newest', 'Name A–Z', 'Highest amount', 'Lowest amount'].map((x) => DropdownMenuItem(value: x, child: Text(x))).toList(),
             onChanged: (value) => setState(() => _sort = value ?? 'Newest'),
           ),
@@ -74,12 +75,12 @@ class _ImpactPageState extends ConsumerState<ImpactPage> {
               child: Column(children: [
                 const Icon(Icons.cloud_off_rounded, size: 44),
                 const SizedBox(height: 12),
-                const Text('Unable to load impact stories right now.'),
-                TextButton(onPressed: () => ref.invalidate(beneficiariesProvider((search: _search.text.trim(), sort: _apiSort))), child: const Text('Try again')),
+                Text(AppLocalizations.of(context)!.impactLoadError),
+                TextButton(onPressed: () => ref.invalidate(beneficiariesProvider((search: _search.text.trim(), sort: _apiSort))), child: Text(AppLocalizations.of(context)!.tryAgain)),
               ]),
             ),
             data: (items) => items.isEmpty
-                ? const Padding(padding: EdgeInsets.all(32), child: Center(child: Text('No beneficiaries found.')))
+                ? Padding(padding: const EdgeInsets.all(32), child: Center(child: Text(AppLocalizations.of(context)!.impactNoResults)))
                 : Column(children: items.map((item) => Padding(padding: const EdgeInsets.only(bottom: 16), child: _Card(item))).toList()),
           ),
         ],
@@ -98,9 +99,9 @@ class _Card extends StatelessWidget {
     const SizedBox(height: 4),
     Text(x.cause),
     const SizedBox(height: 14),
-    Text('Supported in ${x.supportedYear}'),
-    Text('₹${x.contributionAmount.toStringAsFixed(0)} Contribution'),
+    Text(AppLocalizations.of(context)!.supportedIn(x.supportedYear)),
+    Text(AppLocalizations.of(context)!.contributionAmount(x.contributionAmount.toStringAsFixed(0))),
     const SizedBox(height: 10),
-    Align(alignment: Alignment.centerRight, child: TextButton(onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => BeneficiaryDetailPage(beneficiary: x))), child: const Text('View Story →'))),
+    Align(alignment: Alignment.centerRight, child: TextButton(onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => BeneficiaryDetailPage(beneficiary: x))), child: Text(AppLocalizations.of(context)!.viewStory))),
   ])));
 }

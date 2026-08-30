@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:avijit_sahyog/features/impact/models/beneficiary.dart';
+import 'package:avijit_sahyog/l10n/app_localizations.dart';
 import 'package:avijit_sahyog/features/impact/presentation/impact_page.dart';
 import 'package:avijit_sahyog/features/impact/providers/beneficiaries_providers.dart';
 
@@ -31,7 +32,12 @@ void main() {
       overrides: [
         beneficiariesProvider.overrideWith((ref, query) async => items),
       ],
-      child: const MaterialApp(home: ImpactPage()),
+      child: const MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: Locale('en'),
+        home: ImpactPage(),
+      ),
     );
   }
 

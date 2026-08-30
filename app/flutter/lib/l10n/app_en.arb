@@ -44,5 +44,41 @@
   "navHome": "Home",
   "navCauses": "Causes",
   "navImpact": "Impact",
-  "navSettings": "Settings"
+  "navSettings": "Settings",
+  "causesSubtitle": "Support meaningful work and make a difference.",
+  "homeWelcome": "Welcome to Avijit Sahyog",
+  "homeIntro": "A simple way to come together, support meaningful causes, and create a lasting impact.",
+  "homeExploreCausesSubtitle": "Discover the causes you can support and the work happening behind them.",
+  "homeExploreImpactSubtitle": "Meet the people and communities whose lives have been supported.",
+  "explore": "Explore",
+  "homeHeroTitle": "Together, we can make compassion reach further.",
+  "homeHeroSubtitle": "Support the causes that matter. See the impact your contribution creates.",
+  "givingQuote": "The value of a gift is not measured by what leaves your hand, but by the difference it makes in someone’s life.",
+  "givingQuoteAttribution": "— The spirit of selfless giving",
+  "impactSortNewest": "Newest",
+  "impactSortName": "Name A–Z",
+  "impactSortHighest": "Highest amount",
+  "impactSortLowest": "Lowest amount",
+  "impactLoadError": "Unable to load impact stories right now.",
+  "tryAgain": "Try again",
+  "supportedIn": "Supported in {year}",
+  "@supportedIn": {
+    "placeholders": {
+      "year": {}
+    }
+  },
+  "contributionAmount": "₹{amount} Contribution",
+  "@contributionAmount": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "viewStory": "View Story →",
+  "impactStoryTitle": "Impact Story",
+  "theirStory": "Their Story",
+  "supportedThrough": "Supported through",
+  "contribution": "Contribution",
+  "impactDefaultStory": "Every contribution has a human story behind it. This support helped create an opportunity and move one life forward.",
+  "impactThankYou": "Thank you for being part of stories like this. Your generosity helps turn compassion into meaningful impact.",
+  "supportedInLabel": "Supported in"
 }

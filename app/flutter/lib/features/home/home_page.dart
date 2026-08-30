@@ -51,7 +51,7 @@ class _HomePageState extends State<HomePage> {
                   ? AppLocalizations.of(context)!.appTitle
                   : _selectedIndex == 1
                       ? AppLocalizations.of(context)!.causesTitle
-                      : 'Our Impact'),
+                      : AppLocalizations.of(context)!.impactTitle),
               actions: [
                 IconButton(
                   tooltip: AppLocalizations.of(context)!.language,
@@ -64,26 +64,26 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
         onDestinationSelected: (index) => setState(() => _selectedIndex = index),
-        destinations: const [
+        destinations: [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home_rounded),
-            label: 'Home',
+            label: AppLocalizations.of(context)!.navHome,
           ),
           NavigationDestination(
             icon: Icon(Icons.volunteer_activism_outlined),
             selectedIcon: Icon(Icons.volunteer_activism_rounded),
-            label: 'Causes',
+            label: AppLocalizations.of(context)!.navCauses,
           ),
           NavigationDestination(
             icon: Icon(Icons.auto_awesome_outlined),
             selectedIcon: Icon(Icons.auto_awesome_rounded),
-            label: 'Impact',
+            label: AppLocalizations.of(context)!.navImpact,
           ),
           NavigationDestination(
             icon: Icon(Icons.settings_outlined),
             selectedIcon: Icon(Icons.settings_rounded),
-            label: 'Settings',
+            label: AppLocalizations.of(context)!.navSettings,
           ),
         ],
       ),
@@ -111,25 +111,25 @@ class _HomeContent extends StatelessWidget {
         children: [
         _HeroSection(onExploreCauses: onExploreCauses),
         const SizedBox(height: 24),
-        Text('Welcome to Avijit Sahyog', style: theme.textTheme.headlineSmall),
+        Text(AppLocalizations.of(context)!.homeWelcome, style: theme.textTheme.headlineSmall),
         const SizedBox(height: 10),
         Text(
-          'A simple way to come together, support meaningful causes, and create a lasting impact.',
+          AppLocalizations.of(context)!.homeIntro,
           style: theme.textTheme.bodyLarge,
         ),
         const SizedBox(height: 24),
         _ActionCard(
           icon: Icons.volunteer_activism_rounded,
-          title: 'Explore Causes',
-          subtitle: 'Discover the causes you can support and the work happening behind them.',
-          action: 'Explore',
+          title: AppLocalizations.of(context)!.homeExploreCauses,
+          subtitle: AppLocalizations.of(context)!.homeExploreCausesSubtitle,
+          action: AppLocalizations.of(context)!.explore,
           onTap: onExploreCauses,
         ),
         const SizedBox(height: 14),
         _ActionCard(
           icon: Icons.auto_awesome_rounded,
-          title: 'See Our Impact',
-          subtitle: 'Meet the people and communities whose lives have been supported.',
+          title: AppLocalizations.of(context)!.homeImpact,
+          subtitle: AppLocalizations.of(context)!.homeExploreImpactSubtitle,
           action: 'Explore',
           onTap: onExploreImpact,
         ),
@@ -195,10 +195,10 @@ class _HeroSection extends StatelessWidget {
                   size: 30,
                 ),
                 const Spacer(),
-                const SizedBox(
+                SizedBox(
                   width: 210,
                   child: Text(
-                    'Together, we can make compassion reach further.',
+                    AppLocalizations.of(context)!.homeHeroTitle,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 28,
@@ -211,7 +211,7 @@ class _HeroSection extends StatelessWidget {
                 SizedBox(
                   width: 205,
                   child: Text(
-                    'Support the causes that matter. See the impact your contribution creates.',
+                    AppLocalizations.of(context)!.homeHeroSubtitle,
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.85),
                       fontSize: 14,
@@ -227,7 +227,7 @@ class _HeroSection extends StatelessWidget {
                   ),
                   onPressed: onExploreCauses,
                   icon: const Icon(Icons.arrow_forward_rounded),
-                  label: const Text('Explore Causes'),
+                  label: Text(AppLocalizations.of(context)!.homeExploreCauses),
                 ),
               ],
             ),
@@ -311,13 +311,13 @@ class _GivingQuote extends StatelessWidget {
         color: const Color(0xFFFCE8C9),
         borderRadius: BorderRadius.circular(22),
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(Icons.format_quote_rounded, color: Color(0xFF6E1A14), size: 34),
           SizedBox(height: 8),
           Text(
-            'The value of a gift is not measured by what leaves your hand, but by the difference it makes in someone’s life.',
+            AppLocalizations.of(context)!.givingQuote,
             style: TextStyle(
               color: Color(0xFF39271C),
               fontSize: 17,
@@ -327,7 +327,7 @@ class _GivingQuote extends StatelessWidget {
           ),
           SizedBox(height: 12),
           Text(
-            '— The spirit of selfless giving',
+            AppLocalizations.of(context)!.givingQuoteAttribution,
             style: TextStyle(color: Color(0xFF6B4F36)),
           ),
         ],

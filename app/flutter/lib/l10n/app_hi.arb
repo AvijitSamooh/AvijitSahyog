@@ -44,5 +44,41 @@
   "navHome": "होम",
   "navCauses": "सेवा क्षेत्र",
   "navImpact": "प्रभाव",
-  "navSettings": "सेटिंग्स"
+  "navSettings": "सेटिंग्स",
+  "causesSubtitle": "सार्थक कार्यों का समर्थन करें और बदलाव लाएँ।",
+  "homeWelcome": "अविजित सहयोग में आपका स्वागत है",
+  "homeIntro": "एक साथ आएँ, सार्थक कार्यों का समर्थन करें और स्थायी प्रभाव बनाएँ।",
+  "homeExploreCausesSubtitle": "उन सेवा क्षेत्रों और उनके पीछे हो रहे कार्यों को जानें जिन्हें आप सहयोग दे सकते हैं।",
+  "homeExploreImpactSubtitle": "उन लोगों और समुदायों से मिलें जिनके जीवन को सहयोग मिला है।",
+  "explore": "जानें",
+  "homeHeroTitle": "मिलकर हम करुणा को और दूर तक पहुँचा सकते हैं।",
+  "homeHeroSubtitle": "उन कार्यों का समर्थन करें जो महत्वपूर्ण हैं। देखें आपका योगदान क्या बदलाव लाता है।",
+  "givingQuote": "उपहार का मूल्य इस बात से नहीं मापा जाता कि आपके हाथ से क्या गया, बल्कि इससे कि उसने किसी के जीवन में क्या बदलाव किया।",
+  "givingQuoteAttribution": "— निस्वार्थ सेवा की भावना",
+  "impactSortNewest": "नवीनतम",
+  "impactSortName": "नाम A–Z",
+  "impactSortHighest": "सबसे अधिक राशि",
+  "impactSortLowest": "सबसे कम राशि",
+  "impactLoadError": "अभी प्रभाव की कहानियाँ लोड नहीं हो सकीं।",
+  "tryAgain": "पुनः प्रयास करें",
+  "supportedIn": "{year} में सहयोग मिला",
+  "@supportedIn": {
+    "placeholders": {
+      "year": {}
+    }
+  },
+  "contributionAmount": "₹{amount} योगदान",
+  "@contributionAmount": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
+  "viewStory": "कहानी देखें →",
+  "impactStoryTitle": "प्रभाव की कहानी",
+  "theirStory": "उनकी कहानी",
+  "supportedThrough": "के माध्यम से सहयोग",
+  "contribution": "योगदान",
+  "impactDefaultStory": "हर योगदान के पीछे एक मानवीय कहानी होती है। इस सहयोग ने एक अवसर बनाया और एक जीवन को आगे बढ़ने में मदद की।",
+  "impactThankYou": "ऐसी कहानियों का हिस्सा बनने के लिए धन्यवाद। आपकी उदारता करुणा को सार्थक प्रभाव में बदलने में मदद करती है।",
+  "supportedInLabel": "सहयोग मिला"
 }
