@@ -90,7 +90,6 @@ void main() {
       home: const DonationPage(
         causeId: 'cause-1',
         causeName: 'Education',
-        organisation: _organisation,
         organisations: _organisations,
       ),
       overrides: overrides,
@@ -217,10 +216,10 @@ void main() {
 
     expect(find.text('Seva Trust'), findsOneWidget);
     expect(find.text('Pune, Maharashtra'), findsOneWidget);
-    expect(find.byKey(const ValueKey('cause_organisation_donate_org-1')), findsOneWidget);
+    expect(find.text('Support this Cause'), findsOneWidget);
   });
 
-  testWidgets('organisation pay button opens donation page', (tester) async {
+  testWidgets('support cause button opens donation page', (tester) async {
     await pumpApp(
       tester,
       home: const CauseDetailPage(slug: 'education'),
@@ -230,7 +229,7 @@ void main() {
       ],
     );
 
-    await tapVisible(tester, find.byKey(const ValueKey('cause_organisation_donate_org-1')));
+    await tapVisible(tester, find.text('Support this Cause'));
 
     expect(find.byType(DonationPage), findsOneWidget);
     expect(find.text(l10n(tester).chooseAmount), findsOneWidget);
@@ -252,7 +251,7 @@ void main() {
     expect(find.byKey(const ValueKey('donation_allocation_org-1')), findsNothing);
   });
 
-  testWidgets('preset amount selects total and preselects originating organisation', (tester) async {
+  testWidgets('preset amount selects total without preselecting an organisation', (tester) async {
     await pumpDonationPage(tester);
 
     final preset = find.byKey(const ValueKey('donation_amount_500'));
@@ -268,7 +267,7 @@ void main() {
       scrollable: find.byType(Scrollable).first,
     );
     expect(firstAllocation, findsOneWidget);
-    expect(tester.widget<TextField>(firstAllocation).controller?.text, '500');
+    expect(tester.widget<TextField>(firstAllocation).controller?.text, '0');
 
     final secondAllocation = find.byKey(const ValueKey('donation_allocation_org-2'));
     await tester.scrollUntilVisible(
@@ -299,7 +298,7 @@ void main() {
     expect(firstAllocation, findsOneWidget);
     expect(
       tester.widget<TextField>(firstAllocation).controller?.text,
-      '1750',
+      '0',
     );
   });
 
