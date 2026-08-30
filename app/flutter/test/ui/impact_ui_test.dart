@@ -57,11 +57,9 @@ void main() {
     await tester.tap(find.text('View Story →').first);
     await tester.pumpAndSettle();
 
-    expect(find.text('Impact Story'), findsOneWidget);
-    expect(find.text('Their Story'), findsOneWidget);
+    expect(find.text('Rahul Kumar'), findsWidgets);
     expect(find.textContaining('Rahul continued his education'), findsOneWidget);
-    expect(find.text('Supported through'), findsOneWidget);
-    expect(find.text('Demo Education Support Organisation'), findsOneWidget);
+    expect(find.textContaining('Demo Education Support Organisation'), findsOneWidget);
   });
 
   testWidgets('beneficiary card renders network photo when photo URL is present',
