@@ -97,6 +97,7 @@ The initial domain should be designed around these entities:
 -   Organisation
 -   Organisation Translation
 -   Organisation-Cause relationship
+-   Beneficiary / Impact Story
 -   Donation
 -   Donation Allocation
 -   Payment
@@ -267,6 +268,7 @@ successful completion
 -   Donation allocation UI
 -   Donation domain model
 -   Basic admin/content model
+-   Beneficiary / impact explorer
 -   Automated tests
 -   CI/CD foundation
 
@@ -312,3 +314,18 @@ commitments are active.
 
 The product succeeds when donating becomes simple, transparent,
 multilingual, and repeatable.
+
+------------------------------------------------------------------------
+
+## 13. Testing & Quality Target
+
+Coverage is a quality signal, not a substitute for meaningful tests.
+
+Initial targets:
+
+- **70% overall line coverage** as the project matures
+- **80%+ coverage for new domain/service logic**
+- **90%+ for critical financial, allocation and payment logic**
+- UI tests should cover primary journeys and important empty/error states
+
+CI must run analysis/build, automated tests and Prisma schema validation before merge.

@@ -1,17 +1,33 @@
-# avijit_sahyog
+# Avijit Sahyog Flutter App
 
-A new Flutter project.
+Flutter client for the Avijit Sahyog donation platform.
 
-## Getting Started
+## Current features
 
-This project is a starting point for a Flutter application.
+- Multilingual application shell
+- Home experience with Maharaj Ji hero image
+- Cause discovery
+- Cause-centric donation entry flow
+- Affiliated organisation transparency
+- Impact Explorer with beneficiary cards
+- Beneficiary impact story detail
+- Search and sorting for beneficiary discovery
+- Backend-driven API configuration using `API_BASE_URL`
 
-A few resources to get you started if this is your first Flutter project:
+## Run locally
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+```bash
+flutter pub get
+flutter gen-l10n
+flutter run --dart-define=API_BASE_URL=http://localhost:3000
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Test and quality
+
+```bash
+flutter analyze
+flutter test
+flutter test --coverage
+```
+
+UI tests should cover primary journeys plus important loading, empty and error states.

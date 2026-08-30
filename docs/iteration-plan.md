@@ -131,6 +131,30 @@ app can display it without a Flutter release.
 
 ------------------------------------------------------------------------
 
+# Iteration 2.5 --- Impact Explorer & Beneficiary Transparency
+
+## Goal
+
+Make the outcome of giving discoverable without complicating the donation flow.
+
+### Features
+
+- Cause-centric donation entry point
+- Home hero with Maharaj Ji image and giving message
+- Beneficiary cards
+- Beneficiary detail / impact story
+- Cause, year, name and amount discovery controls
+- Affiliated organisation details remain visible for transparency
+- Backend `Beneficiary` model and REST API
+- Production Prisma migration and seed data
+- Flutter and backend regression tests
+
+### Exit criteria
+
+A user can discover beneficiaries, explore an impact story and understand the related cause and organisation without being asked to choose an organisation during donation allocation.
+
+------------------------------------------------------------------------
+
 # Iteration 3 --- Authentication + User Profile
 
 ## Goal
@@ -495,6 +519,16 @@ Localized content
 No payment yet.
 
 Once this works end-to-end, we move into the donation domain.
+
+------------------------------------------------------------------------
+
+# Testing & Coverage Policy
+
+- Measure coverage continuously in CI.
+- Target **70% overall line coverage** as a baseline.
+- New backend domain/service logic should normally reach **80%+**.
+- Critical financial/payment/allocation code should target **90%+** with scenario-based tests.
+- Do not chase percentage with trivial tests; important branches and user journeys matter more.
 
 ------------------------------------------------------------------------
 
