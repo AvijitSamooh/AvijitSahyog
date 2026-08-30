@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
                   onPressed: _showLanguageSelector,
                 ),
               ],
-            )
+            ),
       body: IndexedStack(index: _selectedIndex, children: pages),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
@@ -345,7 +345,7 @@ class _LanguageSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final options = const [
+    final options = [
       (AppLocalizations.of(context)!.languageEnglish, 'en'),
       (AppLocalizations.of(context)!.languageHindi, 'hi'),
       (AppLocalizations.of(context)!.languageMarathi, 'mr'),
