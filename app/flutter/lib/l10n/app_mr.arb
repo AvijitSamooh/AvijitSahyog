@@ -6,7 +6,10 @@
   "backendStatus": "{status} — {service}",
   "@backendStatus": {
     "description": "विकास अवस्थेत दाखवला जाणारा सत्यापित बॅकएंड आरोग्य स्थिती संदेश.",
-    "placeholders": { "status": {}, "service": {} }
+    "placeholders": {
+      "status": {},
+      "service": {}
+    }
   },
   "welcomeTitle": "अविजित सहयोगमध्ये आपले स्वागत आहे",
   "welcomeSubtitle": "सोपे, पारदर्शक आणि अर्थपूर्ण योगदान.",
@@ -30,5 +33,16 @@
   "donationCreatedTitle": "योगदान नोंदवले गेले",
   "donationCreatedMessage": "तुमचे योगदान नोंदवले गेले आहे. पुढील टप्प्यात पेमेंट जोडले जाईल.",
   "donationPaymentLater": "या योगदान प्रक्रियेची पडताळणी झाल्यानंतर पेमेंटची सुविधा जोडली जाईल.",
-  "done": "पूर्ण"
+  "done": "पूर्ण",
+  "homeExploreCauses": "सेवेची क्षेत्रे पहा",
+  "homeImpact": "आमचा प्रभाव पहा",
+  "impactTitle": "आमचा प्रभाव",
+  "impactSubtitle": "तुमच्या योगदानामुळे स्पर्श झालेली आयुष्ये.",
+  "impactSearch": "नावाने शोधा",
+  "impactSort": "क्रमवारी",
+  "impactNoResults": "कोणतेही लाभार्थी सापडले नाहीत.",
+  "navHome": "मुख्यपृष्ठ",
+  "navCauses": "सेवा क्षेत्रे",
+  "navImpact": "प्रभाव",
+  "navSettings": "सेटिंग्ज"
 }

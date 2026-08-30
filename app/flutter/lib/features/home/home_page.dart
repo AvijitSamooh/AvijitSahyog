@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../causes/presentation/causes_page.dart';
 import '../impact/presentation/impact_page.dart';
 import '../settings/settings_page.dart';
+import '../../l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.onLocaleChanged});
@@ -15,11 +16,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  void _openCauses() {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const CausesPage()),
-    );
-  }
+  void _openCauses() => setState(() => _selectedIndex = 1);
 
   void _showLanguageSelector() async {
     final currentLocale = Localizations.localeOf(context).languageCode;
@@ -47,18 +44,22 @@ class _HomePageState extends State<HomePage> {
     ];
 
     return Scaffold(
-      appBar: _selectedIndex == 0
-          ? AppBar(
-              title: const Text('Avijit Sahyog'),
+      appBar: _selectedIndex == 3
+          ? null
+          : AppBar(
+              title: Text(_selectedIndex == 0
+                  ? AppLocalizations.of(context)!.appTitle
+                  : _selectedIndex == 1
+                      ? AppLocalizations.of(context)!.causesTitle
+                      : 'Our Impact'),
               actions: [
                 IconButton(
-                  tooltip: 'Language',
+                  tooltip: AppLocalizations.of(context)!.language,
                   icon: const Icon(Icons.language_rounded),
                   onPressed: _showLanguageSelector,
                 ),
               ],
-            )
-          : null,
+            ),
       body: IndexedStack(index: _selectedIndex, children: pages),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
@@ -178,7 +179,7 @@ class _HeroSection extends StatelessWidget {
             top: 8,
             bottom: 0,
             child: Image.asset(
-              'assets/images/ajit_sagar_ji.png',
+              'assets/images/AjitSagarJi.png',
               fit: BoxFit.contain,
               errorBuilder: (_, _, _) => const Icon(Icons.self_improvement_rounded, size: 140, color: Color(0xFFF5A623)),
             ),
@@ -344,11 +345,11 @@ class _LanguageSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final options = const [
-      ('English', 'en'),
-      ('हिंदी', 'hi'),
-      ('मराठी', 'mr'),
-      ('ગુજરાતી', 'gu'),
+    final options = [
+      (AppLocalizations.of(context)!.languageEnglish, 'en'),
+      (AppLocalizations.of(context)!.languageHindi, 'hi'),
+      (AppLocalizations.of(context)!.languageMarathi, 'mr'),
+      (AppLocalizations.of(context)!.languageGujarati, 'gu'),
     ];
 
     return Material(
