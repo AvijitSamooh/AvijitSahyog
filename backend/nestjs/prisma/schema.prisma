@@ -89,7 +89,7 @@ model Organisation {
 
 model OrganisationTranslation {
   id             String   @id @default(uuid()) @db.Uuid
-  organisationId String?  @db.Uuid
+  organisationId String   @db.Uuid
   languageId     String   @db.Uuid
   name           String   @db.VarChar(250)
   description    String?  @db.Text

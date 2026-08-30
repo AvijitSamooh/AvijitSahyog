@@ -33,6 +33,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Prisma CLI needs datasource env vars even for offline schema validation/generation.
+      # These are dummy CI values; no database connection is made by these commands.
+      - name: Validate Prisma schema
+        env:
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+          DIRECT_URL: postgresql://ci:ci@localhost:5432/ci
+        run: npx prisma validate
+
+      - name: Generate Prisma client
+        env:
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+          DIRECT_URL: postgresql://ci:ci@localhost:5432/ci
+        run: npx prisma generate
+
       - name: Build
         run: npm run build
 
