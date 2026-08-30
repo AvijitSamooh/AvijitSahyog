@@ -2,6 +2,15 @@
 
 This repository is developed collaboratively by humans and AI agents. These rules are mandatory for all new features and changes.
 
+## 0. Branch and Pull Request Safety
+
+- **Never commit directly to `master`/`main`.**
+- Create a dedicated feature, fix or chore branch from the latest `master` before making changes.
+- All changes must reach `master` through a Pull Request with CI checks.
+- Do not merge a PR unless required CI checks pass, except when a repository owner explicitly approves an exception.
+- Follow every rule in this document for every change, including small fixes and AI-generated code.
+- Before editing, confirm the target branch is not `master`/`main`.
+
 ## 1. Before Writing Code
 
 - Inspect the existing architecture and nearby implementations before changing code.
