@@ -40,7 +40,7 @@ void main() {
     await tester.pumpWidget(app(_items));
     await tester.pumpAndSettle();
 
-    expect(find.text('Our Impact'), findsOneWidget);
+    expect(find.text('Search by name'), findsOneWidget);
     expect(find.byKey(const ValueKey('beneficiary_search')), findsOneWidget);
     expect(find.byKey(const ValueKey('beneficiary_sort')), findsOneWidget);
     expect(find.text('Rahul Kumar'), findsOneWidget);
