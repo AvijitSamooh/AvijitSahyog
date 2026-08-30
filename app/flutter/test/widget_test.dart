@@ -1,8 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:avijit_sahyog/app.dart';
 
 void main() {
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
   testWidgets('application renders', (WidgetTester tester) async {
     await tester.pumpWidget(const AvijitSahyogApp());
     await tester.pumpAndSettle();
