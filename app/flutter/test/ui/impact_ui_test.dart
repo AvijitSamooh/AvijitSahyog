@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart' show AsyncValue;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:avijit_sahyog/features/impact/models/beneficiary.dart';
@@ -62,6 +61,23 @@ void main() {
     expect(find.text('Rahul continued his education.'), findsOneWidget);
     expect(find.text('Supported through'), findsOneWidget);
     expect(find.text('Demo Education Support Organisation'), findsOneWidget);
+  });
+
+  testWidgets('beneficiary card renders network photo when photo URL is present',
+      (tester) async {
+    const item = Beneficiary(
+      id: 'photo-1',
+      name: 'Photo Beneficiary',
+      cause: 'Education',
+      supportedYear: 2025,
+      contributionAmount: 100,
+      photoUrl: 'https://example.com/photo.jpg',
+    );
+
+    await tester.pumpWidget(app([item]));
+    await tester.pump();
+
+    expect(find.byType(Image), findsWidgets);
   });
 
   testWidgets('impact page shows empty state', (tester) async {
