@@ -6,18 +6,20 @@ class SettingsPage extends StatelessWidget {
   const SettingsPage({
     super.key,
     required this.onLocaleChanged,
+    this.showAppBar = true,
   });
 
   final ValueChanged<Locale> onLocaleChanged;
+  final bool showAppBar;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.language),
-      ),
+      appBar: showAppBar
+          ? AppBar(title: Text(l10n.language))
+          : null,
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -63,7 +65,7 @@ class SettingsPage extends StatelessWidget {
         trailing: const Icon(Icons.chevron_right),
         onTap: () {
           onLocaleChanged(locale);
-          Navigator.of(context).pop();
+          if (showAppBar) Navigator.of(context).pop();
         },
       ),
     );
