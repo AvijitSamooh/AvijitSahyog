@@ -14,88 +14,27 @@ export class DonationsService {
     if (currency !== 'INR') {
       throw new BadRequestException('Only INR is currently supported');
     }
-
     if (amount.lte(0)) {
       throw new BadRequestException('Donation amount must be greater than zero');
     }
 
-    if (!input.allocations?.length) {
-      throw new BadRequestException('At least one donation allocation is required');
-    }
-
-    const allocations = input.allocations.map((allocation) => ({
-      causeId: allocation.causeId,
-      organisationId: allocation.organisationId,
-      amount: this.decimal(allocation.amount, 'Allocation amount'),
-    }));
-
-    if (allocations.some((allocation) => allocation.amount.lte(0))) {
-      throw new BadRequestException('Allocation amounts must be greater than zero');
-    }
-
-    const allocationTotal = allocations.reduce(
-      (total, allocation) => total.plus(allocation.amount),
-      new Prisma.Decimal(0),
-    );
-
-    if (!allocationTotal.equals(amount)) {
-      throw new BadRequestException(
-        'Donation amount must equal the sum of its allocations',
-      );
-    }
-
-    const organisationCausePairs = allocations.map((allocation) => ({
-      causeId: allocation.causeId,
-      organisationId: allocation.organisationId,
-    }));
-
-    const validRelationships = await this.prisma.organisationCause.findMany({
-      where: {
-        isActive: true,
-        OR: organisationCausePairs,
-        cause: { isActive: true },
-        organisation: { isActive: true },
-      },
-      select: {
-        causeId: true,
-        organisationId: true,
-      },
+    const cause = await this.prisma.cause.findFirst({
+      where: { id: input.causeId, isActive: true },
+      select: { id: true },
     });
-
-    const validRelationshipKeys = new Set(
-      validRelationships.map(
-        (relationship) => `${relationship.causeId}:${relationship.organisationId}`,
-      ),
-    );
-
-    const invalidAllocation = allocations.find(
-      (allocation) =>
-        !validRelationshipKeys.has(
-          `${allocation.causeId}:${allocation.organisationId}`,
-        ),
-    );
-
-    if (invalidAllocation) {
-      throw new BadRequestException(
-        'Each allocation must reference an active cause-organisation relationship',
-      );
+    if (!cause) {
+      throw new BadRequestException('Donation must reference an active cause');
     }
 
-    return this.prisma.$transaction(async (tx) => {
-      const donation = await tx.donation.create({
-        data: {
-          amount,
-          currency,
-          allocations: {
-            create: allocations,
-          },
+    return this.prisma.donation.create({
+      data: {
+        amount,
+        currency,
+        allocations: {
+          create: [{ causeId: input.causeId, amount }],
         },
-        include: {
-          allocations: true,
-        },
-      });
-
-      return donation;
+      },
+      include: { allocations: true },
     });
   }
 
