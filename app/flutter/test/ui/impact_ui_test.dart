@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' show AsyncValue;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:avijit_sahyog/features/impact/models/beneficiary.dart';
@@ -29,8 +30,7 @@ void main() {
   Widget app(List<Beneficiary> items) {
     return ProviderScope(
       overrides: [
-        beneficiariesProvider((search: '', sort: null))
-            .overrideWith((ref) async => items),
+        beneficiariesProvider.overrideWith((ref, query) async => items),
       ],
       child: const MaterialApp(home: ImpactPage()),
     );
