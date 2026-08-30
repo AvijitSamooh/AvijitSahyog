@@ -4,7 +4,7 @@
 
 Iteration 2.1 defines the content/discovery domain used to show donation causes and the affiliated organisations under each cause.
 
-Financial models such as Donation, Payment, Allocation, Receipt and Mandate are intentionally not included in this iteration.
+Financial models such as Donation, Payment, Allocation, Receipt and Mandate are intentionally outside the current discovery scope.
 
 ## Entities
 
@@ -45,6 +45,22 @@ The model stores non-translatable operational/contact data such as:
 
 Organisation names and descriptions are stored in `OrganisationTranslation`.
 
+### Beneficiary
+
+Represents a person or initiative whose support can be transparently explored by donors.
+
+- `name` — beneficiary or initiative display name
+- `photoUrl` — optional image
+- `story` — optional impact story
+- `supportedYear` — year of support
+- `contributionAmount` — contribution amount associated with the record
+- `causeId` — required cause relationship
+- `organisationId` — optional affiliated organisation relationship
+- `isActive` — controls public visibility
+- `displayOrder` — presentation ordering
+
+Beneficiaries support the Impact Explorer and are not part of donation allocation logic.
+
 ### OrganisationCause
 
 Explicit many-to-many relationship between organisations and causes.
@@ -78,6 +94,15 @@ English remains the mandatory fallback language as defined by `docs/vision.md`.
 4. Translation records are separate from the core entity so adding a language does not require a schema redesign.
 5. Organisation-to-cause is an explicit relation because the relationship has its own lifecycle and ordering.
 6. Donation/payment state is deliberately outside this model.
+
+## Current API additions
+
+The impact domain exposes:
+
+- `GET /beneficiaries`
+- `GET /beneficiaries/:id`
+
+The collection supports filtering/searching and sorting for discovery.
 
 ## Next iteration
 
