@@ -50,8 +50,14 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Unit tests
-        run: npm test -- --runInBand
+      - name: Unit tests with coverage
+        run: npm run test:cov -- --runInBand
+
+      - name: Upload backend coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/nestjs/coverage
 
   flutter:
     name: Flutter - Analyze & Test
@@ -77,5 +83,11 @@ jobs:
       - name: Analyze
         run: flutter analyze
 
-      - name: Tests
-        run: flutter test
+      - name: Tests with coverage
+        run: flutter test --coverage
+
+      - name: Upload Flutter coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-coverage
+          path: app/flutter/coverage
