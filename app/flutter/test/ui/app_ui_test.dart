@@ -135,13 +135,15 @@ void main() {
   }
 
 
-  testWidgets('home page renders the main donation entry point', (tester) async {
+  testWidgets('home page renders the cause-centric entry point', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
     await tester.pump();
 
     expect(find.byType(AvijitSahyogApp), findsOneWidget);
     expect(find.byIcon(Icons.language_rounded), findsOneWidget);
-    expect(find.widgetWithText(FilledButton, 'Causes'), findsOneWidget);
+    expect(find.text('Welcome to Avijit Sahyog'), findsOneWidget);
+    expect(find.text('Explore Causes'), findsWidgets);
+    expect(find.text('See Our Impact'), findsOneWidget);
   });
 
   testWidgets('language selector opens and shows all supported languages', (tester) async {
@@ -152,9 +154,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('English'), findsOneWidget);
-    expect(find.text('Hindi'), findsOneWidget);
-    expect(find.text('Marathi'), findsOneWidget);
-    expect(find.text('Gujarati'), findsOneWidget);
+    expect(find.text('हिंदी'), findsOneWidget);
+    expect(find.text('मराठी'), findsOneWidget);
+    expect(find.text('ગુજરાતી'), findsOneWidget);
   });
 
   testWidgets('language selector changes the app locale', (tester) async {
@@ -163,10 +165,11 @@ void main() {
 
     await tester.tap(find.byIcon(Icons.language_rounded));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Hindi'));
+    await tester.tap(find.text('हिंदी'));
     await tester.pumpAndSettle();
 
-    expect(find.text('अविजित सहयोग में आपका स्वागत है'), findsOneWidget);
+    final preferences = await SharedPreferences.getInstance();
+    expect(preferences.getString('selected_locale'), 'hi');
   });
 
   testWidgets('causes page displays mocked causes', (tester) async {
