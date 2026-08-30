@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
 import 'package:http/http.dart' as http;
 
 class ApiClient {
@@ -12,7 +14,9 @@ class ApiClient {
             'API_BASE_URL',
             defaultValue: 'http://localhost:3000',
           ),
-        );
+        ) {
+    debugPrint('[ApiClient] Configured API base URL: $baseUrl');
+  }
 
   static String _normalizeBaseUrl(String value) =>
       value.endsWith('/') ? value.substring(0, value.length - 1) : value;
@@ -21,9 +25,10 @@ class ApiClient {
   final String baseUrl;
 
   Future<Map<String, dynamic>> getHealth() async {
-    final response = await _client.get(
-      Uri.parse('$baseUrl/health'),
-    );
+    final uri = Uri.parse('$baseUrl/health');
+    debugPrint('[ApiClient] GET $uri');
+    final response = await _client.get(uri);
+    debugPrint('[ApiClient] Health response: ${response.statusCode}');
 
     _ensureSuccess(response, 'Health check');
     return jsonDecode(response.body) as Map<String, dynamic>;
@@ -34,7 +39,9 @@ class ApiClient {
       queryParameters: {'language': languageCode},
     );
 
+    debugPrint('[ApiClient] GET $uri');
     final response = await _client.get(uri);
+    debugPrint('[ApiClient] Causes response: ${response.statusCode}');
     _ensureSuccess(response, 'Loading causes');
 
     final decoded = jsonDecode(response.body) as List<dynamic>;
@@ -51,7 +58,9 @@ class ApiClient {
       queryParameters: {'language': languageCode},
     );
 
+    debugPrint('[ApiClient] GET $uri');
     final response = await _client.get(uri);
+    debugPrint('[ApiClient] Cause response: ${response.statusCode}');
     _ensureSuccess(response, 'Loading cause');
 
     return jsonDecode(response.body) as Map<String, dynamic>;
@@ -60,18 +69,22 @@ class ApiClient {
   Future<Map<String, dynamic>> createDonation(
     Map<String, dynamic> payload,
   ) async {
+    final uri = Uri.parse('$baseUrl/donations');
+    debugPrint('[ApiClient] POST $uri');
     final response = await _client.post(
-      Uri.parse('$baseUrl/donations'),
+      uri,
       headers: const {'Content-Type': 'application/json'},
       body: jsonEncode(payload),
     );
 
+    debugPrint('[ApiClient] Donation response: ${response.statusCode}');
     _ensureSuccess(response, 'Creating donation');
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
   void _ensureSuccess(http.Response response, String operation) {
     if (response.statusCode < 200 || response.statusCode >= 300) {
+      debugPrint('[ApiClient] $operation failed: ${response.statusCode} ${response.body}');
       throw Exception('$operation failed: ${response.statusCode}');
     }
   }
