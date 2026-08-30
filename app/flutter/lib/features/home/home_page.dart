@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-
-import '../../l10n/app_localizations.dart';
 import '../causes/presentation/causes_page.dart';
 import '../settings/settings_page.dart';
 
@@ -177,7 +175,7 @@ class _HeroSection extends StatelessWidget {
             child: Image.asset(
               'assets/images/ajit_sagar_ji.png',
               fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+              errorBuilder: (_, _, _) => const SizedBox.shrink(),
             ),
           ),
           Padding(
