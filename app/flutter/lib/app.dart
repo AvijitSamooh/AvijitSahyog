@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'features/home/home_page.dart';
+import 'features/impact/presentation/impact_page.dart';
 import 'l10n/app_localizations.dart';
 
 class AvijitSahyogApp extends StatefulWidget {
@@ -139,6 +140,7 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       theme: _buildTheme(),
       home: HomePage(onLocaleChanged: setLocale),
+      routes: {'/impact': (_) => const ImpactPage()},
       ),
     );
   }
