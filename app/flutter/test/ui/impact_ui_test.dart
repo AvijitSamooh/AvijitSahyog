@@ -29,7 +29,7 @@ void main() {
   Widget app(List<Beneficiary> items) {
     return ProviderScope(
       overrides: [
-        beneficiariesProvider((search: null, sort: null))
+        beneficiariesProvider((search: '', sort: null))
             .overrideWith((ref) async => items),
       ],
       child: const MaterialApp(home: ImpactPage()),
