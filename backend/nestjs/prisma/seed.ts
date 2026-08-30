@@ -252,6 +252,7 @@ async function main() {
       amount: '25000',
       order: 1,
       story: 'Educational support helped Rahul continue his studies and move forward with confidence.',
+      photoUrl: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=900&q=80',
     },
     {
       name: 'Amit Patel',
@@ -261,6 +262,7 @@ async function main() {
       amount: '12000',
       order: 2,
       story: 'Learning support gave Amit an opportunity to continue building skills for a brighter future.',
+      photoUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=900&q=80',
     },
     {
       name: 'Priya Sharma',
@@ -270,6 +272,7 @@ async function main() {
       amount: '18000',
       order: 3,
       story: 'Timely medical support helped Priya focus on recovery and regain stability.',
+      photoUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=900&q=80',
     },
     {
       name: 'Sanjay Mehta',
@@ -279,6 +282,7 @@ async function main() {
       amount: '30000',
       order: 4,
       story: 'Medical assistance helped Sanjay access essential treatment during a difficult time.',
+      photoUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=900&q=80',
     },
     {
       name: 'Gopal Care Initiative',
@@ -288,6 +292,7 @@ async function main() {
       amount: '15000',
       order: 5,
       story: 'Support contributed to food, care and protection for animals in need.',
+      photoUrl: 'https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=900&q=80',
     },
     {
       name: 'Seva Community Project',
@@ -297,6 +302,7 @@ async function main() {
       amount: '20000',
       order: 6,
       story: 'Community support helped provide practical assistance to families facing hardship.',
+      photoUrl: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=900&q=80',
     },
   ];
 
@@ -311,6 +317,7 @@ async function main() {
     });
     const data = {
       name: beneficiary.name,
+      photoUrl: beneficiary.photoUrl,
       story: beneficiary.story,
       supportedYear: beneficiary.year,
       contributionAmount: beneficiary.amount,
