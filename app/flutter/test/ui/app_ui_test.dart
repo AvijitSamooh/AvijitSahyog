@@ -145,6 +145,24 @@ void main() {
     expect(find.text('See Our Impact'), findsOneWidget);
   });
 
+
+  testWidgets('home hero loads Maharaj Ji image asset', (tester) async {
+    await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
+    await tester.pump();
+    expect(find.byType(Image), findsWidgets);
+  });
+
+  testWidgets('impact navigation opens the real impact explorer', (tester) async {
+    await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
+    await tester.pumpAndSettle();
+    final impactButton = find.text('See Our Impact');
+    await tester.ensureVisible(impactButton);
+    await tester.tap(impactButton);
+    await tester.pumpAndSettle();
+    expect(find.text('Our Impact'), findsOneWidget);
+    expect(find.text('Search by name'), findsOneWidget);
+  });
+
   testWidgets('language selector opens and shows all supported languages', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
     await tester.pump();

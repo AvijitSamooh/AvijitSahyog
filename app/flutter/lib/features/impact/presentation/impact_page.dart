@@ -4,6 +4,28 @@ import '../models/beneficiary.dart';
 import '../providers/beneficiaries_providers.dart';
 import 'beneficiary_detail_page.dart';
 
+Widget beneficiaryImage(String? photoUrl, {required double height, required BorderRadius borderRadius, double iconSize = 64}) {
+  return ClipRRect(
+    borderRadius: borderRadius,
+    child: SizedBox(
+      height: height,
+      width: double.infinity,
+      child: photoUrl != null && photoUrl.trim().isNotEmpty
+          ? Image.network(
+              photoUrl,
+              fit: BoxFit.cover,
+              errorBuilder: (_, _, _) => _beneficiaryPlaceholder(iconSize),
+            )
+          : _beneficiaryPlaceholder(iconSize),
+    ),
+  );
+}
+
+Widget _beneficiaryPlaceholder(double iconSize) => Container(
+  color: const Color(0xFFFCE8C9),
+  child: Icon(Icons.person_rounded, size: iconSize, color: const Color(0xFF6E1A14)),
+);
+
 class ImpactPage extends ConsumerStatefulWidget {
   const ImpactPage({super.key});
   @override ConsumerState<ImpactPage> createState() => _ImpactPageState();
@@ -71,7 +93,7 @@ class _Card extends StatelessWidget {
   const _Card(this.x);
   final Beneficiary x;
   @override Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(18), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    Hero(tag: 'beneficiary-${x.id}', child: Container(height: 150, width: double.infinity, decoration: BoxDecoration(color: const Color(0xFFFCE8C9), borderRadius: BorderRadius.circular(14)), child: const Icon(Icons.person_rounded, size: 64, color: Color(0xFF6E1A14)))),
+    Hero(tag: 'beneficiary-${x.id}', child: beneficiaryImage(x.photoUrl, height: 150, borderRadius: BorderRadius.circular(14))),
     const SizedBox(height: 16),
     Text(x.name, style: Theme.of(context).textTheme.titleLarge),
     const SizedBox(height: 4),

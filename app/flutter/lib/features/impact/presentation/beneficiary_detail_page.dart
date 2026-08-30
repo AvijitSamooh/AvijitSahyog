@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/beneficiary.dart';
+import 'impact_page.dart' show beneficiaryImage;
 
 class BeneficiaryDetailPage extends StatelessWidget {
   const BeneficiaryDetailPage({super.key, required this.beneficiary});
@@ -15,14 +16,7 @@ class BeneficiaryDetailPage extends StatelessWidget {
         children: [
           Hero(
             tag: 'beneficiary-${beneficiary.id}',
-            child: Container(
-              height: 240,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFCE8C9),
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: const Center(child: Icon(Icons.person_rounded, size: 100, color: Color(0xFF6E1A14))),
-            ),
+            child: beneficiaryImage(beneficiary.photoUrl, height: 240, borderRadius: BorderRadius.circular(24), iconSize: 100),
           ),
           const SizedBox(height: 24),
           Text(beneficiary.name, style: theme.textTheme.headlineMedium),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../causes/presentation/causes_page.dart';
+import '../impact/presentation/impact_page.dart';
 import '../settings/settings_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -41,7 +42,7 @@ class _HomePageState extends State<HomePage> {
         onExploreImpact: () => setState(() => _selectedIndex = 2),
       ),
       const CausesPage(),
-      const _ImpactPlaceholder(),
+      const ImpactPage(),
       SettingsPage(onLocaleChanged: widget.onLocaleChanged, showAppBar: false),
     ];
 
@@ -179,7 +180,7 @@ class _HeroSection extends StatelessWidget {
             child: Image.asset(
               'assets/images/ajit_sagar_ji.png',
               fit: BoxFit.contain,
-              errorBuilder: (_, _, _) => const SizedBox.shrink(),
+              errorBuilder: (_, _, _) => const Icon(Icons.self_improvement_rounded, size: 140, color: Color(0xFFF5A623)),
             ),
           ),
           Padding(
@@ -334,36 +335,7 @@ class _GivingQuote extends StatelessWidget {
   }
 }
 
-class _ImpactPlaceholder extends StatelessWidget {
-  const _ImpactPlaceholder();
 
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.auto_awesome_rounded,
-              size: 56,
-              color: Color(0xFF6E1A14),
-            ),
-            const SizedBox(height: 16),
-            Text('Our Impact', style: Theme.of(context).textTheme.headlineSmall),
-            const SizedBox(height: 8),
-            Text(
-              'In the next phase, this space will let you explore beneficiaries, their stories, and the impact created across every cause.',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class _LanguageSheet extends StatelessWidget {
   const _LanguageSheet({required this.currentLocale});
