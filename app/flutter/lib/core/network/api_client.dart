@@ -57,6 +57,17 @@ class ApiClient {
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
+  Future<List<Map<String, dynamic>>> getBeneficiaries({String? search, String? sort}) async {
+    final uri = Uri.parse('$baseUrl/beneficiaries').replace(queryParameters: {
+      if (search != null && search.isNotEmpty) 'search': search,
+      if (sort != null && sort.isNotEmpty) 'sort': sort,
+    });
+    final response = await _client.get(uri);
+    _ensureSuccess(response, 'Loading beneficiaries');
+    final decoded = jsonDecode(response.body) as List<dynamic>;
+    return decoded.map((item) => item as Map<String, dynamic>).toList(growable: false);
+  }
+
   Future<Map<String, dynamic>> createDonation(
     Map<String, dynamic> payload,
   ) async {
