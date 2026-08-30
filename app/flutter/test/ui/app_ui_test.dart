@@ -171,9 +171,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('English'), findsOneWidget);
-    expect(find.text('हिंदी'), findsOneWidget);
-    expect(find.text('मराठी'), findsOneWidget);
-    expect(find.text('ગુજરાતી'), findsOneWidget);
+    expect(find.text('Hindi'), findsOneWidget);
+    expect(find.text('Marathi'), findsOneWidget);
+    expect(find.text('Gujarati'), findsOneWidget);
   });
 
   testWidgets('language selector changes the app locale', (tester) async {
@@ -182,7 +182,7 @@ void main() {
 
     await tester.tap(find.byIcon(Icons.language_rounded));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('हिंदी'));
+    await tester.tap(find.text('Hindi'));
     await tester.pumpAndSettle();
 
     final preferences = await SharedPreferences.getInstance();
