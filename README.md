@@ -11,6 +11,7 @@ a donation app.
 The platform will allow users to:
 
 - Discover causes and affiliated organisations
+- Explore beneficiaries and impact stories
 - Distribute donations across multiple causes
 - Donate using UPI
 - View donation history and receipts
@@ -57,10 +58,17 @@ See [docs/iteration-plan.md](docs/iteration-plan.md).
 
 ## Current Status
 
-🚧 Early development — Iteration 0
+🚧 Active development — Causes, cause-centric giving UX and Impact Explorer are implemented; payment functionality remains future work.
 
 The current focus is establishing the project foundation before implementing
 the donation domain.
+
+## Quality Targets
+
+- 70% overall line coverage target as the codebase matures
+- 80%+ for new domain/service logic
+- 90%+ for critical financial/payment/allocation logic
+- CI validates Prisma schema, builds, analyzes and runs automated tests
 
 ## Development Principles
 
