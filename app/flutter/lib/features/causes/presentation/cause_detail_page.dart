@@ -14,49 +14,80 @@ class CauseDetailPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final languageCode = Localizations.localeOf(context).languageCode;
     final causeAsync = ref.watch(causeProvider((slug: slug, languageCode: languageCode)));
-    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.causesTitle)),
+      appBar: AppBar(title: const Text('Cause Details')),
       body: causeAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Padding(padding: const EdgeInsets.all(24), child: Text(l10n.causeLoadError, textAlign: TextAlign.center))),
+        error: (_, __) => const _CauseErrorState(),
         data: (cause) => ListView(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
           children: [
             Container(
-              padding: const EdgeInsets.all(22),
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF6E1A14), Color(0xFF4C120D)]),
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF6E1A14), Color(0xFF4C120D)],
+                ),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: const Color(0xFFC89B3C)),
               ),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Text('✦', style: TextStyle(color: Color(0xFFF5A623), fontSize: 24)),
-                const SizedBox(height: 8),
-                Text(cause.name, style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white, fontSize: 28)),
-                if (cause.description?.isNotEmpty == true) ...[
-                  const SizedBox(height: 10),
-                  Text(cause.description!, style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white.withValues(alpha: 0.88))),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(Icons.volunteer_activism_rounded,
+                      color: Color(0xFFF5A623), size: 32),
+                  const SizedBox(height: 18),
+                  Text(cause.name,
+                      style: theme.textTheme.headlineSmall
+                          ?.copyWith(color: Colors.white)),
+                  if (cause.description?.isNotEmpty == true) ...[
+                    const SizedBox(height: 10),
+                    Text(
+                      cause.description!,
+                      style: theme.textTheme.bodyLarge
+                          ?.copyWith(color: Colors.white.withValues(alpha: .88)),
+                    ),
+                  ],
+                  const SizedBox(height: 24),
+                  FilledButton.icon(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => DonationPage(
+                          causeId: cause.id,
+                          causeName: cause.name,
+                          organisations: cause.organisations,
+                        ),
+                      ),
+                    ),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xFFF5A623),
+                      foregroundColor: const Color(0xFF4C120D),
+                    ),
+                    icon: const Icon(Icons.favorite_rounded),
+                    label: const Text('Support this Cause'),
+                  ),
                 ],
-              ]),
+              ),
             ),
             if (cause.organisations.isNotEmpty) ...[
               const SizedBox(height: 30),
-              Text(l10n.affiliatedOrganisations, style: theme.textTheme.titleLarge),
+              Text('How your contribution reaches people',
+                  style: theme.textTheme.titleLarge),
               const SizedBox(height: 6),
-              Text(l10n.welcomeSubtitle, style: theme.textTheme.bodyMedium),
-              const SizedBox(height: 14),
-              ...cause.organisations.map((organisation) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _OrganisationCard(
-                  organisation: organisation,
-                  causeId: cause.id,
-                  causeName: cause.name,
-                  organisations: cause.organisations,
+              Text(
+                'Your contribution supports this cause. These affiliated organisations help turn that support into real impact.',
+                style: theme.textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 16),
+              ...cause.organisations.map(
+                (organisation) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _OrganisationInfoCard(organisation: organisation),
                 ),
-              )),
+              ),
             ],
           ],
         ),
@@ -65,66 +96,69 @@ class CauseDetailPage extends ConsumerWidget {
   }
 }
 
-class _OrganisationCard extends StatelessWidget {
-  const _OrganisationCard({
-    required this.organisation,
-    required this.causeId,
-    required this.causeName,
-    required this.organisations,
-  });
-
+class _OrganisationInfoCard extends StatelessWidget {
+  const _OrganisationInfoCard({required this.organisation});
   final Organisation organisation;
-  final String causeId;
-  final String causeName;
-  final List<Organisation> organisations;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context)!;
-    final location = _organisationSubtitle(organisation);
+    final location = [
+      if (organisation.city?.isNotEmpty == true) organisation.city!,
+      if (organisation.state?.isNotEmpty == true) organisation.state!,
+    ].join(', ');
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Container(width: 46, height: 46, decoration: BoxDecoration(color: const Color(0xFFFCE8C9), borderRadius: BorderRadius.circular(14)), child: const Icon(Icons.account_balance_rounded, color: Color(0xFF6E1A14))),
-            const SizedBox(width: 14),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(organisation.name, style: theme.textTheme.titleMedium),
-              if (location != null) ...[const SizedBox(height: 5), location],
-              if (organisation.description?.isNotEmpty == true) ...[
-                const SizedBox(height: 7),
-                Text(organisation.description!, maxLines: 3, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodyMedium),
-              ],
-            ])),
-          ]),
-          const SizedBox(height: 14),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton.icon(
-              key: ValueKey('cause_organisation_donate_${organisation.id}'),
-              onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => DonationPage(
-                causeId: causeId,
-                causeName: causeName,
-                organisation: organisation,
-                organisations: organisations,
-              ))),
-              icon: const Icon(Icons.favorite_rounded, size: 18),
-              label: Text(l10n.donateNow),
+        padding: const EdgeInsets.all(17),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: const Color(0xFFFCE8C9),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: const Icon(Icons.account_balance_rounded,
+                  color: Color(0xFF6E1A14)),
             ),
-          ),
-        ]),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(organisation.name, style: theme.textTheme.titleMedium),
+                  if (location.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(location, style: theme.textTheme.bodyMedium),
+                  ],
+                  if (organisation.description?.isNotEmpty == true) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      organisation.description!,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+}
 
-  Widget? _organisationSubtitle(Organisation organisation) {
-    final parts = <String>[];
-    if (organisation.city != null && organisation.city!.isNotEmpty) parts.add(organisation.city!);
-    if (organisation.state != null && organisation.state!.isNotEmpty) parts.add(organisation.state!);
-    if (parts.isEmpty) return null;
-    return Text(parts.join(', '), style: const TextStyle(color: Color(0xFF9A574C), fontWeight: FontWeight.w500));
-  }
+class _CauseErrorState extends StatelessWidget {
+  const _CauseErrorState();
+
+  @override
+  Widget build(BuildContext context) => const Center(
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Text('Unable to load this cause right now.'),
+        ),
+      );
 }
