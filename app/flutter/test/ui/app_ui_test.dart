@@ -155,7 +155,9 @@ void main() {
   testWidgets('impact navigation opens the real impact explorer', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('See Our Impact'));
+    final impactButton = find.text('See Our Impact');
+    await tester.ensureVisible(impactButton);
+    await tester.tap(impactButton);
     await tester.pumpAndSettle();
     expect(find.text('Our Impact'), findsOneWidget);
     expect(find.text('Search by name'), findsOneWidget);
