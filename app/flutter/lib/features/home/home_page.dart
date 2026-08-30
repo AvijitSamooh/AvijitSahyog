@@ -143,8 +143,9 @@ class _HeroSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: const BoxConstraints(minHeight: 390),
+    return SizedBox(
+      height: 390,
+      child: Container(
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
@@ -154,8 +155,8 @@ class _HeroSection extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(28),
       ),
-      child: Stack(
-        children: [
+        child: Stack(
+          children: [
           Positioned(
             right: -35,
             top: -55,
@@ -226,7 +227,8 @@ class _HeroSection extends StatelessWidget {
               ],
             ),
           ),
-        ],
+          ],
+        ),
       ),
     );
   }
