@@ -6,7 +6,10 @@
   "backendStatus": "{status} — {service}",
   "@backendStatus": {
     "description": "Verified backend health status shown in the development shell.",
-    "placeholders": { "status": {}, "service": {} }
+    "placeholders": {
+      "status": {},
+      "service": {}
+    }
   },
   "welcomeTitle": "Welcome to Avijit Sahyog",
   "welcomeSubtitle": "Simple, transparent and meaningful giving.",
@@ -30,5 +33,16 @@
   "donationCreatedTitle": "Donation recorded",
   "donationCreatedMessage": "Your contribution has been recorded. Payment will be added in the next step.",
   "donationPaymentLater": "Payment processing will be added after this donation flow is verified.",
-  "done": "Done"
+  "done": "Done",
+  "homeExploreCauses": "Explore Causes",
+  "homeImpact": "See Our Impact",
+  "impactTitle": "Our Impact",
+  "impactSubtitle": "Lives touched through your contributions.",
+  "impactSearch": "Search by name",
+  "impactSort": "Sort",
+  "impactNoResults": "No beneficiaries found.",
+  "navHome": "Home",
+  "navCauses": "Causes",
+  "navImpact": "Impact",
+  "navSettings": "Settings"
 }
