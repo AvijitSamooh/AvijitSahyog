@@ -102,9 +102,11 @@ class _HomeContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return ListView(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
-      children: [
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
         _HeroSection(onExploreCauses: onExploreCauses),
         const SizedBox(height: 24),
         Text('Welcome to Avijit Sahyog', style: theme.textTheme.headlineSmall),
@@ -131,7 +133,8 @@ class _HomeContent extends StatelessWidget {
         ),
         const SizedBox(height: 28),
         const _GivingQuote(),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -144,7 +147,7 @@ class _HeroSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 390,
+      height: 560,
       child: Container(
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
