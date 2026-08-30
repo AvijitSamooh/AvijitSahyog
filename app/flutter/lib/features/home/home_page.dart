@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
       ),
       const CausesPage(),
       const _ImpactPlaceholder(),
-      SettingsPage(onLocaleChanged: widget.onLocaleChanged),
+      SettingsPage(onLocaleChanged: widget.onLocaleChanged, showAppBar: false),
     ];
 
     return Scaffold(
