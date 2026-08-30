@@ -195,7 +195,7 @@ class _HeroSection extends StatelessWidget {
                   size: 30,
                 ),
                 const Spacer(),
-                const SizedBox(
+                SizedBox(
                   width: 210,
                   child: Text(
                     AppLocalizations.of(context)!.homeHeroTitle,
