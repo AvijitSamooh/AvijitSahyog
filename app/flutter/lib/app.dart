@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'features/home/home_page.dart';
 import 'l10n/app_localizations.dart';
@@ -130,13 +131,15 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return ProviderScope(
+      child: MaterialApp(
       locale: _locale,
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: _buildTheme(),
       home: HomePage(onLocaleChanged: setLocale),
+      ),
     );
   }
 }
