@@ -42,22 +42,24 @@ class _HomePageState extends State<HomePage> {
         onExploreCauses: _openCauses,
         onExploreImpact: () => setState(() => _selectedIndex = 2),
       ),
-      const CausesPage(embedded: true),
+      const CausesPage(),
       const _ImpactPlaceholder(),
       SettingsPage(onLocaleChanged: widget.onLocaleChanged),
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Avijit Sahyog'),
-        actions: [
-          IconButton(
-            tooltip: 'Language',
-            icon: const Icon(Icons.language_rounded),
-            onPressed: _showLanguageSelector,
-          ),
-        ],
-      ),
+      appBar: _selectedIndex == 0
+          ? AppBar(
+              title: const Text('Avijit Sahyog'),
+              actions: [
+                IconButton(
+                  tooltip: 'Language',
+                  icon: const Icon(Icons.language_rounded),
+                  onPressed: _showLanguageSelector,
+                ),
+              ],
+            )
+          : null,
       body: IndexedStack(index: _selectedIndex, children: pages),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
