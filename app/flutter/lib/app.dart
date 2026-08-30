@@ -33,7 +33,6 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
   Future<void> _loadLocale() async {
     final preferences = await SharedPreferences.getInstance();
     final languageCode = preferences.getString(_localeKey);
-
     if (!mounted || languageCode == null) return;
 
     final supportedCodes = AppLocalizations.supportedLocales
@@ -41,17 +40,12 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
         .toSet();
 
     if (supportedCodes.contains(languageCode)) {
-      setState(() {
-        _locale = Locale(languageCode);
-      });
+      setState(() => _locale = Locale(languageCode));
     }
   }
 
   Future<void> setLocale(Locale locale) async {
-    setState(() {
-      _locale = locale;
-    });
-
+    setState(() => _locale = locale);
     final preferences = await SharedPreferences.getInstance();
     await preferences.setString(_localeKey, locale.languageCode);
   }
@@ -76,12 +70,12 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
       scaffoldBackgroundColor: _cream,
       fontFamily: 'Poppins',
       appBarTheme: const AppBarTheme(
-        backgroundColor: _maroon,
-        foregroundColor: Colors.white,
+        backgroundColor: _cream,
+        foregroundColor: _maroon,
         elevation: 0,
         centerTitle: false,
         titleTextStyle: TextStyle(
-          color: Colors.white,
+          color: _maroon,
           fontSize: 20,
           fontWeight: FontWeight.w700,
         ),
@@ -107,17 +101,10 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
         ),
       ),
       textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(
-          foregroundColor: _maroon,
-        ),
+        style: TextButton.styleFrom(foregroundColor: _maroon),
       ),
-      dividerTheme: const DividerThemeData(
-        color: _line,
-        space: 1,
-      ),
-      progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: _maroon,
-      ),
+      dividerTheme: const DividerThemeData(color: _line, space: 1),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(color: _maroon),
       textTheme: const TextTheme(
         headlineSmall: TextStyle(
           color: _maroon,
@@ -135,16 +122,8 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
           fontSize: 17,
           fontWeight: FontWeight.w600,
         ),
-        bodyLarge: TextStyle(
-          color: _text,
-          fontSize: 16,
-          height: 1.6,
-        ),
-        bodyMedium: TextStyle(
-          color: _textSoft,
-          fontSize: 14,
-          height: 1.55,
-        ),
+        bodyLarge: TextStyle(color: _text, fontSize: 16, height: 1.6),
+        bodyMedium: TextStyle(color: _textSoft, fontSize: 14, height: 1.55),
       ),
     );
   }
