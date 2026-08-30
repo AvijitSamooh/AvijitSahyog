@@ -335,36 +335,7 @@ class _GivingQuote extends StatelessWidget {
   }
 }
 
-class _ImpactPlaceholder extends StatelessWidget {
-  const _ImpactPlaceholder();
 
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.auto_awesome_rounded,
-              size: 56,
-              color: Color(0xFF6E1A14),
-            ),
-            const SizedBox(height: 16),
-            Text('Our Impact', style: Theme.of(context).textTheme.headlineSmall),
-            const SizedBox(height: 8),
-            Text(
-              'In the next phase, this space will let you explore beneficiaries, their stories, and the impact created across every cause.',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class _LanguageSheet extends StatelessWidget {
   const _LanguageSheet({required this.currentLocale});
