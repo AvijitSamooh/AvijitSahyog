@@ -142,6 +142,6 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
       routes: {
         '/impact': (_) => const ImpactPage(),
       },
-      );
+    );
   }
 }
