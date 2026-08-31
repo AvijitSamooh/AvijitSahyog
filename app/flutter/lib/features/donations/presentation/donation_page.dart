@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../causes/providers/causes_providers.dart';
-import '../models/create_donation.dart';
-import '../providers/donation_providers.dart';
 
 class DonationPage extends ConsumerStatefulWidget {
   const DonationPage({super.key, this.initialCauseId});
@@ -18,7 +16,6 @@ class _DonationPageState extends ConsumerState<DonationPage> {
   final Set<String> _selectedCauseIds = {};
   final Map<String, int> _allocationPercentages = {};
   int? _selectedAmount;
-  bool _submitting = false;
   static const _amounts = [100, 500, 1000, 2000];
 
   @override
@@ -64,36 +61,10 @@ class _DonationPageState extends ConsumerState<DonationPage> {
   void _setPercentage(String id, int value) =>
       setState(() => _allocationPercentages[id] = value.clamp(0, 100));
 
-  List<CreateDonationAllocation> _buildAllocations() {
-    final totalPaise = (_totalAmount * 100).round();
-    var assigned = 0;
-    final ids = _selectedCauseIds.toList(growable: false);
-    return [
-      for (var i = 0; i < ids.length; i++)
-        CreateDonationAllocation(
-          causeId: ids[i],
-          amount: (() {
-            final paise = i == ids.length - 1 ? totalPaise - assigned : (totalPaise * (_allocationPercentages[ids[i]] ?? 0) / 100).round();
-            assigned += paise;
-            return (paise / 100).toStringAsFixed(2);
-          })(),
-        ),
-    ];
-  }
-
-  Future<void> _submit() async {
-    final l10n = AppLocalizations.of(context)!;
-    if (_totalAmount <= 0) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.donationInvalidAmount))); return; }
-    if (_selectedCauseIds.isEmpty || _allocationTotal != 100) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.allocationMustTotal100))); return; }
-    setState(() => _submitting = true);
-    try {
-      await ref.read(donationRepositoryProvider).createDonation(CreateDonation(amount: _totalAmount.toStringAsFixed(2), allocations: _buildAllocations()));
-      if (!mounted) return;
-      await showDialog<void>(context: context, builder: (context) => AlertDialog(title: Text(l10n.donationCreatedTitle), content: Text(l10n.donationCreatedMessage), actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.done))]));
-      if (mounted) Navigator.pop(context);
-    } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.donationCreateError)));
-    } finally { if (mounted) setState(() => _submitting = false); }
+  void _submit() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(AppLocalizations.of(context)!.donationNotEnabledYet)),
+    );
   }
 
   @override
@@ -139,7 +110,7 @@ class _DonationPageState extends ConsumerState<DonationPage> {
         const SizedBox(height: 12),
         Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: const Color(0xFFFFF8ED), borderRadius: BorderRadius.circular(16)), child: Text(l10n.causeAllocationInfo)),
         const SizedBox(height: 18),
-        FilledButton.icon(key: const ValueKey('donation_submit'), onPressed: _submitting || _totalAmount <= 0 || _selectedCauseIds.isEmpty || _allocationTotal != 100 ? null : _submit, icon: _submitting ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.favorite_rounded), label: Text(l10n.donateNow)),
+        FilledButton.icon(key: const ValueKey('donation_submit'), onPressed: _totalAmount <= 0 || _selectedCauseIds.isEmpty || _allocationTotal != 100 ? null : _submit, icon: const Icon(Icons.favorite_rounded), label: Text(l10n.donateNow)),
         const SizedBox(height: 12),
         Text(l10n.donationPaymentLater, textAlign: TextAlign.center, style: theme.textTheme.bodySmall),
       ]),

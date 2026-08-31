@@ -86,5 +86,6 @@
   "causeAllocationInfo": "Your donation is allocated to causes. Affiliated organisations are shown for transparency and are not selected by the donor.",
   "allocationPercentage": "Allocation",
   "totalAllocation": "Total allocation",
-  "allocationMustTotal100": "Your selected cause allocations must total 100%."
+  "allocationMustTotal100": "Your selected cause allocations must total 100%.",
+  "donationNotEnabledYet": "Donation is not enabled yet. We’ll let you know when it is available."
 }
