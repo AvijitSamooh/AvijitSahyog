@@ -9,6 +9,29 @@ datasource db {
 }
 
 // -----------------------------------------------------------------------------
+// Identity / authorization domain
+// -----------------------------------------------------------------------------
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model User {
+  id                String   @id @default(uuid()) @db.Uuid
+  firebaseUid       String   @unique @db.VarChar(128)
+  email             String?  @db.VarChar(320)
+  displayName       String?  @db.VarChar(250)
+  photoUrl          String?  @db.VarChar(1000)
+  role              UserRole @default(USER)
+  preferredLanguage String?  @db.VarChar(10)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([role])
+}
+
+// -----------------------------------------------------------------------------
 // Content / discovery domain
 // -----------------------------------------------------------------------------
 
