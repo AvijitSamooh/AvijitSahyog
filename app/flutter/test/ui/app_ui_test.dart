@@ -104,11 +104,6 @@ void main() {
   }
 
   Future<void> tapVisible(WidgetTester tester, Finder finder) async {
-    await tester.scrollUntilVisible(
-      finder,
-      300,
-      scrollable: find.byType(Scrollable).first,
-    );
     await tester.tap(finder);
     await tester.pump();
   }
@@ -118,11 +113,7 @@ void main() {
     Finder finder,
     String value,
   ) async {
-    await tester.scrollUntilVisible(
-      finder,
-      300,
-      scrollable: find.byType(Scrollable).first,
-    );
+    await tester.tap(finder);
     await tester.enterText(finder, value);
     await tester.pump();
   }
@@ -215,8 +206,13 @@ void main() {
     await advanceToDistribution(tester);
     final action = find.byKey(const ValueKey('donation_primary_action'));
     expect(tester.widget<FilledButton>(action).onPressed, isNull);
-    await tapVisible(tester, find.byKey(const ValueKey('donation_amount_1000')));
-    expect(tester.widget<FilledButton>(action).onPressed, isNotNull);
+    await tapVisible(
+      tester,
+      find.byKey(const ValueKey('donation_amount_1000')),
+    );
+    final updatedAction =
+        find.byKey(const ValueKey('donation_primary_action'));
+    expect(tester.widget<FilledButton>(updatedAction).onPressed, isNotNull);
   });
 
   testWidgets('back navigation returns to cause selection', (tester) async {
