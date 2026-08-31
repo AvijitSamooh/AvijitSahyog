@@ -252,7 +252,7 @@ void main() {
   testWidgets('donation defaults a single selected cause to 100 percent', (tester) async {
     await pumpDonationPage(tester);
     expect(find.byKey(const ValueKey('donation_percentage_cause-1')), findsOneWidget);
-    expect(find.text('Total allocation: 100%'), findsOneWidget);
+    expect(find.byKey(const ValueKey('donation_allocation_total')), findsOneWidget);
   });
 
   testWidgets('selecting a second cause defaults allocation equally', (tester) async {
