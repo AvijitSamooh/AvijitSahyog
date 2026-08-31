@@ -139,6 +139,8 @@ Before opening a PR, verify:
 - [ ] Static analysis passes
 - [ ] Database migrations/seeds are updated if needed
 - [ ] Documentation impact has been explicitly reviewed
+- [ ] Existing automated tests affected by the change have been updated
+- [ ] New or changed behaviour has appropriate regression coverage
 - [ ] Relevant `docs/` files are updated for every significant product flow, domain, architecture, API contract, or operational change
 - [ ] If no documentation changed, the PR explains why the change is implementation-only
 - [ ] CI logs have been checked for any failure
@@ -168,5 +170,6 @@ When implementing a change:
 7. Fix root causes, not symptoms.
 8. Update documentation when behaviour or architecture changes.
 9. Before declaring the work complete, explicitly review whether the change alters product vision, user flow, domain model, API contract, architecture, iteration plan, or operational assumptions. If yes, update the relevant `docs/` files in the same PR and explain the documentation impact in the PR.
+10. Treat tests as part of the implementation contract. When changing a feature, user flow, API contract, domain model, validation rule, UI behaviour, or architecture, identify and update/add the affected automated tests in the same PR. Do not leave stale tests that describe the old behaviour.
 
 Never declare a fix complete without verifying the relevant checks.
