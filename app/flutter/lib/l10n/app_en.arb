@@ -83,5 +83,8 @@
   "supportedInLabel": "Supported in",
   "shareAcrossCauses": "Share across causes",
   "selectCauses": "Select the causes you want to support",
-  "causeAllocationInfo": "Your donation is allocated to causes. Affiliated organisations are shown for transparency and are not selected by the donor."
+  "causeAllocationInfo": "Your donation is allocated to causes. Affiliated organisations are shown for transparency and are not selected by the donor.",
+  "allocationPercentage": "Allocation",
+  "totalAllocation": "Total allocation",
+  "allocationMustTotal100": "Your selected cause allocations must total 100%."
 }
