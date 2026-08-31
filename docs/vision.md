@@ -123,6 +123,16 @@ historical donations.
 
 The platform supports:
 
+### Donor intent boundary
+
+A donor allocates money **only across Causes**. Affiliated Organisations are discovery and transparency entities beneath a Cause; the donor is never required or asked to choose which organisation receives an allocation.
+
+The platform records the donor's intent as:
+
+`Donation → DonationAllocation → Cause`
+
+Any later organisation-level routing, settlement or reconciliation is an administrative/platform responsibility and must not retroactively change the donor's recorded cause allocation.
+
 ### Percentage allocation
 
 Example:
