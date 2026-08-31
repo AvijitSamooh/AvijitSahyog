@@ -197,6 +197,7 @@ Build the financial domain before connecting payments.
 
 ### Rules
 
+-   Donors allocate across causes only; affiliated organisations are not allocation choices
 -   Amount must be positive
 -   Percentages must total 100%
 -   Allocated amount must equal donation amount

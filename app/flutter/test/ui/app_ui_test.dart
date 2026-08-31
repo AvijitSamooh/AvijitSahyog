@@ -88,9 +88,8 @@ void main() {
     await pumpApp(
       tester,
       home: const DonationPage(
-        causeId: 'cause-1',
-        causeName: 'Education',
-        organisations: _organisations,
+        initialCauseId: 'cause-1',
+        initialCauseName: 'Education',
       ),
       overrides: overrides,
     );
@@ -261,14 +260,12 @@ void main() {
     expect(amountField, findsOneWidget);
   });
 
-  testWidgets('donation submit is visible but disabled until an amount is selected', (tester) async {
+  testWidgets('donation submit is disabled until an amount is selected', (tester) async {
     await pumpDonationPage(tester);
 
-    final submit = tester.widget<FilledButton>(
-      find.byKey(const ValueKey('donation_submit')),
-    );
-    expect(submit.onPressed, isNull);
-    expect(find.byKey(const ValueKey('donation_allocation_org-1')), findsNothing);
+    final submitFinder = find.byKey(const ValueKey('donation_submit'));
+    await tester.scrollUntilVisible(submitFinder, 400, scrollable: find.byType(Scrollable).first);
+    expect(tester.widget<FilledButton>(submitFinder).onPressed, isNull);
   });
 
   testWidgets('preset amount enables cause donation', (tester) async {
@@ -278,10 +275,9 @@ void main() {
     final amountField = find.byKey(const ValueKey('donation_amount_input'));
     expect(tester.widget<TextField>(amountField).controller?.text, '500');
 
-    final submit = tester.widget<FilledButton>(
-      find.byKey(const ValueKey('donation_submit')),
-    );
-    expect(submit.onPressed, isNotNull);
+    final submitFinder = find.byKey(const ValueKey('donation_submit'));
+    await tester.scrollUntilVisible(submitFinder, 400, scrollable: find.byType(Scrollable).first);
+    expect(tester.widget<FilledButton>(submitFinder).onPressed, isNotNull);
   });
 
   testWidgets('custom donation amount enables cause donation', (tester) async {
@@ -291,7 +287,7 @@ void main() {
     await enterVisibleText(tester, amountField, '1750');
     expect(tester.widget<TextField>(amountField).controller?.text, '1750');
 
-    expect(find.textContaining('Your contribution will support this cause'), findsOneWidget);
+    expect(find.text(l10n(tester).shareAcrossCauses), findsOneWidget);
   });
 
   testWidgets('invalid donation amount keeps submit disabled', (tester) async {
@@ -326,7 +322,9 @@ void main() {
 
     expect(repository.lastDonation, isNotNull);
     expect(repository.lastDonation!.amount, '1000.00');
-    expect(repository.lastDonation!.allocations, isEmpty);
+    expect(repository.lastDonation!.allocations, hasLength(1));
+    expect(repository.lastDonation!.allocations.single.causeId, 'cause-1');
+    expect(repository.lastDonation!.allocations.single.amount, '1000.00');
     expect(find.text(l10n(tester).donationCreatedTitle), findsOneWidget);
   });
 }

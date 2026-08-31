@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateDonationDto } from './dto/create-donation.dto';
@@ -18,13 +17,35 @@ export class DonationsService {
     if (amount.lte(0)) {
       throw new BadRequestException('Donation amount must be greater than zero');
     }
+    if (!Array.isArray(input.allocations) || input.allocations.length === 0) {
+      throw new BadRequestException('Donation must be allocated to at least one cause');
+    }
 
-    const cause = await this.prisma.cause.findFirst({
-      where: { id: input.causeId, isActive: true },
-      select: { id: true },
+    const allocationAmounts = input.allocations.map((allocation) =>
+      this.decimal(allocation.amount, 'Allocation amount'),
+    );
+    if (allocationAmounts.some((allocationAmount) => allocationAmount.lte(0))) {
+      throw new BadRequestException('Allocation amounts must be greater than zero');
+    }
+
+    const uniqueCauseIds = new Set(input.allocations.map((allocation) => allocation.causeId));
+    if (uniqueCauseIds.size !== input.allocations.length) {
+      throw new BadRequestException('A cause can only appear once in a donation allocation');
+    }
+
+    const allocationTotal = allocationAmounts.reduce(
+      (total, allocationAmount) => total.plus(allocationAmount),
+      new Decimal(0),
+    );
+    if (!allocationTotal.equals(amount)) {
+      throw new BadRequestException('Allocation total must equal the donation amount');
+    }
+
+    const activeCauseCount = await this.prisma.cause.count({
+      where: { id: { in: [...uniqueCauseIds] }, isActive: true },
     });
-    if (!cause) {
-      throw new BadRequestException('Donation must reference an active cause');
+    if (activeCauseCount !== uniqueCauseIds.size) {
+      throw new BadRequestException('Donation allocations must reference active causes');
     }
 
     return this.prisma.donation.create({
@@ -32,7 +53,10 @@ export class DonationsService {
         amount,
         currency,
         allocations: {
-          create: [{ causeId: input.causeId, amount }],
+          create: input.allocations.map((allocation, index) => ({
+            causeId: allocation.causeId,
+            amount: allocationAmounts[index],
+          })),
         },
       },
       include: { allocations: true },

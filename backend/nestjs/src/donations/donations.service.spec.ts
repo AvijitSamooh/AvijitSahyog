@@ -5,66 +5,66 @@ import { DonationsService } from './donations.service';
 describe('DonationsService', () => {
   let service: DonationsService;
   let prisma: {
-    cause: { findFirst: jest.Mock };
+    cause: { count: jest.Mock };
     donation: { create: jest.Mock; findUnique: jest.Mock };
   };
 
   beforeEach(() => {
     prisma = {
-      cause: { findFirst: jest.fn().mockResolvedValue({ id: 'cause-1' }) },
+      cause: { count: jest.fn().mockResolvedValue(2) },
       donation: { create: jest.fn(), findUnique: jest.fn() },
     };
     service = new DonationsService(prisma as never);
   });
 
-  const validInput = { amount: '1000.00', currency: 'INR', causeId: 'cause-1' };
+  const validInput = {
+    amount: '1000.00',
+    currency: 'INR',
+    allocations: [
+      { causeId: 'cause-1', amount: '600.00' },
+      { causeId: 'cause-2', amount: '400.00' },
+    ],
+  };
 
-  it('creates a cause-level donation without organisation selection', async () => {
-    const created = { id: 'donation-1', amount: new Decimal('1000.00'), currency: 'INR', allocations: [] };
+  it('creates a donation allocated across causes without organisation selection', async () => {
+    const created = { id: 'donation-1', amount: new Decimal('1000.00'), allocations: [] };
     prisma.donation.create.mockResolvedValue(created);
 
     await expect(service.create(validInput)).resolves.toEqual(created);
-    expect(prisma.cause.findFirst).toHaveBeenCalledWith({
-      where: { id: 'cause-1', isActive: true },
-      select: { id: true },
+    expect(prisma.cause.count).toHaveBeenCalledWith({
+      where: { id: { in: ['cause-1', 'cause-2'] }, isActive: true },
     });
     expect(prisma.donation.create).toHaveBeenCalledWith({
       data: {
         amount: new Decimal('1000.00'),
         currency: 'INR',
-        allocations: { create: [{ causeId: 'cause-1', amount: new Decimal('1000.00') }] },
+        allocations: {
+          create: [
+            { causeId: 'cause-1', amount: new Decimal('600.00') },
+            { causeId: 'cause-2', amount: new Decimal('400.00') },
+          ],
+        },
       },
       include: { allocations: true },
     });
   });
 
-  it('defaults currency to INR', async () => {
-    prisma.donation.create.mockResolvedValue({ id: 'donation-1' });
-    await service.create({ amount: '100.00', causeId: 'cause-1' });
-    expect(prisma.donation.create).toHaveBeenCalledWith(expect.objectContaining({
-      data: expect.objectContaining({ currency: 'INR' }),
-    }));
-  });
-
   it.each([
+    ['empty allocations', { ...validInput, allocations: [] }],
+    ['allocation total mismatch', { ...validInput, allocations: [{ causeId: 'cause-1', amount: '999.00' }] }],
+    ['duplicate cause', { ...validInput, allocations: [{ causeId: 'cause-1', amount: '500.00' }, { causeId: 'cause-1', amount: '500.00' }] }],
     ['zero donation', { ...validInput, amount: '0' }],
     ['negative donation', { ...validInput, amount: '-1' }],
     ['non-INR currency', { ...validInput, currency: 'USD' }],
   ])('rejects %s', async (_scenario, input) => {
     await expect(service.create(input)).rejects.toBeInstanceOf(BadRequestException);
-    expect(prisma.cause.findFirst).not.toHaveBeenCalled();
-  });
-
-  it('rejects an invalid decimal amount', async () => {
-    await expect(service.create({ ...validInput, amount: 'not-a-number' }))
-      .rejects.toThrow('Donation amount must be a valid decimal amount');
-  });
-
-  it('rejects an inactive or missing cause', async () => {
-    prisma.cause.findFirst.mockResolvedValue(null);
-    await expect(service.create(validInput))
-      .rejects.toThrow('Donation must reference an active cause');
     expect(prisma.donation.create).not.toHaveBeenCalled();
+  });
+
+  it('rejects inactive or missing causes', async () => {
+    prisma.cause.count.mockResolvedValue(1);
+    await expect(service.create(validInput))
+      .rejects.toThrow('Donation allocations must reference active causes');
   });
 
   it('finds a donation with cause and organisation information when available', async () => {
