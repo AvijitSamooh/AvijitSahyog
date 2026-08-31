@@ -14,7 +14,7 @@ class HomePage extends ConsumerStatefulWidget {
   final ValueChanged<Locale> onLocaleChanged;
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
