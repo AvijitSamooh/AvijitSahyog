@@ -104,8 +104,9 @@ void main() {
 
   Future<void> tapVisible(WidgetTester tester, Finder finder) async {
     await tester.ensureVisible(finder);
+    await tester.pump();
     await tester.tap(finder);
-    await tester.pumpAndSettle();
+    await tester.pump();
   }
 
   Future<void> enterVisibleText(
@@ -114,9 +115,10 @@ void main() {
     String value,
   ) async {
     await tester.ensureVisible(finder);
+    await tester.pump();
     await tester.tap(finder);
     await tester.enterText(finder, value);
-    await tester.pumpAndSettle();
+    await tester.pump();
   }
 
   testWidgets('home page renders the cause-centric entry point', (tester) async {
