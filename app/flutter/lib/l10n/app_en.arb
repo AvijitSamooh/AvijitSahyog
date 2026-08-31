@@ -80,5 +80,8 @@
   "contribution": "Contribution",
   "impactDefaultStory": "Every contribution has a human story behind it. This support helped create an opportunity and move one life forward.",
   "impactThankYou": "Thank you for being part of stories like this. Your generosity helps turn compassion into meaningful impact.",
-  "supportedInLabel": "Supported in"
+  "supportedInLabel": "Supported in",
+  "shareAcrossCauses": "Share across causes",
+  "selectCauses": "Select the causes you want to support",
+  "causeAllocationInfo": "Your donation is allocated to causes. Affiliated organisations are shown for transparency and are not selected by the donor."
 }
