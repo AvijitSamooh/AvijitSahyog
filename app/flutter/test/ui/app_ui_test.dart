@@ -10,6 +10,12 @@ import 'package:avijit_sahyog/features/causes/presentation/causes_page.dart';
 import 'package:avijit_sahyog/features/causes/presentation/cause_detail_page.dart';
 import 'package:avijit_sahyog/features/causes/providers/causes_providers.dart';
 import 'package:avijit_sahyog/features/donations/presentation/donation_page.dart';
+import 'package:avijit_sahyog/features/auth/presentation/login_page.dart';
+import 'package:avijit_sahyog/features/auth/presentation/profile_page.dart';
+import 'package:avijit_sahyog/features/auth/models/app_user.dart';
+import 'package:avijit_sahyog/features/auth/models/auth_state.dart';
+import 'package:avijit_sahyog/features/auth/providers/auth_providers.dart';
+import 'package:avijit_sahyog/features/auth/data/auth_repository.dart';
 import 'package:avijit_sahyog/l10n/app_localizations.dart';
 
 const _organisation = Organisation(
@@ -114,6 +120,34 @@ void main() {
     expect(find.text('See Our Impact'), findsOneWidget);
   });
 
+
+  testWidgets('public home exposes login without restricting browsing', (tester) async {
+    await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
+    await tester.pump();
+
+    expect(find.byKey(const ValueKey('auth_entry')), findsOneWidget);
+    expect(find.text('Explore Causes'), findsWidgets);
+
+    await tester.tap(find.byKey(const ValueKey('auth_entry')));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(LoginPage), findsOneWidget);
+    expect(find.text('Continue as Guest'), findsOneWidget);
+  });
+
+  testWidgets('authenticated admin can see the admin portal entry', (tester) async {
+    await pumpApp(
+      tester,
+      home: const ProfilePage(),
+      overrides: [
+        authProvider.overrideWith(
+          (ref) => _AuthenticatedAdminController(),
+        ),
+      ],
+    );
+
+    expect(find.byKey(const ValueKey('admin_portal_entry')), findsOneWidget);
+  });
 
   testWidgets('home hero loads Maharaj Ji image asset', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
@@ -353,4 +387,26 @@ void main() {
   });
 
 
+}
+
+class _AuthenticatedAdminController extends AuthController {
+  _AuthenticatedAdminController()
+      : super(_NoopAuthRepository()) {
+    state = const AuthState.authenticated(
+      AppUser(
+        id: 'admin-1',
+        email: 'admin@example.com',
+        displayName: 'Admin',
+        role: UserRole.admin,
+      ),
+    );
+  }
+}
+
+class _NoopAuthRepository implements AuthRepository {
+  @override
+  Future<AppUser> signInWithGoogle() => throw UnimplementedError();
+
+  @override
+  Future<void> signOut() async {}
 }

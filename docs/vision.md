@@ -273,7 +273,8 @@ successful completion
 -   Causes
 -   Affiliated organisations
 -   Organisation details
--   User authentication
+-   Optional user authentication with public browsing
+-   Role-based admin access
 -   Donation planner without automatic payment
 -   Donation allocation UI
 -   Donation domain model

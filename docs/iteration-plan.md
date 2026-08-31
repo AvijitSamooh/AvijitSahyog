@@ -163,20 +163,62 @@ Introduce users.
 
 ### Features
 
--   Firebase Authentication
--   Login/logout
--   User profile
+-   Public browsing remains available without login
+-   Firebase Authentication foundation
+-   Login/logout entry point
+-   Internal User record linked to Firebase UID
+-   `USER` / `ADMIN` roles
+-   Protected `GET /auth/me`
+-   User profile foundation
 -   Preferred language
--   Basic account settings
+-   Admin access is role-based; no separate admin login
 
 ### Exit criteria
 
-A user can sign in, select a language, close/reopen the app, and retain
-the preference.
+Visitors can browse causes, organisations and beneficiary stories without login. A signed-in identity can be resolved by the backend and an administrator role can unlock future admin operations.
 
 ------------------------------------------------------------------------
 
-# Iteration 4 --- Donation Allocation Engine
+# Iteration 3.5 --- Authorization + Admin Operations Foundation
+
+## Goal
+
+Establish role-based access before production content is managed by administrators.
+
+### Features
+
+- Admin-only route and API foundation
+- Role checks based on the internal User record
+- Admin navigation entry for authenticated administrators
+- Prepare the first content-management workflow so production content no longer depends on seed data
+
+### Exit criteria
+
+One identity system supports normal users and administrators, while public discovery remains available to guests.
+
+------------------------------------------------------------------------
+
+# Iteration 4 --- Admin Content Operations
+
+## Goal
+
+Make real causes, organisations and beneficiary content manageable without changing seed data or releasing a new client.
+
+### Initial capabilities
+
+- Create/edit/activate/deactivate causes
+- Manage translations
+- Create/edit/activate/deactivate organisations
+- Associate organisations with causes
+- Create/edit/publish beneficiary impact stories
+
+### Exit criteria
+
+An authorised administrator can change production content through protected operations and public clients reflect backend data.
+
+------------------------------------------------------------------------
+
+# Iteration 5 --- Donation Allocation Engine
 
 ## Goal
 
@@ -225,7 +267,7 @@ the donation amount.
 
 ------------------------------------------------------------------------
 
-# Iteration 5 --- Donation Planner
+# Iteration 6 --- Donation Planner
 
 ## Goal
 
@@ -260,7 +302,7 @@ integration.
 
 ------------------------------------------------------------------------
 
-# Iteration 6 --- Donation History + Receipt Foundation
+# Iteration 7 --- Donation History + Receipt Foundation
 
 ## Goal
 
@@ -282,7 +324,7 @@ can display the complete donation history.
 
 ------------------------------------------------------------------------
 
-# Iteration 7 --- UPI Intent
+# Iteration 12 --- Payment Enablement (last)
 
 ## Goal
 
@@ -326,7 +368,7 @@ successful donation.
 
 ------------------------------------------------------------------------
 
-# Iteration 8 --- Receipt Delivery + Notifications
+# Iteration 13 --- Receipt Delivery + Notifications
 
 ## Goal
 
@@ -347,30 +389,7 @@ Successful donation → receipt → notification works end-to-end.
 
 ------------------------------------------------------------------------
 
-# Iteration 9 --- Admin Portal / Content Management
-
-## Goal
-
-Make the platform operational without developer intervention.
-
-### Admin capabilities
-
--   Manage causes
--   Manage translations
--   Manage organisations
--   Associate organisations with causes
--   Activate/deactivate organisations
--   View donations
--   View payment status
--   View audit log
-
-### Exit criteria
-
-Normal content changes do not require an app release.
-
-------------------------------------------------------------------------
-
-# Iteration 10 --- Reconciliation
+# Iteration 14 --- Reconciliation
 
 ## Goal
 
@@ -392,7 +411,7 @@ Every successful donation can be reconciled to a provider transaction.
 
 ------------------------------------------------------------------------
 
-# Iteration 11 --- UPI AutoPay
+# Iteration 15 --- UPI AutoPay
 
 ## Goal
 
@@ -416,7 +435,7 @@ trail.
 
 ------------------------------------------------------------------------
 
-# Iteration 12 --- Production Hardening
+# Iteration 11 --- Production Hardening
 
 ## Goal
 

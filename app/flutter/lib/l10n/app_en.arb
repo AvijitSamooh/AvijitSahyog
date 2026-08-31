@@ -87,5 +87,18 @@
   "allocationPercentage": "Allocation",
   "totalAllocation": "Total allocation",
   "allocationMustTotal100": "Your selected cause allocations must total 100%.",
-  "donationNotEnabledYet": "Donation is not enabled yet. We’ll let you know when it is available."
+  "donationNotEnabledYet": "Donation is not enabled yet. We’ll let you know when it is available.",
+  "login": "Login",
+  "profile": "Profile",
+  "logout": "Logout",
+  "loginTitle": "Sign in to Avijit Sahyog",
+  "loginSubtitle": "Sign in when you want to save personal preferences or access protected features.",
+  "continueWithGoogle": "Continue with Google",
+  "continueAsGuest": "Continue as Guest",
+  "loginRequired": "Please sign in to view your profile.",
+  "authNotConfigured": "Sign-in is being configured. Please try again later.",
+  "authSignInFailed": "We could not sign you in. Please try again.",
+  "authSignOutFailed": "We could not sign you out. Please try again.",
+  "adminPortal": "Admin Portal",
+  "adminPortalSubtitle": "Manage platform content and operations"
 }

@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../causes/presentation/causes_page.dart';
 import '../impact/presentation/impact_page.dart';
 import '../settings/settings_page.dart';
 import '../../l10n/app_localizations.dart';
+import '../auth/presentation/login_page.dart';
+import '../auth/presentation/profile_page.dart';
+import '../auth/providers/auth_providers.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key, required this.onLocaleChanged});
 
   final ValueChanged<Locale> onLocaleChanged;
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> {
   int _selectedIndex = 0;
 
   void _openCauses() => setState(() => _selectedIndex = 1);
@@ -53,6 +57,22 @@ class _HomePageState extends State<HomePage> {
                       ? AppLocalizations.of(context)!.causesTitle
                       : AppLocalizations.of(context)!.impactTitle),
               actions: [
+                IconButton(
+                  key: const ValueKey('auth_entry'),
+                  tooltip: ref.watch(authProvider).isAuthenticated
+                      ? AppLocalizations.of(context)!.profile
+                      : AppLocalizations.of(context)!.login,
+                  icon: Icon(ref.watch(authProvider).isAuthenticated
+                      ? Icons.account_circle_rounded
+                      : Icons.login_rounded),
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => ref.read(authProvider).isAuthenticated
+                          ? const ProfilePage()
+                          : const LoginPage(),
+                    ));
+                  },
+                ),
                 IconButton(
                   tooltip: AppLocalizations.of(context)!.language,
                   icon: const Icon(Icons.language_rounded),
