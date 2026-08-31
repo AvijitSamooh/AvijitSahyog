@@ -195,6 +195,12 @@ Build the financial domain before connecting payments.
 2.  Equal share (automatic default when selected causes change)
 3.  Select all (future convenience option)
 
+### First-release availability
+
+- The donation planning and allocation experience is available for exploration.
+- Actual donation submission is intentionally disabled in the first release.
+- When a user attempts to donate, the app clearly states that the donation feature is not enabled yet and does not create a backend donation record.
+
 ### Rules
 
 -   Donors allocate across causes only; affiliated organisations are not allocation choices
