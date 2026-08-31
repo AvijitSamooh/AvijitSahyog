@@ -133,8 +133,7 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
 
   @override
   Widget build(BuildContext context) {
-    return ProviderScope(
-      child: MaterialApp(
+    return MaterialApp(
       locale: _locale,
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -144,7 +143,6 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
       routes: {
         '/impact': (_) => const ImpactPage(),
       },
-      ),
-    );
+      );
   }
 }
