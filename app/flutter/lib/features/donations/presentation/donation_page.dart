@@ -38,8 +38,31 @@ class _DonationPageState extends ConsumerState<DonationPage> {
 
   void _selectAmount(int amount) => setState(() { _selectedAmount = amount; _amountController.text = amount.toString(); });
   void _onTotalChanged(String value) { final parsed = double.tryParse(value.trim()); setState(() { _selectedAmount = parsed != null && _amounts.contains(parsed.toInt()) ? parsed.toInt() : null; }); }
-  void _toggleCause(String id, bool selected) => setState(() { if (selected) { _selectedCauseIds.add(id); _allocationPercentages[id] ??= 0; } else { _selectedCauseIds.remove(id); _allocationPercentages.remove(id); } });
-  void _setPercentage(String id, int value) => setState(() => _allocationPercentages[id] = value.clamp(0, 100));
+  void _toggleCause(String id, bool selected) {
+    setState(() {
+      if (selected) {
+        _selectedCauseIds.add(id);
+      } else {
+        _selectedCauseIds.remove(id);
+        _allocationPercentages.remove(id);
+      }
+      _applyEqualDistribution();
+    });
+  }
+
+  void _applyEqualDistribution() {
+    if (_selectedCauseIds.isEmpty) return;
+    final ids = _selectedCauseIds.toList(growable: false);
+    final base = 100 ~/ ids.length;
+    var remainder = 100 % ids.length;
+    for (final id in ids) {
+      _allocationPercentages[id] = base + (remainder > 0 ? 1 : 0);
+      if (remainder > 0) remainder--;
+    }
+  }
+
+  void _setPercentage(String id, int value) =>
+      setState(() => _allocationPercentages[id] = value.clamp(0, 100));
 
   List<CreateDonationAllocation> _buildAllocations() {
     final totalPaise = (_totalAmount * 100).round();
