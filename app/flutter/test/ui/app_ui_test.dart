@@ -352,8 +352,10 @@ void main() {
     final submit = find.byKey(const ValueKey('donation_submit'));
     await tester.scrollUntilVisible(submit, 400, scrollable: find.byType(Scrollable).first);
     await tester.tap(submit);
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
 
+    expect(repository.lastDonation, isNotNull);
     expect(repository.lastDonation!.allocations, hasLength(2));
     expect(repository.lastDonation!.allocations[0].amount, '700.00');
     expect(repository.lastDonation!.allocations[1].amount, '300.00');
@@ -372,6 +374,8 @@ void main() {
 
     await tapVisible(tester, find.byKey(const ValueKey('donation_amount_1000')));
     await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-2')));
+    await enterVisibleText(tester, find.byKey(const ValueKey('donation_percentage_cause-1')), '70');
+    await enterVisibleText(tester, find.byKey(const ValueKey('donation_percentage_cause-2')), '20');
     final submit = find.byKey(const ValueKey('donation_submit'));
     await tester.scrollUntilVisible(submit, 400, scrollable: find.byType(Scrollable).first);
     expect(tester.widget<FilledButton>(submit).onPressed, isNull);
