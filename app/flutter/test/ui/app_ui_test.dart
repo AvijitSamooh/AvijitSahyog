@@ -100,12 +100,13 @@ void main() {
         ...overrides,
       ],
     );
+    await tester.pumpAndSettle();
     expect(find.byType(DonationPage), findsOneWidget);
   }
 
   Future<void> tapVisible(WidgetTester tester, Finder finder) async {
     await tester.tap(finder);
-    await tester.pump();
+    await tester.pumpAndSettle();
   }
 
   Future<void> enterVisibleText(
@@ -115,7 +116,7 @@ void main() {
   ) async {
     await tester.tap(finder);
     await tester.enterText(finder, value);
-    await tester.pump();
+    await tester.pumpAndSettle();
   }
 
   Future<void> advanceToDistribution(WidgetTester tester) async {
