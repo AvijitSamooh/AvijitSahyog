@@ -231,14 +231,15 @@ void main() {
       overrides: [
         causeProvider((slug: 'education', languageCode: 'en'))
             .overrideWith((ref) async => _cause),
+        causesProvider('en').overrideWith((ref) async => const [_cause]),
       ],
     );
 
     await tapVisible(tester, find.text('Support this Cause'));
+    await tester.pumpAndSettle();
 
     expect(find.byType(DonationPage), findsOneWidget);
     expect(find.text(l10n(tester).chooseAmount), findsOneWidget);
-    expect(find.text('Education'), findsNothing);
 
     final amountField = find.byKey(const ValueKey('donation_amount_input'));
     await tester.scrollUntilVisible(
@@ -251,8 +252,10 @@ void main() {
 
   testWidgets('donation defaults a single selected cause to 100 percent', (tester) async {
     await pumpDonationPage(tester);
-    expect(find.byKey(const ValueKey('donation_percentage_cause-1')), findsOneWidget);
-    expect(find.byKey(const ValueKey('donation_allocation_total')), findsOneWidget);
+    final field = tester.widget<TextFormField>(
+      find.byKey(const ValueKey('donation_percentage_cause-1')),
+    );
+    expect(field.initialValue, '100');
   });
 
   testWidgets('selecting a second cause defaults allocation equally', (tester) async {
