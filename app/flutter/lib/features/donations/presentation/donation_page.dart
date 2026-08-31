@@ -19,6 +19,7 @@ class _DonationPageState extends ConsumerState<DonationPage> {
   final Map<String, int> _allocationPercentages = {};
   int? _selectedAmount;
   bool _submitting = false;
+  int _step = 0;
   static const _amounts = [100, 500, 1000, 2000];
 
   @override
@@ -80,46 +81,42 @@ class _DonationPageState extends ConsumerState<DonationPage> {
     final causesAsync = ref.watch(causesProvider(Localizations.localeOf(context).languageCode));
     return Scaffold(
       appBar: AppBar(title: Text(l10n.donateTitle)),
-      body: ListView(padding: const EdgeInsets.fromLTRB(20, 20, 20, 32), children: [
-        Text(l10n.chooseAmount, style: theme.textTheme.titleLarge),
-        const SizedBox(height: 14),
-        GridView.builder(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), itemCount: _amounts.length, gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 2.5), itemBuilder: (context, index) {
-          final amount = _amounts[index];
-          return OutlinedButton(key: ValueKey('donation_amount_$amount'), onPressed: () => _selectAmount(amount), style: OutlinedButton.styleFrom(backgroundColor: _selectedAmount == amount ? const Color(0xFFFCE8C9) : Colors.white), child: Text('₹ $amount'));
-        }),
-        const SizedBox(height: 18),
-        TextField(key: const ValueKey('donation_amount_input'), controller: _amountController, keyboardType: const TextInputType.numberWithOptions(decimal: true), onChanged: _onTotalChanged, decoration: InputDecoration(labelText: l10n.customAmount, prefixText: '₹ ', border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)))),
-        const SizedBox(height: 28),
-        Text(l10n.shareAcrossCauses, style: theme.textTheme.titleLarge),
-        const SizedBox(height: 6),
-        Text(l10n.selectCauses, style: theme.textTheme.bodyMedium),
-        const SizedBox(height: 8),
-        causesAsync.when(
-          loading: () => const Center(child: Padding(padding: EdgeInsets.all(16), child: CircularProgressIndicator())),
-          error: (_, _) => Text(l10n.causesLoadError),
-          data: (causes) => Column(children: causes.map((cause) {
-            final selected = _selectedCauseIds.contains(cause.id);
-            final percentage = _allocationPercentages[cause.id] ?? 0;
-            return Card(child: Column(children: [
-              CheckboxListTile(key: ValueKey('donation_cause_${cause.id}'), value: selected, title: Text(cause.name), onChanged: (value) => _toggleCause(cause.id, value ?? false)),
-              if (selected) Padding(padding: const EdgeInsets.fromLTRB(16, 0, 16, 16), child: Row(children: [
-                Expanded(child: Text(l10n.allocationPercentage)),
-                SizedBox(width: 110, child: TextFormField(key: ValueKey('donation_percentage_${cause.id}'), initialValue: percentage.toString(), keyboardType: TextInputType.number, textAlign: TextAlign.center, onChanged: (value) => _setPercentage(cause.id, int.tryParse(value) ?? 0), decoration: const InputDecoration(suffixText: '%'))),
-                const SizedBox(width: 12),
-                if (_totalAmount > 0) Text('₹ ${(_totalAmount * percentage / 100).toStringAsFixed(2)}'),
-              ])),
-            ]));
-          }).toList(growable: false)),
-        ),
-        const SizedBox(height: 12),
-        Text('${l10n.totalAllocation}: $_allocationTotal%', key: const ValueKey('donation_allocation_total'), style: theme.textTheme.titleMedium?.copyWith(color: _allocationTotal == 100 ? Colors.green.shade700 : Colors.red.shade700)),
-        const SizedBox(height: 12),
-        Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: const Color(0xFFFFF8ED), borderRadius: BorderRadius.circular(16)), child: Text(l10n.causeAllocationInfo)),
-        const SizedBox(height: 18),
-        FilledButton.icon(key: const ValueKey('donation_submit'), onPressed: _submitting || _totalAmount <= 0 || _selectedCauseIds.isEmpty || _allocationTotal != 100 ? null : _submit, icon: _submitting ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.favorite_rounded), label: Text(l10n.donateNow)),
-        const SizedBox(height: 12),
-        Text(l10n.donationPaymentLater, textAlign: TextAlign.center, style: theme.textTheme.bodySmall),
-      ]),
+      body: causesAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (_, _) => Center(child: Text(l10n.causesLoadError)),
+        data: (causes) {
+          final selectedCauses = causes.where((cause) => _selectedCauseIds.contains(cause.id)).toList();
+          final canContinue = _step == 0 ? _selectedCauseIds.isNotEmpty : _totalAmount > 0 && _allocationTotal == 100;
+          return ListView(padding: const EdgeInsets.fromLTRB(20, 20, 20, 32), children: [
+            Row(children: List.generate(3, (index) => Expanded(child: Column(children: [
+              CircleAvatar(radius: 16, backgroundColor: index <= _step ? theme.colorScheme.primary : Colors.grey.shade300, child: Text((index + 1).toString(), style: TextStyle(color: index <= _step ? Colors.white : Colors.black54))),
+              const SizedBox(height: 6), Text(index == 0 ? l10n.selectCauses : index == 1 ? l10n.shareAcrossCauses : l10n.donateNow, textAlign: TextAlign.center, maxLines: 2, style: theme.textTheme.labelSmall),
+            ])))),
+            const SizedBox(height: 28),
+            if (_step == 0) ...[
+              Text(l10n.selectCauses, style: theme.textTheme.titleLarge), const SizedBox(height: 8), Text(l10n.causeAllocationInfo), const SizedBox(height: 12),
+              ...causes.map((cause) => Card(child: CheckboxListTile(key: ValueKey("donation_cause_" + cause.id), value: _selectedCauseIds.contains(cause.id), title: Text(cause.name), subtitle: cause.description == null ? null : Text(cause.description!), onChanged: (value) => _toggleCause(cause.id, value ?? false)))),
+            ] else if (_step == 1) ...[
+              Text(l10n.chooseAmount, style: theme.textTheme.titleLarge), const SizedBox(height: 14),
+              GridView.builder(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), itemCount: _amounts.length, gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 2.5), itemBuilder: (context, index) { final amount = _amounts[index]; return OutlinedButton(key: ValueKey("donation_amount_" + amount.toString()), onPressed: () => _selectAmount(amount), child: Text("₹ " + amount.toString())); }),
+              const SizedBox(height: 16), TextField(key: const ValueKey("donation_amount_input"), controller: _amountController, keyboardType: const TextInputType.numberWithOptions(decimal: true), onChanged: _onTotalChanged, decoration: InputDecoration(labelText: l10n.customAmount, prefixText: "₹ ", border: const OutlineInputBorder())),
+              const SizedBox(height: 28), Text(l10n.shareAcrossCauses, style: theme.textTheme.titleLarge),
+              ...selectedCauses.map((cause) { final percentage = _allocationPercentages[cause.id] ?? 0; return Card(child: Padding(padding: const EdgeInsets.all(14), child: Row(children: [Expanded(child: Text(cause.name)), SizedBox(width: 100, child: TextFormField(key: ValueKey("donation_percentage_" + cause.id), initialValue: percentage.toString(), keyboardType: TextInputType.number, onChanged: (value) => _setPercentage(cause.id, int.tryParse(value) ?? 0), decoration: const InputDecoration(suffixText: "%"))), const SizedBox(width: 12), if (_totalAmount > 0) Text("₹ " + (_totalAmount * percentage / 100).toStringAsFixed(2))]))); }),
+              const SizedBox(height: 12), Text(l10n.totalAllocation + ": " + _allocationTotal.toString() + "%", key: const ValueKey("donation_allocation_total"), style: theme.textTheme.titleMedium),
+            ] else ...[
+              Text(l10n.donateTitle, style: theme.textTheme.titleLarge), const SizedBox(height: 8), Text(l10n.causeAllocationInfo), const SizedBox(height: 16),
+              ...selectedCauses.map((cause) { final percentage = _allocationPercentages[cause.id] ?? 0; return Card(child: ListTile(title: Text(cause.name), subtitle: Text(percentage.toString() + "%"), trailing: Text("₹ " + (_totalAmount * percentage / 100).toStringAsFixed(2)))); }),
+              Card(child: ListTile(title: Text(l10n.chooseAmount), trailing: Text("₹ " + _totalAmount.toStringAsFixed(2), style: theme.textTheme.titleMedium))),
+              const SizedBox(height: 12), Text(l10n.donationPaymentLater, textAlign: TextAlign.center, style: theme.textTheme.bodySmall),
+            ],
+            const SizedBox(height: 28),
+            Row(children: [
+              if (_step > 0) ...[Expanded(child: OutlinedButton(key: const ValueKey("donation_back"), onPressed: _submitting ? null : () => setState(() => _step--), child: const Icon(Icons.arrow_back_rounded))), const SizedBox(width: 12)],
+              Expanded(child: FilledButton.icon(key: const ValueKey("donation_primary_action"), onPressed: _submitting ? null : (_step == 2 ? _submit : (canContinue ? () => setState(() => _step++) : null)), icon: _submitting ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : Icon(_step == 2 ? Icons.favorite_rounded : Icons.arrow_forward_rounded), label: Text(_step == 2 ? l10n.donateNow : _step == 0 ? l10n.shareAcrossCauses : l10n.donateTitle))),
+            ]),
+          ]);
+        },
+      ),
     );
   }
 }
