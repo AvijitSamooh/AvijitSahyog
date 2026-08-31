@@ -55,9 +55,8 @@ class CauseDetailPage extends ConsumerWidget {
                     onPressed: () => Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => DonationPage(
-                          causeId: cause.id,
-                          causeName: cause.name,
-                          organisations: cause.organisations,
+                          initialCauseId: cause.id,
+                          initialCauseName: cause.name,
                         ),
                       ),
                     ),
