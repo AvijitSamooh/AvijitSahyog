@@ -4,16 +4,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:avijit_sahyog/app.dart';
-import 'package:avijit_sahyog/core/network/api_client.dart';
 import 'package:avijit_sahyog/features/causes/models/cause.dart';
 import 'package:avijit_sahyog/features/causes/models/organisation.dart';
 import 'package:avijit_sahyog/features/causes/presentation/causes_page.dart';
 import 'package:avijit_sahyog/features/causes/presentation/cause_detail_page.dart';
 import 'package:avijit_sahyog/features/causes/providers/causes_providers.dart';
-import 'package:avijit_sahyog/features/donations/data/donations_repository.dart';
-import 'package:avijit_sahyog/features/donations/models/create_donation.dart';
 import 'package:avijit_sahyog/features/donations/presentation/donation_page.dart';
-import 'package:avijit_sahyog/features/donations/providers/donation_providers.dart';
 import 'package:avijit_sahyog/l10n/app_localizations.dart';
 
 const _organisation = Organisation(
@@ -43,20 +39,6 @@ const _cause = Cause(
   description: 'Support education initiatives.',
   organisations: _organisations,
 );
-
-class _FakeDonationsRepository extends DonationsRepository {
-  _FakeDonationsRepository() : super(ApiClient());
-
-  CreateDonation? lastDonation;
-
-  @override
-  Future<Map<String, dynamic>> createDonation(CreateDonation input) async {
-    lastDonation = input;
-    return {'id': 'donation-1', 'status': 'PENDING'};
-  }
-
-
-}
 
 void main() {
   setUp(() {
@@ -299,17 +281,12 @@ void main() {
     expect(find.text('Total allocation: 100%'), findsOneWidget);
   });
 
-  testWidgets('donor can override equal percentages and submit exact allocations', (tester) async {
+  testWidgets('donation attempt shows feature is not enabled message', (tester) async {
     const causes = [
       _cause,
       Cause(id: 'cause-2', slug: 'jeev-daya', name: 'Jeev Daya'),
     ];
-    final repository = _FakeDonationsRepository();
-    await pumpDonationPage(
-      tester,
-      causes: causes,
-      overrides: [donationRepositoryProvider.overrideWithValue(repository)],
-    );
+    await pumpDonationPage(tester, causes: causes);
 
     await tapVisible(tester, find.byKey(const ValueKey('donation_amount_1000')));
     await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-2')));
@@ -324,16 +301,12 @@ void main() {
       '30',
     );
 
-    expect(find.text('Total allocation: 100%'), findsOneWidget);
-
     await tapVisible(tester, find.byKey(const ValueKey('donation_submit')));
-    await tester.pump(const Duration(milliseconds: 300));
 
-    expect(repository.lastDonation, isNotNull);
-    expect(repository.lastDonation!.amount, '1000.00');
-    expect(repository.lastDonation!.allocations, hasLength(2));
-    expect(repository.lastDonation!.allocations[0].amount, '700.00');
-    expect(repository.lastDonation!.allocations[1].amount, '300.00');
+    expect(
+      find.text(l10n(tester).donationNotEnabledYet),
+      findsOneWidget,
+    );
   });
 
   testWidgets('donation submit is disabled when allocation does not total 100 percent', (tester) async {
