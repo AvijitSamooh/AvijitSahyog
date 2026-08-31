@@ -4,7 +4,7 @@
 
 Iteration 2.1 defines the content/discovery domain used to show donation causes and the affiliated organisations under each cause.
 
-Financial models such as Donation, Payment, Allocation, Receipt and Mandate are intentionally outside the current discovery scope.\n\n## Donation allocation boundary\n\nThe donor allocates a donation across **Causes**, not individual Organisations. The intended financial relationship is:\n\n```text\nDonation\n  └── DonationAllocation\n        └── Cause\n              └── affiliated Organisations (discovery/transparency)\n```\n\nOrganisations may later participate in operational routing or settlement, but organisation selection is not part of donor intent and must not be required by the donation allocation UI or API.
+Financial models such as Donation, Payment, Allocation, Receipt and Mandate are intentionally outside the current discovery scope.\n\n## Donation allocation boundary\n\nThe donor allocates a donation across **Causes**, not individual Organisations. The intended financial relationship is:\n\n```text\nDonation\n  └── DonationAllocation\n        └── Cause\n              └── affiliated Organisations (discovery/transparency)\n```\n\nOrganisations may later participate in operational routing or settlement, but organisation selection is not part of donor intent and must not be required by the donation allocation UI or API. A donor may allocate a donation across one or more selected causes using explicit percentages that total 100%. A preselected cause is only an entry-point convenience and does not make the donation cause-specific.
 
 ## Entities
 
