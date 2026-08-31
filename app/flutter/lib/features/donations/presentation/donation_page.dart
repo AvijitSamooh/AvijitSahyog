@@ -37,7 +37,7 @@ class _DonationPageState extends ConsumerState<DonationPage> {
   int get _allocationTotal => _selectedCauseIds.fold(0, (total, id) => total + (_allocationPercentages[id] ?? 0));
 
   void _selectAmount(int amount) => setState(() => _amountController.text = amount.toString());
-  void _onTotalChanged(String value) { final parsed = double.tryParse(value.trim()); setState(() { _selectedAmount = parsed != null && _amounts.contains(parsed.toInt()) ? parsed.toInt() : null; }); }
+  void _onTotalChanged(String value) => setState(() {});
   void _toggleCause(String id, bool selected) => setState(() { if (selected) { _selectedCauseIds.add(id); _allocationPercentages[id] ??= 0; } else { _selectedCauseIds.remove(id); _allocationPercentages.remove(id); } });
   void _setPercentage(String id, int value) => setState(() => _allocationPercentages[id] = value.clamp(0, 100));
 
