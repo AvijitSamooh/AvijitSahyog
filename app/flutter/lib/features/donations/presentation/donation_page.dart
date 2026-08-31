@@ -85,7 +85,7 @@ class _DonationPageState extends ConsumerState<DonationPage> {
         const SizedBox(height: 14),
         GridView.builder(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), itemCount: _amounts.length, gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 2.5), itemBuilder: (context, index) {
           final amount = _amounts[index];
-          return OutlinedButton(key: ValueKey('donation_amount_' + amount.toString()), onPressed: () => _selectAmount(amount), style: OutlinedButton.styleFrom(backgroundColor: _selectedAmount == amount ? const Color(0xFFFCE8C9) : Colors.white), child: Text('₹ ' + amount.toString()));
+          return OutlinedButton(key: ValueKey('donation_amount_$amount'), onPressed: () => _selectAmount(amount), style: OutlinedButton.styleFrom(backgroundColor: _selectedAmount == amount ? const Color(0xFFFCE8C9) : Colors.white), child: Text('₹ $amount'));
         }),
         const SizedBox(height: 18),
         TextField(key: const ValueKey('donation_amount_input'), controller: _amountController, keyboardType: const TextInputType.numberWithOptions(decimal: true), onChanged: _onTotalChanged, decoration: InputDecoration(labelText: l10n.customAmount, prefixText: '₹ ', border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)))),
@@ -101,18 +101,18 @@ class _DonationPageState extends ConsumerState<DonationPage> {
             final selected = _selectedCauseIds.contains(cause.id);
             final percentage = _allocationPercentages[cause.id] ?? 0;
             return Card(child: Column(children: [
-              CheckboxListTile(key: ValueKey('donation_cause_' + cause.id), value: selected, title: Text(cause.name), onChanged: (value) => _toggleCause(cause.id, value ?? false)),
+              CheckboxListTile(key: ValueKey('donation_cause_${cause.id}'), value: selected, title: Text(cause.name), onChanged: (value) => _toggleCause(cause.id, value ?? false)),
               if (selected) Padding(padding: const EdgeInsets.fromLTRB(16, 0, 16, 16), child: Row(children: [
                 Expanded(child: Text(l10n.allocationPercentage)),
-                SizedBox(width: 110, child: TextFormField(key: ValueKey('donation_percentage_' + cause.id), initialValue: percentage.toString(), keyboardType: TextInputType.number, textAlign: TextAlign.center, onChanged: (value) => _setPercentage(cause.id, int.tryParse(value) ?? 0), decoration: const InputDecoration(suffixText: '%'))),
+                SizedBox(width: 110, child: TextFormField(key: ValueKey('donation_percentage_${cause.id}'), initialValue: percentage.toString(), keyboardType: TextInputType.number, textAlign: TextAlign.center, onChanged: (value) => _setPercentage(cause.id, int.tryParse(value) ?? 0), decoration: const InputDecoration(suffixText: '%'))),
                 const SizedBox(width: 12),
-                if (_totalAmount > 0) Text('₹ ' + (_totalAmount * percentage / 100).toStringAsFixed(2)),
+                if (_totalAmount > 0) Text('₹ ${(_totalAmount * percentage / 100).toStringAsFixed(2)}'),
               ])),
             ]));
           }).toList(growable: false)),
         ),
         const SizedBox(height: 12),
-        Text(l10n.totalAllocation + ': ' + _allocationTotal.toString() + '%', key: const ValueKey('donation_allocation_total'), style: theme.textTheme.titleMedium?.copyWith(color: _allocationTotal == 100 ? Colors.green.shade700 : Colors.red.shade700)),
+        Text('${l10n.totalAllocation}: $_allocationTotal%', key: const ValueKey('donation_allocation_total'), style: theme.textTheme.titleMedium?.copyWith(color: _allocationTotal == 100 ? Colors.green.shade700 : Colors.red.shade700)),
         const SizedBox(height: 12),
         Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: const Color(0xFFFFF8ED), borderRadius: BorderRadius.circular(16)), child: Text(l10n.causeAllocationInfo)),
         const SizedBox(height: 18),
