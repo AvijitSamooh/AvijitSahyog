@@ -58,7 +58,8 @@ class _FakeDonationsRepository extends DonationsRepository {
 
 }
 
-void main() {  setUp(() {
+void main() {
+  setUp(() {
     SharedPreferences.setMockInitialValues({});
   });
 
@@ -374,7 +375,9 @@ void main() {  setUp(() {
     final submit = find.byKey(const ValueKey('donation_submit'));
     await tester.scrollUntilVisible(submit, 400, scrollable: find.byType(Scrollable).first);
     expect(tester.widget<FilledButton>(submit).onPressed, isNull);
-  });  testWidgets('donation page allows a donor to choose custom cause percentages', (tester) async {
+  });
+
+  testWidgets('donation page allows a donor to choose custom cause percentages', (tester) async {
     final repository = _FakeDonationsRepository();
     await pumpDonationPage(
       tester,
