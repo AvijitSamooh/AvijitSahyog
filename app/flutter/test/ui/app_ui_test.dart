@@ -88,6 +88,7 @@ void main() {
 
   Future<void> pumpDonationPage(
     WidgetTester tester, {
+    List<Cause> causes = const [_cause],
     List<Override> overrides = const [],
     String? initialCauseId = 'cause-1',
   }) async {
@@ -95,7 +96,7 @@ void main() {
       tester,
       home: DonationPage(initialCauseId: initialCauseId),
       overrides: [
-        causesProvider('en').overrideWith((ref) async => const [_cause]),
+        causesProvider('en').overrideWith((ref) async => causes),
         ...overrides,
       ],
     );
@@ -103,25 +104,49 @@ void main() {
   }
 
   Future<void> tapVisible(WidgetTester tester, Finder finder) async {
-    await tester.scrollUntilVisible(finder, 300, scrollable: find.byType(Scrollable).first);
+    await tester.scrollUntilVisible(
+      finder,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.tap(finder);
-    await tester.pumpAndSettle();
+    await tester.pump();
   }
 
-  Future<void> enterVisibleText(WidgetTester tester, Finder finder, String value) async {
-    await tester.scrollUntilVisible(finder, 300, scrollable: find.byType(Scrollable).first);
+  Future<void> enterVisibleText(
+    WidgetTester tester,
+    Finder finder,
+    String value,
+  ) async {
+    await tester.scrollUntilVisible(
+      finder,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.enterText(finder, value);
-    await tester.pumpAndSettle();
+    await tester.pump();
   }
 
   Future<void> advanceToDistribution(WidgetTester tester) async {
-    await tapVisible(tester, find.byKey(const ValueKey('donation_primary_action')));
-    expect(find.byKey(const ValueKey('donation_amount_input')), findsOneWidget);
+    await tapVisible(
+      tester,
+      find.byKey(const ValueKey('donation_primary_action')),
+    );
+    expect(
+      find.byKey(const ValueKey('donation_amount_input')),
+      findsOneWidget,
+    );
   }
 
   Future<void> advanceToReview(WidgetTester tester) async {
-    await tapVisible(tester, find.byKey(const ValueKey('donation_amount_1000')));
-    await tapVisible(tester, find.byKey(const ValueKey('donation_primary_action')));
+    await tapVisible(
+      tester,
+      find.byKey(const ValueKey('donation_amount_1000')),
+    );
+    await tapVisible(
+      tester,
+      find.byKey(const ValueKey('donation_primary_action')),
+    );
     expect(find.text('₹ 1000.00'), findsWidgets);
   }
 
@@ -202,12 +227,10 @@ void main() {
   });
 
   testWidgets('multi-cause allocation reaches review with calculated amounts', (tester) async {
-    await pumpDonationPage(tester, overrides: [
-      causesProvider('en').overrideWith((ref) async => const [
+    await pumpDonationPage(tester, causes: const [
         _cause,
         Cause(id: 'cause-2', slug: 'jeev-daya', name: 'Jeev Daya'),
-      ]),
-    ]);
+      ]);
     await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-2')));
     await advanceToDistribution(tester);
     await tapVisible(tester, find.byKey(const ValueKey('donation_amount_1000')));
@@ -220,12 +243,10 @@ void main() {
   });
 
   testWidgets('step 2 cannot continue when allocations do not total 100 percent', (tester) async {
-    await pumpDonationPage(tester, overrides: [
-      causesProvider('en').overrideWith((ref) async => const [
+    await pumpDonationPage(tester, causes: const [
         _cause,
         Cause(id: 'cause-2', slug: 'jeev-daya', name: 'Jeev Daya'),
-      ]),
-    ]);
+      ]);
     await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-2')));
     await advanceToDistribution(tester);
     await tapVisible(tester, find.byKey(const ValueKey('donation_amount_1000')));
