@@ -389,29 +389,6 @@ Successful donation → receipt → notification works end-to-end.
 
 ------------------------------------------------------------------------
 
-# Iteration 4 note --- Admin Portal scope moved earlier
-
-## Goal
-
-Make the platform operational without developer intervention.
-
-### Admin capabilities
-
--   Manage causes
--   Manage translations
--   Manage organisations
--   Associate organisations with causes
--   Activate/deactivate organisations
--   View donations
--   View payment status
--   View audit log
-
-### Exit criteria
-
-Normal content changes do not require an app release.
-
-------------------------------------------------------------------------
-
 # Iteration 14 --- Reconciliation
 
 ## Goal
