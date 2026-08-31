@@ -66,7 +66,7 @@ class _DonationPageState extends ConsumerState<DonationPage> {
         const SizedBox(height: 28),
         Text(l10n.chooseAmount, style: theme.textTheme.titleLarge),
         const SizedBox(height: 14),
-        GridView.builder(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), itemCount: _amounts.length, gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 2.5), itemBuilder: (context, index) { final amount = _amounts[index]; return OutlinedButton(key: ValueKey('donation_amount_$amount'), onPressed: () => _selectAmount(amount), style: OutlinedButton.styleFrom(backgroundColor: _selectedAmount == amount ? const Color(0xFFFCE8C9) : Colors.white), child: Text('₹ ' + amount.toString())); }),
+        GridView.builder(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), itemCount: _amounts.length, gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 2.5), itemBuilder: (context, index) { final amount = _amounts[index]; return OutlinedButton(key: ValueKey('donation_amount_$amount'), onPressed: () => _selectAmount(amount), style: OutlinedButton.styleFrom(backgroundColor: _selectedAmount == amount ? const Color(0xFFFCE8C9) : Colors.white), child: Text('₹ $amount')); }),
         const SizedBox(height: 18),
         TextField(key: const ValueKey('donation_amount_input'), controller: _amountController, keyboardType: const TextInputType.numberWithOptions(decimal: true), onChanged: _onTotalChanged, decoration: InputDecoration(labelText: l10n.customAmount, prefixText: '₹ ', border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)))),
         const SizedBox(height: 28),
@@ -78,7 +78,7 @@ class _DonationPageState extends ConsumerState<DonationPage> {
           error: (_, _) => Text(l10n.causesLoadError),
           data: (causes) => Column(children: causes.map((cause) {
             final selected = _selectedCauseIds.contains(cause.id);
-            return CheckboxListTile(key: ValueKey('donation_cause_' + cause.id), value: selected, title: Text(cause.name), subtitle: _totalAmount > 0 && selected ? Text('₹ ' + ((_totalAmount * 100).round() ~/ _selectedCauseIds.length / 100).toStringAsFixed(2)) : null, onChanged: (value) => setState(() { if (value == true) { _selectedCauseIds.add(cause.id); } else { _selectedCauseIds.remove(cause.id); } }));
+            return CheckboxListTile(key: ValueKey('donation_cause_${cause.id}'), value: selected, title: Text(cause.name), subtitle: _totalAmount > 0 && selected ? Text('₹ ${((_totalAmount * 100).round() ~/ _selectedCauseIds.length / 100).toStringAsFixed(2)}') : null, onChanged: (value) => setState(() { if (value == true) { _selectedCauseIds.add(cause.id); } else { _selectedCauseIds.remove(cause.id); } }));
           }).toList(growable: false)),
         ),
         const SizedBox(height: 12),
