@@ -191,9 +191,9 @@ Build the financial domain before connecting payments.
 
 ### Supported modes
 
-1.  Percentage
-2.  Equal share
-3.  Select all
+1.  Custom percentage allocation (current donation flow)
+2.  Equal share (future convenience option)
+3.  Select all (future convenience option)
 
 ### Rules
 
