@@ -87,5 +87,18 @@
   "allocationPercentage": "ફાળવણી",
   "totalAllocation": "કુલ ફાળવણી",
   "allocationMustTotal100": "પસંદ કરેલા સેવા ક્ષેત્રોની કુલ ફાળવણી 100% હોવી આવશ્યક છે.",
-  "donationNotEnabledYet": "દાનની સુવિધા હજી ઉપલબ્ધ નથી. તે ઉપલબ્ધ થતાં જ અમે તમને જણાવીશું."
+  "donationNotEnabledYet": "દાનની સુવિધા હજી ઉપલબ્ધ નથી. તે ઉપલબ્ધ થતાં જ અમે તમને જણાવીશું.",
+  "login": "લૉગ ઇન",
+  "profile": "પ્રોફાઇલ",
+  "logout": "લૉગ આઉટ",
+  "loginTitle": "અવિજિત સહયોગમાં સાઇન ઇન કરો",
+  "loginSubtitle": "સુરક્ષિત સુવિધાઓનો ઉપયોગ કરવા માટે સાઇન ઇન કરો.",
+  "continueWithGoogle": "Google સાથે ચાલુ રાખો",
+  "continueAsGuest": "મહેમાન તરીકે ચાલુ રાખો",
+  "loginRequired": "તમારી પ્રોફાઇલ જોવા માટે કૃપા કરીને સાઇન ઇન કરો.",
+  "authNotConfigured": "સાઇન-ઇન સુવિધા હજી ગોઠવાઈ રહી છે.",
+  "authSignInFailed": "સાઇન ઇન થઈ શક્યું નથી. કૃપા કરીને ફરી પ્રયાસ કરો.",
+  "authSignOutFailed": "લૉગ આઉટ થઈ શક્યું નથી. કૃપા કરીને ફરી પ્રયાસ કરો.",
+  "adminPortal": "એડમિન પોર્ટલ",
+  "adminPortalSubtitle": "સામગ્રી અને કામગીરીનું સંચાલન કરો"
 }
