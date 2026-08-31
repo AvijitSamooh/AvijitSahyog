@@ -8,7 +8,7 @@ import '../auth/presentation/login_page.dart';
 import '../auth/presentation/profile_page.dart';
 import '../auth/providers/auth_providers.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key, required this.onLocaleChanged});
 
   final ValueChanged<Locale> onLocaleChanged;
