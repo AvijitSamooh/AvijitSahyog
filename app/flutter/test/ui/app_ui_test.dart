@@ -55,71 +55,10 @@ class _FakeDonationsRepository extends DonationsRepository {
     return {'id': 'donation-1', 'status': 'PENDING'};
   }
 
-  testWidgets('donation page allows a donor to choose custom cause percentages', (tester) async {
-    final repository = _FakeDonationsRepository();
-    await pumpDonationPage(
-      tester,
-      overrides: [
-        causesProvider('en').overrideWith(
-          (ref) async => const [
-            _cause,
-            Cause(
-              id: 'cause-2',
-              slug: 'jeev-daya',
-              name: 'Jeev Daya',
-              description: 'Support animal welfare.',
-            ),
-          ],
-        ),
-        donationRepositoryProvider.overrideWithValue(repository),
-      ],
-    );
-
-    await tapVisible(tester, find.byKey(const ValueKey('donation_amount_1000')));
-    await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-2')));
-
-    final causeOne = find.byKey(const ValueKey('donation_percentage_cause-1'));
-    final causeTwo = find.byKey(const ValueKey('donation_percentage_cause-2'));
-    await enterVisibleText(tester, causeOne, '70');
-    await enterVisibleText(tester, causeTwo, '30');
-
-    expect(find.text('Total allocation: 100%'), findsOneWidget);
-
-    final submit = find.byKey(const ValueKey('donation_submit'));
-    await tester.scrollUntilVisible(submit, 400, scrollable: find.byType(Scrollable).first);
-    await tester.tap(submit);
-    await tester.pumpAndSettle();
-
-    expect(repository.lastDonation!.allocations, hasLength(2));
-    expect(repository.lastDonation!.allocations[0].amount, '700.00');
-    expect(repository.lastDonation!.allocations[1].amount, '300.00');
-  });
-
-  testWidgets('donation submit remains disabled until allocations total 100 percent', (tester) async {
-    await pumpDonationPage(
-      tester,
-      overrides: [
-        causesProvider('en').overrideWith(
-          (ref) async => const [
-            _cause,
-            Cause(id: 'cause-2', slug: 'jeev-daya', name: 'Jeev Daya'),
-          ],
-        ),
-      ],
-    );
-
-    await tapVisible(tester, find.byKey(const ValueKey('donation_amount_1000')));
-    await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-2')));
-
-    final submit = find.byKey(const ValueKey('donation_submit'));
-    await tester.scrollUntilVisible(submit, 400, scrollable: find.byType(Scrollable).first);
-    expect(tester.widget<FilledButton>(submit).onPressed, isNull);
-  });
 
 }
 
-void main() {
-  setUp(() {
+void main() {  setUp(() {
     SharedPreferences.setMockInitialValues({});
   });
 
@@ -435,5 +374,65 @@ void main() {
     final submit = find.byKey(const ValueKey('donation_submit'));
     await tester.scrollUntilVisible(submit, 400, scrollable: find.byType(Scrollable).first);
     expect(tester.widget<FilledButton>(submit).onPressed, isNull);
+  });  testWidgets('donation page allows a donor to choose custom cause percentages', (tester) async {
+    final repository = _FakeDonationsRepository();
+    await pumpDonationPage(
+      tester,
+      overrides: [
+        causesProvider('en').overrideWith(
+          (ref) async => const [
+            _cause,
+            Cause(
+              id: 'cause-2',
+              slug: 'jeev-daya',
+              name: 'Jeev Daya',
+              description: 'Support animal welfare.',
+            ),
+          ],
+        ),
+        donationRepositoryProvider.overrideWithValue(repository),
+      ],
+    );
+
+    await tapVisible(tester, find.byKey(const ValueKey('donation_amount_1000')));
+    await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-2')));
+
+    final causeOne = find.byKey(const ValueKey('donation_percentage_cause-1'));
+    final causeTwo = find.byKey(const ValueKey('donation_percentage_cause-2'));
+    await enterVisibleText(tester, causeOne, '70');
+    await enterVisibleText(tester, causeTwo, '30');
+
+    expect(find.text('Total allocation: 100%'), findsOneWidget);
+
+    final submit = find.byKey(const ValueKey('donation_submit'));
+    await tester.scrollUntilVisible(submit, 400, scrollable: find.byType(Scrollable).first);
+    await tester.tap(submit);
+    await tester.pumpAndSettle();
+
+    expect(repository.lastDonation!.allocations, hasLength(2));
+    expect(repository.lastDonation!.allocations[0].amount, '700.00');
+    expect(repository.lastDonation!.allocations[1].amount, '300.00');
   });
+
+  testWidgets('donation submit remains disabled until allocations total 100 percent', (tester) async {
+    await pumpDonationPage(
+      tester,
+      overrides: [
+        causesProvider('en').overrideWith(
+          (ref) async => const [
+            _cause,
+            Cause(id: 'cause-2', slug: 'jeev-daya', name: 'Jeev Daya'),
+          ],
+        ),
+      ],
+    );
+
+    await tapVisible(tester, find.byKey(const ValueKey('donation_amount_1000')));
+    await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-2')));
+
+    final submit = find.byKey(const ValueKey('donation_submit'));
+    await tester.scrollUntilVisible(submit, 400, scrollable: find.byType(Scrollable).first);
+    expect(tester.widget<FilledButton>(submit).onPressed, isNull);
+  });
+
 }
