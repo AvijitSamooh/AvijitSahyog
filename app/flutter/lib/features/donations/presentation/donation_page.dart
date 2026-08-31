@@ -17,7 +17,6 @@ class _DonationPageState extends ConsumerState<DonationPage> {
   final _amountController = TextEditingController();
   final Set<String> _selectedCauseIds = {};
   final Map<String, int> _allocationPercentages = {};
-  int? _selectedAmount;
   bool _submitting = false;
   int _step = 0;
   static const _amounts = [100, 500, 1000, 2000];
@@ -37,7 +36,7 @@ class _DonationPageState extends ConsumerState<DonationPage> {
   double get _totalAmount => double.tryParse(_amountController.text.trim()) ?? 0;
   int get _allocationTotal => _selectedCauseIds.fold(0, (total, id) => total + (_allocationPercentages[id] ?? 0));
 
-  void _selectAmount(int amount) => setState(() { _selectedAmount = amount; _amountController.text = amount.toString(); });
+  void _selectAmount(int amount) => setState(() => _amountController.text = amount.toString());
   void _onTotalChanged(String value) { final parsed = double.tryParse(value.trim()); setState(() { _selectedAmount = parsed != null && _amounts.contains(parsed.toInt()) ? parsed.toInt() : null; }); }
   void _toggleCause(String id, bool selected) => setState(() { if (selected) { _selectedCauseIds.add(id); _allocationPercentages[id] ??= 0; } else { _selectedCauseIds.remove(id); _allocationPercentages.remove(id); } });
   void _setPercentage(String id, int value) => setState(() => _allocationPercentages[id] = value.clamp(0, 100));
