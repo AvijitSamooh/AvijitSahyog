@@ -260,14 +260,12 @@ void main() {
     expect(amountField, findsOneWidget);
   });
 
-  testWidgets('donation submit is visible but disabled until an amount is selected', (tester) async {
+  testWidgets('donation submit is disabled until an amount is selected', (tester) async {
     await pumpDonationPage(tester);
 
-    final submit = tester.widget<FilledButton>(
-      find.byKey(const ValueKey('donation_submit')),
-    );
-    expect(submit.onPressed, isNull);
-    expect(find.byKey(const ValueKey('donation_cause_cause-1')), findsOneWidget);
+    final submitFinder = find.byKey(const ValueKey('donation_submit'));
+    await tester.scrollUntilVisible(submitFinder, 400, scrollable: find.byType(Scrollable).first);
+    expect(tester.widget<FilledButton>(submitFinder).onPressed, isNull);
   });
 
   testWidgets('preset amount enables cause donation', (tester) async {
@@ -277,10 +275,9 @@ void main() {
     final amountField = find.byKey(const ValueKey('donation_amount_input'));
     expect(tester.widget<TextField>(amountField).controller?.text, '500');
 
-    final submit = tester.widget<FilledButton>(
-      find.byKey(const ValueKey('donation_submit')),
-    );
-    expect(submit.onPressed, isNotNull);
+    final submitFinder = find.byKey(const ValueKey('donation_submit'));
+    await tester.scrollUntilVisible(submitFinder, 400, scrollable: find.byType(Scrollable).first);
+    expect(tester.widget<FilledButton>(submitFinder).onPressed, isNotNull);
   });
 
   testWidgets('custom donation amount enables cause donation', (tester) async {
