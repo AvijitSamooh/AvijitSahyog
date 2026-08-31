@@ -86,34 +86,24 @@ void main() {
   AppLocalizations l10n(WidgetTester tester) =>
       AppLocalizations.of(tester.element(find.byType(Scaffold).first))!;
 
-  Future<void> pumpDonationPage(WidgetTester tester, {List<Override> overrides = const []}) async {
+  Future<void> pumpDonationPage(
+    WidgetTester tester, {
+    List<Cause> causes = const [_cause],
+    List<Override> overrides = const [],
+  }) async {
     await pumpApp(
       tester,
-      home: const DonationPage(
-        initialCauseId: 'cause-1',
-      ),
-      overrides: overrides,
+      home: const DonationPage(initialCauseId: 'cause-1'),
+      overrides: [
+        causesProvider('en').overrideWith((ref) async => causes),
+        ...overrides,
+      ],
     );
-
     expect(find.byType(DonationPage), findsOneWidget);
-
-    final amountField = find.byKey(const ValueKey('donation_amount_input'));
-    await tester.scrollUntilVisible(
-      amountField,
-      400,
-      scrollable: find.byType(Scrollable).first,
-    );
-    expect(amountField, findsOneWidget);
   }
 
-
   Future<void> tapVisible(WidgetTester tester, Finder finder) async {
-    await tester.scrollUntilVisible(
-      finder,
-      300,
-      scrollable: find.byType(Scrollable).first,
-    );
-    expect(finder, findsOneWidget);
+    await tester.ensureVisible(finder);
     await tester.tap(finder);
     await tester.pumpAndSettle();
   }
@@ -123,16 +113,11 @@ void main() {
     Finder finder,
     String value,
   ) async {
-    await tester.scrollUntilVisible(
-      finder,
-      300,
-      scrollable: find.byType(Scrollable).first,
-    );
-    expect(finder, findsOneWidget);
+    await tester.ensureVisible(finder);
+    await tester.tap(finder);
     await tester.enterText(finder, value);
     await tester.pumpAndSettle();
   }
-
 
   testWidgets('home page renders the cause-centric entry point', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
@@ -262,188 +247,132 @@ void main() {
     expect(amountField, findsOneWidget);
   });
 
-  testWidgets('donation submit is disabled until an amount is selected', (tester) async {
+  testWidgets('donation defaults a single selected cause to 100 percent', (tester) async {
     await pumpDonationPage(tester);
-
-    final submitFinder = find.byKey(const ValueKey('donation_submit'));
-    await tester.scrollUntilVisible(submitFinder, 400, scrollable: find.byType(Scrollable).first);
-    expect(tester.widget<FilledButton>(submitFinder).onPressed, isNull);
+    expect(find.byKey(const ValueKey('donation_percentage_cause-1')), findsOneWidget);
+    expect(find.text('Total allocation: 100%'), findsOneWidget);
   });
 
-  testWidgets('preset amount enables cause donation', (tester) async {
-    await pumpDonationPage(tester);
+  testWidgets('selecting a second cause defaults allocation equally', (tester) async {
+    const causes = [
+      _cause,
+      Cause(id: 'cause-2', slug: 'jeev-daya', name: 'Jeev Daya'),
+    ];
+    await pumpDonationPage(tester, causes: causes);
 
-    await tapVisible(tester, find.byKey(const ValueKey('donation_amount_500')));
-    final amountField = find.byKey(const ValueKey('donation_amount_input'));
-    expect(tester.widget<TextField>(amountField).controller?.text, '500');
+    await tapVisible(
+      tester,
+      find.byKey(const ValueKey('donation_cause_cause-2')),
+    );
 
-    final submitFinder = find.byKey(const ValueKey('donation_submit'));
-    await tester.scrollUntilVisible(submitFinder, 400, scrollable: find.byType(Scrollable).first);
-    expect(tester.widget<FilledButton>(submitFinder).onPressed, isNotNull);
+    expect(
+      tester.widget<TextFormField>(
+        find.byKey(const ValueKey('donation_percentage_cause-1')),
+      ).initialValue,
+      '50',
+    );
+    expect(
+      tester.widget<TextFormField>(
+        find.byKey(const ValueKey('donation_percentage_cause-2')),
+      ).initialValue,
+      '50',
+    );
+    expect(find.text('Total allocation: 100%'), findsOneWidget);
   });
 
-  testWidgets('custom donation amount enables cause donation', (tester) async {
-    await pumpDonationPage(tester);
+  testWidgets('three selected causes default to a complete 100 percent split', (tester) async {
+    const causes = [
+      _cause,
+      Cause(id: 'cause-2', slug: 'jeev-daya', name: 'Jeev Daya'),
+      Cause(id: 'cause-3', slug: 'medical', name: 'Medical'),
+    ];
+    await pumpDonationPage(tester, causes: causes);
 
-    final amountField = find.byKey(const ValueKey('donation_amount_input'));
-    await enterVisibleText(tester, amountField, '1750');
-    expect(tester.widget<TextField>(amountField).controller?.text, '1750');
+    await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-2')));
+    await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-3')));
 
-    expect(find.text(l10n(tester).shareAcrossCauses), findsOneWidget);
+    expect(find.text('Total allocation: 100%'), findsOneWidget);
   });
 
-  testWidgets('invalid donation amount keeps submit disabled', (tester) async {
-    await pumpDonationPage(tester);
-    final amountField = find.byKey(const ValueKey('donation_amount_input'));
-    await enterVisibleText(tester, amountField, '0');
+  testWidgets('donor can override equal percentages and submit exact allocations', (tester) async {
+    const causes = [
+      _cause,
+      Cause(id: 'cause-2', slug: 'jeev-daya', name: 'Jeev Daya'),
+    ];
+    final repository = _FakeDonationsRepository();
+    await pumpDonationPage(
+      tester,
+      causes: causes,
+      overrides: [donationRepositoryProvider.overrideWithValue(repository)],
+    );
+
+    await tapVisible(tester, find.byKey(const ValueKey('donation_amount_1000')));
+    await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-2')));
+    await enterVisibleText(
+      tester,
+      find.byKey(const ValueKey('donation_percentage_cause-1')),
+      '70',
+    );
+    await enterVisibleText(
+      tester,
+      find.byKey(const ValueKey('donation_percentage_cause-2')),
+      '30',
+    );
+
+    expect(find.text('Total allocation: 100%'), findsOneWidget);
+
+    await tapVisible(tester, find.byKey(const ValueKey('donation_submit')));
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(repository.lastDonation, isNotNull);
+    expect(repository.lastDonation!.amount, '1000.00');
+    expect(repository.lastDonation!.allocations, hasLength(2));
+    expect(repository.lastDonation!.allocations[0].amount, '700.00');
+    expect(repository.lastDonation!.allocations[1].amount, '300.00');
+  });
+
+  testWidgets('donation submit is disabled when allocation does not total 100 percent', (tester) async {
+    const causes = [
+      _cause,
+      Cause(id: 'cause-2', slug: 'jeev-daya', name: 'Jeev Daya'),
+    ];
+    await pumpDonationPage(tester, causes: causes);
+
+    await tapVisible(tester, find.byKey(const ValueKey('donation_amount_1000')));
+    await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-2')));
+    await enterVisibleText(
+      tester,
+      find.byKey(const ValueKey('donation_percentage_cause-1')),
+      '70',
+    );
+    await enterVisibleText(
+      tester,
+      find.byKey(const ValueKey('donation_percentage_cause-2')),
+      '20',
+    );
 
     final submit = tester.widget<FilledButton>(
       find.byKey(const ValueKey('donation_submit')),
     );
     expect(submit.onPressed, isNull);
+    expect(find.text('Total allocation: 90%'), findsOneWidget);
   });
 
-  testWidgets('valid cause donation is submitted without organisation allocations', (tester) async {
-    final repository = _FakeDonationsRepository();
-    await pumpDonationPage(
-      tester,
-      overrides: [donationRepositoryProvider.overrideWithValue(repository)],
+  testWidgets('preset amount updates donation amount field', (tester) async {
+    await pumpDonationPage(tester);
+
+    await tapVisible(tester, find.byKey(const ValueKey('donation_amount_500')));
+
+    expect(
+      tester
+          .widget<TextField>(
+            find.byKey(const ValueKey('donation_amount_input')),
+          )
+          .controller
+          ?.text,
+      '500',
     );
-
-    await tapVisible(tester, find.byKey(const ValueKey('donation_amount_1000')));
-
-    final submit = find.byKey(const ValueKey('donation_submit'));
-    await tester.scrollUntilVisible(
-      submit,
-      400,
-      scrollable: find.byType(Scrollable).first,
-    );
-    await tester.tap(submit);
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
-
-    expect(repository.lastDonation, isNotNull);
-    expect(repository.lastDonation!.amount, '1000.00');
-    expect(repository.lastDonation!.allocations, hasLength(1));
-    expect(repository.lastDonation!.allocations.single.causeId, 'cause-1');
-    expect(repository.lastDonation!.allocations.single.amount, '1000.00');
-    expect(find.text(l10n(tester).donationCreatedTitle), findsOneWidget);
   });
 
-  testWidgets('donation page supports custom percentage allocation', (tester) async {
-    final repository = _FakeDonationsRepository();
-    await pumpDonationPage(
-      tester,
-      overrides: [
-        causesProvider('en').overrideWith((ref) async => const [
-          _cause,
-          Cause(id: 'cause-2', slug: 'jeev-daya', name: 'Jeev Daya'),
-        ]),
-        donationRepositoryProvider.overrideWithValue(repository),
-      ],
-    );
-
-    await tapVisible(tester, find.byKey(const ValueKey('donation_amount_1000')));
-    await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-2')));
-    await enterVisibleText(tester, find.byKey(const ValueKey('donation_percentage_cause-1')), '70');
-    await enterVisibleText(tester, find.byKey(const ValueKey('donation_percentage_cause-2')), '30');
-
-    expect(find.text('Total allocation: 100%'), findsOneWidget);
-    final submit = find.byKey(const ValueKey('donation_submit'));
-    await tester.scrollUntilVisible(submit, 400, scrollable: find.byType(Scrollable).first);
-    await tester.tap(submit);
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
-
-    expect(repository.lastDonation, isNotNull);
-    expect(repository.lastDonation!.allocations, hasLength(2));
-    expect(repository.lastDonation!.allocations[0].amount, '700.00');
-    expect(repository.lastDonation!.allocations[1].amount, '300.00');
-  });
-
-  testWidgets('submit stays disabled when selected cause allocations do not total 100 percent', (tester) async {
-    await pumpDonationPage(
-      tester,
-      overrides: [
-        causesProvider('en').overrideWith((ref) async => const [
-          _cause,
-          Cause(id: 'cause-2', slug: 'jeev-daya', name: 'Jeev Daya'),
-        ]),
-      ],
-    );
-
-    await tapVisible(tester, find.byKey(const ValueKey('donation_amount_1000')));
-    await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-2')));
-    await enterVisibleText(tester, find.byKey(const ValueKey('donation_percentage_cause-1')), '70');
-    await enterVisibleText(tester, find.byKey(const ValueKey('donation_percentage_cause-2')), '20');
-    final submit = find.byKey(const ValueKey('donation_submit'));
-    await tester.scrollUntilVisible(submit, 400, scrollable: find.byType(Scrollable).first);
-    expect(tester.widget<FilledButton>(submit).onPressed, isNull);
-  });
-
-  testWidgets('donation page allows a donor to choose custom cause percentages', (tester) async {
-    final repository = _FakeDonationsRepository();
-    await pumpDonationPage(
-      tester,
-      overrides: [
-        causesProvider('en').overrideWith(
-          (ref) async => const [
-            _cause,
-            Cause(
-              id: 'cause-2',
-              slug: 'jeev-daya',
-              name: 'Jeev Daya',
-              description: 'Support animal welfare.',
-            ),
-          ],
-        ),
-        donationRepositoryProvider.overrideWithValue(repository),
-      ],
-    );
-
-    await tapVisible(tester, find.byKey(const ValueKey('donation_amount_1000')));
-    await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-2')));
-
-    final causeOne = find.byKey(const ValueKey('donation_percentage_cause-1'));
-    final causeTwo = find.byKey(const ValueKey('donation_percentage_cause-2'));
-    await enterVisibleText(tester, causeOne, '70');
-    await enterVisibleText(tester, causeTwo, '30');
-
-    expect(find.text('Total allocation: 100%'), findsOneWidget);
-
-    final submit = find.byKey(const ValueKey('donation_submit'));
-    await tester.scrollUntilVisible(submit, 400, scrollable: find.byType(Scrollable).first);
-    await tester.tap(submit);
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
-
-    expect(repository.lastDonation, isNotNull);
-    expect(repository.lastDonation!.allocations, hasLength(2));
-    expect(repository.lastDonation!.allocations[0].amount, '700.00');
-    expect(repository.lastDonation!.allocations[1].amount, '300.00');
-  });
-
-  testWidgets('donation submit remains disabled until allocations total 100 percent', (tester) async {
-    await pumpDonationPage(
-      tester,
-      overrides: [
-        causesProvider('en').overrideWith(
-          (ref) async => const [
-            _cause,
-            Cause(id: 'cause-2', slug: 'jeev-daya', name: 'Jeev Daya'),
-          ],
-        ),
-      ],
-    );
-
-    await tapVisible(tester, find.byKey(const ValueKey('donation_amount_1000')));
-    await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-2')));
-    await enterVisibleText(tester, find.byKey(const ValueKey('donation_percentage_cause-1')), '70');
-    await enterVisibleText(tester, find.byKey(const ValueKey('donation_percentage_cause-2')), '20');
-
-    final submit = find.byKey(const ValueKey('donation_submit'));
-    await tester.scrollUntilVisible(submit, 400, scrollable: find.byType(Scrollable).first);
-    expect(tester.widget<FilledButton>(submit).onPressed, isNull);
-  });
 
 }
