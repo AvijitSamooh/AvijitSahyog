@@ -9,8 +9,8 @@ import {
 } from '@nestjs/common';
 
 import { AdminGuard } from '../auth/admin.guard';
-import { CreateCauseDto } from './dto/create-cause.dto';
-import { UpdateCauseDto } from './dto/update-cause.dto';
+import type { CreateCauseDto } from './dto/create-cause.dto';
+import type { UpdateCauseDto } from './dto/update-cause.dto';
 import { CausesService } from './causes.service';
 
 @Controller('admin/causes')
