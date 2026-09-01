@@ -20,6 +20,7 @@ describe('OrganisationsService admin operations', () => {
         update: jest.fn(),
       },
       language: { findMany: jest.fn() },
+      cause: { findMany: jest.fn() },
       $transaction: jest.fn(),
     };
     service = new OrganisationsService(prisma);
@@ -123,4 +124,38 @@ describe('OrganisationsService admin operations', () => {
       expect.objectContaining({ data: expect.objectContaining({ city: 'Pune' }) }),
     );
   });
+  it('replaces organisation cause assignments atomically', async () => {
+    prisma.organisation.findUnique.mockResolvedValue({ id: 'org-1' });
+    prisma.cause.findMany.mockResolvedValue([{ id: 'cause-1' }, { id: 'cause-2' }]);
+    const tx = {
+      organisationCause: {
+        deleteMany: jest.fn(),
+        createMany: jest.fn(),
+      },
+      organisation: { findUnique: jest.fn().mockResolvedValue({ id: 'org-1' }) },
+    };
+    prisma.$transaction.mockImplementation((callback: any) => callback(tx));
+
+    await service.updateCauses('org-1', ['cause-1', 'cause-2']);
+
+    expect(tx.organisationCause.deleteMany).toHaveBeenCalledWith({
+      where: { organisationId: 'org-1' },
+    });
+    expect(tx.organisationCause.createMany).toHaveBeenCalledWith({
+      data: [
+        { organisationId: 'org-1', causeId: 'cause-1', displayOrder: 0 },
+        { organisationId: 'org-1', causeId: 'cause-2', displayOrder: 1 },
+      ],
+    });
+  });
+
+  it('rejects duplicate cause assignments', async () => {
+    prisma.organisation.findUnique.mockResolvedValue({ id: 'org-1' });
+
+    await expect(
+      service.updateCauses('org-1', ['cause-1', 'cause-1']),
+    ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+
 });
