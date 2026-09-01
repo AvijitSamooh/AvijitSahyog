@@ -7,9 +7,10 @@ import { OrganisationsModule } from './organisations/organisations.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { BeneficiariesModule } from './beneficiaries/beneficiaries.module';
 import { AuthModule } from './auth/auth.module';
+import { AdminDashboardModule } from './admin-dashboard/admin-dashboard.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, CausesModule, OrganisationsModule, DonationsModule, BeneficiariesModule],
+  imports: [PrismaModule, AuthModule, CausesModule, OrganisationsModule, DonationsModule, BeneficiariesModule, AdminDashboardModule],
   controllers: [AppController],
   providers: [AppService],
 })
