@@ -376,7 +376,7 @@ void main() {
     final field = tester.widget<TextFormField>(
       find.byKey(const ValueKey('donation_percentage_cause-1')),
     );
-    expect(field.initialValue, '100');
+    expect(field.controller?.text, '100');
   });
 
   testWidgets('selecting a second cause defaults allocation equally', (tester) async {
@@ -394,15 +394,68 @@ void main() {
     expect(
       tester.widget<TextFormField>(
         find.byKey(const ValueKey('donation_percentage_cause-1')),
-      ).initialValue,
+      ).controller?.text,
       '50',
     );
     expect(
       tester.widget<TextFormField>(
         find.byKey(const ValueKey('donation_percentage_cause-2')),
-      ).initialValue,
+      ).controller?.text,
       '50',
     );
+    expect(find.text('Total allocation: 100%'), findsOneWidget);
+  });
+
+  testWidgets('allocation percentage fields stay synchronized when causes change', (tester) async {
+    const causes = [
+      _cause,
+      Cause(id: 'cause-2', slug: 'jeev-daya', name: 'Jeev Daya'),
+      Cause(id: 'cause-3', slug: 'medical', name: 'Medical'),
+    ];
+    await pumpDonationPage(tester, causes: causes);
+
+    await enterVisibleText(
+      tester,
+      find.byKey(const ValueKey('donation_amount_input')),
+      '2000',
+    );
+    await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-2')));
+    await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-3')));
+
+    expect(
+      tester.widget<TextFormField>(
+        find.byKey(const ValueKey('donation_percentage_cause-1')),
+      ).controller?.text,
+      '34',
+    );
+    expect(
+      tester.widget<TextFormField>(
+        find.byKey(const ValueKey('donation_percentage_cause-2')),
+      ).controller?.text,
+      '33',
+    );
+    expect(
+      tester.widget<TextFormField>(
+        find.byKey(const ValueKey('donation_percentage_cause-3')),
+      ).controller?.text,
+      '33',
+    );
+
+    await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-3')));
+
+    expect(
+      tester.widget<TextFormField>(
+        find.byKey(const ValueKey('donation_percentage_cause-1')),
+      ).controller?.text,
+      '50',
+    );
+    expect(
+      tester.widget<TextFormField>(
+        find.byKey(const ValueKey('donation_percentage_cause-2')),
+      ).controller?.text,
+      '50',
+    );
+    expect(find.text('₹ 1000.00'), findsNWidgets(2));
     expect(find.text('Total allocation: 100%'), findsOneWidget);
   });
 
