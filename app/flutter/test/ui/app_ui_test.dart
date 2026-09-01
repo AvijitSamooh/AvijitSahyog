@@ -394,7 +394,7 @@ void main() {
     await pumpDonationPage(tester);
     final percentageFinder =
         find.byKey(const ValueKey('donation_percentage_cause-1'));
-    await tester.drag(find.byType(ListView).first, const Offset(0, -600));
+    await tester.ensureVisible(percentageFinder);
     await tester.pump();
     expect(percentageFinder, findsOneWidget);
     final field = tester.widget<TextFormField>(
