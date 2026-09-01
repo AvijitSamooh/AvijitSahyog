@@ -109,5 +109,10 @@
   "adminManageOrganisations": "संस्था व्यवस्थापित करा",
   "adminManageOrganisationsSubtitle": "संस्था व्यवस्थापन पुढील टप्प्यात जोडले जाईल.",
   "adminManageBeneficiaries": "लाभार्थी व्यवस्थापित करा",
-  "adminManageBeneficiariesSubtitle": "लाभार्थी व्यवस्थापन पुढील टप्प्यात जोडले जाईल."
+  "adminManageBeneficiariesSubtitle": "लाभार्थी व्यवस्थापन पुढील टप्प्यात जोडले जाईल.",
+  "adminDashboard": "डॅशबोर्ड",
+  "adminDashboardSubtitle": "कामकाजाचा आढावा आणि सामग्रीची स्थिती पहा",
+  "adminDashboardOverview": "कामकाजाचा आढावा",
+  "adminActive": "सक्रिय",
+  "adminInactive": "निष्क्रिय"
 }

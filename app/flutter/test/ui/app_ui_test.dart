@@ -13,6 +13,9 @@ import 'package:avijit_sahyog/features/donations/presentation/donation_page.dart
 import 'package:avijit_sahyog/features/auth/presentation/login_page.dart';
 import 'package:avijit_sahyog/features/auth/presentation/profile_page.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_portal_page.dart';
+import 'package:avijit_sahyog/features/admin/presentation/admin_dashboard_page.dart';
+import 'package:avijit_sahyog/features/admin/providers/admin_dashboard_providers.dart';
+import 'package:avijit_sahyog/features/admin/models/admin_dashboard_summary.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_beneficiaries_page.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_causes_page.dart';
 import 'package:avijit_sahyog/features/admin/providers/admin_beneficiaries_providers.dart';
@@ -172,6 +175,27 @@ void main() {
 
     expect(find.byType(AdminPortalPage), findsOneWidget);
     expect(find.text('Manage causes'), findsOneWidget);
+  });
+
+  testWidgets('admin portal opens dashboard with operational summary', (tester) async {
+    await pumpApp(
+      tester,
+      home: const AdminPortalPage(),
+      overrides: [
+        adminDashboardProvider.overrideWith((ref) async => const AdminDashboardSummary(
+          causes: AdminDashboardMetric(total: 3, active: 2, inactive: 1),
+          organisations: AdminDashboardMetric(total: 4, active: 4, inactive: 0),
+          beneficiaries: AdminDashboardMetric(total: 8, active: 7, inactive: 1),
+        )),
+      ],
+    );
+
+    await tester.tap(find.text('Dashboard'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AdminDashboardPage), findsOneWidget);
+    expect(find.text('Operational overview'), findsOneWidget);
+    expect(find.text('8'), findsOneWidget);
   });
 
   testWidgets('admin portal exposes cause management workflow', (tester) async {

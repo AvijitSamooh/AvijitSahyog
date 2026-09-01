@@ -109,5 +109,10 @@
   "adminManageOrganisations": "સંસ્થાઓનું સંચાલન",
   "adminManageOrganisationsSubtitle": "સંસ્થા કામગીરી આગામી તબક્કામાં ઉમેરાશે.",
   "adminManageBeneficiaries": "લાભાર્થીઓનું સંચાલન",
-  "adminManageBeneficiariesSubtitle": "લાભાર્થી કામગીરી આગામી તબક્કામાં ઉમેરાશે."
+  "adminManageBeneficiariesSubtitle": "લાભાર્થી કામગીરી આગામી તબક્કામાં ઉમેરાશે.",
+  "adminDashboard": "ડેશબોર્ડ",
+  "adminDashboardSubtitle": "કામકાજનો સારાંશ અને સામગ્રીની સ્થિતિ જુઓ",
+  "adminDashboardOverview": "કામકાજનો સારાંશ",
+  "adminActive": "સક્રિય",
+  "adminInactive": "નિષ્ક્રિય"
 }

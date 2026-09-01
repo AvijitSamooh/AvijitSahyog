@@ -58,7 +58,7 @@ See [docs/iteration-plan.md](docs/iteration-plan.md).
 
 ## Current Status
 
-🚧 Active development — public discovery and impact exploration are implemented, along with authenticated admin management for causes, organisations and beneficiaries; payment functionality remains intentionally disabled for now.
+🚧 Active development — public discovery and impact exploration are implemented, along with authenticated admin management for causes, organisations and beneficiaries, with an operational dashboard summary; payment functionality remains intentionally disabled for now.
 
 The current focus is establishing the project foundation before implementing
 the donation domain.

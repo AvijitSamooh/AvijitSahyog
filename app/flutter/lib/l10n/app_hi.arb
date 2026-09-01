@@ -109,5 +109,10 @@
   "adminManageOrganisations": "संस्थाएं प्रबंधित करें",
   "adminManageOrganisationsSubtitle": "संस्था संचालन अगले चरण में जोड़े जाएंगे।",
   "adminManageBeneficiaries": "लाभार्थी प्रबंधित करें",
-  "adminManageBeneficiariesSubtitle": "लाभार्थी संचालन अगले चरण में जोड़े जाएंगे।"
+  "adminManageBeneficiariesSubtitle": "लाभार्थी संचालन अगले चरण में जोड़े जाएंगे।",
+  "adminDashboard": "डैशबोर्ड",
+  "adminDashboardSubtitle": "संचालन का सार और सामग्री की स्थिति देखें",
+  "adminDashboardOverview": "संचालन का सार",
+  "adminActive": "सक्रिय",
+  "adminInactive": "निष्क्रिय"
 }
