@@ -53,6 +53,9 @@ jobs:
       - name: Unit tests with coverage
         run: npm run test:cov -- --runInBand
 
+      - name: Application dependency-injection smoke test
+        run: npm run test:e2e -- --runInBand
+
       - name: Upload backend coverage artifact
         uses: actions/upload-artifact@v4
         with:
