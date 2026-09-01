@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../l10n/app_localizations.dart';
+import 'admin_dashboard_page.dart';
 import 'admin_beneficiaries_page.dart';
 import 'admin_causes_page.dart';
 import 'admin_organisations_page.dart';
@@ -24,6 +25,15 @@ class AdminPortalPage extends StatelessWidget {
           const SizedBox(height: 8),
           Text(l10n.adminPortalDescription),
           const SizedBox(height: 24),
+          _AdminSectionCard(
+            icon: Icons.dashboard_rounded,
+            title: l10n.adminDashboard,
+            subtitle: l10n.adminDashboardSubtitle,
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const AdminDashboardPage()),
+            ),
+          ),
+          const SizedBox(height: 12),
           _AdminSectionCard(
             icon: Icons.volunteer_activism_rounded,
             title: l10n.adminManageCauses,
