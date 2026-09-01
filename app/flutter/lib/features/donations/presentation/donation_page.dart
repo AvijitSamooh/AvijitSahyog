@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../l10n/app_localizations.dart';
+import '../../../core/navigation/app_shell_scope.dart';
+import '../../../core/widgets/app_navigation_bar.dart';
+import '../../../core/widgets/app_settings_menu.dart';
 import '../../causes/providers/causes_providers.dart';
 
 class DonationPage extends ConsumerStatefulWidget {
@@ -99,7 +102,10 @@ class _DonationPageState extends ConsumerState<DonationPage> {
     final theme = Theme.of(context);
     final causesAsync = ref.watch(causesProvider(Localizations.localeOf(context).languageCode));
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.donateTitle)),
+      appBar: AppBar(
+        title: Text(l10n.donateTitle),
+        actions: const [AppSettingsMenu()],
+      ),
       body: ListView(padding: const EdgeInsets.fromLTRB(20, 20, 20, 32), children: [
         Text(l10n.chooseAmount, style: theme.textTheme.titleLarge),
         const SizedBox(height: 14),
@@ -140,6 +146,14 @@ class _DonationPageState extends ConsumerState<DonationPage> {
         const SizedBox(height: 12),
         Text(l10n.donationPaymentLater, textAlign: TextAlign.center, style: theme.textTheme.bodySmall),
       ]),
+      bottomNavigationBar: AppNavigationBar(
+        selectedIndex: 1,
+        onDestinationSelected: (index) {
+          final navigation = AppShellScope.of(context).navigation;
+          navigation.select(index);
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        },
+      ),
     );
   }
 }
