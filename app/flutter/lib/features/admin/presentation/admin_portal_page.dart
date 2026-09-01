@@ -48,7 +48,11 @@ class AdminPortalPage extends StatelessWidget {
             icon: Icons.auto_awesome_rounded,
             title: l10n.adminManageBeneficiaries,
             subtitle: l10n.adminManageBeneficiariesSubtitle,
-            onTap: null,
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const AdminBeneficiariesPage(),
+              ),
+            ),
           ),
         ],
       ),
