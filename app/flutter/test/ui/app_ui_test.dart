@@ -397,7 +397,7 @@ void main() {
       findsNothing,
       reason: 'The percentage input is intentionally lazy-built below the fold.',
     );
-    final amountField = tester.widget<TextFormField>(
+    final amountField = tester.widget<TextField>(
       find.byKey(const ValueKey('donation_amount_input')),
     );
     expect(amountField.controller?.text, isEmpty);
