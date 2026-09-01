@@ -100,5 +100,14 @@
   "authSignInFailed": "साइन इन करता आले नाही. कृपया पुन्हा प्रयत्न करा.",
   "authSignOutFailed": "लॉग आउट करता आले नाही. कृपया पुन्हा प्रयत्न करा.",
   "adminPortal": "अॅडमिन पोर्टल",
-  "adminPortalSubtitle": "सामग्री आणि कामकाज व्यवस्थापित करा"
+  "adminPortalSubtitle": "सामग्री आणि कामकाज व्यवस्थापित करा",
+  "adminPortalWelcome": "प्लॅटफॉर्म प्रशासन",
+  "adminPortalDescription": "अविजित सहयोगवर सार्वजनिकपणे दिसणारी माहिती व्यवस्थापित करा.",
+  "adminManageCauses": "कार्यक्रम व्यवस्थापित करा",
+  "adminManageCausesSubtitle": "कार्यक्रम तयार करा, संपादित करा, सक्रिय करा आणि भाषांतर करा",
+  "adminCauseManagementComingSoon": "कार्यक्रम व्यवस्थापन स्क्रीन पुढील टप्प्यात सुरक्षित एडमिन API शी जोडली जाईल.",
+  "adminManageOrganisations": "संस्था व्यवस्थापित करा",
+  "adminManageOrganisationsSubtitle": "संस्था व्यवस्थापन पुढील टप्प्यात जोडले जाईल.",
+  "adminManageBeneficiaries": "लाभार्थी व्यवस्थापित करा",
+  "adminManageBeneficiariesSubtitle": "लाभार्थी व्यवस्थापन पुढील टप्प्यात जोडले जाईल."
 }
