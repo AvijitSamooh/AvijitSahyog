@@ -1,4 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { CreateCauseDto } from './dto/create-cause.dto';
+import { UpdateCauseDto } from './dto/update-cause.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -70,6 +77,174 @@ export class CausesService {
         ...this.translation(organisation.translations, languageCode),
       })),
     };
+  }
+
+  async findAllForAdmin() {
+    return this.prisma.cause.findMany({
+      orderBy: { displayOrder: 'asc' },
+      include: {
+        translations: {
+          include: { language: true },
+          orderBy: { language: { code: 'asc' } },
+        },
+      },
+    });
+  }
+
+  async findOneForAdmin(id: string) {
+    const cause = await this.prisma.cause.findUnique({
+      where: { id },
+      include: {
+        translations: {
+          include: { language: true },
+          orderBy: { language: { code: 'asc' } },
+        },
+      },
+    });
+
+    if (!cause) {
+      throw new NotFoundException(`Cause '${id}' not found`);
+    }
+
+    return cause;
+  }
+
+  async create(dto: CreateCauseDto) {
+    this.validateTranslations(dto.translations);
+
+    const existing = await this.prisma.cause.findUnique({
+      where: { slug: dto.slug },
+      select: { id: true },
+    });
+
+    if (existing) {
+      throw new ConflictException(`Cause slug '${dto.slug}' already exists`);
+    }
+
+    const languages = await this.resolveLanguages(dto.translations);
+
+    return this.prisma.cause.create({
+      data: {
+        slug: dto.slug,
+        displayOrder: dto.displayOrder ?? 0,
+        translations: {
+          create: dto.translations.map((translation) => ({
+            languageId: languages.get(translation.languageCode)!,
+            name: translation.name,
+            description: translation.description,
+          })),
+        },
+      },
+      include: {
+        translations: { include: { language: true } },
+      },
+    });
+  }
+
+  async update(id: string, dto: UpdateCauseDto) {
+    await this.findOneForAdmin(id);
+
+    if (dto.translations) {
+      this.validateTranslations(dto.translations);
+      await this.resolveLanguages(dto.translations);
+    }
+
+    if (dto.slug) {
+      const existing = await this.prisma.cause.findUnique({
+        where: { slug: dto.slug },
+        select: { id: true },
+      });
+      if (existing && existing.id !== id) {
+        throw new ConflictException(`Cause slug '${dto.slug}' already exists`);
+      }
+    }
+
+    return this.prisma.$transaction(async (tx: any) => {
+      if (dto.translations) {
+        const languages = await tx.language.findMany({
+          where: { code: { in: dto.translations.map((item) => item.languageCode) } },
+          select: { id: true, code: true },
+        });
+        const languageIds = new Map(languages.map((language: any) => [language.code, language.id]));
+
+        for (const translation of dto.translations) {
+          await tx.causeTranslation.upsert({
+            where: {
+              causeId_languageId: {
+                causeId: id,
+                languageId: languageIds.get(translation.languageCode)!,
+              },
+            },
+            update: {
+              name: translation.name,
+              description: translation.description,
+            },
+            create: {
+              causeId: id,
+              languageId: languageIds.get(translation.languageCode)!,
+              name: translation.name,
+              description: translation.description,
+            },
+          });
+        }
+      }
+
+      return tx.cause.update({
+        where: { id },
+        data: {
+          ...(dto.slug !== undefined ? { slug: dto.slug } : {}),
+          ...(dto.displayOrder !== undefined
+            ? { displayOrder: dto.displayOrder }
+            : {}),
+          ...(dto.isActive !== undefined ? { isActive: dto.isActive } : {}),
+        },
+        include: {
+          translations: { include: { language: true } },
+        },
+      });
+    });
+  }
+
+  async setActive(id: string, isActive: boolean) {
+    await this.findOneForAdmin(id);
+
+    return this.prisma.cause.update({
+      where: { id },
+      data: { isActive },
+    });
+  }
+
+  private validateTranslations(
+    translations: { languageCode: string; name: string }[],
+  ) {
+    if (!translations?.length) {
+      throw new BadRequestException('At least one translation is required.');
+    }
+
+    const codes = translations.map((translation) => translation.languageCode);
+    if (new Set(codes).size !== codes.length) {
+      throw new BadRequestException('Each language may only appear once.');
+    }
+
+    if (translations.some((translation) => !translation.name?.trim())) {
+      throw new BadRequestException('Translation names are required.');
+    }
+  }
+
+  private async resolveLanguages(
+    translations: { languageCode: string }[],
+  ): Promise<Map<string, string>> {
+    const codes = translations.map((translation) => translation.languageCode);
+    const languages = await this.prisma.language.findMany({
+      where: { code: { in: codes }, isActive: true },
+      select: { id: true, code: true },
+    });
+
+    if (languages.length !== codes.length) {
+      throw new BadRequestException('One or more translation languages are unavailable.');
+    }
+
+    return new Map(languages.map((language) => [language.code, language.id]));
   }
 
   private toResponse(entity: any, languageCode: string) {
