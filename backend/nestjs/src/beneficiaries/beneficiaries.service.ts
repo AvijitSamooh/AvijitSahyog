@@ -104,13 +104,13 @@ export class BeneficiariesService {
   private validate(dto: CreateBeneficiaryDto | UpdateBeneficiaryDto, partial = false) {
     if (!partial && !dto.name?.trim()) throw new BadRequestException('Beneficiary name is required.');
     if (dto.name !== undefined && !dto.name.trim()) throw new BadRequestException('Beneficiary name is required.');
-    if (!partial && (!Number.isInteger(dto.supportedYear) || dto.supportedYear < 1900)) {
+    if (!partial && (!Number.isInteger(dto.supportedYear) || (dto.supportedYear ?? 0) < 1900)) {
       throw new BadRequestException('A valid supported year is required.');
     }
     if (dto.supportedYear !== undefined && (!Number.isInteger(dto.supportedYear) || dto.supportedYear < 1900)) {
       throw new BadRequestException('Supported year must be valid.');
     }
-    if (!partial && (!(dto.contributionAmount > 0))) throw new BadRequestException('Contribution amount must be greater than zero.');
+    if (!partial && (!((dto.contributionAmount ?? 0) > 0))) throw new BadRequestException('Contribution amount must be greater than zero.');
     if (dto.contributionAmount !== undefined && !(dto.contributionAmount > 0)) throw new BadRequestException('Contribution amount must be greater than zero.');
     if (!partial && !dto.causeId) throw new BadRequestException('Cause is required.');
   }
