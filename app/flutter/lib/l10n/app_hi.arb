@@ -100,5 +100,14 @@
   "authSignInFailed": "साइन इन नहीं हो सका। कृपया पुनः प्रयास करें।",
   "authSignOutFailed": "लॉग आउट नहीं हो सका। कृपया पुनः प्रयास करें।",
   "adminPortal": "एडमिन पोर्टल",
-  "adminPortalSubtitle": "सामग्री और संचालन प्रबंधित करें"
+  "adminPortalSubtitle": "सामग्री और संचालन प्रबंधित करें",
+  "adminPortalWelcome": "प्लेटफ़ॉर्म प्रशासन",
+  "adminPortalDescription": "अविजित सहयोग पर सार्वजनिक रूप से दिखाई देने वाली जानकारी प्रबंधित करें।",
+  "adminManageCauses": "कारण प्रबंधित करें",
+  "adminManageCausesSubtitle": "कारण बनाएं, संपादित करें, सक्रिय करें और अनुवाद करें",
+  "adminCauseManagementComingSoon": "कारण प्रबंधन स्क्रीन को अगले चरण में सुरक्षित एडमिन API से जोड़ा जाएगा।",
+  "adminManageOrganisations": "संस्थाएं प्रबंधित करें",
+  "adminManageOrganisationsSubtitle": "संस्था संचालन अगले चरण में जोड़े जाएंगे।",
+  "adminManageBeneficiaries": "लाभार्थी प्रबंधित करें",
+  "adminManageBeneficiariesSubtitle": "लाभार्थी संचालन अगले चरण में जोड़े जाएंगे।"
 }
