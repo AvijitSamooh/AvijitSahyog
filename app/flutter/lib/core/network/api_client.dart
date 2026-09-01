@@ -84,6 +84,12 @@ class ApiClient {
 
 
 
+  Future<Map<String, dynamic>> getAdminDashboardSummary() async {
+    final response = await _client.get(Uri.parse('$baseUrl/admin/dashboard'));
+    _ensureSuccess(response, 'Loading admin dashboard');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
   Future<List<Map<String, dynamic>>> getAdminBeneficiaries() async {
     final response = await _client.get(Uri.parse('$baseUrl/admin/beneficiaries'));
     _ensureSuccess(response, 'Loading admin beneficiaries');
