@@ -110,7 +110,7 @@ void main() {
     await tester.scrollUntilVisible(
       finder,
       300,
-      scrollable: find.byType(Scrollable).first,
+      scrollable: find.byType(ListView).first,
     );
     await tester.tap(finder);
     await tester.pump();
@@ -124,7 +124,7 @@ void main() {
     await tester.scrollUntilVisible(
       finder,
       300,
-      scrollable: find.byType(Scrollable).first,
+      scrollable: find.byType(ListView).first,
     );
     await tester.pump();
     await tester.tap(finder);
@@ -385,7 +385,7 @@ void main() {
     await tester.scrollUntilVisible(
       amountField,
       400,
-      scrollable: find.byType(Scrollable).first,
+      scrollable: find.byType(ListView).first,
     );
     expect(amountField, findsOneWidget);
   });
@@ -404,7 +404,7 @@ void main() {
     await tester.scrollUntilVisible(
       percentageFinder,
       300,
-      scrollable: find.byType(Scrollable).first,
+      scrollable: find.byType(ListView).first,
     );
     final field = tester.widget<TextFormField>(
       find.byKey(const ValueKey('donation_percentage_cause-1')),
@@ -554,9 +554,13 @@ void main() {
       '20',
     );
 
-    final submit = tester.widget<FilledButton>(
-      find.byKey(const ValueKey('donation_submit')),
+    final submitFinder = find.byKey(const ValueKey('donation_submit'));
+    await tester.scrollUntilVisible(
+      submitFinder,
+      300,
+      scrollable: find.byType(ListView).first,
     );
+    final submit = tester.widget<FilledButton>(submitFinder);
     expect(submit.onPressed, isNull);
     expect(find.text('Total allocation: 90%'), findsOneWidget);
   });
