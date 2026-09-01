@@ -36,7 +36,11 @@ class AdminPortalPage extends StatelessWidget {
             icon: Icons.business_rounded,
             title: l10n.adminManageOrganisations,
             subtitle: l10n.adminManageOrganisationsSubtitle,
-            onTap: null,
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const AdminOrganisationsPage(),
+              ),
+            ),
           ),
           const SizedBox(height: 12),
           _AdminSectionCard(
