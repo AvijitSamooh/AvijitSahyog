@@ -6,7 +6,12 @@ describe('BeneficiariesService', () => {
     beneficiary: {
       findMany: jest.fn(),
       findFirst: jest.fn(),
+      findUnique: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
     },
+    cause: { findUnique: jest.fn() },
+    organisation: { findUnique: jest.fn() },
   } as any;
 
   const service = new BeneficiariesService(prisma);
@@ -102,4 +107,54 @@ describe('BeneficiariesService', () => {
       NotFoundException,
     );
   });
+  it('creates a beneficiary after validating cause and organisation', async () => {
+    prisma.cause.findUnique.mockResolvedValue({ id: 'cause-1' });
+    prisma.organisation.findUnique.mockResolvedValue({ id: 'org-1' });
+    prisma.beneficiary.create.mockResolvedValue(record);
+
+    await expect(
+      service.create({
+        name: 'Rahul Kumar',
+        supportedYear: 2025,
+        contributionAmount: 25000,
+        causeId: 'cause-1',
+        organisationId: 'org-1',
+      }),
+    ).resolves.toEqual(record);
+  });
+
+  it('rejects a beneficiary without a valid contribution amount', async () => {
+    await expect(
+      service.create({
+        name: 'Rahul',
+        supportedYear: 2025,
+        contributionAmount: 0,
+        causeId: 'cause-1',
+      }),
+    ).rejects.toBeInstanceOf(require('@nestjs/common').BadRequestException);
+  });
+
+  it('rejects an unknown cause during creation', async () => {
+    prisma.cause.findUnique.mockResolvedValue(null);
+
+    await expect(
+      service.create({
+        name: 'Rahul',
+        supportedYear: 2025,
+        contributionAmount: 100,
+        causeId: 'missing',
+      }),
+    ).rejects.toBeInstanceOf(require('@nestjs/common').BadRequestException);
+  });
+
+  it('deactivates an existing beneficiary', async () => {
+    prisma.beneficiary.findUnique.mockResolvedValue(record);
+    prisma.beneficiary.update.mockResolvedValue({ ...record, isActive: false });
+
+    await expect(service.setActive('beneficiary-1', false)).resolves.toEqual(
+      expect.objectContaining({ isActive: false }),
+    );
+  });
+
+
 });

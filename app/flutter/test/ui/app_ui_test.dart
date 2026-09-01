@@ -13,7 +13,9 @@ import 'package:avijit_sahyog/features/donations/presentation/donation_page.dart
 import 'package:avijit_sahyog/features/auth/presentation/login_page.dart';
 import 'package:avijit_sahyog/features/auth/presentation/profile_page.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_portal_page.dart';
+import 'package:avijit_sahyog/features/admin/presentation/admin_beneficiaries_page.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_causes_page.dart';
+import 'package:avijit_sahyog/features/admin/providers/admin_beneficiaries_providers.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_organisations_page.dart';
 import 'package:avijit_sahyog/features/admin/providers/admin_organisations_providers.dart';
 import 'package:avijit_sahyog/features/admin/providers/admin_causes_providers.dart';
@@ -188,6 +190,25 @@ void main() {
 
     expect(find.byType(AdminCausesPage), findsOneWidget);
     expect(find.byKey(const ValueKey('admin_create_cause')), findsOneWidget);
+  });
+
+  testWidgets('admin portal exposes beneficiary management workflow', (tester) async {
+    await pumpApp(
+      tester,
+      home: const AdminPortalPage(),
+      overrides: [
+        adminBeneficiariesProvider.overrideWith((ref) async => const []),
+      ],
+    );
+
+    await tester.tap(find.text('Manage beneficiaries'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AdminBeneficiariesPage), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('admin_create_beneficiary')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('admin portal exposes organisation management workflow', (tester) async {

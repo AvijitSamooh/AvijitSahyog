@@ -58,7 +58,7 @@ See [docs/iteration-plan.md](docs/iteration-plan.md).
 
 ## Current Status
 
-🚧 Active development — Causes, cause-centric giving UX and Impact Explorer are implemented; payment functionality remains future work.
+🚧 Active development — public discovery and impact exploration are implemented, along with authenticated admin management for causes, organisations and beneficiaries; payment functionality remains intentionally disabled for now.
 
 The current focus is establishing the project foundation before implementing
 the donation domain.

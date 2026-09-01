@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../l10n/app_localizations.dart';
+import 'admin_beneficiaries_page.dart';
 import 'admin_causes_page.dart';
 import 'admin_organisations_page.dart';
 
@@ -47,7 +48,11 @@ class AdminPortalPage extends StatelessWidget {
             icon: Icons.auto_awesome_rounded,
             title: l10n.adminManageBeneficiaries,
             subtitle: l10n.adminManageBeneficiariesSubtitle,
-            onTap: null,
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const AdminBeneficiariesPage(),
+              ),
+            ),
           ),
         ],
       ),

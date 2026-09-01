@@ -83,6 +83,47 @@ class ApiClient {
 
 
 
+
+  Future<List<Map<String, dynamic>>> getAdminBeneficiaries() async {
+    final response = await _client.get(Uri.parse('$baseUrl/admin/beneficiaries'));
+    _ensureSuccess(response, 'Loading admin beneficiaries');
+    return (jsonDecode(response.body) as List<dynamic>)
+        .cast<Map<String, dynamic>>();
+  }
+
+  Future<Map<String, dynamic>> createAdminBeneficiary(
+    Map<String, dynamic> payload,
+  ) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/admin/beneficiaries'),
+      headers: const {'Content-Type': 'application/json'},
+      body: jsonEncode(payload),
+    );
+    _ensureSuccess(response, 'Creating beneficiary');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> updateAdminBeneficiary(
+    String id,
+    Map<String, dynamic> payload,
+  ) async {
+    final response = await _client.patch(
+      Uri.parse('$baseUrl/admin/beneficiaries/$id'),
+      headers: const {'Content-Type': 'application/json'},
+      body: jsonEncode(payload),
+    );
+    _ensureSuccess(response, 'Updating beneficiary');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<void> setAdminBeneficiaryActive(String id, bool active) async {
+    final action = active ? 'activate' : 'deactivate';
+    final response = await _client.patch(
+      Uri.parse('$baseUrl/admin/beneficiaries/$id/$action'),
+    );
+    _ensureSuccess(response, 'Updating beneficiary status');
+  }
+
   Future<List<Map<String, dynamic>>> getAdminOrganisations() async {
     final response = await _client.get(Uri.parse('$baseUrl/admin/organisations'));
     _ensureSuccess(response, 'Loading admin organisations');
