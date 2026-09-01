@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/admin_cause.dart';
 import '../models/admin_organisation.dart';
 import '../providers/admin_causes_providers.dart';
 import '../providers/admin_organisations_providers.dart';
