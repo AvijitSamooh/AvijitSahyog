@@ -14,6 +14,8 @@ import 'package:avijit_sahyog/features/auth/presentation/login_page.dart';
 import 'package:avijit_sahyog/features/auth/presentation/profile_page.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_portal_page.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_causes_page.dart';
+import 'package:avijit_sahyog/features/admin/presentation/admin_organisations_page.dart';
+import 'package:avijit_sahyog/features/admin/providers/admin_organisations_providers.dart';
 import 'package:avijit_sahyog/features/admin/providers/admin_causes_providers.dart';
 import 'package:avijit_sahyog/features/auth/models/app_user.dart';
 import 'package:avijit_sahyog/features/auth/models/auth_state.dart';
@@ -186,6 +188,25 @@ void main() {
 
     expect(find.byType(AdminCausesPage), findsOneWidget);
     expect(find.byKey(const ValueKey('admin_create_cause')), findsOneWidget);
+  });
+
+  testWidgets('admin portal exposes organisation management workflow', (tester) async {
+    await pumpApp(
+      tester,
+      home: const AdminPortalPage(),
+      overrides: [
+        adminOrganisationsProvider.overrideWith((ref) async => const []),
+      ],
+    );
+
+    await tester.tap(find.text('Manage organisations'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AdminOrganisationsPage), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('admin_create_organisation')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('home hero loads Maharaj Ji image asset', (tester) async {

@@ -82,6 +82,59 @@ class ApiClient {
   }
 
 
+
+  Future<List<Map<String, dynamic>>> getAdminOrganisations() async {
+    final response = await _client.get(Uri.parse('$baseUrl/admin/organisations'));
+    _ensureSuccess(response, 'Loading admin organisations');
+    return (jsonDecode(response.body) as List<dynamic>)
+        .cast<Map<String, dynamic>>();
+  }
+
+  Future<Map<String, dynamic>> createAdminOrganisation(
+    Map<String, dynamic> payload,
+  ) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/admin/organisations'),
+      headers: const {'Content-Type': 'application/json'},
+      body: jsonEncode(payload),
+    );
+    _ensureSuccess(response, 'Creating organisation');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> updateAdminOrganisation(
+    String id,
+    Map<String, dynamic> payload,
+  ) async {
+    final response = await _client.patch(
+      Uri.parse('$baseUrl/admin/organisations/$id'),
+      headers: const {'Content-Type': 'application/json'},
+      body: jsonEncode(payload),
+    );
+    _ensureSuccess(response, 'Updating organisation');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<void> setAdminOrganisationActive(String id, bool active) async {
+    final action = active ? 'activate' : 'deactivate';
+    final response = await _client.patch(
+      Uri.parse('$baseUrl/admin/organisations/$id/$action'),
+    );
+    _ensureSuccess(response, 'Updating organisation status');
+  }
+
+  Future<void> updateAdminOrganisationCauses(
+    String id,
+    List<String> causeIds,
+  ) async {
+    final response = await _client.patch(
+      Uri.parse('$baseUrl/admin/organisations/$id/causes'),
+      headers: const {'Content-Type': 'application/json'},
+      body: jsonEncode({'causeIds': causeIds}),
+    );
+    _ensureSuccess(response, 'Updating organisation causes');
+  }
+
   Future<List<Map<String, dynamic>>> getAdminCauses() async {
     final response = await _client.get(Uri.parse('$baseUrl/admin/causes'));
     _ensureSuccess(response, 'Loading admin causes');

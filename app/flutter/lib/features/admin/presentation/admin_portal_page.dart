@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../l10n/app_localizations.dart';
 import 'admin_causes_page.dart';
+import 'admin_organisations_page.dart';
 
 class AdminPortalPage extends StatelessWidget {
   const AdminPortalPage({super.key});
@@ -35,7 +36,11 @@ class AdminPortalPage extends StatelessWidget {
             icon: Icons.business_rounded,
             title: l10n.adminManageOrganisations,
             subtitle: l10n.adminManageOrganisationsSubtitle,
-            onTap: null,
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const AdminOrganisationsPage(),
+              ),
+            ),
           ),
           const SizedBox(height: 12),
           _AdminSectionCard(
