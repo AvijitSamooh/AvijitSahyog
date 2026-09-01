@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../l10n/app_localizations.dart';
+import 'admin_beneficiaries_page.dart';
 import 'admin_causes_page.dart';
 import 'admin_organisations_page.dart';
 
