@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:avijit_sahyog/app.dart';
+import 'package:avijit_sahyog/core/navigation/app_shell_scope.dart';
+import 'package:avijit_sahyog/core/widgets/app_navigation_bar.dart';
 import 'package:avijit_sahyog/features/causes/models/cause.dart';
 import 'package:avijit_sahyog/features/causes/models/organisation.dart';
 import 'package:avijit_sahyog/features/causes/presentation/causes_page.dart';
@@ -69,12 +71,16 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: overrides,
-        child: MaterialApp(
+        child: AppShellScope(
+          onLocaleChanged: (_) {},
+          navigation: AppNavigationController(),
+          child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           locale: const Locale('en'),
           theme: ThemeData(useMaterial3: true),
           home: home ?? const AvijitSahyogApp(),
+        ),
         ),
       ),
     );
@@ -124,7 +130,7 @@ void main() {
     await tester.pump();
 
     expect(find.byType(AvijitSahyogApp), findsOneWidget);
-    expect(find.byIcon(Icons.language_rounded), findsOneWidget);
+    expect(find.byKey(const ValueKey('app_settings_menu')), findsOneWidget);
     expect(find.text('Welcome to Avijit Sahyog'), findsOneWidget);
     expect(find.text('Explore Causes'), findsWidgets);
     expect(find.text('See Our Impact'), findsOneWidget);
@@ -275,7 +281,9 @@ void main() {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
     await tester.pump();
 
-    await tester.tap(find.byIcon(Icons.language_rounded));
+    await tester.tap(find.byKey(const ValueKey('app_settings_menu')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Language'));
     await tester.pumpAndSettle();
 
     expect(find.text('English'), findsOneWidget);
@@ -288,7 +296,9 @@ void main() {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
     await tester.pump();
 
-    await tester.tap(find.byIcon(Icons.language_rounded));
+    await tester.tap(find.byKey(const ValueKey('app_settings_menu')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Language'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Hindi'));
     await tester.pumpAndSettle();
@@ -369,6 +379,13 @@ void main() {
       scrollable: find.byType(Scrollable).first,
     );
     expect(amountField, findsOneWidget);
+  });
+
+  testWidgets('contribution page keeps shared settings and bottom navigation visible', (tester) async {
+    await pumpDonationPage(tester);
+
+    expect(find.byKey(const ValueKey('app_settings_menu')), findsOneWidget);
+    expect(find.byType(AppNavigationBar), findsOneWidget);
   });
 
   testWidgets('donation defaults a single selected cause to 100 percent', (tester) async {
