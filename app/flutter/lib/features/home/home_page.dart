@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../causes/presentation/causes_page.dart';
 import '../impact/presentation/impact_page.dart';
+import '../settings/settings_page.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/navigation/app_shell_scope.dart';
 import '../../core/widgets/app_navigation_bar.dart';
@@ -30,22 +31,24 @@ class _HomePageState extends ConsumerState<HomePage> {
       ),
       const CausesPage(),
       const ImpactPage(),
-      const _SettingsPlaceholder(),
+      SettingsPage(onLocaleChanged: shell.onLocaleChanged, showAppBar: false),
     ];
 
     return AnimatedBuilder(
       animation: shell.navigation,
       builder: (context, _) => Scaffold(
-      appBar: _selectedIndex == 3
-          ? null
-          : AppBar(
-              title: Text(_selectedIndex == 0
-                  ? AppLocalizations.of(context)!.appTitle
-                  : _selectedIndex == 1
-                      ? AppLocalizations.of(context)!.causesTitle
-                      : AppLocalizations.of(context)!.impactTitle),
-              actions: const [AppSettingsMenu()],
-            ),
+      appBar: AppBar(
+        title: Text(
+          _selectedIndex == 0
+              ? AppLocalizations.of(context)!.appTitle
+              : _selectedIndex == 1
+                  ? AppLocalizations.of(context)!.causesTitle
+                  : _selectedIndex == 2
+                      ? AppLocalizations.of(context)!.impactTitle
+                      : AppLocalizations.of(context)!.navSettings,
+        ),
+        actions: const [AppSettingsMenu()],
+      ),
       body: IndexedStack(index: _selectedIndex, children: pages),
       bottomNavigationBar: AppNavigationBar(
         selectedIndex: _selectedIndex,
@@ -54,12 +57,6 @@ class _HomePageState extends ConsumerState<HomePage> {
     ),
     );
   }
-}
-
-class _SettingsPlaceholder extends StatelessWidget {
-  const _SettingsPlaceholder();
-  @override
-  Widget build(BuildContext context) => const SizedBox.shrink();
 }
 
 class _HomeContent extends StatelessWidget {
@@ -302,51 +299,6 @@ class _GivingQuote extends StatelessWidget {
             style: TextStyle(color: Color(0xFF6B4F36)),
           ),
         ],
-      ),
-    );
-  }
-}
-
-
-
-class _LanguageSheet extends StatelessWidget {
-  const _LanguageSheet({required this.currentLocale});
-
-  final String currentLocale;
-
-  @override
-  Widget build(BuildContext context) {
-    final options = [
-      (AppLocalizations.of(context)!.languageEnglish, 'en'),
-      (AppLocalizations.of(context)!.languageHindi, 'hi'),
-      (AppLocalizations.of(context)!.languageMarathi, 'mr'),
-      (AppLocalizations.of(context)!.languageGujarati, 'gu'),
-    ];
-
-    return Material(
-      color: const Color(0xFFFFF8ED),
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-      clipBehavior: Clip.antiAlias,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
-        child: SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: options.map((option) {
-              final selected = option.$2 == currentLocale;
-              return ListTile(
-                leading: Icon(
-                  selected
-                      ? Icons.radio_button_checked_rounded
-                      : Icons.radio_button_unchecked_rounded,
-                  color: const Color(0xFF6E1A14),
-                ),
-                title: Text(option.$1),
-                onTap: () => Navigator.pop(context, Locale(option.$2)),
-              );
-            }).toList(),
-          ),
-        ),
       ),
     );
   }
