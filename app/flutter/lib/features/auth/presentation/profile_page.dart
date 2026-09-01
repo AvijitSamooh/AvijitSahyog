@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../l10n/app_localizations.dart';
+import '../../admin/presentation/admin_portal_page.dart';
 import '../providers/auth_providers.dart';
 
 class ProfilePage extends ConsumerWidget {
@@ -38,7 +39,9 @@ class ProfilePage extends ConsumerWidget {
                     leading: const Icon(Icons.admin_panel_settings_rounded),
                     title: Text(l10n.adminPortal),
                     subtitle: Text(l10n.adminPortalSubtitle),
-                    onTap: () {},
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const AdminPortalPage()),
+                    ),
                   ),
                 ListTile(
                   leading: const Icon(Icons.logout_rounded),
