@@ -15,6 +15,7 @@ class _DonationPageState extends ConsumerState<DonationPage> {
   final _amountController = TextEditingController();
   final Set<String> _selectedCauseIds = {};
   final Map<String, int> _allocationPercentages = {};
+  final Map<String, TextEditingController> _percentageControllers = {};
   int? _selectedAmount;
   static const _amounts = [100, 500, 1000, 2000];
 
@@ -28,7 +29,13 @@ class _DonationPageState extends ConsumerState<DonationPage> {
   }
 
   @override
-  void dispose() { _amountController.dispose(); super.dispose(); }
+  void dispose() {
+    _amountController.dispose();
+    for (final controller in _percentageControllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
 
   double get _totalAmount => double.tryParse(_amountController.text.trim()) ?? 0;
   int get _allocationTotal => _selectedCauseIds.fold(0, (total, id) => total + (_allocationPercentages[id] ?? 0));
@@ -42,6 +49,7 @@ class _DonationPageState extends ConsumerState<DonationPage> {
       } else {
         _selectedCauseIds.remove(id);
         _allocationPercentages.remove(id);
+        _percentageControllers.remove(id)?.dispose();
       }
       _applyEqualDistribution();
     });
@@ -56,6 +64,24 @@ class _DonationPageState extends ConsumerState<DonationPage> {
       _allocationPercentages[id] = base + (remainder > 0 ? 1 : 0);
       if (remainder > 0) remainder--;
     }
+    _syncAllocationControllers();
+  }
+
+  void _syncAllocationControllers() {
+    for (final id in _selectedCauseIds) {
+      final percentage = _allocationPercentages[id] ?? 0;
+      final controller = _percentageControllers[id];
+      if (controller != null && controller.text != percentage.toString()) {
+        controller.text = percentage.toString();
+      }
+    }
+  }
+
+  TextEditingController _percentageController(String id, int percentage) {
+    return _percentageControllers.putIfAbsent(
+      id,
+      () => TextEditingController(text: percentage.toString()),
+    );
   }
 
   void _setPercentage(String id, int value) =>
@@ -98,7 +124,7 @@ class _DonationPageState extends ConsumerState<DonationPage> {
               CheckboxListTile(key: ValueKey('donation_cause_${cause.id}'), value: selected, title: Text(cause.name), onChanged: (value) => _toggleCause(cause.id, value ?? false)),
               if (selected) Padding(padding: const EdgeInsets.fromLTRB(16, 0, 16, 16), child: Row(children: [
                 Expanded(child: Text(l10n.allocationPercentage)),
-                SizedBox(width: 110, child: TextFormField(key: ValueKey('donation_percentage_${cause.id}'), initialValue: percentage.toString(), keyboardType: TextInputType.number, textAlign: TextAlign.center, onChanged: (value) => _setPercentage(cause.id, int.tryParse(value) ?? 0), decoration: const InputDecoration(suffixText: '%'))),
+                SizedBox(width: 110, child: TextFormField(key: ValueKey('donation_percentage_${cause.id}'), controller: _percentageController(cause.id, percentage), keyboardType: TextInputType.number, textAlign: TextAlign.center, onChanged: (value) => _setPercentage(cause.id, int.tryParse(value) ?? 0), decoration: const InputDecoration(suffixText: '%'))),
                 const SizedBox(width: 12),
                 if (_totalAmount > 0) Text('₹ ${(_totalAmount * percentage / 100).toStringAsFixed(2)}'),
               ])),
