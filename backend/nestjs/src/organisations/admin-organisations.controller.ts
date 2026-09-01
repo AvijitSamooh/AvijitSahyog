@@ -30,6 +30,11 @@ export class AdminOrganisationsController {
     return this.organisationsService.update(id, dto);
   }
 
+  @Patch(':id/causes')
+  updateCauses(@Param('id') id: string, @Body('causeIds') causeIds: string[]) {
+    return this.organisationsService.updateCauses(id, causeIds ?? []);
+  }
+
   @Patch(':id/activate')
   activate(@Param('id') id: string) {
     return this.organisationsService.setActive(id, true);
