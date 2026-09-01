@@ -137,14 +137,16 @@ void main() {
   });
 
 
-  testWidgets('public home exposes login without restricting browsing', (tester) async {
+  testWidgets('public home exposes login from the shared settings menu', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
     await tester.pump();
 
-    expect(find.byKey(const ValueKey('auth_entry')), findsOneWidget);
+    expect(find.byKey(const ValueKey('app_settings_menu')), findsOneWidget);
     expect(find.text('Explore Causes'), findsWidgets);
 
-    await tester.tap(find.byKey(const ValueKey('auth_entry')));
+    await tester.tap(find.byKey(const ValueKey('app_settings_menu')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Login'));
     await tester.pumpAndSettle();
 
     expect(find.byType(LoginPage), findsOneWidget);
