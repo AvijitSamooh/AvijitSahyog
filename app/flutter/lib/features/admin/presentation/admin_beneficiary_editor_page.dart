@@ -115,7 +115,7 @@ class _AdminBeneficiaryEditorPageState
             error: (error, stackTrace) => const Text('Unable to load causes.'),
             data: (items) => DropdownButtonFormField<String>(
               key: const ValueKey('admin_beneficiary_cause'),
-              value: items.any((item) => item.id == _causeId) ? _causeId : null,
+              initialValue: items.any((item) => item.id == _causeId) ? _causeId : null,
               decoration: const InputDecoration(labelText: 'Cause'),
               items: items.map((AdminCause item) => DropdownMenuItem(value: item.id, child: Text(item.displayName))).toList(),
               onChanged: (value) => setState(() => _causeId = value),
@@ -126,7 +126,7 @@ class _AdminBeneficiaryEditorPageState
             loading: () => const LinearProgressIndicator(),
             error: (error, stackTrace) => const Text('Unable to load organisations.'),
             data: (items) => DropdownButtonFormField<String>(
-              value: items.any((item) => item.id == _organisationId) ? _organisationId : null,
+              initialValue: items.any((item) => item.id == _organisationId) ? _organisationId : null,
               decoration: const InputDecoration(labelText: 'Organisation (optional)'),
               items: [
                 const DropdownMenuItem<String>(value: null, child: Text('No organisation')),
