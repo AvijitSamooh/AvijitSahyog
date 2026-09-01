@@ -189,12 +189,26 @@ Establish role-based access before production content is managed by administrato
 
 - Admin-only route and API foundation
 - Role checks based on the internal User record
+- Protected `/admin/*` API namespace
 - Admin navigation entry for authenticated administrators
+- Cause management API: list all, create, edit, activate/deactivate
+- Cause translation upsert support for active content languages
 - Prepare the first content-management workflow so production content no longer depends on seed data
 
 ### Exit criteria
 
 One identity system supports normal users and administrators, while public discovery remains available to guests.
+
+### Initial admin API contract
+
+- `GET /admin/causes`
+- `GET /admin/causes/:id`
+- `POST /admin/causes`
+- `PATCH /admin/causes/:id`
+- `PATCH /admin/causes/:id/activate`
+- `PATCH /admin/causes/:id/deactivate`
+
+All endpoints require an authenticated internal user with the `ADMIN` role.
 
 ------------------------------------------------------------------------
 

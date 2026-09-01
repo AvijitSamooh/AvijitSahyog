@@ -100,5 +100,14 @@
   "authSignInFailed": "સાઇન ઇન થઈ શક્યું નથી. કૃપા કરીને ફરી પ્રયાસ કરો.",
   "authSignOutFailed": "લૉગ આઉટ થઈ શક્યું નથી. કૃપા કરીને ફરી પ્રયાસ કરો.",
   "adminPortal": "એડમિન પોર્ટલ",
-  "adminPortalSubtitle": "સામગ્રી અને કામગીરીનું સંચાલન કરો"
+  "adminPortalSubtitle": "સામગ્રી અને કામગીરીનું સંચાલન કરો",
+  "adminPortalWelcome": "પ્લેટફોર્મ વહીવટ",
+  "adminPortalDescription": "અવિજિત સહયોગ પર જાહેરમાં દેખાતી માહિતીનું સંચાલન કરો.",
+  "adminManageCauses": "કારણોનું સંચાલન",
+  "adminManageCausesSubtitle": "કારણો બનાવો, સંપાદિત કરો, સક્રિય કરો અને અનુવાદ કરો",
+  "adminCauseManagementComingSoon": "કારણ વ્યવસ્થાપન સ્ક્રીન આગામી તબક્કામાં સુરક્ષિત એડમિન API સાથે જોડાશે.",
+  "adminManageOrganisations": "સંસ્થાઓનું સંચાલન",
+  "adminManageOrganisationsSubtitle": "સંસ્થા કામગીરી આગામી તબક્કામાં ઉમેરાશે.",
+  "adminManageBeneficiaries": "લાભાર્થીઓનું સંચાલન",
+  "adminManageBeneficiariesSubtitle": "લાભાર્થી કામગીરી આગામી તબક્કામાં ઉમેરાશે."
 }

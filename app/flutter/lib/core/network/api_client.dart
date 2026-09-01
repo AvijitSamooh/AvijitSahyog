@@ -81,6 +81,54 @@ class ApiClient {
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
+
+  Future<List<Map<String, dynamic>>> getAdminCauses() async {
+    final response = await _client.get(Uri.parse('$baseUrl/admin/causes'));
+    _ensureSuccess(response, 'Loading admin causes');
+    final decoded = jsonDecode(response.body) as List<dynamic>;
+    return decoded
+        .map((item) => item as Map<String, dynamic>)
+        .toList(growable: false);
+  }
+
+  Future<Map<String, dynamic>> createAdminCause(
+    Map<String, dynamic> payload,
+  ) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/admin/causes'),
+      headers: const {'Content-Type': 'application/json'},
+      body: jsonEncode(payload),
+    );
+    _ensureSuccess(response, 'Creating cause');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> updateAdminCause(
+    String id,
+    Map<String, dynamic> payload,
+  ) async {
+    final response = await _client.patch(
+      Uri.parse('$baseUrl/admin/causes/$id'),
+      headers: const {'Content-Type': 'application/json'},
+      body: jsonEncode(payload),
+    );
+    _ensureSuccess(response, 'Updating cause');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> setAdminCauseActive(
+    String id,
+    bool isActive,
+  ) async {
+    final action = isActive ? 'activate' : 'deactivate';
+    final response = await _client.patch(
+      Uri.parse('$baseUrl/admin/causes/$id/$action'),
+      headers: const {'Content-Type': 'application/json'},
+    );
+    _ensureSuccess(response, 'Updating cause status');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
   void _ensureSuccess(http.Response response, String operation) {
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('$operation failed: ${response.statusCode}');

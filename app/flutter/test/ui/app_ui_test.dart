@@ -12,6 +12,9 @@ import 'package:avijit_sahyog/features/causes/providers/causes_providers.dart';
 import 'package:avijit_sahyog/features/donations/presentation/donation_page.dart';
 import 'package:avijit_sahyog/features/auth/presentation/login_page.dart';
 import 'package:avijit_sahyog/features/auth/presentation/profile_page.dart';
+import 'package:avijit_sahyog/features/admin/presentation/admin_portal_page.dart';
+import 'package:avijit_sahyog/features/admin/presentation/admin_causes_page.dart';
+import 'package:avijit_sahyog/features/admin/providers/admin_causes_providers.dart';
 import 'package:avijit_sahyog/features/auth/models/app_user.dart';
 import 'package:avijit_sahyog/features/auth/models/auth_state.dart';
 import 'package:avijit_sahyog/features/auth/providers/auth_providers.dart';
@@ -147,6 +150,42 @@ void main() {
     );
 
     expect(find.byKey(const ValueKey('admin_portal_entry')), findsOneWidget);
+  });
+
+  testWidgets('authenticated admin can open the admin portal', (tester) async {
+    await pumpApp(
+      tester,
+      home: const ProfilePage(),
+      overrides: [
+        authProvider.overrideWith(
+          (ref) => _AuthenticatedAdminController(),
+        ),
+      ],
+    );
+
+    await tester.tap(find.byKey(const ValueKey('admin_portal_entry')));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AdminPortalPage), findsOneWidget);
+    expect(find.text('Manage causes'), findsOneWidget);
+  });
+
+  testWidgets('admin portal exposes cause management workflow', (tester) async {
+    await pumpApp(
+      tester,
+      home: const AdminPortalPage(),
+      overrides: [
+        adminCausesProvider.overrideWith(
+          (ref) async => const [],
+        ),
+      ],
+    );
+
+    await tester.tap(find.text('Manage causes'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AdminCausesPage), findsOneWidget);
+    expect(find.byKey(const ValueKey('admin_create_cause')), findsOneWidget);
   });
 
   testWidgets('home hero loads Maharaj Ji image asset', (tester) async {

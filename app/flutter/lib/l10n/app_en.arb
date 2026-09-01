@@ -100,5 +100,14 @@
   "authSignInFailed": "We could not sign you in. Please try again.",
   "authSignOutFailed": "We could not sign you out. Please try again.",
   "adminPortal": "Admin Portal",
-  "adminPortalSubtitle": "Manage platform content and operations"
+  "adminPortalSubtitle": "Manage platform content and operations",
+  "adminPortalWelcome": "Platform administration",
+  "adminPortalDescription": "Manage the information that appears publicly across Avijit Sahyog.",
+  "adminManageCauses": "Manage causes",
+  "adminManageCausesSubtitle": "Create, edit, activate and translate causes",
+  "adminCauseManagementComingSoon": "Cause management screen will be connected to the protected admin API next.",
+  "adminManageOrganisations": "Manage organisations",
+  "adminManageOrganisationsSubtitle": "Organisation operations will be added next.",
+  "adminManageBeneficiaries": "Manage beneficiaries",
+  "adminManageBeneficiariesSubtitle": "Beneficiary operations will be added next."
 }
