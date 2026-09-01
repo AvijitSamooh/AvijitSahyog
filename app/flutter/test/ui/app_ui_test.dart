@@ -107,8 +107,11 @@ void main() {
   }
 
   Future<void> tapVisible(WidgetTester tester, Finder finder) async {
-    await tester.ensureVisible(finder);
-    await tester.pump();
+    await tester.scrollUntilVisible(
+      finder,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.tap(finder);
     await tester.pump();
   }
@@ -118,7 +121,11 @@ void main() {
     Finder finder,
     String value,
   ) async {
-    await tester.ensureVisible(finder);
+    await tester.scrollUntilVisible(
+      finder,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.pump();
     await tester.tap(finder);
     await tester.enterText(finder, value);
@@ -392,6 +399,13 @@ void main() {
 
   testWidgets('donation defaults a single selected cause to 100 percent', (tester) async {
     await pumpDonationPage(tester);
+    final percentageFinder =
+        find.byKey(const ValueKey('donation_percentage_cause-1'));
+    await tester.scrollUntilVisible(
+      percentageFinder,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
     final field = tester.widget<TextFormField>(
       find.byKey(const ValueKey('donation_percentage_cause-1')),
     );
