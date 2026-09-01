@@ -6,6 +6,7 @@ const languages = [
   { code: 'en', name: 'English', nativeName: 'English', isDefault: true },
   { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', isDefault: false },
   { code: 'mr', name: 'Marathi', nativeName: 'मराठी', isDefault: false },
+  { code: 'gu', name: 'Gujarati', nativeName: 'ગુજરાતી', isDefault: false },
 ];
 
 const causes = [
