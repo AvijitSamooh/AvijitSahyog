@@ -30,9 +30,9 @@ class AdminDashboardPage extends ConsumerWidget {
           children: [
             Text(l10n.adminDashboardOverview, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 16),
-            _MetricCard(title: l10n.adminManageCauses, metric: data.causes, icon: Icons.volunteer_activism_rounded, onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AdminCausesPage()))),
-            _MetricCard(title: l10n.adminManageOrganisations, metric: data.organisations, icon: Icons.business_rounded, onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AdminOrganisationsPage()))),
-            _MetricCard(title: l10n.adminManageBeneficiaries, metric: data.beneficiaries, icon: Icons.auto_awesome_rounded, onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AdminBeneficiariesPage()))),
+            _MetricCard(title: l10n.adminManageCauses, activeLabel: l10n.adminActive, inactiveLabel: l10n.adminInactive, metric: data.causes, icon: Icons.volunteer_activism_rounded, onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AdminCausesPage()))),
+            _MetricCard(title: l10n.adminManageOrganisations, activeLabel: l10n.adminActive, inactiveLabel: l10n.adminInactive, metric: data.organisations, icon: Icons.business_rounded, onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AdminOrganisationsPage()))),
+            _MetricCard(title: l10n.adminManageBeneficiaries, activeLabel: l10n.adminActive, inactiveLabel: l10n.adminInactive, metric: data.beneficiaries, icon: Icons.auto_awesome_rounded, onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AdminBeneficiariesPage()))),
           ],
         ),
       ),
@@ -41,8 +41,10 @@ class AdminDashboardPage extends ConsumerWidget {
 }
 
 class _MetricCard extends StatelessWidget {
-  const _MetricCard({required this.title, required this.metric, required this.icon, required this.onTap});
+  const _MetricCard({required this.title, required this.activeLabel, required this.inactiveLabel, required this.metric, required this.icon, required this.onTap});
   final String title;
+  final String activeLabel;
+  final String inactiveLabel;
   final AdminDashboardMetric metric;
   final IconData icon;
   final VoidCallback onTap;
