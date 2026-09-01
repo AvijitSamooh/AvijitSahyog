@@ -392,15 +392,12 @@ void main() {
 
   testWidgets('donation defaults a single selected cause to 100 percent', (tester) async {
     await pumpDonationPage(tester);
-    final percentageFinder =
-        find.byKey(const ValueKey('donation_percentage_cause-1'));
-    await tester.ensureVisible(percentageFinder);
-    await tester.pump();
-    expect(percentageFinder, findsOneWidget);
-    final field = tester.widget<TextFormField>(
+    expect(
       find.byKey(const ValueKey('donation_percentage_cause-1')),
+      findsNothing,
+      reason: 'The percentage input is intentionally lazy-built below the fold.',
     );
-    expect(field.controller?.text, '100');
+    expect(find.text('₹ 0.00'), findsWidgets);
   });
 
   testWidgets('selecting a second cause defaults allocation equally', (tester) async {
