@@ -71,7 +71,13 @@ export class BeneficiariesService {
     await this.findOneForAdmin(id);
     this.validate(dto, true);
     if (dto.causeId !== undefined || dto.organisationId !== undefined) {
-      await this.validateRelationships(dto.causeId, dto.organisationId);
+      const existing = await this.findOneForAdmin(id);
+      await this.validateRelationships(
+        dto.causeId ?? existing.causeId,
+        dto.organisationId === undefined
+            ? existing.organisationId
+            : dto.organisationId,
+      );
     }
     return this.prisma.beneficiary.update({
       where: { id },
