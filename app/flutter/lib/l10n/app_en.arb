@@ -109,5 +109,10 @@
   "adminManageOrganisations": "Manage organisations",
   "adminManageOrganisationsSubtitle": "Organisation operations will be added next.",
   "adminManageBeneficiaries": "Manage beneficiaries",
-  "adminManageBeneficiariesSubtitle": "Beneficiary operations will be added next."
+  "adminManageBeneficiariesSubtitle": "Beneficiary operations will be added next.",
+  "adminDashboard": "Dashboard",
+  "adminDashboardSubtitle": "View operational overview and content status",
+  "adminDashboardOverview": "Operational overview",
+  "adminActive": "Active",
+  "adminInactive": "Inactive"
 }
