@@ -15,13 +15,11 @@ import 'package:avijit_sahyog/features/auth/presentation/profile_page.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_portal_page.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_causes_page.dart';
 import 'package:avijit_sahyog/features/admin/providers/admin_causes_providers.dart';
-import 'package:avijit_sahyog/features/admin/data/admin_causes_repository.dart';
-import 'package:avijit_sahyog/features/admin/models/admin_cause.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:avijit_sahyog/features/auth/models/app_user.dart';
 import 'package:avijit_sahyog/features/auth/models/auth_state.dart';
 import 'package:avijit_sahyog/features/auth/providers/auth_providers.dart';
 import 'package:avijit_sahyog/features/auth/data/auth_repository.dart';
-import 'package:avijit_sahyog/core/network/api_client.dart';
 import 'package:avijit_sahyog/l10n/app_localizations.dart';
 
 const _organisation = Organisation(
@@ -178,8 +176,8 @@ void main() {
       tester,
       home: const AdminPortalPage(),
       overrides: [
-        adminCausesRepositoryProvider.overrideWithValue(
-          _FakeAdminCausesRepository(),
+        adminCausesProvider.overrideWith(
+          (ref) async => const [],
         ),
       ],
     );
@@ -430,15 +428,6 @@ void main() {
 
 
 }
-
-class _FakeAdminCausesRepository extends AdminCausesRepository {
-  _FakeAdminCausesRepository() : super(_ThrowingApiClient());
-
-  @override
-  Future<List<AdminCause>> getCauses() async => const [];
-}
-
-class _ThrowingApiClient extends ApiClient {}
 
 class _AuthenticatedAdminController extends AuthController {
   _AuthenticatedAdminController()
