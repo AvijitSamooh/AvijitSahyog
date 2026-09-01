@@ -107,6 +107,10 @@ void main() {
   }
 
   Future<void> tapVisible(WidgetTester tester, Finder finder) async {
+    if (finder.evaluate().isEmpty) {
+      await tester.drag(find.byType(ListView).first, const Offset(0, -600));
+      await tester.pump();
+    }
     await tester.ensureVisible(finder);
     await tester.pump();
     await tester.tap(finder);
@@ -376,11 +380,6 @@ void main() {
     expect(find.text(l10n(tester).chooseAmount), findsOneWidget);
 
     final amountField = find.byKey(const ValueKey('donation_amount_input'));
-    await tester.scrollUntilVisible(
-      amountField,
-      400,
-      scrollable: find.descendant(of: find.byType(ListView).first, matching: find.byType(Scrollable)),
-    );
     expect(amountField, findsOneWidget);
   });
 
@@ -395,8 +394,9 @@ void main() {
     await pumpDonationPage(tester);
     final percentageFinder =
         find.byKey(const ValueKey('donation_percentage_cause-1'));
-    await tester.ensureVisible(percentageFinder);
+    await tester.drag(find.byType(ListView).first, const Offset(0, -600));
     await tester.pump();
+    expect(percentageFinder, findsOneWidget);
     final field = tester.widget<TextFormField>(
       find.byKey(const ValueKey('donation_percentage_cause-1')),
     );
