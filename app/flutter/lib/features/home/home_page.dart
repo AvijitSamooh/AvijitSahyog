@@ -2,52 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../causes/presentation/causes_page.dart';
 import '../impact/presentation/impact_page.dart';
-import '../settings/settings_page.dart';
 import '../../l10n/app_localizations.dart';
-import '../auth/presentation/login_page.dart';
-import '../auth/presentation/profile_page.dart';
-import '../auth/providers/auth_providers.dart';
+import '../../core/navigation/app_shell_scope.dart';
+import '../../core/widgets/app_navigation_bar.dart';
+import '../../core/widgets/app_settings_menu.dart';
 
 class HomePage extends ConsumerStatefulWidget {
-  const HomePage({super.key, required this.onLocaleChanged});
-
-  final ValueChanged<Locale> onLocaleChanged;
+  const HomePage({super.key});
 
   @override
   ConsumerState<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  int _selectedIndex = 0;
+  int get _selectedIndex => AppShellScope.of(context).navigation.index;
 
-  void _openCauses() => setState(() => _selectedIndex = 1);
+  void _openCauses() => AppShellScope.of(context).navigation.select(1);
 
-  void _showLanguageSelector() async {
-    final currentLocale = Localizations.localeOf(context).languageCode;
-    final selectedLocale = await showModalBottomSheet<Locale>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (_) => _LanguageSheet(currentLocale: currentLocale),
-    );
-
-    if (selectedLocale != null) {
-      widget.onLocaleChanged(selectedLocale);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
+    final shell = AppShellScope.of(context);
     final pages = [
       _HomeContent(
         onExploreCauses: _openCauses,
-        onExploreImpact: () => setState(() => _selectedIndex = 2),
+        onExploreImpact: () => shell.navigation.select(2),
       ),
       const CausesPage(),
       const ImpactPage(),
-      SettingsPage(onLocaleChanged: widget.onLocaleChanged, showAppBar: false),
+      const _SettingsPlaceholder(),
     ];
 
-    return Scaffold(
+    return AnimatedBuilder(
+      animation: shell.navigation,
+      builder: (context, _) => Scaffold(
       appBar: _selectedIndex == 3
           ? null
           : AppBar(
@@ -56,59 +44,22 @@ class _HomePageState extends ConsumerState<HomePage> {
                   : _selectedIndex == 1
                       ? AppLocalizations.of(context)!.causesTitle
                       : AppLocalizations.of(context)!.impactTitle),
-              actions: [
-                IconButton(
-                  key: const ValueKey('auth_entry'),
-                  tooltip: ref.watch(authProvider).isAuthenticated
-                      ? AppLocalizations.of(context)!.profile
-                      : AppLocalizations.of(context)!.login,
-                  icon: Icon(ref.watch(authProvider).isAuthenticated
-                      ? Icons.account_circle_rounded
-                      : Icons.login_rounded),
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => ref.read(authProvider).isAuthenticated
-                          ? const ProfilePage()
-                          : const LoginPage(),
-                    ));
-                  },
-                ),
-                IconButton(
-                  tooltip: AppLocalizations.of(context)!.language,
-                  icon: const Icon(Icons.language_rounded),
-                  onPressed: _showLanguageSelector,
-                ),
-              ],
+              actions: const [AppSettingsMenu()],
             ),
       body: IndexedStack(index: _selectedIndex, children: pages),
-      bottomNavigationBar: NavigationBar(
+      bottomNavigationBar: AppNavigationBar(
         selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) => setState(() => _selectedIndex = index),
-        destinations: [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_rounded),
-            label: AppLocalizations.of(context)!.navHome,
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.volunteer_activism_outlined),
-            selectedIcon: Icon(Icons.volunteer_activism_rounded),
-            label: AppLocalizations.of(context)!.navCauses,
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.auto_awesome_outlined),
-            selectedIcon: Icon(Icons.auto_awesome_rounded),
-            label: AppLocalizations.of(context)!.navImpact,
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings_rounded),
-            label: AppLocalizations.of(context)!.navSettings,
-          ),
-        ],
+        onDestinationSelected: shell.navigation.select,
       ),
+    ),
     );
   }
+}
+
+class _SettingsPlaceholder extends StatelessWidget {
+  const _SettingsPlaceholder();
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
 }
 
 class _HomeContent extends StatelessWidget {
