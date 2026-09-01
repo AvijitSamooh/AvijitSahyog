@@ -110,7 +110,7 @@ void main() {
     await tester.scrollUntilVisible(
       finder,
       300,
-      scrollable: find.byType(ListView).first,
+      scrollable: find.descendant(of: find.byType(ListView).first, matching: find.byType(Scrollable)),
     );
     await tester.tap(finder);
     await tester.pump();
@@ -124,7 +124,7 @@ void main() {
     await tester.scrollUntilVisible(
       finder,
       300,
-      scrollable: find.byType(ListView).first,
+      scrollable: find.descendant(of: find.byType(ListView).first, matching: find.byType(Scrollable)),
     );
     await tester.pump();
     await tester.tap(finder);
@@ -385,7 +385,7 @@ void main() {
     await tester.scrollUntilVisible(
       amountField,
       400,
-      scrollable: find.byType(ListView).first,
+      scrollable: find.descendant(of: find.byType(ListView).first, matching: find.byType(Scrollable)),
     );
     expect(amountField, findsOneWidget);
   });
@@ -404,7 +404,7 @@ void main() {
     await tester.scrollUntilVisible(
       percentageFinder,
       300,
-      scrollable: find.byType(ListView).first,
+      scrollable: find.descendant(of: find.byType(ListView).first, matching: find.byType(Scrollable)),
     );
     final field = tester.widget<TextFormField>(
       find.byKey(const ValueKey('donation_percentage_cause-1')),
@@ -558,7 +558,7 @@ void main() {
     await tester.scrollUntilVisible(
       submitFinder,
       300,
-      scrollable: find.byType(ListView).first,
+      scrollable: find.descendant(of: find.byType(ListView).first, matching: find.byType(Scrollable)),
     );
     final submit = tester.widget<FilledButton>(submitFinder);
     expect(submit.onPressed, isNull);
