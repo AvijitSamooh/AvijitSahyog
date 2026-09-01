@@ -4,109 +4,57 @@ import '../causes/presentation/causes_page.dart';
 import '../impact/presentation/impact_page.dart';
 import '../settings/settings_page.dart';
 import '../../l10n/app_localizations.dart';
-import '../auth/presentation/login_page.dart';
-import '../auth/presentation/profile_page.dart';
-import '../auth/providers/auth_providers.dart';
+import '../../core/navigation/app_shell_scope.dart';
+import '../../core/widgets/app_navigation_bar.dart';
+import '../../core/widgets/app_settings_menu.dart';
 
 class HomePage extends ConsumerStatefulWidget {
-  const HomePage({super.key, required this.onLocaleChanged});
-
-  final ValueChanged<Locale> onLocaleChanged;
+  const HomePage({super.key});
 
   @override
   ConsumerState<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  int _selectedIndex = 0;
+  int get _selectedIndex => AppShellScope.of(context).navigation.index;
 
-  void _openCauses() => setState(() => _selectedIndex = 1);
+  void _openCauses() => AppShellScope.of(context).navigation.select(1);
 
-  void _showLanguageSelector() async {
-    final currentLocale = Localizations.localeOf(context).languageCode;
-    final selectedLocale = await showModalBottomSheet<Locale>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (_) => _LanguageSheet(currentLocale: currentLocale),
-    );
-
-    if (selectedLocale != null) {
-      widget.onLocaleChanged(selectedLocale);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
+    final shell = AppShellScope.of(context);
     final pages = [
       _HomeContent(
         onExploreCauses: _openCauses,
-        onExploreImpact: () => setState(() => _selectedIndex = 2),
+        onExploreImpact: () => shell.navigation.select(2),
       ),
       const CausesPage(),
       const ImpactPage(),
-      SettingsPage(onLocaleChanged: widget.onLocaleChanged, showAppBar: false),
+      SettingsPage(onLocaleChanged: shell.onLocaleChanged, showAppBar: false),
     ];
 
-    return Scaffold(
-      appBar: _selectedIndex == 3
-          ? null
-          : AppBar(
-              title: Text(_selectedIndex == 0
-                  ? AppLocalizations.of(context)!.appTitle
-                  : _selectedIndex == 1
-                      ? AppLocalizations.of(context)!.causesTitle
-                      : AppLocalizations.of(context)!.impactTitle),
-              actions: [
-                IconButton(
-                  key: const ValueKey('auth_entry'),
-                  tooltip: ref.watch(authProvider).isAuthenticated
-                      ? AppLocalizations.of(context)!.profile
-                      : AppLocalizations.of(context)!.login,
-                  icon: Icon(ref.watch(authProvider).isAuthenticated
-                      ? Icons.account_circle_rounded
-                      : Icons.login_rounded),
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => ref.read(authProvider).isAuthenticated
-                          ? const ProfilePage()
-                          : const LoginPage(),
-                    ));
-                  },
-                ),
-                IconButton(
-                  tooltip: AppLocalizations.of(context)!.language,
-                  icon: const Icon(Icons.language_rounded),
-                  onPressed: _showLanguageSelector,
-                ),
-              ],
-            ),
-      body: IndexedStack(index: _selectedIndex, children: pages),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) => setState(() => _selectedIndex = index),
-        destinations: [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_rounded),
-            label: AppLocalizations.of(context)!.navHome,
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.volunteer_activism_outlined),
-            selectedIcon: Icon(Icons.volunteer_activism_rounded),
-            label: AppLocalizations.of(context)!.navCauses,
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.auto_awesome_outlined),
-            selectedIcon: Icon(Icons.auto_awesome_rounded),
-            label: AppLocalizations.of(context)!.navImpact,
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings_rounded),
-            label: AppLocalizations.of(context)!.navSettings,
-          ),
-        ],
+    return AnimatedBuilder(
+      animation: shell.navigation,
+      builder: (context, _) => Scaffold(
+      appBar: AppBar(
+        title: Text(
+          _selectedIndex == 0
+              ? AppLocalizations.of(context)!.appTitle
+              : _selectedIndex == 1
+                  ? AppLocalizations.of(context)!.causesTitle
+                  : _selectedIndex == 2
+                      ? AppLocalizations.of(context)!.impactTitle
+                      : AppLocalizations.of(context)!.navSettings,
+        ),
+        actions: const [AppSettingsMenu()],
       ),
+      body: IndexedStack(index: _selectedIndex, children: pages),
+      bottomNavigationBar: AppNavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: shell.navigation.select,
+      ),
+    ),
     );
   }
 }
@@ -351,51 +299,6 @@ class _GivingQuote extends StatelessWidget {
             style: TextStyle(color: Color(0xFF6B4F36)),
           ),
         ],
-      ),
-    );
-  }
-}
-
-
-
-class _LanguageSheet extends StatelessWidget {
-  const _LanguageSheet({required this.currentLocale});
-
-  final String currentLocale;
-
-  @override
-  Widget build(BuildContext context) {
-    final options = [
-      (AppLocalizations.of(context)!.languageEnglish, 'en'),
-      (AppLocalizations.of(context)!.languageHindi, 'hi'),
-      (AppLocalizations.of(context)!.languageMarathi, 'mr'),
-      (AppLocalizations.of(context)!.languageGujarati, 'gu'),
-    ];
-
-    return Material(
-      color: const Color(0xFFFFF8ED),
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-      clipBehavior: Clip.antiAlias,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
-        child: SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: options.map((option) {
-              final selected = option.$2 == currentLocale;
-              return ListTile(
-                leading: Icon(
-                  selected
-                      ? Icons.radio_button_checked_rounded
-                      : Icons.radio_button_unchecked_rounded,
-                  color: const Color(0xFF6E1A14),
-                ),
-                title: Text(option.$1),
-                onTap: () => Navigator.pop(context, Locale(option.$2)),
-              );
-            }).toList(),
-          ),
-        ),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'features/home/home_page.dart';
+import 'core/navigation/app_shell_scope.dart';
 import 'features/impact/presentation/impact_page.dart';
 
 import 'l10n/app_localizations.dart';
@@ -25,11 +26,18 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
   static const _line = Color(0xFFE8DCC8);
 
   Locale? _locale;
+  final _navigation = AppNavigationController();
 
   @override
   void initState() {
     super.initState();
     _loadLocale();
+  }
+
+  @override
+  void dispose() {
+    _navigation.dispose();
+    super.dispose();
   }
 
   Future<void> _loadLocale() async {
@@ -138,7 +146,12 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: _buildTheme(),
-      home: HomePage(onLocaleChanged: setLocale),
+      builder: (context, child) => AppShellScope(
+        onLocaleChanged: setLocale,
+        navigation: _navigation,
+        child: child!,
+      ),
+      home: const HomePage(),
       routes: {
         '/impact': (_) => const ImpactPage(),
       },

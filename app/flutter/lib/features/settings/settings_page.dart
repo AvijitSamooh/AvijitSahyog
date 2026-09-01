@@ -16,41 +16,21 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: showAppBar
-          ? AppBar(title: Text(l10n.language))
-          : null,
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          Text(
-            l10n.language,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(height: 12),
-          _languageTile(
-            context,
-            label: l10n.languageEnglish,
-            locale: const Locale('en'),
-          ),
-          _languageTile(
-            context,
-            label: l10n.languageHindi,
-            locale: const Locale('hi'),
-          ),
-          _languageTile(
-            context,
-            label: l10n.languageMarathi,
-            locale: const Locale('mr'),
-          ),
-          _languageTile(
-            context,
-            label: l10n.languageGujarati,
-            locale: const Locale('gu'),
-          ),
-        ],
-      ),
+    final content = ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        Text(l10n.language, style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 12),
+        _languageTile(context, label: l10n.languageEnglish, locale: const Locale('en')),
+        _languageTile(context, label: l10n.languageHindi, locale: const Locale('hi')),
+        _languageTile(context, label: l10n.languageMarathi, locale: const Locale('mr')),
+        _languageTile(context, label: l10n.languageGujarati, locale: const Locale('gu')),
+      ],
     );
+
+    return showAppBar
+        ? Scaffold(appBar: AppBar(title: Text(l10n.language)), body: content)
+        : content;
   }
 
   Widget _languageTile(

@@ -596,3 +596,10 @@ Integration test
 
 This keeps the application maintainable as it grows from an MVP into a
 real donation platform.
+
+
+### App Shell Consistency
+
+- Shared top-right settings menu exposes language and login/profile actions across public flows.
+- Shared bottom navigation remains available on contribution flows and returns users to the existing main tab shell.
+- Locale changes remain available outside the home screen through the application shell.

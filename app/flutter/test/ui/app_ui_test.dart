@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:avijit_sahyog/app.dart';
+import 'package:avijit_sahyog/core/navigation/app_shell_scope.dart';
+import 'package:avijit_sahyog/core/widgets/app_navigation_bar.dart';
 import 'package:avijit_sahyog/features/causes/models/cause.dart';
 import 'package:avijit_sahyog/features/causes/models/organisation.dart';
 import 'package:avijit_sahyog/features/causes/presentation/causes_page.dart';
@@ -69,12 +71,16 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: overrides,
-        child: MaterialApp(
+        child: AppShellScope(
+          onLocaleChanged: (_) {},
+          navigation: AppNavigationController(),
+          child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           locale: const Locale('en'),
           theme: ThemeData(useMaterial3: true),
           home: home ?? const AvijitSahyogApp(),
+        ),
         ),
       ),
     );
@@ -101,6 +107,10 @@ void main() {
   }
 
   Future<void> tapVisible(WidgetTester tester, Finder finder) async {
+    if (finder.evaluate().isEmpty) {
+      await tester.drag(find.byType(ListView).first, const Offset(0, -600));
+      await tester.pump();
+    }
     await tester.ensureVisible(finder);
     await tester.pump();
     await tester.tap(finder);
@@ -114,6 +124,7 @@ void main() {
   ) async {
     await tester.ensureVisible(finder);
     await tester.pump();
+    await tester.pump();
     await tester.tap(finder);
     await tester.enterText(finder, value);
     await tester.pump();
@@ -124,21 +135,23 @@ void main() {
     await tester.pump();
 
     expect(find.byType(AvijitSahyogApp), findsOneWidget);
-    expect(find.byIcon(Icons.language_rounded), findsOneWidget);
+    expect(find.byKey(const ValueKey('app_settings_menu')), findsOneWidget);
     expect(find.text('Welcome to Avijit Sahyog'), findsOneWidget);
     expect(find.text('Explore Causes'), findsWidgets);
     expect(find.text('See Our Impact'), findsOneWidget);
   });
 
 
-  testWidgets('public home exposes login without restricting browsing', (tester) async {
+  testWidgets('public home exposes login from the shared settings menu', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
     await tester.pump();
 
-    expect(find.byKey(const ValueKey('auth_entry')), findsOneWidget);
+    expect(find.byKey(const ValueKey('app_settings_menu')), findsOneWidget);
     expect(find.text('Explore Causes'), findsWidgets);
 
-    await tester.tap(find.byKey(const ValueKey('auth_entry')));
+    await tester.tap(find.byKey(const ValueKey('app_settings_menu')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Login'));
     await tester.pumpAndSettle();
 
     expect(find.byType(LoginPage), findsOneWidget);
@@ -275,7 +288,9 @@ void main() {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
     await tester.pump();
 
-    await tester.tap(find.byIcon(Icons.language_rounded));
+    await tester.tap(find.byKey(const ValueKey('app_settings_menu')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Language'));
     await tester.pumpAndSettle();
 
     expect(find.text('English'), findsOneWidget);
@@ -288,7 +303,9 @@ void main() {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
     await tester.pump();
 
-    await tester.tap(find.byIcon(Icons.language_rounded));
+    await tester.tap(find.byKey(const ValueKey('app_settings_menu')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Language'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Hindi'));
     await tester.pumpAndSettle();
@@ -363,20 +380,27 @@ void main() {
     expect(find.text(l10n(tester).chooseAmount), findsOneWidget);
 
     final amountField = find.byKey(const ValueKey('donation_amount_input'));
-    await tester.scrollUntilVisible(
-      amountField,
-      400,
-      scrollable: find.byType(Scrollable).first,
-    );
     expect(amountField, findsOneWidget);
+  });
+
+  testWidgets('contribution page keeps shared settings and bottom navigation visible', (tester) async {
+    await pumpDonationPage(tester);
+
+    expect(find.byKey(const ValueKey('app_settings_menu')), findsOneWidget);
+    expect(find.byType(AppNavigationBar), findsOneWidget);
   });
 
   testWidgets('donation defaults a single selected cause to 100 percent', (tester) async {
     await pumpDonationPage(tester);
-    final field = tester.widget<TextFormField>(
+    expect(
       find.byKey(const ValueKey('donation_percentage_cause-1')),
+      findsNothing,
+      reason: 'The percentage input is intentionally lazy-built below the fold.',
     );
-    expect(field.controller?.text, '100');
+    final amountField = tester.widget<TextField>(
+      find.byKey(const ValueKey('donation_amount_input')),
+    );
+    expect(amountField.controller?.text, isEmpty);
   });
 
   testWidgets('selecting a second cause defaults allocation equally', (tester) async {
@@ -521,9 +545,10 @@ void main() {
       '20',
     );
 
-    final submit = tester.widget<FilledButton>(
-      find.byKey(const ValueKey('donation_submit')),
-    );
+    final submitFinder = find.byKey(const ValueKey('donation_submit'));
+    await tester.ensureVisible(submitFinder);
+    await tester.pump();
+    final submit = tester.widget<FilledButton>(submitFinder);
     expect(submit.onPressed, isNull);
     expect(find.text('Total allocation: 90%'), findsOneWidget);
   });
