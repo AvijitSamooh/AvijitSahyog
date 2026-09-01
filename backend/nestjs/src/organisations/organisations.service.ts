@@ -231,6 +231,42 @@ export class OrganisationsService {
       });
     });
   }
+  async updateCauses(id: string, causeIds: string[]) {
+    await this.findOneForAdmin(id);
+    if (new Set(causeIds).size !== causeIds.length) {
+      throw new BadRequestException('Each cause may only appear once.');
+    }
+
+    const causes = await this.prisma.cause.findMany({
+      where: { id: { in: causeIds } },
+      select: { id: true },
+    });
+    if (causes.length !== causeIds.length) {
+      throw new BadRequestException('One or more causes do not exist.');
+    }
+
+    return this.prisma.$transaction(async (tx: any) => {
+      await tx.organisationCause.deleteMany({ where: { organisationId: id } });
+      if (causeIds.length) {
+        await tx.organisationCause.createMany({
+          data: causeIds.map((causeId, index) => ({
+            organisationId: id,
+            causeId,
+            displayOrder: index,
+          })),
+        });
+      }
+      return tx.organisation.findUnique({
+        where: { id },
+        include: {
+          causes: {
+            orderBy: { displayOrder: 'asc' },
+            include: { cause: { select: { id: true, slug: true } } },
+          },
+        },
+      });
+    });
+  }
 
   async setActive(id: string, isActive: boolean) {
     await this.findOneForAdmin(id);
