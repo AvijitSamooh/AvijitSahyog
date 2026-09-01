@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../l10n/app_localizations.dart';
+import 'admin_causes_page.dart';
 
 class AdminPortalPage extends StatelessWidget {
   const AdminPortalPage({super.key});
@@ -25,11 +26,9 @@ class AdminPortalPage extends StatelessWidget {
             icon: Icons.volunteer_activism_rounded,
             title: l10n.adminManageCauses,
             subtitle: l10n.adminManageCausesSubtitle,
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.adminCauseManagementComingSoon)),
-              );
-            },
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const AdminCausesPage()),
+            ),
           ),
           const SizedBox(height: 12),
           _AdminSectionCard(
