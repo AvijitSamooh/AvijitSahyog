@@ -8,10 +8,6 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// -----------------------------------------------------------------------------
-// Identity / authorization domain
-// -----------------------------------------------------------------------------
-
 enum UserRole {
   USER
   ADMIN
@@ -30,10 +26,6 @@ model User {
 
   @@index([role])
 }
-
-// -----------------------------------------------------------------------------
-// Content / discovery domain
-// -----------------------------------------------------------------------------
 
 model Language {
   id         String   @id @default(uuid()) @db.Uuid
@@ -61,8 +53,8 @@ model Cause {
 
   translations  CauseTranslation[]
   organisations OrganisationCause[]
-  allocations    DonationAllocation[]
-  beneficiaries  Beneficiary[]
+  allocations   DonationAllocation[]
+  beneficiaries Beneficiary[]
 
   @@index([isActive, displayOrder])
 }
@@ -105,6 +97,7 @@ model Organisation {
   causes       OrganisationCause[]
   allocations  DonationAllocation[]
   beneficiaries Beneficiary[]
+  media        OrganisationMedia[]
 
   @@index([isActive, displayOrder])
   @@index([city, state])
@@ -143,13 +136,6 @@ model OrganisationCause {
   @@index([organisationId, isActive, displayOrder])
 }
 
-// -----------------------------------------------------------------------------
-// Donation domain
-// -----------------------------------------------------------------------------
-// Financial state is intentionally separated from payment processing.
-// A Donation represents the contribution intent; payment attempts will be
-// introduced in a later iteration.
-
 enum DonationStatus {
   PENDING
   PAYMENT_PENDING
@@ -179,8 +165,8 @@ model DonationAllocation {
   amount         Decimal  @db.Decimal(12, 2)
   createdAt      DateTime @default(now())
 
-  donation     Donation     @relation(fields: [donationId], references: [id], onDelete: Cascade)
-  cause        Cause        @relation(fields: [causeId], references: [id], onDelete: Restrict)
+  donation     Donation      @relation(fields: [donationId], references: [id], onDelete: Cascade)
+  cause        Cause         @relation(fields: [causeId], references: [id], onDelete: Restrict)
   organisation Organisation? @relation(fields: [organisationId], references: [id], onDelete: Restrict)
 
   @@index([donationId])
@@ -188,10 +174,6 @@ model DonationAllocation {
   @@index([organisationId])
 }
 
-
-// -----------------------------------------------------------------------------
-// Impact domain
-// -----------------------------------------------------------------------------
 model Beneficiary {
   id                 String        @id @default(uuid()) @db.Uuid
   name               String        @db.VarChar(250)
@@ -208,8 +190,71 @@ model Beneficiary {
 
   cause        Cause         @relation(fields: [causeId], references: [id], onDelete: Restrict)
   organisation Organisation? @relation(fields: [organisationId], references: [id], onDelete: SetNull)
+  media        BeneficiaryMedia[]
 
   @@index([causeId, isActive, displayOrder])
   @@index([supportedYear, isActive])
   @@index([name])
+}
+
+// -----------------------------------------------------------------------------
+// Media domain
+// -----------------------------------------------------------------------------
+
+model Media {
+  id         String   @id @default(uuid()) @db.Uuid
+  storageKey String   @unique @db.VarChar(1000)
+  mimeType   String   @db.VarChar(100)
+  fileSize   Int
+  width      Int?
+  height     Int?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  organisationMedia OrganisationMedia[]
+  beneficiaryMedia  BeneficiaryMedia[]
+}
+
+enum OrganisationMediaPurpose {
+  LOGO
+  GALLERY
+}
+
+model OrganisationMedia {
+  id             String                   @id @default(uuid()) @db.Uuid
+  organisationId String                   @db.Uuid
+  mediaId        String                   @db.Uuid
+  purpose        OrganisationMediaPurpose @default(GALLERY)
+  displayOrder   Int                      @default(0)
+  isPrimary      Boolean                  @default(false)
+  createdAt      DateTime                 @default(now())
+
+  organisation Organisation @relation(fields: [organisationId], references: [id], onDelete: Cascade)
+  media        Media        @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@unique([organisationId, mediaId])
+  @@index([organisationId, purpose, displayOrder])
+  @@index([mediaId])
+}
+
+enum BeneficiaryMediaPurpose {
+  PROFILE
+  GALLERY
+}
+
+model BeneficiaryMedia {
+  id            String                  @id @default(uuid()) @db.Uuid
+  beneficiaryId String                  @db.Uuid
+  mediaId       String                  @db.Uuid
+  purpose       BeneficiaryMediaPurpose @default(GALLERY)
+  displayOrder  Int                     @default(0)
+  isPrimary     Boolean                 @default(false)
+  createdAt     DateTime                @default(now())
+
+  beneficiary Beneficiary @relation(fields: [beneficiaryId], references: [id], onDelete: Cascade)
+  media       Media       @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@unique([beneficiaryId, mediaId])
+  @@index([beneficiaryId, purpose, displayOrder])
+  @@index([mediaId])
 }
