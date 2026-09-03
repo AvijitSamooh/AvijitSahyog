@@ -1,10 +1,21 @@
-# Avijit Sahyog — Causes & Organisations Data Model
+# Avijit Sahyog — Causes, Organisations & Media Data Model
 
 ## Scope
 
-Iteration 2.1 defines the content/discovery domain used to show donation causes and the affiliated organisations under each cause.
+The content/discovery domain supports donation causes, affiliated organisations, beneficiaries, and managed image assets.
 
-Financial models such as Donation, Payment, Allocation, Receipt and Mandate are intentionally outside the current discovery scope.\n\n## Donation allocation boundary\n\nThe donor allocates a donation across **Causes**, not individual Organisations. The intended financial relationship is:\n\n```text\nDonation\n  └── DonationAllocation\n        └── Cause\n              └── affiliated Organisations (discovery/transparency)\n```\n\nOrganisations may later participate in operational routing or settlement, but organisation selection is not part of donor intent and must not be required by the donation allocation UI or API. A donor may allocate a donation across one or more selected causes using explicit percentages that total 100%. A preselected cause is only an entry-point convenience and does not make the donation cause-specific.
+Financial models such as Donation, Payment, Allocation, Receipt and Mandate remain separate from the media domain.
+
+## Donation allocation boundary
+
+The donor allocates a donation across **Causes**, not individual Organisations:
+
+```text
+Donation
+  └── DonationAllocation
+        └── Cause
+              └── affiliated Organisations (discovery/transparency)
+```
 
 ## Entities
 
@@ -12,65 +23,104 @@ Financial models such as Donation, Payment, Allocation, Receipt and Mandate are 
 
 Stores supported backend content languages.
 
-- `code` — stable language code such as `en`, `hi`, `mr`, `gu`
+- `code` — stable language code
 - `name` — English/display name
 - `nativeName` — language's native name
-- `isDefault` — identifies the fallback language
-- `isActive` — controls availability
+- `isDefault` — fallback language
+- `isActive` — availability
 
 ### Cause
 
-Represents a donation bucket/cause, for example Jeev Daya or Education.
+Represents a donation bucket/cause.
 
 - `slug` — stable API-friendly identifier
-- `isActive` — whether the cause is currently available
-- `displayOrder` — ordering in the UI
+- `isActive` — public availability
+- `displayOrder` — UI ordering
 
-Cause names and descriptions are stored separately in `CauseTranslation`.
+Names and descriptions are stored in `CauseTranslation`.
 
 ### Organisation
 
-Represents an affiliated organisation that can receive allocations under one or more causes.
+Represents an affiliated organisation associated with one or more causes.
 
-The model stores non-translatable operational/contact data such as:
+Operational/contact fields include logo URL compatibility, website, phone/email, address, location, active state and display order. Names and descriptions are stored in `OrganisationTranslation`.
 
-- logo
-- website
-- phone/email
-- address
-- city/state/country
-- latitude/longitude
-- active state
-- display order
-
-Organisation names and descriptions are stored in `OrganisationTranslation`.
+Managed images are represented through `OrganisationMedia`.
 
 ### Beneficiary
 
-Represents a person or initiative whose support can be transparently explored by donors.
+Represents a person or initiative whose support can be transparently explored.
 
-- `name` — beneficiary or initiative display name
-- `photoUrl` — optional image
-- `story` — optional impact story
-- `supportedYear` — year of support
-- `contributionAmount` — contribution amount associated with the record
-- `causeId` — required cause relationship
-- `organisationId` — optional affiliated organisation relationship
-- `isActive` — controls public visibility
-- `displayOrder` — presentation ordering
-
-Beneficiaries support the Impact Explorer and are not part of donation allocation logic.
-
-### OrganisationCause
-
-Explicit many-to-many relationship between organisations and causes.
-
-An explicit relation is used instead of an implicit Prisma many-to-many relation because the relationship itself needs state and presentation metadata:
-
+- `name`
+- `photoUrl` — legacy/backward-compatible primary image URL
+- `story`
+- `supportedYear`
+- `contributionAmount`
+- `causeId`
+- `organisationId`
 - `isActive`
 - `displayOrder`
 
-This also leaves room for future relationship-specific fields without redesigning the relation.
+Managed images are represented through `BeneficiaryMedia`.
+
+### Media
+
+Represents a processed image stored in object storage.
+
+- `storageKey` — unique Cloudflare R2 object key
+- `mimeType` — persisted output MIME type
+- `fileSize` — processed file size in bytes
+- `width` / `height` — processed image dimensions
+- timestamps
+
+The application stores object metadata in PostgreSQL rather than exposing storage implementation details to domain entities.
+
+### OrganisationMedia
+
+Explicit association between an Organisation and a Media record.
+
+- `purpose` — `LOGO` or `GALLERY`
+- `displayOrder` — gallery ordering
+- `isPrimary` — identifies the preferred image
+
+### BeneficiaryMedia
+
+Explicit association between a Beneficiary and a Media record.
+
+- `purpose` — `PROFILE` or `GALLERY`
+- `displayOrder`
+- `isPrimary`
+
+## Media storage and processing
+
+```text
+Admin upload
+    ↓
+NestJS Media API
+    ↓
+Validate MIME type + size
+    ↓
+Sharp: auto-rotate + resize
+    ↓
+Convert to WebP
+    ↓
+Cloudflare R2
+    ↓
+Persist Media metadata in PostgreSQL
+    ↓
+Attach Media to Organisation or Beneficiary
+```
+
+Current upload constraints:
+
+- Accepted input: JPEG, PNG, WebP
+- Maximum upload size: 10 MB
+- Maximum processed dimension: 1920 px
+- Output format: WebP (quality 82)
+
+If database persistence fails after object upload, the backend attempts to remove the uploaded R2 object to avoid orphaned files.
+
+The current `logoUrl` and `photoUrl` fields remain temporarily for backward compatibility. New gallery functionality should use the Media relations.
 
 ## Translation strategy
 
@@ -82,8 +132,6 @@ Organisation
   └── OrganisationTranslation ── Language
 ```
 
-Each cause can have at most one translation per language, and each organisation can have at most one translation per language.
-
 English remains the mandatory fallback language as defined by `docs/vision.md`.
 
 ## Important design decisions
@@ -91,9 +139,12 @@ English remains the mandatory fallback language as defined by `docs/vision.md`.
 1. Stable IDs are UUIDs.
 2. Slugs are unique and intended for API/UI routing.
 3. Content can be activated/deactivated without deleting historical references.
-4. Translation records are separate from the core entity so adding a language does not require a schema redesign.
-5. Organisation-to-cause is an explicit relation because the relationship has its own lifecycle and ordering.
-6. Donation/payment state is deliberately outside this model.
+4. Translation records are separate from core entities.
+5. Organisation-to-cause is an explicit relation because it has its own lifecycle and ordering.
+6. Media uses explicit entity relations rather than polymorphic `entityType/entityId` references, preserving database foreign-key integrity.
+7. Object storage keys, rather than storage-provider URLs, are persisted as the canonical media identity.
+8. Existing URL fields remain temporarily to avoid breaking existing clients.
+9. Video is intentionally outside the current media foundation scope.
 
 ## Current API additions
 
@@ -102,14 +153,13 @@ The impact domain exposes:
 - `GET /beneficiaries`
 - `GET /beneficiaries/:id`
 
-The collection supports filtering/searching and sorting for discovery.
+The admin media foundation exposes:
+
+- `GET /admin/media/verify`
+- `POST /admin/media/upload`
+
+Both media endpoints are protected by admin authorization.
 
 ## Next iteration
 
-Iteration 2.2 will expose this model through NestJS services/controllers and REST endpoints:
-
-- `GET /causes`
-- `GET /causes/:id`
-- `GET /causes/:id/organisations`
-- `GET /organisations`
-- `GET /organisations/:id`
+The next media slice will attach uploaded Media records to Organisations and Beneficiaries and expose ordered gallery data through the relevant APIs.

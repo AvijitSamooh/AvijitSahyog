@@ -8,9 +8,19 @@ import { PrismaModule } from './prisma/prisma.module';
 import { BeneficiariesModule } from './beneficiaries/beneficiaries.module';
 import { AuthModule } from './auth/auth.module';
 import { AdminDashboardModule } from './admin-dashboard/admin-dashboard.module';
+import { MediaModule } from './media/media.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, CausesModule, OrganisationsModule, DonationsModule, BeneficiariesModule, AdminDashboardModule],
+  imports: [
+    PrismaModule,
+    AuthModule,
+    CausesModule,
+    OrganisationsModule,
+    DonationsModule,
+    BeneficiariesModule,
+    AdminDashboardModule,
+    MediaModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
