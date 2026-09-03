@@ -3,8 +3,9 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import sharp from 'sharp';
 import { randomUUID } from 'crypto';
+import sharp from 'sharp';
+import { PrismaService } from '../prisma/prisma.service';
 import { R2StorageService } from './r2-storage.service';
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -13,7 +14,10 @@ const MAX_DIMENSION = 1920;
 
 @Injectable()
 export class MediaService {
-  constructor(private readonly r2StorageService: R2StorageService) {}
+  constructor(
+    private readonly r2StorageService: R2StorageService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   async uploadImage(file: Express.Multer.File, folder = 'uploads') {
     if (!file) {
@@ -31,19 +35,18 @@ export class MediaService {
     }
 
     try {
-      const image = sharp(file.buffer).rotate().resize({
-        width: MAX_DIMENSION,
-        height: MAX_DIMENSION,
-        fit: 'inside',
-        withoutEnlargement: true,
-      });
-
-      const metadata = await image.metadata();
-
-      const processedBuffer = await image
+      const processedBuffer = await sharp(file.buffer)
+        .rotate()
+        .resize({
+          width: MAX_DIMENSION,
+          height: MAX_DIMENSION,
+          fit: 'inside',
+          withoutEnlargement: true,
+        })
         .webp({ quality: 82 })
         .toBuffer();
 
+      const metadata = await sharp(processedBuffer).metadata();
       const key = `${folder}/${randomUUID()}.webp`;
 
       await this.r2StorageService.upload(
@@ -52,13 +55,20 @@ export class MediaService {
         'image/webp',
       );
 
-      return {
-        key,
-        mimeType: 'image/webp',
-        fileSize: processedBuffer.length,
-        width: metadata.width ?? null,
-        height: metadata.height ?? null,
-      };
+      try {
+        return await this.prisma.media.create({
+          data: {
+            storageKey: key,
+            mimeType: 'image/webp',
+            fileSize: processedBuffer.length,
+            width: metadata.width ?? null,
+            height: metadata.height ?? null,
+          },
+        });
+      } catch (error) {
+        await this.r2StorageService.delete(key);
+        throw error;
+      }
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
