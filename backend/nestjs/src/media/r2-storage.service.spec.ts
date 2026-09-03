@@ -25,11 +25,12 @@ describe('R2StorageService', () => {
     process.env = originalEnv;
   });
 
-  it('fails fast when required configuration is missing', () => {
+  it('allows application bootstrap without configuration but fails when storage is used', async () => {
     delete process.env.R2_BUCKET_NAME;
+    const service = new R2StorageService();
 
-    expect(() => new R2StorageService()).toThrow(
-      'Missing Cloudflare R2 configuration',
+    await expect(service.verifyConnection()).rejects.toBeInstanceOf(
+      InternalServerErrorException,
     );
   });
 
@@ -40,15 +41,14 @@ describe('R2StorageService', () => {
       .mockResolvedValue({} as never);
 
     await expect(service.verifyConnection()).resolves.toBeUndefined();
-
     expect(send).toHaveBeenCalledWith(expect.any(HeadBucketCommand));
   });
 
   it('wraps bucket connectivity failures', async () => {
     const service = new R2StorageService();
-    jest
-      .spyOn(S3Client.prototype, 'send')
-      .mockRejectedValue(new Error('Connection failed'));
+    jest.spyOn(S3Client.prototype, 'send').mockRejectedValue(
+      new Error('Connection failed'),
+    );
 
     await expect(service.verifyConnection()).rejects.toBeInstanceOf(
       InternalServerErrorException,
@@ -65,7 +65,6 @@ describe('R2StorageService', () => {
     await service.upload('uploads/test.webp', body, 'image/webp');
 
     expect(send).toHaveBeenCalledWith(expect.any(PutObjectCommand));
-
     const command = send.mock.calls[0][0] as PutObjectCommand;
     expect(command.input).toEqual({
       Bucket: 'test-bucket',
@@ -84,7 +83,6 @@ describe('R2StorageService', () => {
     await service.delete('uploads/test.webp');
 
     expect(send).toHaveBeenCalledWith(expect.any(DeleteObjectCommand));
-
     const command = send.mock.calls[0][0] as DeleteObjectCommand;
     expect(command.input).toEqual({
       Bucket: 'test-bucket',
