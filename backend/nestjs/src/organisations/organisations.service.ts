@@ -24,7 +24,6 @@ export class OrganisationsService {
           include: { language: true },
         },
         media: { orderBy: [{ purpose: 'asc' }, { isPrimary: 'desc' }, { displayOrder: 'asc' }], include: { media: true } },
-        media: { orderBy: [{ purpose: 'asc' }, { isPrimary: 'desc' }, { displayOrder: 'asc' }], include: { media: true } },
         causes: {
           where: {
             isActive: true,
