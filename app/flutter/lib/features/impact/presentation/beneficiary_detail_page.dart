@@ -18,8 +18,30 @@ class BeneficiaryDetailPage extends StatelessWidget {
         children: [
           Hero(
             tag: 'beneficiary-${beneficiary.id}',
-            child: beneficiaryImage(beneficiary.photoUrl, height: 240, borderRadius: BorderRadius.circular(24), iconSize: 100),
+            child: beneficiaryImage(beneficiary.primaryImageUrl, height: 240, borderRadius: BorderRadius.circular(24), iconSize: 100),
           ),
+          if (beneficiary.gallery.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 84,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: beneficiary.gallery.length,
+                separatorBuilder: (_, _) => const SizedBox(width: 10),
+                itemBuilder: (_, index) => ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: Image.network(
+                      beneficiary.gallery[index],
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) => const Icon(Icons.image_not_supported_rounded),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
           const SizedBox(height: 24),
           Text(beneficiary.name, style: theme.textTheme.headlineMedium),
           const SizedBox(height: 8),
