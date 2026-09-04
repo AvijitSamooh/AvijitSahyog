@@ -118,8 +118,18 @@ class _OrganisationInfoCard extends StatelessWidget {
                 color: const Color(0xFFFCE8C9),
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: const Icon(Icons.account_balance_rounded,
-                  color: Color(0xFF6E1A14)),
+              child: organisation.logoUrl?.trim().isNotEmpty == true
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: Image.network(
+                        organisation.logoUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => const Icon(Icons.account_balance_rounded,
+                            color: Color(0xFF6E1A14)),
+                      ),
+                    )
+                  : const Icon(Icons.account_balance_rounded,
+                      color: Color(0xFF6E1A14)),
             ),
             const SizedBox(width: 14),
             Expanded(
