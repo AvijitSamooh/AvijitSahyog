@@ -7,7 +7,10 @@ import '../models/admin_cause.dart';
 
 final adminApiClientProvider = Provider<ApiClient>((ref) {
   final client = ApiClient(
-    authTokenProvider: () => FirebaseAuth.instance.currentUser?.getIdToken(),
+    authTokenProvider: () async {
+      final user = FirebaseAuth.instance.currentUser;
+      return user == null ? null : await user.getIdToken();
+    },
   );
   ref.onDispose(client.dispose);
   return client;
