@@ -6,15 +6,14 @@ class ApiClient {
   ApiClient({
     http.Client? client,
     String? baseUrl,
-    Future<String?> Function()? authTokenProvider,
+    this._authTokenProvider,
   })  : _client = client ?? http.Client(),
         baseUrl = _normalizeBaseUrl(
           baseUrl ?? const String.fromEnvironment(
             'API_BASE_URL',
             defaultValue: 'http://localhost:3000',
           ),
-        ),
-        _authTokenProvider = authTokenProvider;
+        );
 
   static String _normalizeBaseUrl(String value) =>
       value.endsWith('/') ? value.substring(0, value.length - 1) : value;
