@@ -1,8 +1,10 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 
 import { AdminGuard } from '../auth/admin.guard';
 import type { CreateOrganisationDto } from './dto/create-organisation.dto';
 import type { UpdateOrganisationDto } from './dto/update-organisation.dto';
+import type { AttachOrganisationMediaDto } from './dto/attach-organisation-media.dto';
+import type { UpdateOrganisationMediaDto } from './dto/update-organisation-media.dto';
 import { OrganisationsService } from './organisations.service';
 
 @Controller('admin/organisations')
@@ -33,6 +35,30 @@ export class AdminOrganisationsController {
   @Patch(':id/causes')
   updateCauses(@Param('id') id: string, @Body('causeIds') causeIds: string[]) {
     return this.organisationsService.updateCauses(id, causeIds ?? []);
+  }
+
+  @Get(':id/media')
+  listMedia(@Param('id') id: string) {
+    return this.organisationsService.listMedia(id);
+  }
+
+  @Post(':id/media')
+  attachMedia(@Param('id') id: string, @Body() dto: AttachOrganisationMediaDto) {
+    return this.organisationsService.attachMedia(id, dto);
+  }
+
+  @Patch(':id/media/:mediaId')
+  updateMedia(
+    @Param('id') id: string,
+    @Param('mediaId') mediaId: string,
+    @Body() dto: UpdateOrganisationMediaDto,
+  ) {
+    return this.organisationsService.updateMedia(id, mediaId, dto);
+  }
+
+  @Delete(':id/media/:mediaId')
+  removeMedia(@Param('id') id: string, @Param('mediaId') mediaId: string) {
+    return this.organisationsService.removeMedia(id, mediaId);
   }
 
   @Patch(':id/activate')

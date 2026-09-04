@@ -2,6 +2,8 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { PrismaService } from '../prisma/prisma.service';
 import type { CreateBeneficiaryDto } from './dto/create-beneficiary.dto';
 import type { UpdateBeneficiaryDto } from './dto/update-beneficiary.dto';
+import type { AttachBeneficiaryMediaDto } from './dto/attach-beneficiary-media.dto';
+import type { UpdateBeneficiaryMediaDto } from './dto/update-beneficiary-media.dto';
 
 type Query = { causeId?: string; year?: number; search?: string; sort?: string };
 
@@ -93,6 +95,87 @@ export class BeneficiariesService {
         ...(dto.isActive !== undefined ? { isActive: dto.isActive } : {}),
       },
       include: { cause: { select: { id: true, slug: true } }, organisation: { select: { id: true, slug: true } } },
+    });
+  }
+
+
+  async listMedia(id: string) {
+    await this.findOneForAdmin(id);
+    return this.prisma.beneficiaryMedia.findMany({
+      where: { beneficiaryId: id },
+      orderBy: [{ purpose: 'asc' }, { displayOrder: 'asc' }, { createdAt: 'asc' }],
+      include: { media: true },
+    });
+  }
+
+  async attachMedia(id: string, dto: AttachBeneficiaryMediaDto) {
+    await this.findOneForAdmin(id);
+    if (!dto.mediaId) throw new BadRequestException('Media id is required.');
+
+    const media = await this.prisma.media.findUnique({ where: { id: dto.mediaId }, select: { id: true } });
+    if (!media) throw new NotFoundException(`Media '${dto.mediaId}' not found`);
+
+    const existing = await this.prisma.beneficiaryMedia.findUnique({
+      where: { beneficiaryId_mediaId: { beneficiaryId: id, mediaId: dto.mediaId } },
+      select: { id: true },
+    });
+    if (existing) throw new BadRequestException('Media is already attached to this beneficiary.');
+
+    const purpose = dto.purpose ?? 'GALLERY';
+    const displayOrder = dto.displayOrder ?? 0;
+    const isPrimary = dto.isPrimary ?? false;
+
+    return this.prisma.$transaction(async (tx: any) => {
+      if (isPrimary) {
+        await tx.beneficiaryMedia.updateMany({
+          where: { beneficiaryId: id, purpose, isPrimary: true },
+          data: { isPrimary: false },
+        });
+      }
+      return tx.beneficiaryMedia.create({
+        data: { beneficiaryId: id, mediaId: dto.mediaId, purpose, displayOrder, isPrimary },
+        include: { media: true },
+      });
+    });
+  }
+
+  async updateMedia(id: string, mediaId: string, dto: UpdateBeneficiaryMediaDto) {
+    await this.findOneForAdmin(id);
+    const existing = await this.prisma.beneficiaryMedia.findUnique({
+      where: { beneficiaryId_mediaId: { beneficiaryId: id, mediaId } },
+      select: { id: true, purpose: true },
+    });
+    if (!existing) throw new NotFoundException('Media is not attached to this beneficiary.');
+
+    const purpose = dto.purpose ?? existing.purpose;
+    return this.prisma.$transaction(async (tx: any) => {
+      if (dto.isPrimary === true) {
+        await tx.beneficiaryMedia.updateMany({
+          where: { beneficiaryId: id, purpose, isPrimary: true, NOT: { mediaId } },
+          data: { isPrimary: false },
+        });
+      }
+      return tx.beneficiaryMedia.update({
+        where: { beneficiaryId_mediaId: { beneficiaryId: id, mediaId } },
+        data: {
+          ...(dto.purpose !== undefined ? { purpose: dto.purpose } : {}),
+          ...(dto.displayOrder !== undefined ? { displayOrder: dto.displayOrder } : {}),
+          ...(dto.isPrimary !== undefined ? { isPrimary: dto.isPrimary } : {}),
+        },
+        include: { media: true },
+      });
+    });
+  }
+
+  async removeMedia(id: string, mediaId: string) {
+    await this.findOneForAdmin(id);
+    const existing = await this.prisma.beneficiaryMedia.findUnique({
+      where: { beneficiaryId_mediaId: { beneficiaryId: id, mediaId } },
+      select: { id: true },
+    });
+    if (!existing) throw new NotFoundException('Media is not attached to this beneficiary.');
+    return this.prisma.beneficiaryMedia.delete({
+      where: { beneficiaryId_mediaId: { beneficiaryId: id, mediaId } },
     });
   }
 
