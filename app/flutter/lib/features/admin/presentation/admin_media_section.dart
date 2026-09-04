@@ -19,6 +19,7 @@ class AdminMediaSection extends StatefulWidget {
     this.entity,
     this.entityId,
     this.onPendingChanged,
+    this.pickImage,
   });
 
   final ApiClient? api;
@@ -27,6 +28,7 @@ class AdminMediaSection extends StatefulWidget {
   final String primaryPurpose;
   final String title;
   final ValueChanged<List<PendingAdminMedia>>? onPendingChanged;
+  final Future<XFile?> Function()? pickImage;
 
   bool get attachedMode => api != null && entity != null && entityId != null;
 
@@ -57,7 +59,7 @@ class _AdminMediaSectionState extends State<AdminMediaSection> {
   }
 
   Future<void> _pick(String purpose) async {
-    final file = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 90);
+    final file = await (widget.pickImage?.call() ?? _picker.pickImage(source: ImageSource.gallery, imageQuality: 90));
     if (file == null) return;
     if (!widget.attachedMode) {
       setState(() {
