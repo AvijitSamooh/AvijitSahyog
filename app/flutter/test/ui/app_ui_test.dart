@@ -591,5 +591,8 @@ class _NoopAuthRepository implements AuthRepository {
   Future<AppUser> signInWithGoogle() => throw UnimplementedError();
 
   @override
+  Future<AppUser?> restoreSession() async => null;
+
+  @override
   Future<void> signOut() async {}
 }
