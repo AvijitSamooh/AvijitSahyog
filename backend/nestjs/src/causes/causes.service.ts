@@ -48,6 +48,11 @@ export class CausesService {
                   where: { language: { code: { in: [languageCode, 'en'] } } },
                   include: { language: true },
                 },
+                media: {
+                  where: { purpose: 'LOGO' },
+                  orderBy: [{ isPrimary: 'desc' }, { displayOrder: 'asc' }],
+                  include: { media: true },
+                },
               },
             },
           },
@@ -64,7 +69,7 @@ export class CausesService {
       organisations: cause.organisations.map(({ organisation }) => ({
         id: organisation.id,
         slug: organisation.slug,
-        logoUrl: organisation.logoUrl,
+        logoUrl: this.organisationLogoUrl(organisation) ?? organisation.logoUrl,
         websiteUrl: organisation.websiteUrl,
         phone: organisation.phone,
         email: organisation.email,
@@ -254,6 +259,13 @@ export class CausesService {
       displayOrder: entity.displayOrder,
       ...this.translation(entity.translations, languageCode),
     };
+  }
+
+  private organisationLogoUrl(organisation: any) {
+    const relation = organisation.media?.[0];
+    if (!relation?.media) return null;
+    const base = process.env.R2_PUBLIC_BASE_URL?.replace(/\/$/, '');
+    return base ? `${base}/${relation.media.storageKey}` : relation.media.storageKey;
   }
 
   private translation(translations: any[], languageCode: string) {
