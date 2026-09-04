@@ -16,6 +16,15 @@ class AuthNotConfiguredException implements Exception {
   const AuthNotConfiguredException();
 }
 
+class AuthDiagnosticException implements Exception {
+  const AuthDiagnosticException(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
+}
+
 class FirebaseAuthRepository implements AuthRepository {
   FirebaseAuthRepository({
     this.firebaseAuth,
@@ -61,7 +70,18 @@ class FirebaseAuthRepository implements AuthRepository {
       if (error.code == 'operation-not-allowed') {
         throw const AuthNotConfiguredException();
       }
-      rethrow;
+      throw AuthDiagnosticException(
+        'Firebase error: code=${error.code}; message=${error.message ?? 'none'}',
+      );
+    } on GoogleSignInException catch (error) {
+      throw AuthDiagnosticException(
+        'Google Sign-In error: code=${error.code}; '
+        'description=${error.description ?? 'none'}',
+      );
+    } catch (error) {
+      throw AuthDiagnosticException(
+        'Sign-In error: ${error.runtimeType}: $error',
+      );
     }
   }
 
