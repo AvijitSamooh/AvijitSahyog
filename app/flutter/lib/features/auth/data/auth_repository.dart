@@ -71,16 +71,16 @@ class FirebaseAuthRepository implements AuthRepository {
         throw const AuthNotConfiguredException();
       }
       throw AuthDiagnosticException(
-        'Firebase error: code=' + error.code + '; message=' + (error.message ?? 'none'),
+        'Firebase error: code=${error.code}; message=${error.message ?? 'none'}',
       );
     } on GoogleSignInException catch (error) {
       throw AuthDiagnosticException(
-        'Google Sign-In error: code=' + error.code.toString() +
-        '; description=' + (error.description ?? 'none'),
+        'Google Sign-In error: code=${error.code}; '
+        'description=${error.description ?? 'none'}',
       );
     } catch (error) {
       throw AuthDiagnosticException(
-        'Sign-In error: ' + error.runtimeType.toString() + ': ' + error.toString(),
+        'Sign-In error: ${error.runtimeType}: $error',
       );
     }
   }
