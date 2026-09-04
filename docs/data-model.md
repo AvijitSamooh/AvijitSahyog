@@ -195,3 +195,14 @@ Supported purposes are `PROFILE` and `GALLERY`.
 4. Setting `isPrimary=true` clears any existing primary image for the same entity and purpose.
 5. Removing an association does not delete the underlying Media database record or Cloudflare R2 object. Orphan cleanup is intentionally a separate lifecycle concern.
 6. A Media record may be reused by different entities, so attachment deletion is deliberately non-destructive.
+
+
+## Public image delivery
+
+Public Organisation and Beneficiary APIs now resolve attached Media records into client-ready image objects. Set `R2_PUBLIC_BASE_URL` to the Cloudflare R2 custom/public domain.
+
+- Organisation responses expose `logoUrl` (preferring attached LOGO media) and `gallery`.
+- Beneficiary responses expose `photoUrl` (preferring attached PROFILE media), `profileImage`, and `gallery`.
+- Gallery items are ordered by `displayOrder`.
+- Legacy `logoUrl` and `photoUrl` fields remain as fallbacks for backwards compatibility.
+- Storage keys are not exposed as public API URLs when `R2_PUBLIC_BASE_URL` is configured.
