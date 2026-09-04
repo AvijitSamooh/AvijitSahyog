@@ -114,5 +114,11 @@
   "adminDashboardSubtitle": "કામકાજનો સારાંશ અને સામગ્રીની સ્થિતિ જુઓ",
   "adminDashboardOverview": "કામકાજનો સારાંશ",
   "adminActive": "સક્રિય",
-  "adminInactive": "નિષ્ક્રિય"
+  "adminInactive": "નિષ્ક્રિય",
+  "adminPrimaryImageSelected": "મુખ્ય છબી પસંદ કરવામાં આવી",
+  "adminGalleryImageSelected": "ગેલેરી છબી પસંદ કરવામાં આવી",
+  "adminUploadPrimaryImage": "મુખ્ય છબી અપલોડ કરો",
+  "adminSelectPrimaryImage": "મુખ્ય છબી પસંદ કરો",
+  "adminAddGalleryImage": "ગેલેરી છબી ઉમેરો",
+  "adminSelectGalleryImage": "ગેલેરી છબી પસંદ કરો"
 }

@@ -160,9 +160,23 @@ The admin media foundation exposes:
 
 Both media endpoints are protected by admin authorization.
 
-## Next iteration
+## Flutter admin workflow
 
-The next media slice will attach uploaded Media records to Organisations and Beneficiaries and expose ordered gallery data through the relevant APIs.
+Administrators can manage images directly from the Organisation and Beneficiary editors. Images can be selected during initial creation or added later while editing.
+
+Creation flow:
+
+```text
+Select primary/gallery images
+        ↓
+Create entity
+        ↓
+Upload selected images
+        ↓
+Attach Media records to the new entity
+```
+
+This sequencing avoids requiring a Flutter release when content images change and prevents entity identifiers from being required before the administrator starts filling out the form.
 
 
 ## Entity media management workflow

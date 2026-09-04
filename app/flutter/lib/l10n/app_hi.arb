@@ -114,5 +114,11 @@
   "adminDashboardSubtitle": "संचालन का सार और सामग्री की स्थिति देखें",
   "adminDashboardOverview": "संचालन का सार",
   "adminActive": "सक्रिय",
-  "adminInactive": "निष्क्रिय"
+  "adminInactive": "निष्क्रिय",
+  "adminPrimaryImageSelected": "मुख्य छवि चुनी गई",
+  "adminGalleryImageSelected": "गैलरी छवि चुनी गई",
+  "adminUploadPrimaryImage": "मुख्य छवि अपलोड करें",
+  "adminSelectPrimaryImage": "मुख्य छवि चुनें",
+  "adminAddGalleryImage": "गैलरी छवि जोड़ें",
+  "adminSelectGalleryImage": "गैलरी छवि चुनें"
 }
