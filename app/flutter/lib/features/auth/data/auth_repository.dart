@@ -18,11 +18,10 @@ class AuthNotConfiguredException implements Exception {
 
 class FirebaseAuthRepository implements AuthRepository {
   FirebaseAuthRepository({
-    FirebaseAuth? firebaseAuth,
+    this.firebaseAuth,
     http.Client? httpClient,
     String? baseUrl,
-  })  : _firebaseAuth = firebaseAuth,
-        _httpClient = httpClient ?? http.Client(),
+  })  : _httpClient = httpClient ?? http.Client(),
         _baseUrl = _normalizeBaseUrl(
           baseUrl ??
               const String.fromEnvironment(
@@ -31,9 +30,9 @@ class FirebaseAuthRepository implements AuthRepository {
               ),
         );
 
-  FirebaseAuth? _firebaseAuth;
+  final FirebaseAuth? firebaseAuth;
 
-  FirebaseAuth get _auth => _firebaseAuth ??= FirebaseAuth.instance;
+  FirebaseAuth get _auth => firebaseAuth ?? FirebaseAuth.instance;
   final http.Client _httpClient;
   final String _baseUrl;
 
