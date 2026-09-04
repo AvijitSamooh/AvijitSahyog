@@ -114,5 +114,11 @@
   "adminDashboardSubtitle": "View operational overview and content status",
   "adminDashboardOverview": "Operational overview",
   "adminActive": "Active",
-  "adminInactive": "Inactive"
+  "adminInactive": "Inactive",
+  "adminPrimaryImageSelected": "Primary image selected",
+  "adminGalleryImageSelected": "Gallery image selected",
+  "adminUploadPrimaryImage": "Upload primary image",
+  "adminSelectPrimaryImage": "Select primary image",
+  "adminAddGalleryImage": "Add gallery image",
+  "adminSelectGalleryImage": "Select gallery image"
 }
