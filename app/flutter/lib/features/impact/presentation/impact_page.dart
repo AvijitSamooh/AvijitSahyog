@@ -93,7 +93,7 @@ class _Card extends StatelessWidget {
   const _Card(this.x);
   final Beneficiary x;
   @override Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(18), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    Hero(tag: 'beneficiary-${x.id}', child: beneficiaryImage(x.photoUrl, height: 150, borderRadius: BorderRadius.circular(14))),
+    Hero(tag: 'beneficiary-${x.id}', child: beneficiaryImage(x.primaryImageUrl, height: 150, borderRadius: BorderRadius.circular(14))),
     const SizedBox(height: 16),
     Text(x.name, style: Theme.of(context).textTheme.titleLarge),
     const SizedBox(height: 4),
