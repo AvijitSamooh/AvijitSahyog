@@ -21,7 +21,7 @@ class FirebaseAuthRepository implements AuthRepository {
     FirebaseAuth? firebaseAuth,
     http.Client? httpClient,
     String? baseUrl,
-  })  : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+  })  : _firebaseAuth = firebaseAuth,
         _httpClient = httpClient ?? http.Client(),
         _baseUrl = _normalizeBaseUrl(
           baseUrl ??
@@ -31,7 +31,9 @@ class FirebaseAuthRepository implements AuthRepository {
               ),
         );
 
-  final FirebaseAuth _firebaseAuth;
+  FirebaseAuth? _firebaseAuth;
+
+  FirebaseAuth get _auth => _firebaseAuth ??= FirebaseAuth.instance;
   final http.Client _httpClient;
   final String _baseUrl;
 
@@ -48,7 +50,7 @@ class FirebaseAuthRepository implements AuthRepository {
       final credential = GoogleAuthProvider.credential(
         idToken: googleAuth.idToken,
       );
-      final result = await _firebaseAuth.signInWithCredential(credential);
+      final result = await _auth.signInWithCredential(credential);
 
       final user = result.user;
       if (user == null) {
@@ -66,14 +68,14 @@ class FirebaseAuthRepository implements AuthRepository {
 
   @override
   Future<AppUser?> restoreSession() async {
-    final user = _firebaseAuth.currentUser;
+    final user = _auth.currentUser;
     if (user == null) return null;
     return _resolveBackendUser(user);
   }
 
   @override
   Future<void> signOut() async {
-    await _firebaseAuth.signOut();
+    await _auth.signOut();
   }
 
   Future<AppUser> _resolveBackendUser(User firebaseUser) async {
