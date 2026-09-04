@@ -6,19 +6,30 @@ class ApiClient {
   ApiClient({
     http.Client? client,
     String? baseUrl,
+    Future<String?> Function()? authTokenProvider,
   })  : _client = client ?? http.Client(),
         baseUrl = _normalizeBaseUrl(
           baseUrl ?? const String.fromEnvironment(
             'API_BASE_URL',
             defaultValue: 'http://localhost:3000',
           ),
-        );
+        ),
+        _authTokenProvider = authTokenProvider;
 
   static String _normalizeBaseUrl(String value) =>
       value.endsWith('/') ? value.substring(0, value.length - 1) : value;
 
   final http.Client _client;
+  final Future<String?> Function()? _authTokenProvider;
   final String baseUrl;
+
+  Future<Map<String, String>> _headers({bool json = false}) async {
+    final token = await _authTokenProvider?.call();
+    return {
+      if (json) 'Content-Type': 'application/json',
+      if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
+    };
+  }
 
   Future<Map<String, dynamic>> getHealth() async {
     final response = await _client.get(
@@ -86,6 +97,7 @@ class ApiClient {
 
   Future<Map<String, dynamic>> uploadAdminImage(String path) async {
     final request = http.MultipartRequest('POST', Uri.parse('$baseUrl/admin/media/upload'))
+      ..headers.addAll(await _headers())
       ..files.add(await http.MultipartFile.fromPath('file', path));
     final response = await http.Response.fromStream(await request.send());
     _ensureSuccess(response, 'Uploading image');
@@ -93,30 +105,30 @@ class ApiClient {
   }
 
   Future<List<Map<String, dynamic>>> getAdminEntityMedia(String entity, String id) async {
-    final response = await _client.get(Uri.parse('$baseUrl/admin/$entity/$id/media'));
+    final response = await _client.get(Uri.parse('$baseUrl/admin/$entity/$id/media'), headers: await _headers());
     _ensureSuccess(response, 'Loading media');
     return (jsonDecode(response.body) as List<dynamic>).cast<Map<String, dynamic>>();
   }
 
   Future<void> attachAdminEntityMedia(String entity, String id, Map<String, dynamic> payload) async {
     final response = await _client.post(Uri.parse('$baseUrl/admin/$entity/$id/media'),
-      headers: const {'Content-Type': 'application/json'}, body: jsonEncode(payload));
+      headers: await _headers(json: true), body: jsonEncode(payload));
     _ensureSuccess(response, 'Attaching media');
   }
 
   Future<void> removeAdminEntityMedia(String entity, String id, String mediaId) async {
-    final response = await _client.delete(Uri.parse('$baseUrl/admin/$entity/$id/media/$mediaId'));
+    final response = await _client.delete(Uri.parse('$baseUrl/admin/$entity/$id/media/$mediaId'), headers: await _headers());
     _ensureSuccess(response, 'Removing media');
   }
 
   Future<Map<String, dynamic>> getAdminDashboardSummary() async {
-    final response = await _client.get(Uri.parse('$baseUrl/admin/dashboard'));
+    final response = await _client.get(Uri.parse('$baseUrl/admin/dashboard'), headers: await _headers());
     _ensureSuccess(response, 'Loading admin dashboard');
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
   Future<List<Map<String, dynamic>>> getAdminBeneficiaries() async {
-    final response = await _client.get(Uri.parse('$baseUrl/admin/beneficiaries'));
+    final response = await _client.get(Uri.parse('$baseUrl/admin/beneficiaries'), headers: await _headers());
     _ensureSuccess(response, 'Loading admin beneficiaries');
     return (jsonDecode(response.body) as List<dynamic>)
         .cast<Map<String, dynamic>>();
@@ -127,7 +139,7 @@ class ApiClient {
   ) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/admin/beneficiaries'),
-      headers: const {'Content-Type': 'application/json'},
+      headers: await _headers(json: true),
       body: jsonEncode(payload),
     );
     _ensureSuccess(response, 'Creating beneficiary');
@@ -140,7 +152,7 @@ class ApiClient {
   ) async {
     final response = await _client.patch(
       Uri.parse('$baseUrl/admin/beneficiaries/$id'),
-      headers: const {'Content-Type': 'application/json'},
+      headers: await _headers(json: true),
       body: jsonEncode(payload),
     );
     _ensureSuccess(response, 'Updating beneficiary');
@@ -151,12 +163,13 @@ class ApiClient {
     final action = active ? 'activate' : 'deactivate';
     final response = await _client.patch(
       Uri.parse('$baseUrl/admin/beneficiaries/$id/$action'),
+    headers: await _headers(),
     );
     _ensureSuccess(response, 'Updating beneficiary status');
   }
 
   Future<List<Map<String, dynamic>>> getAdminOrganisations() async {
-    final response = await _client.get(Uri.parse('$baseUrl/admin/organisations'));
+    final response = await _client.get(Uri.parse('$baseUrl/admin/organisations'), headers: await _headers());
     _ensureSuccess(response, 'Loading admin organisations');
     return (jsonDecode(response.body) as List<dynamic>)
         .cast<Map<String, dynamic>>();
@@ -167,7 +180,7 @@ class ApiClient {
   ) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/admin/organisations'),
-      headers: const {'Content-Type': 'application/json'},
+      headers: await _headers(json: true),
       body: jsonEncode(payload),
     );
     _ensureSuccess(response, 'Creating organisation');
@@ -180,7 +193,7 @@ class ApiClient {
   ) async {
     final response = await _client.patch(
       Uri.parse('$baseUrl/admin/organisations/$id'),
-      headers: const {'Content-Type': 'application/json'},
+      headers: await _headers(json: true),
       body: jsonEncode(payload),
     );
     _ensureSuccess(response, 'Updating organisation');
@@ -191,6 +204,7 @@ class ApiClient {
     final action = active ? 'activate' : 'deactivate';
     final response = await _client.patch(
       Uri.parse('$baseUrl/admin/organisations/$id/$action'),
+    headers: await _headers(),
     );
     _ensureSuccess(response, 'Updating organisation status');
   }
@@ -201,14 +215,14 @@ class ApiClient {
   ) async {
     final response = await _client.patch(
       Uri.parse('$baseUrl/admin/organisations/$id/causes'),
-      headers: const {'Content-Type': 'application/json'},
+      headers: await _headers(json: true),
       body: jsonEncode({'causeIds': causeIds}),
     );
     _ensureSuccess(response, 'Updating organisation causes');
   }
 
   Future<List<Map<String, dynamic>>> getAdminCauses() async {
-    final response = await _client.get(Uri.parse('$baseUrl/admin/causes'));
+    final response = await _client.get(Uri.parse('$baseUrl/admin/causes'), headers: await _headers());
     _ensureSuccess(response, 'Loading admin causes');
     final decoded = jsonDecode(response.body) as List<dynamic>;
     return decoded
@@ -221,7 +235,7 @@ class ApiClient {
   ) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/admin/causes'),
-      headers: const {'Content-Type': 'application/json'},
+      headers: await _headers(json: true),
       body: jsonEncode(payload),
     );
     _ensureSuccess(response, 'Creating cause');
@@ -234,7 +248,7 @@ class ApiClient {
   ) async {
     final response = await _client.patch(
       Uri.parse('$baseUrl/admin/causes/$id'),
-      headers: const {'Content-Type': 'application/json'},
+      headers: await _headers(json: true),
       body: jsonEncode(payload),
     );
     _ensureSuccess(response, 'Updating cause');
@@ -248,7 +262,7 @@ class ApiClient {
     final action = isActive ? 'activate' : 'deactivate';
     final response = await _client.patch(
       Uri.parse('$baseUrl/admin/causes/$id/$action'),
-      headers: const {'Content-Type': 'application/json'},
+      headers: await _headers(json: true),
     );
     _ensureSuccess(response, 'Updating cause status');
     return jsonDecode(response.body) as Map<String, dynamic>;
