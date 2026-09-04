@@ -84,6 +84,31 @@ class ApiClient {
 
 
 
+  Future<Map<String, dynamic>> uploadAdminImage(String path) async {
+    final request = http.MultipartRequest('POST', Uri.parse('$baseUrl/admin/media/upload'))
+      ..files.add(await http.MultipartFile.fromPath('file', path));
+    final response = await http.Response.fromStream(await request.send());
+    _ensureSuccess(response, 'Uploading image');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<List<Map<String, dynamic>>> getAdminEntityMedia(String entity, String id) async {
+    final response = await _client.get(Uri.parse('$baseUrl/admin/$entity/$id/media'));
+    _ensureSuccess(response, 'Loading media');
+    return (jsonDecode(response.body) as List<dynamic>).cast<Map<String, dynamic>>();
+  }
+
+  Future<void> attachAdminEntityMedia(String entity, String id, Map<String, dynamic> payload) async {
+    final response = await _client.post(Uri.parse('$baseUrl/admin/$entity/$id/media'),
+      headers: const {'Content-Type': 'application/json'}, body: jsonEncode(payload));
+    _ensureSuccess(response, 'Attaching media');
+  }
+
+  Future<void> removeAdminEntityMedia(String entity, String id, String mediaId) async {
+    final response = await _client.delete(Uri.parse('$baseUrl/admin/$entity/$id/media/$mediaId'));
+    _ensureSuccess(response, 'Removing media');
+  }
+
   Future<Map<String, dynamic>> getAdminDashboardSummary() async {
     final response = await _client.get(Uri.parse('$baseUrl/admin/dashboard'));
     _ensureSuccess(response, 'Loading admin dashboard');
