@@ -7,6 +7,8 @@ import {
 import { CreateOrganisationDto } from './dto/create-organisation.dto';
 import { UpdateOrganisationDto } from './dto/update-organisation.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import type { AttachOrganisationMediaDto } from './dto/attach-organisation-media.dto';
+import type { UpdateOrganisationMediaDto } from './dto/update-organisation-media.dto';
 
 @Injectable()
 export class OrganisationsService {
@@ -265,6 +267,90 @@ export class OrganisationsService {
           },
         },
       });
+    });
+  }
+
+
+  async listMedia(id: string) {
+    await this.findOneForAdmin(id);
+    return this.prisma.organisationMedia.findMany({
+      where: { organisationId: id },
+      orderBy: [{ purpose: 'asc' }, { displayOrder: 'asc' }, { createdAt: 'asc' }],
+      include: { media: true },
+    });
+  }
+
+  async attachMedia(id: string, dto: AttachOrganisationMediaDto) {
+    await this.findOneForAdmin(id);
+    if (!dto.mediaId) throw new BadRequestException('Media id is required.');
+
+    const media = await this.prisma.media.findUnique({
+      where: { id: dto.mediaId },
+      select: { id: true },
+    });
+    if (!media) throw new NotFoundException(`Media '${dto.mediaId}' not found`);
+
+    const existing = await this.prisma.organisationMedia.findUnique({
+      where: { organisationId_mediaId: { organisationId: id, mediaId: dto.mediaId } },
+      select: { id: true },
+    });
+    if (existing) throw new ConflictException('Media is already attached to this organisation.');
+
+    const purpose = dto.purpose ?? 'GALLERY';
+    const displayOrder = dto.displayOrder ?? 0;
+    const isPrimary = dto.isPrimary ?? false;
+
+    return this.prisma.$transaction(async (tx: any) => {
+      if (isPrimary) {
+        await tx.organisationMedia.updateMany({
+          where: { organisationId: id, purpose, isPrimary: true },
+          data: { isPrimary: false },
+        });
+      }
+      return tx.organisationMedia.create({
+        data: { organisationId: id, mediaId: dto.mediaId, purpose, displayOrder, isPrimary },
+        include: { media: true },
+      });
+    });
+  }
+
+  async updateMedia(id: string, mediaId: string, dto: UpdateOrganisationMediaDto) {
+    await this.findOneForAdmin(id);
+    const existing = await this.prisma.organisationMedia.findUnique({
+      where: { organisationId_mediaId: { organisationId: id, mediaId } },
+      select: { id: true, purpose: true },
+    });
+    if (!existing) throw new NotFoundException('Media is not attached to this organisation.');
+
+    const purpose = dto.purpose ?? existing.purpose;
+    return this.prisma.$transaction(async (tx: any) => {
+      if (dto.isPrimary === true) {
+        await tx.organisationMedia.updateMany({
+          where: { organisationId: id, purpose, isPrimary: true, NOT: { mediaId } },
+          data: { isPrimary: false },
+        });
+      }
+      return tx.organisationMedia.update({
+        where: { organisationId_mediaId: { organisationId: id, mediaId } },
+        data: {
+          ...(dto.purpose !== undefined ? { purpose: dto.purpose } : {}),
+          ...(dto.displayOrder !== undefined ? { displayOrder: dto.displayOrder } : {}),
+          ...(dto.isPrimary !== undefined ? { isPrimary: dto.isPrimary } : {}),
+        },
+        include: { media: true },
+      });
+    });
+  }
+
+  async removeMedia(id: string, mediaId: string) {
+    await this.findOneForAdmin(id);
+    const existing = await this.prisma.organisationMedia.findUnique({
+      where: { organisationId_mediaId: { organisationId: id, mediaId } },
+      select: { id: true },
+    });
+    if (!existing) throw new NotFoundException('Media is not attached to this organisation.');
+    return this.prisma.organisationMedia.delete({
+      where: { organisationId_mediaId: { organisationId: id, mediaId } },
     });
   }
 
