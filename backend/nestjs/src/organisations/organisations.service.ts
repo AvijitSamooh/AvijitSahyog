@@ -23,6 +23,7 @@ export class OrganisationsService {
           where: { language: { code: { in: [languageCode, 'en'] } } },
           include: { language: true },
         },
+        media: { orderBy: [{ purpose: 'asc' }, { isPrimary: 'desc' }, { displayOrder: 'asc' }], include: { media: true } },
         causes: {
           where: {
             isActive: true,
@@ -62,6 +63,7 @@ export class OrganisationsService {
           where: { language: { code: { in: [languageCode, 'en'] } } },
           include: { language: true },
         },
+        media: { orderBy: [{ purpose: 'asc' }, { isPrimary: 'desc' }, { displayOrder: 'asc' }], include: { media: true } },
         causes: {
           where: {
             isActive: true,
@@ -395,7 +397,8 @@ export class OrganisationsService {
     return {
       id: entity.id,
       slug: entity.slug,
-      logoUrl: entity.logoUrl,
+      logoUrl: this.primaryMediaUrl(entity.media, 'LOGO') ?? entity.logoUrl,
+      gallery: this.galleryMedia(entity.media, 'GALLERY'),
       websiteUrl: entity.websiteUrl,
       phone: entity.phone,
       email: entity.email,
@@ -408,6 +411,30 @@ export class OrganisationsService {
       displayOrder: entity.displayOrder,
       ...this.translation(entity.translations, languageCode),
     };
+  }
+
+  private mediaResponse(media: any) {
+    const base = process.env.R2_PUBLIC_BASE_URL?.replace(/\/$/, '');
+    return {
+      id: media.id,
+      url: base ? `${base}/${media.storageKey}` : media.storageKey,
+      mimeType: media.mimeType,
+      width: media.width,
+      height: media.height,
+    };
+  }
+
+  private primaryMediaUrl(relations: any[] | undefined, purpose: string) {
+    const relation = relations?.find((item) => item.purpose === purpose && item.isPrimary)
+      ?? relations?.find((item) => item.purpose === purpose);
+    return relation ? this.mediaResponse(relation.media).url : null;
+  }
+
+  private galleryMedia(relations: any[] | undefined, purpose: string) {
+    return (relations ?? [])
+      .filter((item) => item.purpose === purpose)
+      .sort((a, b) => a.displayOrder - b.displayOrder)
+      .map((item) => this.mediaResponse(item.media));
   }
 
   private translation(translations: any[], languageCode: string) {

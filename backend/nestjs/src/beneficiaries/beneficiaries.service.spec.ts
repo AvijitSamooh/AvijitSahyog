@@ -48,7 +48,7 @@ describe('BeneficiariesService', () => {
           { supportedYear: 'desc' },
           { displayOrder: 'asc' },
         ],
-        include: { cause: true, organisation: true },
+        include: expect.objectContaining({ cause: true, organisation: true, media: expect.any(Object) }),
       }),
     );
   });
@@ -96,7 +96,7 @@ describe('BeneficiariesService', () => {
 
     expect(prisma.beneficiary.findFirst).toHaveBeenCalledWith({
       where: { id: 'beneficiary-1', isActive: true },
-      include: { cause: true, organisation: true },
+      include: expect.objectContaining({ cause: true, organisation: true, media: expect.any(Object) }),
     });
   });
 

@@ -21,7 +21,7 @@ export class BeneficiariesService {
         ...(query.search ? { name: { contains: query.search, mode: 'insensitive' } } : {}),
       },
       orderBy,
-      include: { cause: true, organisation: true },
+      include: { cause: true, organisation: true, media: { orderBy: [{ purpose: 'asc' }, { isPrimary: 'desc' }, { displayOrder: 'asc' }], include: { media: true } } },
     });
     return beneficiaries.map((item) => this.toResponse(item));
   }
@@ -29,7 +29,7 @@ export class BeneficiariesService {
   async findOne(id: string) {
     const beneficiary = await this.prisma.beneficiary.findFirst({
       where: { id, isActive: true },
-      include: { cause: true, organisation: true },
+      include: { cause: true, organisation: true, media: { orderBy: [{ purpose: 'asc' }, { isPrimary: 'desc' }, { displayOrder: 'asc' }], include: { media: true } } },
     });
     if (!beneficiary) throw new NotFoundException(`Beneficiary '${id}' not found`);
     return this.toResponse(beneficiary);
@@ -210,6 +210,34 @@ export class BeneficiariesService {
   }
 
 
+  private mediaResponse(media: any) {
+    const base = process.env.R2_PUBLIC_BASE_URL?.replace(/\/$/, '');
+    return {
+      id: media.id,
+      url: base ? `${base}/${media.storageKey}` : media.storageKey,
+      mimeType: media.mimeType,
+      width: media.width,
+      height: media.height,
+    };
+  }
+
+  private primaryMedia(relations: any[] | undefined, purpose: string) {
+    const relation = relations?.find((item) => item.purpose === purpose && item.isPrimary)
+      ?? relations?.find((item) => item.purpose === purpose);
+    return relation ? this.mediaResponse(relation.media) : null;
+  }
+
+  private primaryMediaUrl(relations: any[] | undefined, purpose: string) {
+    return this.primaryMedia(relations, purpose)?.url ?? null;
+  }
+
+  private galleryMedia(relations: any[] | undefined, purpose: string) {
+    return (relations ?? [])
+      .filter((item) => item.purpose === purpose)
+      .sort((a, b) => a.displayOrder - b.displayOrder)
+      .map((item) => this.mediaResponse(item.media));
+  }
+
   private orderBy(sort?: string) {
     switch (sort) {
       case 'name_asc': return { name: 'asc' as const };
@@ -224,7 +252,9 @@ export class BeneficiariesService {
     return {
       id: item.id,
       name: item.name,
-      photoUrl: item.photoUrl,
+      photoUrl: this.primaryMediaUrl(item.media, 'PROFILE') ?? item.photoUrl,
+      profileImage: this.primaryMedia(item.media, 'PROFILE'),
+      gallery: this.galleryMedia(item.media, 'GALLERY'),
       story: item.story,
       supportedYear: item.supportedYear,
       contributionAmount: item.contributionAmount,
