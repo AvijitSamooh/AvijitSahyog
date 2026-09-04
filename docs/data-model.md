@@ -163,3 +163,35 @@ Both media endpoints are protected by admin authorization.
 ## Next iteration
 
 The next media slice will attach uploaded Media records to Organisations and Beneficiaries and expose ordered gallery data through the relevant APIs.
+
+
+## Entity media management workflow
+
+After an image is uploaded into the Media domain, an administrator explicitly attaches it to an Organisation or Beneficiary. Uploading does not automatically make an image public.
+
+### Organisation media API
+
+- `GET /admin/organisations/:id/media`
+- `POST /admin/organisations/:id/media`
+- `PATCH /admin/organisations/:id/media/:mediaId`
+- `DELETE /admin/organisations/:id/media/:mediaId`
+
+Supported purposes are `LOGO` and `GALLERY`.
+
+### Beneficiary media API
+
+- `GET /admin/beneficiaries/:id/media`
+- `POST /admin/beneficiaries/:id/media`
+- `PATCH /admin/beneficiaries/:id/media/:mediaId`
+- `DELETE /admin/beneficiaries/:id/media/:mediaId`
+
+Supported purposes are `PROFILE` and `GALLERY`.
+
+### Association rules
+
+1. The target entity and Media record must exist.
+2. The same Media record cannot be attached to the same entity twice.
+3. `displayOrder` controls gallery ordering.
+4. Setting `isPrimary=true` clears any existing primary image for the same entity and purpose.
+5. Removing an association does not delete the underlying Media database record or Cloudflare R2 object. Orphan cleanup is intentionally a separate lifecycle concern.
+6. A Media record may be reused by different entities, so attachment deletion is deliberately non-destructive.
