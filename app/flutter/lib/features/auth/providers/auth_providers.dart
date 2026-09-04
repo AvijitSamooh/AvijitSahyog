@@ -4,7 +4,11 @@ import '../data/auth_repository.dart';
 import '../models/auth_state.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>(
-  (ref) => FirebaseAuthRepository(),
+  (ref) {
+    final repository = FirebaseAuthRepository();
+    ref.onDispose(repository.dispose);
+    return repository;
+  },
 );
 
 final authProvider = StateNotifierProvider<AuthController, AuthState>(
@@ -12,9 +16,23 @@ final authProvider = StateNotifierProvider<AuthController, AuthState>(
 );
 
 class AuthController extends StateNotifier<AuthState> {
-  AuthController(this._repository) : super(const AuthState.guest());
+  AuthController(this._repository) : super(const AuthState.loading()) {
+    _restoreSession();
+  }
 
   final AuthRepository _repository;
+
+  Future<void> _restoreSession() async {
+    try {
+      final user = await _repository.restoreSession();
+      if (!mounted) return;
+      state = user == null
+          ? const AuthState.guest()
+          : AuthState.authenticated(user);
+    } catch (_) {
+      if (mounted) state = const AuthState.guest();
+    }
+  }
 
   Future<void> signInWithGoogle() async {
     state = const AuthState.loading();

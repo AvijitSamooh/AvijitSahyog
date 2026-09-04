@@ -12,6 +12,9 @@ class _FakeAuthRepository implements AuthRepository {
   bool signedOut = false;
 
   @override
+  Future<AppUser?> restoreSession() async => null;
+
+  @override
   Future<AppUser> signInWithGoogle() async => user;
 
   @override
@@ -32,6 +35,7 @@ void main() {
     );
     final controller = AuthController(repository);
 
+    await Future<void>.delayed(Duration.zero);
     expect(controller.state.isAuthenticated, isFalse);
     await controller.signInWithGoogle();
     expect(controller.state.isAuthenticated, isTrue);
