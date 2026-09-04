@@ -55,7 +55,7 @@ class FirebaseAuthRepository implements AuthRepository {
         throw StateError('Firebase did not return an authenticated user.');
       }
 
-      return _resolveBackendUser(user);
+      return await _resolveBackendUser(user);
     } on FirebaseException catch (error) {
       if (error.code == 'operation-not-allowed') {
         throw const AuthNotConfiguredException();
