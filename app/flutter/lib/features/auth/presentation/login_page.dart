@@ -22,7 +22,14 @@ class LoginPage extends ConsumerWidget {
           'authSignOutFailed' => l10n.authSignOutFailed,
           _ => l10n.authSignInFailed,
         };
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+        showDialog<void>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: Text(message),
+            content: next.errorDetails == null ? null : SingleChildScrollView(child: SelectableText(next.errorDetails!)),
+            actions: [TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: Text(MaterialLocalizations.of(dialogContext).okButtonLabel))],
+          ),
+        );
       }
     });
 
