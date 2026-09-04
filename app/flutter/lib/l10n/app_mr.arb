@@ -114,5 +114,11 @@
   "adminDashboardSubtitle": "कामकाजाचा आढावा आणि सामग्रीची स्थिती पहा",
   "adminDashboardOverview": "कामकाजाचा आढावा",
   "adminActive": "सक्रिय",
-  "adminInactive": "निष्क्रिय"
+  "adminInactive": "निष्क्रिय",
+  "adminPrimaryImageSelected": "मुख्य प्रतिमा निवडली आहे",
+  "adminGalleryImageSelected": "गॅलरी प्रतिमा निवडली आहे",
+  "adminUploadPrimaryImage": "मुख्य प्रतिमा अपलोड करा",
+  "adminSelectPrimaryImage": "मुख्य प्रतिमा निवडा",
+  "adminAddGalleryImage": "गॅलरी प्रतिमा जोडा",
+  "adminSelectGalleryImage": "गॅलरी प्रतिमा निवडा"
 }
