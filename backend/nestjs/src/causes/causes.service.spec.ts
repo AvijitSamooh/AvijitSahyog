@@ -126,10 +126,19 @@ describe('CausesService', () => {
             email: 'one@example.com',
             address: 'Pune',
             city: 'Pune',
+            logoUrl: 'https://images.example.com/organisations/org-1.webp',
             state: 'Maharashtra',
             country: 'India',
             latitude: null,
             longitude: null,
+            media: [
+              {
+                purpose: 'LOGO',
+                isPrimary: true,
+                displayOrder: 0,
+                media: { storageKey: 'organisations/org-1.webp' },
+              },
+            ],
             translations: [
               {
                 name: 'संस्था एक',
@@ -141,6 +150,9 @@ describe('CausesService', () => {
         },
       ],
     });
+
+    const originalBase = process.env.R2_PUBLIC_BASE_URL;
+    process.env.R2_PUBLIC_BASE_URL = 'https://images.example.com';
 
     await expect(service.findOne('jeev-daya', 'hi')).resolves.toEqual(
       expect.objectContaining({
@@ -156,6 +168,8 @@ describe('CausesService', () => {
         ],
       }),
     );
+
+    process.env.R2_PUBLIC_BASE_URL = originalBase;
 
     expect(prisma.cause.findFirst).toHaveBeenCalledWith(
       expect.objectContaining({
