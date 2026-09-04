@@ -16,11 +16,18 @@ void main() {
       'contributionAmount': '25000.00',
       'cause': {'id': 'c-1', 'slug': 'education'},
       'organisation': {'id': 'o-1', 'slug': 'demo-education'},
+      'profileImage': {'id': 'm-1', 'url': 'https://images.example.com/profile.webp'},
+      'gallery': [
+        {'id': 'm-2', 'url': 'https://images.example.com/gallery-1.webp'},
+        {'id': 'm-3', 'url': 'https://images.example.com/gallery-2.webp'},
+      ],
     });
 
     expect(beneficiary.cause, 'education');
     expect(beneficiary.organisationName, 'demo-education');
     expect(beneficiary.contributionAmount, 25000);
+    expect(beneficiary.primaryImageUrl, 'https://images.example.com/profile.webp');
+    expect(beneficiary.gallery, hasLength(2));
   });
 
   test('beneficiaries API sends search and sort query parameters', () async {

@@ -31,3 +31,5 @@ flutter test --coverage
 ```
 
 UI tests should cover primary journeys plus important loading, empty and error states.
+
+- Dynamically managed organisation logos and beneficiary profile/gallery images delivered from the public API

@@ -5,6 +5,7 @@ class Organisation {
     required this.name,
     this.description,
     this.logoUrl,
+    this.gallery = const [],
     this.websiteUrl,
     this.phone,
     this.email,
@@ -21,6 +22,7 @@ class Organisation {
   final String name;
   final String? description;
   final String? logoUrl;
+  final List<String> gallery;
   final String? websiteUrl;
   final String? phone;
   final String? email;
@@ -38,6 +40,10 @@ class Organisation {
       name: json['name'] as String? ?? '',
       description: json['description'] as String?,
       logoUrl: json['logoUrl'] as String?,
+      gallery: ((json['gallery'] as List<dynamic>?) ?? const [])
+          .map((item) => item is Map<String, dynamic> ? item['url'] as String? : null)
+          .whereType<String>()
+          .toList(growable: false),
       websiteUrl: json['websiteUrl'] as String?,
       phone: json['phone'] as String?,
       email: json['email'] as String?,
