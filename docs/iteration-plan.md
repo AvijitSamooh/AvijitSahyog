@@ -225,6 +225,9 @@ Make real causes, organisations and beneficiary content manageable without chang
 - Create/edit/activate/deactivate organisations
 - Associate organisations with causes
 - Create/edit/publish beneficiary impact stories
+- Select Organisation logos and gallery images during creation or editing
+- Select Beneficiary profile and gallery images during creation or editing
+- Upload images through the admin media workflow without embedding static asset URLs in Flutter
 
 ### Exit criteria
 
