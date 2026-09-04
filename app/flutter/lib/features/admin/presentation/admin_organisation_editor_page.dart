@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/admin_organisation.dart';
 import '../providers/admin_causes_providers.dart';
+import 'admin_media_section.dart';
 import '../providers/admin_organisations_providers.dart';
 
 class AdminOrganisationEditorPage extends ConsumerStatefulWidget {
@@ -30,6 +31,7 @@ class _AdminOrganisationEditorPageState
   late final Map<String, TextEditingController> _descriptions;
   late Set<String> _causeIds;
   bool _saving = false;
+  List<PendingAdminMedia> _pendingMedia = [];
 
   bool get _editing => widget.organisation != null;
 
@@ -114,6 +116,7 @@ class _AdminOrganisationEditorPageState
       } else {
         final created = await repository.create(payload);
         await repository.updateCauses(created.id, _causeIds.toList());
+        await _attachPendingMedia(created.id);
       }
 
       if (mounted) Navigator.of(context).pop();
@@ -121,6 +124,14 @@ class _AdminOrganisationEditorPageState
       if (mounted) _error('Unable to save organisation.');
     } finally {
       if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  Future<void> _attachPendingMedia(String entityId) async {
+    final api = ref.read(adminApiClientProvider);
+    for (final item in _pendingMedia) {
+      final uploaded = await api.uploadAdminImage(item.file.path);
+      await api.attachAdminEntityMedia('organisations', entityId, {'mediaId': uploaded['id'], 'purpose': item.purpose, 'isPrimary': item.purpose == 'LOGO', 'displayOrder': 0});
     }
   }
 
@@ -166,6 +177,15 @@ class _AdminOrganisationEditorPageState
                 }),
               )).toList(),
             ),
+          ),
+          const SizedBox(height: 24),
+          AdminMediaSection(
+            api: _editing ? ref.read(adminApiClientProvider) : null,
+            entity: _editing ? 'organisations' : null,
+            entityId: _editing ? widget.organisation!.id : null,
+            primaryPurpose: 'LOGO',
+            title: 'Organisation images',
+            onPendingChanged: (items) => _pendingMedia = items,
           ),
           const SizedBox(height: 24),
           Text('Translations', style: Theme.of(context).textTheme.titleLarge),
