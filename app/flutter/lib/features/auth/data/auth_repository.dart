@@ -16,13 +16,21 @@ class AuthNotConfiguredException implements Exception {
   const AuthNotConfiguredException();
 }
 
+class AuthDiagnosticException implements Exception {
+  const AuthDiagnosticException(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
+}
+
 class FirebaseAuthRepository implements AuthRepository {
   FirebaseAuthRepository({
-    FirebaseAuth? firebaseAuth,
+    this.firebaseAuth,
     http.Client? httpClient,
     String? baseUrl,
-  })  : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-        _httpClient = httpClient ?? http.Client(),
+  })  : _httpClient = httpClient ?? http.Client(),
         _baseUrl = _normalizeBaseUrl(
           baseUrl ??
               const String.fromEnvironment(
@@ -31,7 +39,9 @@ class FirebaseAuthRepository implements AuthRepository {
               ),
         );
 
-  final FirebaseAuth _firebaseAuth;
+  final FirebaseAuth? firebaseAuth;
+
+  FirebaseAuth get _auth => firebaseAuth ?? FirebaseAuth.instance;
   final http.Client _httpClient;
   final String _baseUrl;
 
@@ -48,7 +58,7 @@ class FirebaseAuthRepository implements AuthRepository {
       final credential = GoogleAuthProvider.credential(
         idToken: googleAuth.idToken,
       );
-      final result = await _firebaseAuth.signInWithCredential(credential);
+      final result = await _auth.signInWithCredential(credential);
 
       final user = result.user;
       if (user == null) {
@@ -60,20 +70,31 @@ class FirebaseAuthRepository implements AuthRepository {
       if (error.code == 'operation-not-allowed') {
         throw const AuthNotConfiguredException();
       }
-      rethrow;
+      throw AuthDiagnosticException(
+        'Firebase error: code=${error.code}; message=${error.message ?? 'none'}',
+      );
+    } on GoogleSignInException catch (error) {
+      throw AuthDiagnosticException(
+        'Google Sign-In error: code=${error.code}; '
+        'description=${error.description ?? 'none'}',
+      );
+    } catch (error) {
+      throw AuthDiagnosticException(
+        'Sign-In error: ${error.runtimeType}: $error',
+      );
     }
   }
 
   @override
   Future<AppUser?> restoreSession() async {
-    final user = _firebaseAuth.currentUser;
+    final user = _auth.currentUser;
     if (user == null) return null;
     return _resolveBackendUser(user);
   }
 
   @override
   Future<void> signOut() async {
-    await _firebaseAuth.signOut();
+    await _auth.signOut();
   }
 
   Future<AppUser> _resolveBackendUser(User firebaseUser) async {

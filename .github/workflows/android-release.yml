@@ -63,6 +63,17 @@ jobs:
           storeFile=avijit-sahyog-upload.jks
           EOF
 
+      - name: Configure Firebase for Android
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          if [ -z "$GOOGLE_SERVICES_JSON" ]; then
+            echo "Missing required GitHub Actions secret: GOOGLE_SERVICES_JSON"
+            exit 1
+          fi
+          printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+          test -s android/app/google-services.json
+
       - name: Build signed app bundle
         run: flutter build appbundle --release --dart-define=API_BASE_URL=${{ vars.API_BASE_URL }}
 
