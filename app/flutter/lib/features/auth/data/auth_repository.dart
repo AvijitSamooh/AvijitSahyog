@@ -39,11 +39,22 @@ class FirebaseAuthRepository implements AuthRepository {
               ),
         );
 
+  static const String _serverClientId = String.fromEnvironment(
+    'GOOGLE_SIGN_IN_SERVER_CLIENT_ID',
+  );
+  static Future<void>? _googleSignInInitialization;
+
   final FirebaseAuth? firebaseAuth;
 
   FirebaseAuth get _auth => firebaseAuth ?? FirebaseAuth.instance;
   final http.Client _httpClient;
   final String _baseUrl;
+
+  Future<void> _initializeGoogleSignIn() {
+    return _googleSignInInitialization ??= GoogleSignIn.instance.initialize(
+      serverClientId: _serverClientId.isEmpty ? null : _serverClientId,
+    );
+  }
 
   static String _normalizeBaseUrl(String value) =>
       value.endsWith('/') ? value.substring(0, value.length - 1) : value;
@@ -51,7 +62,7 @@ class FirebaseAuthRepository implements AuthRepository {
   @override
   Future<AppUser> signInWithGoogle() async {
     try {
-      await GoogleSignIn.instance.initialize();
+      await _initializeGoogleSignIn();
       final googleUser = await GoogleSignIn.instance.authenticate();
       final googleAuth = googleUser.authentication;
 
