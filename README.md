@@ -101,6 +101,21 @@ flutter build web --dart-define=API_BASE_URL=https://YOUR_RENDER_API_URL
 The production API URL will be configured in Vercel and the Android release
 pipeline; it is intentionally not hard-coded in source.
 
+### Android Firebase and Google Sign-In
+
+Android release builds use the `GOOGLE_SERVICES_JSON` GitHub Actions secret as
+the single source of truth for native Firebase and Google OAuth configuration.
+The release workflow validates that the configuration targets project
+`avijitsahyog-24e55` and package `com.avijitsamooh.avijitsahyog`, then derives
+the Web OAuth client ID (`client_type: 3`) directly from that same file for the
+`GOOGLE_SIGN_IN_SERVER_CLIENT_ID` Dart define. This prevents Firebase and
+Google Sign-In credentials from drifting between independently configured CI
+variables.
+
+On Android, Firebase is initialized from the native `google-services.json`
+configuration. The generated Dart Firebase options remain the source of truth
+for web initialization.
+
 ### Backend environment variables
 
 The NestJS service expects:
