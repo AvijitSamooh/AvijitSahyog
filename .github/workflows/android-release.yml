@@ -80,7 +80,7 @@ jobs:
           PACKAGE_NAME=$(jq -r '.client[0].client_info.android_client_info.package_name // empty' android/app/google-services.json)
           WEB_CLIENT_ID=$(jq -r '[.client[].oauth_client[]? | select(.client_type == 3) | .client_id][0] // empty' android/app/google-services.json)
 
-          test "$PROJECT_ID" = "avijitsahyog-24e55"
+          test "$PROJECT_ID" = "avijitsahyog-firebase"
           test "$PACKAGE_NAME" = "com.avijitsamooh.avijitsahyog"
           if [ -z "$WEB_CLIENT_ID" ]; then
             echo "google-services.json does not contain a Web OAuth client (client_type 3)"
