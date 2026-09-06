@@ -26,8 +26,12 @@ class LoginPage extends ConsumerWidget {
           context: context,
           builder: (dialogContext) => AlertDialog(
             title: Text(message),
-            content: next.errorDetails == null ? null : SingleChildScrollView(child: SelectableText(next.errorDetails!)),
-            actions: [TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: Text(MaterialLocalizations.of(dialogContext).okButtonLabel))],
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: Text(MaterialLocalizations.of(dialogContext).okButtonLabel),
+              ),
+            ],
           ),
         );
       }
@@ -44,24 +48,36 @@ class LoginPage extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Icon(Icons.account_circle_rounded,
-                    size: 72, color: Theme.of(context).colorScheme.primary),
+                Icon(
+                  Icons.account_circle_rounded,
+                  size: 72,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
                 const SizedBox(height: 20),
-                Text(l10n.loginTitle,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.headlineSmall),
+                Text(
+                  l10n.loginTitle,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
                 const SizedBox(height: 10),
-                Text(l10n.loginSubtitle,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyMedium),
+                Text(
+                  l10n.loginSubtitle,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
                 const SizedBox(height: 28),
                 FilledButton.icon(
                   key: const ValueKey('auth_google_sign_in'),
                   onPressed: state.isLoading
                       ? null
-                      : () => ref.read(authProvider.notifier).signInWithGoogle(),
+                      : () =>
+                          ref.read(authProvider.notifier).signInWithGoogle(),
                   icon: state.isLoading
-                      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
                       : const Icon(Icons.login_rounded),
                   label: Text(l10n.continueWithGoogle),
                 ),
