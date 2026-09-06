@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/widgets/app_settings_menu.dart';
 import '../../l10n/app_localizations.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -29,7 +30,7 @@ class SettingsPage extends StatelessWidget {
     );
 
     return showAppBar
-        ? Scaffold(appBar: AppBar(title: Text(l10n.language)), body: content)
+        ? AppPageScaffold(title: Text(l10n.language), body: content)
         : content;
   }
 
