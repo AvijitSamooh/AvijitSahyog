@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/widgets/app_settings_menu.dart';
 import '../../../l10n/app_localizations.dart';
 import '../providers/auth_providers.dart';
 
@@ -37,8 +38,8 @@ class LoginPage extends ConsumerWidget {
       }
     });
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.login)),
+    return AppPageScaffold(
+      title: Text(l10n.login),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 420),
