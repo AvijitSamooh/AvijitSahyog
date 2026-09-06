@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/widgets/app_settings_menu.dart';
 
 import '../models/admin_beneficiary.dart';
 import '../providers/admin_beneficiaries_providers.dart';
@@ -11,8 +12,8 @@ class AdminBeneficiariesPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final beneficiaries = ref.watch(adminBeneficiariesProvider);
-    return Scaffold(
-      appBar: AppBar(title: const Text('Manage beneficiaries')),
+    return AppPageScaffold(
+      title: const Text('Manage beneficiaries'),
       floatingActionButton: FloatingActionButton.extended(
         key: const ValueKey('admin_create_beneficiary'),
         icon: const Icon(Icons.add),
