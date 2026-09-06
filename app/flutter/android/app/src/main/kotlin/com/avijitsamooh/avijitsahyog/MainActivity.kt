@@ -29,10 +29,10 @@ class MainActivity : FlutterActivity() {
             }
 
             val signatures = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                packageInfo.signingInfo.apkContentsSigners
+                packageInfo.signingInfo?.apkContentsSigners.orEmpty()
             } else {
                 @Suppress("DEPRECATION")
-                packageInfo.signatures
+                packageInfo.signatures.orEmpty()
             }
 
             Log.i("AvijitAuthDiag", "packageName=" + packageName)
