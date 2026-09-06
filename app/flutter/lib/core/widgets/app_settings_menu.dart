@@ -31,11 +31,13 @@ class AppSettingsMenu extends ConsumerWidget {
             if (selected != null && context.mounted) {
               AppShellScope.of(context).onLocaleChanged(selected);
             }
+            return;
           case _SettingsAction.account:
             if (!context.mounted) return;
             Navigator.of(context).push(MaterialPageRoute(
               builder: (_) => authenticated ? const ProfilePage() : const LoginPage(),
             ));
+            return;
           case _SettingsAction.logout:
             await ref.read(authProvider.notifier).signOut();
             if (!context.mounted) return;
