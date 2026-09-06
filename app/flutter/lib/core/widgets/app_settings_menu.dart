@@ -139,10 +139,6 @@ class AppPageScaffold extends Scaffold {
             elevation: appBarElevation,
             scrolledUnderElevation: appBarScrolledUnderElevation,
           ),
-          body: body,
-          floatingActionButton: floatingActionButton,
-          floatingActionButtonLocation: floatingActionButtonLocation,
-          bottomNavigationBar: bottomNavigationBar,
-          bottomSheet: bottomSheet,
+
         );
 }
