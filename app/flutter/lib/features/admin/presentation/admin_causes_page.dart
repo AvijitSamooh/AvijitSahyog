@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/widgets/app_settings_menu.dart';
 
 import '../models/admin_cause.dart';
 import '../providers/admin_causes_providers.dart';
@@ -12,8 +13,8 @@ class AdminCausesPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final causes = ref.watch(adminCausesProvider);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Manage causes')),
+    return AppPageScaffold(
+      title: const Text('Manage causes'),
       floatingActionButton: FloatingActionButton.extended(
         key: const ValueKey('admin_create_cause'),
         onPressed: () async {
