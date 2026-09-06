@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/widgets/app_settings_menu.dart';
 
 import '../../../l10n/app_localizations.dart';
 import 'admin_dashboard_page.dart';
@@ -13,8 +14,8 @@ class AdminPortalPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.adminPortal)),
+    return AppPageScaffold(
+      title: Text(l10n.adminPortal),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
