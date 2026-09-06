@@ -100,11 +100,13 @@ Add or update tests for:
 
 Critical donation, allocation and payment logic requires scenario-based tests.
 
-## 7. CI Discipline
+## 7. Mandatory Local Validation and CI Discipline
 
-Before considering work complete:
+GitHub Actions CI is a final confirmation gate, **not a debugging environment**. Before creating a commit, pushing code, opening a PR, or requesting review, validate affected code locally whenever the execution environment supports the required tooling.
 
-### Flutter
+### Flutter — mandatory before every push
+
+Run from `app/flutter` in this exact order:
 
 ```bash
 flutter pub get
@@ -112,6 +114,17 @@ flutter gen-l10n
 flutter analyze
 flutter test
 ```
+
+Rules:
+
+- Do not commit or push with known compilation, analyzer, or test failures.
+- Run the complete Flutter test suite, not only a targeted test, before pushing.
+- When UI structure, titles, navigation, widgets, localization, or page shells change, proactively inspect affected existing UI/widget tests and update stale expectations before validation.
+- Fix failures locally and repeat validation until clean.
+- Do not make speculative commits solely to discover the next CI failure.
+- Prefer one consolidated, locally validated commit over repeated "fix CI" commits.
+- If the agent execution environment cannot run Flutter commands, explicitly state exactly which commands could not be run and why. Never claim validation passed when it was not executed.
+- If commands are available, running them is mandatory; inspecting code or reasoning about likely correctness is not a substitute.
 
 ### Backend
 
@@ -124,6 +137,20 @@ npm test
 Also validate affected Prisma schema/migrations.
 
 CI failures must be fixed by reading the actual failing job logs. Do not repeatedly change tests based on assumptions.
+
+### Required delivery workflow
+
+1. Inspect architecture and affected tests.
+2. Implement the complete coherent change.
+3. Update localization and tests.
+4. Run all mandatory local validation commands.
+5. Fix every failure locally.
+6. Re-run validation until clean.
+7. Review the final diff for regressions and debug artifacts.
+8. Commit and push once validation is clean.
+9. Use GitHub CI as final confirmation only.
+
+Do not report implementation work as complete until this workflow has been followed, or any unavailable validation has been explicitly disclosed.
 
 ## 8. Definition of Done
 
@@ -166,7 +193,7 @@ When implementing a change:
 3. Implement the smallest coherent solution.
 4. Add localization for every new user-visible string.
 5. Add tests in the same change.
-6. Run analysis/tests or inspect CI results.
+6. Run mandatory local analysis/tests before committing or pushing; inspect CI only as final confirmation.
 7. Fix root causes, not symptoms.
 8. Update documentation when behaviour or architecture changes.
 9. Before declaring the work complete, explicitly review whether the change alters product vision, user flow, domain model, API contract, architecture, iteration plan, or operational assumptions. If yes, update the relevant `docs/` files in the same PR and explain the documentation impact in the PR.
