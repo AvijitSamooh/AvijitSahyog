@@ -96,6 +96,7 @@ jobs:
           PACKAGE_NAME=$(jq -r '.client[0].client_info.android_client_info.package_name // empty' android/app/google-services.json)
           test "$PROJECT_ID" = "avijitsahyog-firebase"
           test "$PACKAGE_NAME" = "com.avijitsamooh.avijitsahyog"
+
       - name: Generate unique Play version code
         run: |
           PLAY_VERSION_CODE=$((1000000 + GITHUB_RUN_NUMBER * 100 + GITHUB_RUN_ATTEMPT))
