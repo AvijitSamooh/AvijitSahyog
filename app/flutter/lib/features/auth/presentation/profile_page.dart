@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/widgets/app_settings_menu.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../admin/presentation/admin_portal_page.dart';
 import '../providers/auth_providers.dart';
@@ -13,8 +14,8 @@ class ProfilePage extends ConsumerWidget {
     final user = ref.watch(authProvider).user;
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.profile)),
+    return AppPageScaffold(
+      title: Text(l10n.profile),
       body: user == null
           ? Center(child: Text(l10n.loginRequired))
           : ListView(
