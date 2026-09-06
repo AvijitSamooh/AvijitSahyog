@@ -36,11 +36,6 @@ class CausesPage extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
               children: [
                 Text(
-                  l10n.causesTitle,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                const SizedBox(height: 6),
-                Text(
                   l10n.welcomeSubtitle,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
