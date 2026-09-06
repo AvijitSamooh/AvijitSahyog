@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/beneficiary.dart';
 import 'impact_page.dart' show beneficiaryImage;
 import '../../../l10n/app_localizations.dart';
+import '../../../core/widgets/app_settings_menu.dart';
 
 class BeneficiaryDetailPage extends StatelessWidget {
   const BeneficiaryDetailPage({super.key, required this.beneficiary});
@@ -11,8 +12,8 @@ class BeneficiaryDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.impactStoryTitle)),
+    return AppPageScaffold(
+      title: Text(l10n.impactStoryTitle),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 36),
         children: [
