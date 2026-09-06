@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/widgets/app_settings_menu.dart';
 
 import '../models/admin_organisation.dart';
 import '../providers/admin_causes_providers.dart';
@@ -142,8 +143,8 @@ class _AdminOrganisationEditorPageState
   @override
   Widget build(BuildContext context) {
     final causes = ref.watch(adminCausesProvider);
-    return Scaffold(
-      appBar: AppBar(title: Text(_editing ? 'Edit organisation' : 'Create organisation')),
+    return AppPageScaffold(
+      title: Text(_editing ? 'Edit organisation' : 'Create organisation'),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
         children: [
