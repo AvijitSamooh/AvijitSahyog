@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/widgets/app_settings_menu.dart';
 
 import '../models/admin_cause.dart';
 import '../providers/admin_causes_providers.dart';
@@ -126,10 +127,8 @@ class _AdminCauseEditorPageState extends ConsumerState<AdminCauseEditorPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_isEditing ? 'Edit cause' : 'Create cause'),
-      ),
+    return AppPageScaffold(
+      title: Text(_isEditing ? 'Edit cause' : 'Create cause'),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),

@@ -7,8 +7,12 @@ import '../../features/auth/providers/auth_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../navigation/app_shell_scope.dart';
 
-enum _SettingsAction { language, account }
+enum _SettingsAction { language, account, logout }
 
+/// Standard page actions used by every application AppBar.
+///
+/// New pages should use [AppPageScaffold] (or [AppPageAppBar]) so language,
+/// account and logout actions remain consistent without page-specific wiring.
 class AppSettingsMenu extends ConsumerWidget {
   const AppSettingsMenu({super.key});
 
@@ -21,21 +25,53 @@ class AppSettingsMenu extends ConsumerWidget {
       icon: const Icon(Icons.more_vert_rounded),
       tooltip: l10n.navSettings,
       onSelected: (action) async {
-        if (action == _SettingsAction.language) {
-          final selected = await _showLanguageSelector(context);
-          if (selected != null && context.mounted) {
-            AppShellScope.of(context).onLocaleChanged(selected);
-          }
-          return;
+        switch (action) {
+          case _SettingsAction.language:
+            final selected = await _showLanguageSelector(context);
+            if (selected != null && context.mounted) {
+              AppShellScope.of(context).onLocaleChanged(selected);
+            }
+            return;
+          case _SettingsAction.account:
+            if (!context.mounted) return;
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => authenticated ? const ProfilePage() : const LoginPage(),
+            ));
+            return;
+          case _SettingsAction.logout:
+            await ref.read(authProvider.notifier).signOut();
+            if (!context.mounted) return;
+            Navigator.of(context).popUntil((route) => route.isFirst);
         }
-        if (!context.mounted) return;
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (_) => authenticated ? const ProfilePage() : const LoginPage(),
-        ));
       },
       itemBuilder: (context) => [
-        PopupMenuItem(value: _SettingsAction.language, child: ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.language_rounded), title: Text(l10n.language))),
-        PopupMenuItem(value: _SettingsAction.account, child: ListTile(contentPadding: EdgeInsets.zero, leading: Icon(authenticated ? Icons.account_circle_rounded : Icons.login_rounded), title: Text(authenticated ? l10n.profile : l10n.login))),
+        PopupMenuItem(
+          value: _SettingsAction.language,
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.language_rounded),
+            title: Text(l10n.language),
+          ),
+        ),
+        PopupMenuItem(
+          value: _SettingsAction.account,
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: Icon(authenticated
+                ? Icons.account_circle_rounded
+                : Icons.login_rounded),
+            title: Text(authenticated ? l10n.profile : l10n.login),
+          ),
+        ),
+        if (authenticated)
+          PopupMenuItem(
+            value: _SettingsAction.logout,
+            child: ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.logout_rounded),
+              title: Text(l10n.logout),
+            ),
+          ),
       ],
     );
   }
@@ -43,19 +79,66 @@ class AppSettingsMenu extends ConsumerWidget {
   Future<Locale?> _showLanguageSelector(BuildContext context) {
     final current = Localizations.localeOf(context).languageCode;
     final l10n = AppLocalizations.of(context)!;
-    final options = [(l10n.languageEnglish, 'en'), (l10n.languageHindi, 'hi'), (l10n.languageMarathi, 'mr'), (l10n.languageGujarati, 'gu')];
+    final options = [
+      (l10n.languageEnglish, 'en'),
+      (l10n.languageHindi, 'hi'),
+      (l10n.languageMarathi, 'mr'),
+      (l10n.languageGujarati, 'gu'),
+    ];
     return showModalBottomSheet<Locale>(
       context: context,
       builder: (context) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: options.map((option) => ListTile(
-            leading: Icon(option.$2 == current ? Icons.check_circle_rounded : Icons.language_rounded),
-            title: Text(option.$1),
-            onTap: () => Navigator.of(context).pop(Locale(option.$2)),
-          )).toList(growable: false),
+          children: options
+              .map((option) => ListTile(
+                    leading: Icon(option.$2 == current
+                        ? Icons.check_circle_rounded
+                        : Icons.language_rounded),
+                    title: Text(option.$1),
+                    onTap: () =>
+                        Navigator.of(context).pop(Locale(option.$2)),
+                  ))
+              .toList(growable: false),
         ),
       ),
     );
   }
+}
+
+class AppPageAppBar extends AppBar {
+  AppPageAppBar({
+    super.key,
+    super.title,
+    super.leading,
+    super.automaticallyImplyLeading,
+    super.bottom,
+    super.elevation,
+    super.scrolledUnderElevation,
+  }) : super(actions: const [AppSettingsMenu()]);
+}
+
+class AppPageScaffold extends Scaffold {
+  AppPageScaffold({
+    super.key,
+    required Widget title,
+    super.body,
+    super.floatingActionButton,
+    super.floatingActionButtonLocation,
+    super.bottomNavigationBar,
+    super.bottomSheet,
+    bool automaticallyImplyLeading = true,
+    PreferredSizeWidget? appBarBottom,
+    double? appBarElevation,
+    double? appBarScrolledUnderElevation,
+  }) : super(
+          appBar: AppPageAppBar(
+            title: title,
+            automaticallyImplyLeading: automaticallyImplyLeading,
+            bottom: appBarBottom,
+            elevation: appBarElevation,
+            scrolledUnderElevation: appBarScrolledUnderElevation,
+          ),
+
+        );
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/widgets/app_settings_menu.dart';
 import '../../../l10n/app_localizations.dart';
 import '../models/cause.dart';
 import '../providers/causes_providers.dart';
@@ -15,7 +16,8 @@ class CausesPage extends ConsumerWidget {
     final causesAsync = ref.watch(causesProvider(languageCode));
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
+    return AppPageScaffold(
+      title: Text(l10n.causesTitle),
       body: causesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => _ErrorState(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/widgets/app_settings_menu.dart';
 
 import '../../donations/presentation/donation_page.dart';
 import '../models/organisation.dart';
@@ -15,8 +16,8 @@ class CauseDetailPage extends ConsumerWidget {
     final causeAsync = ref.watch(causeProvider((slug: slug, languageCode: languageCode)));
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Cause Details')),
+    return AppPageScaffold(
+      title: const Text('Cause Details'),
       body: causeAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, _) => const _CauseErrorState(),

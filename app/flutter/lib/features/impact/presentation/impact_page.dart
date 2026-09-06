@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/widgets/app_settings_menu.dart';
 import '../models/beneficiary.dart';
 import '../../../l10n/app_localizations.dart';
 import '../providers/beneficiaries_providers.dart';
@@ -47,7 +48,8 @@ class _ImpactPageState extends ConsumerState<ImpactPage> {
 
   @override Widget build(BuildContext context) {
     final beneficiaries = ref.watch(beneficiariesProvider((search: _search.text.trim(), sort: _apiSort)));
-    return Scaffold(
+    return AppPageScaffold(
+      title: const SizedBox.shrink(),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
         children: [

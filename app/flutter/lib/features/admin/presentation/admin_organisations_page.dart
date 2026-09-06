@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/widgets/app_settings_menu.dart';
 
 import '../models/admin_organisation.dart';
 import '../providers/admin_organisations_providers.dart';
@@ -11,8 +12,8 @@ class AdminOrganisationsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final organisations = ref.watch(adminOrganisationsProvider);
-    return Scaffold(
-      appBar: AppBar(title: const Text('Manage organisations')),
+    return AppPageScaffold(
+      title: const Text('Manage organisations'),
       floatingActionButton: FloatingActionButton.extended(
         key: const ValueKey('admin_create_organisation'),
         icon: const Icon(Icons.add),
