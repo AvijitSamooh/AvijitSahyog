@@ -15,36 +15,33 @@ class MainActivity : FlutterActivity() {
 
     private fun logAuthDiagnostics() {
         try {
-            val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                packageManager.getPackageInfo(
-                    packageName,
-                    PackageManager.GET_SIGNING_CERTIFICATES,
-                )
-            } else {
-                @Suppress("DEPRECATION")
-                packageManager.getPackageInfo(
-                    packageName,
-                    PackageManager.GET_SIGNATURES,
-                )
-            }
+            val packageInfo = packageManager.getPackageInfo(
+                packageName,
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    PackageManager.GET_SIGNING_CERTIFICATES
+                } else {
+                    @Suppress("DEPRECATION")
+                    PackageManager.GET_SIGNATURES
+                },
+            )
 
             val signatures = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                packageInfo.signingInfo?.apkContentsSigners.orEmpty()
+                packageInfo.signingInfo?.apkContentsSigners ?: emptyArray()
             } else {
                 @Suppress("DEPRECATION")
-                packageInfo.signatures.orEmpty()
+                packageInfo.signatures ?: emptyArray()
             }
 
-            Log.i("AvijitAuthDiag", "packageName=" + packageName)
+            Log.i("AvijitAuthDiag", "packageName=$packageName")
             signatures.forEachIndexed { index, signature ->
-                val certificate = signature.toByteArray()
+                val certificateBytes = signature.toByteArray()
                 Log.i(
                     "AvijitAuthDiag",
-                    "signer[" + index + "].SHA1=" + digest(certificate, "SHA-1"),
+                    "signer[$index].SHA1=${digest(certificateBytes, "SHA-1")}",
                 )
                 Log.i(
                     "AvijitAuthDiag",
-                    "signer[" + index + "].SHA256=" + digest(certificate, "SHA-256"),
+                    "signer[$index].SHA256=${digest(certificateBytes, "SHA-256")}",
                 )
             }
 
@@ -58,7 +55,7 @@ class MainActivity : FlutterActivity() {
             } else {
                 "<missing>"
             }
-            Log.i("AvijitAuthDiag", "default_web_client_id=" + webClientId)
+            Log.i("AvijitAuthDiag", "default_web_client_id=$webClientId")
         } catch (error: Exception) {
             Log.e("AvijitAuthDiag", "Unable to collect auth diagnostics", error)
         }
