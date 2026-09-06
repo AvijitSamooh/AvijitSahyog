@@ -49,7 +49,7 @@ class _ImpactPageState extends ConsumerState<ImpactPage> {
   @override Widget build(BuildContext context) {
     final beneficiaries = ref.watch(beneficiariesProvider((search: _search.text.trim(), sort: _apiSort)));
     return AppPageScaffold(
-      title: Text(AppLocalizations.of(context)!.impactTitle),
+      title: const SizedBox.shrink(),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
         children: [
