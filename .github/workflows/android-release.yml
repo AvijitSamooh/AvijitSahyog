@@ -9,9 +9,13 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: google-play-closed-testing
+  cancel-in-progress: false
+
 jobs:
   build-android:
-    name: Build Signed Android App Bundle
+    name: Build and Publish Android App Bundle
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -68,7 +72,7 @@ jobs:
           GOOGLE_SERVICES_JSON: ${{ vars.GOOGLE_SERVICES_JSON }}
         run: |
           if [ -z "$GOOGLE_SERVICES_JSON" ]; then
-            echo "Missing required GitHub Actions secret: GOOGLE_SERVICES_JSON"
+            echo "Missing required GitHub Actions variable: GOOGLE_SERVICES_JSON"
             exit 1
           fi
 
@@ -87,16 +91,33 @@ jobs:
           fi
           echo "GOOGLE_SIGN_IN_SERVER_CLIENT_ID=$MATCHING_WEB_CLIENT_ID" >> "$GITHUB_ENV"
 
+      - name: Generate unique Play version code
+        run: |
+          PLAY_VERSION_CODE=$((1000000 + GITHUB_RUN_NUMBER * 100 + GITHUB_RUN_ATTEMPT))
+          echo "PLAY_VERSION_CODE=$PLAY_VERSION_CODE" >> "$GITHUB_ENV"
+          echo "Publishing versionCode: $PLAY_VERSION_CODE"
+
       - name: Build signed app bundle
         run: |
           flutter build appbundle --release \
+            --build-number="$PLAY_VERSION_CODE" \
             --dart-define=API_BASE_URL=${{ vars.API_BASE_URL }} \
             --dart-define=GOOGLE_SIGN_IN_SERVER_CLIENT_ID="$GOOGLE_SIGN_IN_SERVER_CLIENT_ID"
 
       - name: Upload AAB artifact
         uses: actions/upload-artifact@v4
         with:
-          name: avijit-sahyog-release-aab
+          name: avijit-sahyog-release-aab-${{ env.PLAY_VERSION_CODE }}
           path: app/flutter/build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
           retention-days: 30
+
+      - name: Publish to Google Play Closed Testing
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+          packageName: com.avijitsamooh.avijitsahyog
+          releaseFiles: app/flutter/build/app/outputs/bundle/release/app-release.aab
+          tracks: alpha
+          status: completed
+          releaseName: CI build ${{ env.PLAY_VERSION_CODE }}
