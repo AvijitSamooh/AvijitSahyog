@@ -48,10 +48,8 @@ export class FirebaseTokenVerifierService {
         throw new Error('unsupported_token_header');
       }
 
-      const projectId = process.env.FIREBASE_PROJECT_ID;
-      if (!projectId) {
-        throw new Error('missing_firebase_project_id');
-      }
+      const projectId =
+        process.env.FIREBASE_PROJECT_ID || 'avijitsahyog-firebase';
 
       this.validateClaims(claims, projectId);
 
