@@ -16,15 +16,6 @@ class AuthNotConfiguredException implements Exception {
   const AuthNotConfiguredException();
 }
 
-class AuthDiagnosticException implements Exception {
-  const AuthDiagnosticException(this.message);
-
-  final String message;
-
-  @override
-  String toString() => message;
-}
-
 class FirebaseAuthRepository implements AuthRepository {
   FirebaseAuthRepository({
     this.firebaseAuth,
@@ -76,20 +67,7 @@ class FirebaseAuthRepository implements AuthRepository {
       if (error.code == 'operation-not-allowed') {
         throw const AuthNotConfiguredException();
       }
-      throw AuthDiagnosticException(
-        'Firebase error: code=${error.code}; message=${error.message ?? 'none'}',
-      );
-    } on GoogleSignInException catch (error) {
-      throw AuthDiagnosticException(
-        'Google Sign-In error: code=${error.code}; '
-        'description=${error.description ?? 'none'}',
-      );
-    } on AuthDiagnosticException {
       rethrow;
-    } catch (error) {
-      throw AuthDiagnosticException(
-        'Sign-In error: ${error.runtimeType}: $error',
-      );
     }
   }
 
@@ -108,53 +86,27 @@ class FirebaseAuthRepository implements AuthRepository {
   Future<AppUser> _resolveBackendUser(User firebaseUser) async {
     final token = await firebaseUser.getIdToken();
     if (token == null || token.isEmpty) {
-      throw const AuthDiagnosticException(
-        'Backend auth failed: Firebase returned an empty ID token.',
-      );
+      throw StateError('Firebase returned an empty ID token.');
     }
 
-    final endpoint = '$_baseUrl/auth/me';
-    late http.Response response;
-    try {
-      response = await _httpClient.get(
-        Uri.parse(endpoint),
-        headers: {'Authorization': 'Bearer $token'},
-      );
-    } catch (error) {
-      throw AuthDiagnosticException(
-        'Backend request failed: endpoint=$endpoint; '
-        'error=${error.runtimeType}: $error',
-      );
-    }
+    final response = await _httpClient.get(
+      Uri.parse('$_baseUrl/auth/me'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      final body = response.body.length > 1000
-          ? '${response.body.substring(0, 1000)}…'
-          : response.body;
-      throw AuthDiagnosticException(
-        'Backend auth failed: endpoint=$endpoint; '
-        'status=${response.statusCode}; '
-        'body=$body',
-      );
+      throw StateError('Backend authentication failed.');
     }
 
-    try {
-      final json = jsonDecode(response.body) as Map<String, dynamic>;
-      return AppUser(
-        id: json['id'] as String,
-        email: json['email'] as String?,
-        displayName: json['displayName'] as String?,
-        photoUrl: json['photoUrl'] as String?,
-        preferredLanguage: json['preferredLanguage'] as String?,
-        role: json['role'] == 'ADMIN' ? UserRole.admin : UserRole.user,
-      );
-    } catch (error) {
-      throw AuthDiagnosticException(
-        'Backend response parse failed: endpoint=$endpoint; '
-        'status=${response.statusCode}; '
-        'error=${error.runtimeType}: $error',
-      );
-    }
+    final json = jsonDecode(response.body) as Map<String, dynamic>;
+    return AppUser(
+      id: json['id'] as String,
+      email: json['email'] as String?,
+      displayName: json['displayName'] as String?,
+      photoUrl: json['photoUrl'] as String?,
+      preferredLanguage: json['preferredLanguage'] as String?,
+      role: json['role'] == 'ADMIN' ? UserRole.admin : UserRole.user,
+    );
   }
 
   void dispose() {
