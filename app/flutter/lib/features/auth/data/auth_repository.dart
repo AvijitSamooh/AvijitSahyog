@@ -84,6 +84,8 @@ class FirebaseAuthRepository implements AuthRepository {
         'Google Sign-In error: code=${error.code}; '
         'description=${error.description ?? 'none'}',
       );
+    } on AuthDiagnosticException {
+      rethrow;
     } catch (error) {
       throw AuthDiagnosticException(
         'Sign-In error: ${error.runtimeType}: $error',
@@ -106,27 +108,53 @@ class FirebaseAuthRepository implements AuthRepository {
   Future<AppUser> _resolveBackendUser(User firebaseUser) async {
     final token = await firebaseUser.getIdToken();
     if (token == null || token.isEmpty) {
-      throw StateError('Unable to obtain Firebase authentication token.');
+      throw const AuthDiagnosticException(
+        'Backend auth failed: Firebase returned an empty ID token.',
+      );
     }
 
-    final response = await _httpClient.get(
-      Uri.parse('$_baseUrl/auth/me'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
+    final endpoint = '$_baseUrl/auth/me';
+    late http.Response response;
+    try {
+      response = await _httpClient.get(
+        Uri.parse(endpoint),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+    } catch (error) {
+      throw AuthDiagnosticException(
+        'Backend request failed: endpoint=$endpoint; '
+        'error=${error.runtimeType}: $error',
+      );
+    }
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw StateError('Unable to resolve authenticated user.');
+      final body = response.body.length > 1000
+          ? '${response.body.substring(0, 1000)}…'
+          : response.body;
+      throw AuthDiagnosticException(
+        'Backend auth failed: endpoint=$endpoint; '
+        'status=${response.statusCode}; '
+        'body=$body',
+      );
     }
 
-    final json = jsonDecode(response.body) as Map<String, dynamic>;
-    return AppUser(
-      id: json['id'] as String,
-      email: json['email'] as String?,
-      displayName: json['displayName'] as String?,
-      photoUrl: json['photoUrl'] as String?,
-      preferredLanguage: json['preferredLanguage'] as String?,
-      role: json['role'] == 'ADMIN' ? UserRole.admin : UserRole.user,
-    );
+    try {
+      final json = jsonDecode(response.body) as Map<String, dynamic>;
+      return AppUser(
+        id: json['id'] as String,
+        email: json['email'] as String?,
+        displayName: json['displayName'] as String?,
+        photoUrl: json['photoUrl'] as String?,
+        preferredLanguage: json['preferredLanguage'] as String?,
+        role: json['role'] == 'ADMIN' ? UserRole.admin : UserRole.user,
+      );
+    } catch (error) {
+      throw AuthDiagnosticException(
+        'Backend response parse failed: endpoint=$endpoint; '
+        'status=${response.statusCode}; '
+        'error=${error.runtimeType}: $error',
+      );
+    }
   }
 
   void dispose() {
