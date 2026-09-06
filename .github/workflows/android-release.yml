@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: google-play-closed-testing
+  group: google-play-testing
   cancel-in-progress: false
 
 jobs:
@@ -112,12 +112,12 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Publish to Google Play Closed Testing
+      - name: Publish to Google Play Internal and Closed Testing
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
           packageName: com.avijitsamooh.avijitsahyog
           releaseFiles: app/flutter/build/app/outputs/bundle/release/app-release.aab
-          tracks: alpha
+          tracks: internal,alpha
           status: completed
           releaseName: CI build ${{ env.PLAY_VERSION_CODE }}
