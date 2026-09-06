@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/widgets/app_settings_menu.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../models/admin_dashboard_summary.dart';
@@ -15,8 +16,8 @@ class AdminDashboardPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final summary = ref.watch(adminDashboardProvider);
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.adminDashboard)),
+    return AppPageScaffold(
+      title: Text(l10n.adminDashboard),
       body: summary.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stackTrace) => Center(
