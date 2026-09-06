@@ -41,9 +41,6 @@ class FirebaseAuthRepository implements AuthRepository {
 
   static Future<void>? _googleSignInInitialization;
 
-  static const String _googleSignInServerClientId =
-      String.fromEnvironment('GOOGLE_SIGN_IN_SERVER_CLIENT_ID');
-
   final FirebaseAuth? firebaseAuth;
 
   FirebaseAuth get _auth => firebaseAuth ?? FirebaseAuth.instance;
@@ -51,11 +48,7 @@ class FirebaseAuthRepository implements AuthRepository {
   final String _baseUrl;
 
   Future<void> _initializeGoogleSignIn() {
-    return _googleSignInInitialization ??= GoogleSignIn.instance.initialize(
-      serverClientId: _googleSignInServerClientId.isEmpty
-          ? null
-          : _googleSignInServerClientId,
-    );
+    return _googleSignInInitialization ??= GoogleSignIn.instance.initialize();
   }
 
   static String _normalizeBaseUrl(String value) =>
