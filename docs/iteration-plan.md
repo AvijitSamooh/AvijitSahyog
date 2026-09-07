@@ -25,8 +25,6 @@ This section is the source of truth when asking **“what is pending?”**. Upda
 
 ## In Progress
 
-- [ ] Workflow and partial-failure test discipline — strengthen testing standards following the organisation/beneficiary media partial-success incident.
-
 ## Pending Next
 
 - [ ] Add workflow-level regression coverage to future multi-step admin/content flows as they are changed.
@@ -47,6 +45,7 @@ This section is the source of truth when asking **“what is pending?”**. Upda
 - [x] Organisation slug generation moved server-side; manual admin slug entry removed.
 - [x] Unified local UI/backend validation script added and documented.
 - [x] Admin organisation/beneficiary workflows now report media-upload partial failures accurately and preserve backend error details.
+- [x] Multi-step workflow and partial-failure testing discipline added to Copilot instructions.
 
 # Iteration 0 --- Foundation
 
