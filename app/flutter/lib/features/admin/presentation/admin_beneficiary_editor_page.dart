@@ -76,13 +76,22 @@ class _AdminBeneficiaryEditorPageState
       final repository = ref.read(adminBeneficiariesRepositoryProvider);
       if (_editing) {
         await repository.update(widget.beneficiary!.id, payload);
+        if (mounted) Navigator.of(context).pop();
       } else {
         final created = await repository.create(payload);
-        await _attachPendingMedia(created.id);
+        try {
+          await _attachPendingMedia(created.id);
+        } catch (error) {
+          if (mounted) {
+            _error('Beneficiary was created, but image upload failed: $error. Open it again to retry.');
+            Navigator.of(context).pop();
+          }
+          return;
+        }
+        if (mounted) Navigator.of(context).pop();
       }
-      if (mounted) Navigator.of(context).pop();
-    } catch (_) {
-      if (mounted) _error('Unable to save beneficiary.');
+    } catch (error) {
+      if (mounted) _error('Unable to save beneficiary: $error');
     } finally {
       if (mounted) setState(() => _saving = false);
     }
