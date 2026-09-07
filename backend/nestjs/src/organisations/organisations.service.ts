@@ -135,18 +135,11 @@ export class OrganisationsService {
 
   async create(dto: CreateOrganisationDto) {
     this.validateTranslations(dto.translations);
-    const existing = await this.prisma.organisation.findUnique({
-      where: { slug: dto.slug },
-      select: { id: true },
-    });
-    if (existing) {
-      throw new ConflictException(`Organisation slug '${dto.slug}' already exists`);
-    }
-
+    const slug = await this.generateUniqueSlug(dto.slug, dto.translations);
     const languages = await this.resolveLanguages(dto.translations);
     return this.prisma.organisation.create({
       data: {
-        slug: dto.slug,
+        slug,
         logoUrl: dto.logoUrl,
         websiteUrl: dto.websiteUrl,
         phone: dto.phone,
@@ -362,6 +355,35 @@ export class OrganisationsService {
       where: { id },
       data: { isActive },
     });
+  }
+
+  private async generateUniqueSlug(
+    requestedSlug: string | undefined,
+    translations: { languageCode: string; name: string }[],
+  ) {
+    const source =
+      requestedSlug?.trim() ??
+      translations.find((translation) => translation.languageCode === 'en')?.name ??
+      translations[0]?.name;
+
+    const base = source
+      ?.trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+    if (!base) {
+      throw new BadRequestException('Organisation name must contain letters or numbers.');
+    }
+
+    for (let suffix = 1; ; suffix += 1) {
+      const slug = suffix === 1 ? base : `${base}-${suffix}`;
+      const existing = await this.prisma.organisation.findUnique({
+        where: { slug },
+        select: { id: true },
+      });
+      if (!existing) return slug;
+    }
   }
 
   private validateTranslations(
