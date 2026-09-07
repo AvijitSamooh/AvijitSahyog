@@ -47,7 +47,8 @@ class _ImpactPageState extends ConsumerState<ImpactPage> {
 
   @override Widget build(BuildContext context) {
     final beneficiaries = ref.watch(beneficiariesProvider((search: _search.text.trim(), sort: _apiSort)));
-    return ListView(
+    return Material(
+      child: ListView(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
         children: [
           Text(AppLocalizations.of(context)!.impactSubtitle, style: Theme.of(context).textTheme.bodyLarge),
@@ -83,7 +84,8 @@ class _ImpactPageState extends ConsumerState<ImpactPage> {
                 : Column(children: items.map((item) => Padding(padding: const EdgeInsets.only(bottom: 16), child: _Card(item))).toList()),
           ),
         ],
-      );
+      ),
+    );
   }
 }
 
