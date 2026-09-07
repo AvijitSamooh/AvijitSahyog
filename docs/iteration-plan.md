@@ -17,6 +17,37 @@ Prefer small pull requests with one coherent objective.
 
 ------------------------------------------------------------------------
 
+------------------------------------------------------------------------
+
+# Active / Pending Work
+
+This section is the source of truth when asking **“what is pending?”**. Update it whenever work starts, a PR is opened, merged, closed, or changes scope.
+
+## In Progress
+
+- [ ] Workflow and partial-failure test discipline — strengthen testing standards following the organisation/beneficiary media partial-success incident.
+
+## Pending Next
+
+- [ ] Add workflow-level regression coverage to future multi-step admin/content flows as they are changed.
+
+## Planned Roadmap
+
+- [ ] Iteration 5 — Donation Allocation Engine
+- [ ] Iteration 6 — Donation Planner
+- [ ] Iteration 7 — Donation History + Receipt Foundation
+- [ ] Iteration 11 — Production Hardening
+- [ ] Iteration 12 — Payment Enablement
+- [ ] Iteration 13 — Receipt Delivery + Notifications
+- [ ] Iteration 14 — Reconciliation
+- [ ] Iteration 15 — UPI AutoPay
+
+## Recently Completed
+
+- [x] Organisation slug generation moved server-side; manual admin slug entry removed.
+- [x] Unified local UI/backend validation script added and documented.
+- [x] Admin organisation/beneficiary workflows now report media-upload partial failures accurately and preserve backend error details.
+
 # Iteration 0 --- Foundation
 
 ## Goal
