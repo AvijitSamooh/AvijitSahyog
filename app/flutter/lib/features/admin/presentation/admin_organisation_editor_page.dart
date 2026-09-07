@@ -107,15 +107,23 @@ class _AdminOrganisationEditorPageState
       if (_editing) {
         await repository.update(widget.organisation!.id, payload);
         await repository.updateCauses(widget.organisation!.id, _causeIds.toList());
+        if (mounted) Navigator.of(context).pop();
       } else {
         final created = await repository.create(payload);
-        await repository.updateCauses(created.id, _causeIds.toList());
-        await _attachPendingMedia(created.id);
+        try {
+          await repository.updateCauses(created.id, _causeIds.toList());
+          await _attachPendingMedia(created.id);
+        } catch (error) {
+          if (mounted) {
+            _error('Organisation was created, but some follow-up changes failed: $error. Open it again to retry.');
+            Navigator.of(context).pop();
+          }
+          return;
+        }
+        if (mounted) Navigator.of(context).pop();
       }
-
-      if (mounted) Navigator.of(context).pop();
-    } catch (_) {
-      if (mounted) _error('Unable to save organisation.');
+    } catch (error) {
+      if (mounted) _error('Unable to save organisation: $error');
     } finally {
       if (mounted) setState(() => _saving = false);
     }

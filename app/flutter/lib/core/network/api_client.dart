@@ -269,7 +269,20 @@ class ApiClient {
 
   void _ensureSuccess(http.Response response, String operation) {
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception('$operation failed: ${response.statusCode}');
+      final body = response.body.trim();
+      var detail = body;
+      if (body.isNotEmpty) {
+        try {
+          final decoded = jsonDecode(body);
+          if (decoded is Map<String, dynamic>) {
+            final message = decoded['message'];
+            detail = message is List ? message.join(', ') : (message?.toString() ?? body);
+          }
+        } catch (_) {
+          // Keep the raw response body when it is not JSON.
+        }
+      }
+      throw Exception('$operation failed: ${response.statusCode}${detail.isEmpty ? '' : ': $detail'}');
     }
   }
 
