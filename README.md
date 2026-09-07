@@ -134,3 +134,21 @@ The health endpoint is available at `GET /health` and verifies both API and
 database connectivity.
 
 > Never commit production secrets or connection strings to Git.
+
+
+## Local Validation
+
+Run the repository validation script from the repository root before pushing code:
+
+```powershell
+# Validate Flutter UI and backend (default)
+.\scripts\validate.ps1
+
+# Validate only Flutter UI
+.\scripts\validate.ps1 -Target ui
+
+# Validate only backend
+.\scripts\validate.ps1 -Target backend
+```
+
+The script runs dependency setup, code generation, static checks, tests and production builds for the selected targets. It stops on the first failure so CI remains a final confirmation gate rather than the primary debugging environment.
