@@ -19,7 +19,6 @@ class AdminOrganisationEditorPage extends ConsumerStatefulWidget {
 class _AdminOrganisationEditorPageState
     extends ConsumerState<AdminOrganisationEditorPage> {
   static const _languages = ['en', 'hi', 'mr', 'gu'];
-  late final TextEditingController _slug;
   late final TextEditingController _website;
   late final TextEditingController _phone;
   late final TextEditingController _email;
@@ -40,7 +39,6 @@ class _AdminOrganisationEditorPageState
   void initState() {
     super.initState();
     final organisation = widget.organisation;
-    _slug = TextEditingController(text: organisation?.slug ?? '');
     _website = TextEditingController(text: organisation?.websiteUrl ?? '');
     _phone = TextEditingController(text: organisation?.phone ?? '');
     _email = TextEditingController(text: organisation?.email ?? '');
@@ -68,7 +66,7 @@ class _AdminOrganisationEditorPageState
   @override
   void dispose() {
     for (final controller in [
-      _slug, _website, _phone, _email, _address, _city, _state, _country, _order,
+      _website, _phone, _email, _address, _city, _state, _country, _order,
       ..._names.values, ..._descriptions.values,
     ]) {
       controller.dispose();
@@ -77,10 +75,6 @@ class _AdminOrganisationEditorPageState
   }
 
   Future<void> _save() async {
-    if (_slug.text.trim().isEmpty) {
-      _error('Slug is required.');
-      return;
-    }
     final translations = _languages
         .where((language) => _names[language]!.text.trim().isNotEmpty)
         .map((language) => {
@@ -98,7 +92,7 @@ class _AdminOrganisationEditorPageState
     setState(() => _saving = true);
     try {
       final payload = {
-        'slug': _slug.text.trim(),
+        if (!_editing) 'slug': null,
         'websiteUrl': _website.text.trim(),
         'phone': _phone.text.trim(),
         'email': _email.text.trim(),
@@ -148,7 +142,6 @@ class _AdminOrganisationEditorPageState
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
         children: [
-          TextField(key: const ValueKey('admin_organisation_slug'), controller: _slug, decoration: const InputDecoration(labelText: 'Slug')),
           TextField(controller: _website, decoration: const InputDecoration(labelText: 'Website')),
           TextField(controller: _phone, decoration: const InputDecoration(labelText: 'Phone')),
           TextField(controller: _email, keyboardType: TextInputType.emailAddress, decoration: const InputDecoration(labelText: 'Email')),
