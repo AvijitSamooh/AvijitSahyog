@@ -304,8 +304,15 @@ void main() {
     navigation.select(1);
     await tester.pumpAndSettle();
 
-    expect(find.text('Our Causes'), findsOneWidget);
     expect(find.byType(AppBar), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(CausesPage),
+        matching: find.byType(AppBar),
+      ),
+      findsNothing,
+      reason: 'CausesPage must remain body-only; HomePage owns the single app bar.',
+    );
   });
 
   testWidgets('Impact tab keeps a single shell header and no nested app bar', (tester) async {
@@ -325,8 +332,22 @@ void main() {
     navigation.select(2);
     await tester.pumpAndSettle();
 
-    expect(find.text('Our Impact'), findsOneWidget);
     expect(find.byType(AppBar), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(HomePage),
+        matching: find.byType(AppBar),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byType(ImpactPage),
+        matching: find.byType(AppBar),
+      ),
+      findsNothing,
+      reason: 'ImpactPage must remain body-only; HomePage owns the single app bar.',
+    );
   });
 
   testWidgets('language selector opens and shows all supported languages', (tester) async {
