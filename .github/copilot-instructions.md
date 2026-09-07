@@ -72,6 +72,21 @@ For new backend functionality:
 
 A feature is not complete without tests.
 
+### Multi-step workflows and partial failures
+
+For any user action that performs more than one persistence, API, storage, or external-service operation, tests must cover the workflow boundaries—not only the individual methods.
+
+Required scenario matrix:
+
+- Complete success across all steps.
+- Failure before any persistent side effect.
+- Failure after each successful persistent side effect.
+- Accurate user-visible outcome for partial success.
+- Retry behaviour, including protection against duplicate records or repeated unintended side effects.
+- Recovery path when the user can safely resume or edit the already-created entity.
+
+Before implementation, explicitly identify the ordered workflow steps and their side effects. Do not wrap a multi-step workflow in a single generic error assertion that hides whether an earlier step succeeded.
+
 ### Flutter
 
 Add or update tests for:
@@ -187,6 +202,7 @@ Before opening a PR, verify:
 - [ ] Documentation impact has been explicitly reviewed
 - [ ] Existing automated tests affected by the change have been updated
 - [ ] New or changed behaviour has appropriate regression coverage
+- [ ] Multi-step workflows include boundary/partial-failure and retry-safety coverage where applicable
 - [ ] Relevant `docs/` files are updated for every significant product flow, domain, architecture, API contract, or operational change
 - [ ] If no documentation changed, the PR explains why the change is implementation-only
 - [ ] CI logs have been checked for any failure
