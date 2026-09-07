@@ -79,6 +79,12 @@ class _AdminMediaSectionState extends State<AdminMediaSection> {
         'displayOrder': _items.length,
       });
       await _load();
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Image upload failed: $error')),
+        );
+      }
     } finally {
       if (mounted) setState(() => _uploading = false);
     }
@@ -95,6 +101,20 @@ class _AdminMediaSectionState extends State<AdminMediaSection> {
           label: Text(item.purpose == widget.primaryPurpose ? l10n.adminPrimaryImageSelected : l10n.adminGalleryImageSelected),
           onDeleted: () { setState(() => _pending.remove(item)); widget.onPendingChanged?.call(List.unmodifiable(_pending)); },
         )).toList()),
+      if (widget.attachedMode && _items.isNotEmpty) ...[
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: _items.map((item) {
+            return Chip(
+              avatar: const Icon(Icons.image_outlined, size: 18),
+              label: Text(item['purpose']?.toString() ?? 'IMAGE'),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 8),
+      ],
       Wrap(spacing: 8, children: [
         OutlinedButton.icon(onPressed: _uploading ? null : () => _pick(widget.primaryPurpose), icon: const Icon(Icons.image),
           label: Text(widget.attachedMode ? l10n.adminUploadPrimaryImage : l10n.adminSelectPrimaryImage)),

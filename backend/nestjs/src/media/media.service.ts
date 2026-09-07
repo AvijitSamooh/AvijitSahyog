@@ -74,6 +74,10 @@ export class MediaService {
         throw error;
       }
 
+      if (error instanceof InternalServerErrorException) {
+        throw error;
+      }
+
       throw new InternalServerErrorException(
         'Unable to process and upload image.',
       );

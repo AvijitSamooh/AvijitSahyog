@@ -22,9 +22,15 @@ Widget beneficiaryImage(String? photoUrl, {required double height, required Bord
   );
 }
 
-Widget _beneficiaryPlaceholder(double iconSize) => Container(
-  color: const Color(0xFFFCE8C9),
-  child: Icon(Icons.person_rounded, size: iconSize, color: const Color(0xFF6E1A14)),
+Widget _beneficiaryPlaceholder(double iconSize) => Builder(
+  builder: (context) => Container(
+    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+    child: Icon(
+      Icons.person_rounded,
+      size: iconSize,
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
+    ),
+  ),
 );
 
 class ImpactPage extends ConsumerStatefulWidget {
