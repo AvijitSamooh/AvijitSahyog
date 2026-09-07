@@ -1,7 +1,7 @@
 import type { OrganisationTranslationDto } from './organisation-translation.dto';
 
 export interface CreateOrganisationDto {
-  slug: string;
+  slug?: string;
   logoUrl?: string;
   websiteUrl?: string;
   phone?: string;

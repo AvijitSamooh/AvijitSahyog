@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ConflictException,
   NotFoundException,
 } from '@nestjs/common';
 
@@ -26,7 +25,7 @@ describe('OrganisationsService admin operations', () => {
     service = new OrganisationsService(prisma);
   });
 
-  it('creates an organisation with validated translations', async () => {
+  it('creates an organisation with an auto-generated slug', async () => {
     prisma.organisation.findUnique.mockResolvedValue(null);
     prisma.language.findMany.mockResolvedValue([
       { id: 'en-id', code: 'en' },
@@ -39,7 +38,6 @@ describe('OrganisationsService admin operations', () => {
 
     await expect(
       service.create({
-        slug: 'help-foundation',
         email: 'contact@example.org',
         translations: [
           { languageCode: 'en', name: 'Help Foundation' },
@@ -52,7 +50,6 @@ describe('OrganisationsService admin operations', () => {
   it('rejects duplicate translation languages', async () => {
     await expect(
       service.create({
-        slug: 'duplicate-language',
         translations: [
           { languageCode: 'en', name: 'One' },
           { languageCode: 'en', name: 'Two' },
@@ -67,7 +64,6 @@ describe('OrganisationsService admin operations', () => {
 
     await expect(
       service.create({
-        slug: 'invalid-language',
         translations: [
           { languageCode: 'en', name: 'One' },
           { languageCode: 'gu', name: 'Two' },
@@ -76,15 +72,22 @@ describe('OrganisationsService admin operations', () => {
     ).rejects.toBeInstanceOf(BadRequestException);
   });
 
-  it('rejects duplicate organisation slugs', async () => {
-    prisma.organisation.findUnique.mockResolvedValue({ id: 'existing' });
+  it('adds a suffix when an auto-generated slug already exists', async () => {
+    prisma.organisation.findUnique
+      .mockResolvedValueOnce({ id: 'existing' })
+      .mockResolvedValueOnce(null);
+    prisma.language.findMany.mockResolvedValue([{ id: 'en-id', code: 'en' }]);
+    prisma.organisation.create.mockResolvedValue({ id: 'org-2', slug: 'help-foundation-2' });
 
-    await expect(
-      service.create({
-        slug: 'existing',
-        translations: [{ languageCode: 'en', name: 'Existing' }],
+    await service.create({
+      translations: [{ languageCode: 'en', name: 'Help Foundation' }],
+    });
+
+    expect(prisma.organisation.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ slug: 'help-foundation-2' }),
       }),
-    ).rejects.toBeInstanceOf(ConflictException);
+    );
   });
 
   it('rejects status updates for an unknown organisation', async () => {

@@ -104,15 +104,31 @@ Critical donation, allocation and payment logic requires scenario-based tests.
 
 GitHub Actions CI is a final confirmation gate, **not a debugging environment**. Before creating a commit, pushing code, opening a PR, or requesting review, validate affected code locally whenever the execution environment supports the required tooling.
 
-### Flutter — mandatory before every push
+### Mandatory repository validation script
 
-Run from `app/flutter` in this exact order:
+Run from the repository root before every push:
+
+```powershell
+# Default: validate Flutter UI and backend
+.\scripts\validate.ps1
+
+# Optional targeted validation
+.\scripts\validate.ps1 -Target ui
+.\scripts\validate.ps1 -Target backend
+```
+
+The default command validates both targets and must be used for normal feature work. Targeted commands are useful while iterating on an isolated layer, but run the default command before pushing whenever both toolchains are available.
+
+### Flutter — validation sequence
+
+The UI target runs:
 
 ```bash
 flutter pub get
 flutter gen-l10n
 flutter analyze
 flutter test
+flutter build web
 ```
 
 Rules:
@@ -128,9 +144,12 @@ Rules:
 
 ### Backend
 
+The backend target runs:
+
 ```bash
 npm ci
 npm run prisma:generate
+npm run build
 npm test
 ```
 
@@ -143,7 +162,7 @@ CI failures must be fixed by reading the actual failing job logs. Do not repeate
 1. Inspect architecture and affected tests.
 2. Implement the complete coherent change.
 3. Update localization and tests.
-4. Run all mandatory local validation commands.
+4. Run the mandatory repository validation script (default: both UI and backend).
 5. Fix every failure locally.
 6. Re-run validation until clean.
 7. Review the final diff for regressions and debug artifacts.
