@@ -11,6 +11,7 @@ import 'package:avijit_sahyog/features/causes/models/organisation.dart';
 import 'package:avijit_sahyog/features/causes/presentation/causes_page.dart';
 import 'package:avijit_sahyog/features/home/home_page.dart';
 import 'package:avijit_sahyog/features/impact/models/beneficiary.dart';
+import 'package:avijit_sahyog/features/impact/presentation/impact_page.dart';
 import 'package:avijit_sahyog/features/impact/providers/beneficiaries_providers.dart';
 import 'package:avijit_sahyog/features/causes/presentation/cause_detail_page.dart';
 import 'package:avijit_sahyog/features/causes/providers/causes_providers.dart';
