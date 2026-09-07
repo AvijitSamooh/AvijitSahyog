@@ -92,7 +92,6 @@ class _AdminOrganisationEditorPageState
     setState(() => _saving = true);
     try {
       final payload = {
-        if (!_editing) 'slug': null,
         'websiteUrl': _website.text.trim(),
         'phone': _phone.text.trim(),
         'email': _email.text.trim(),
