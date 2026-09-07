@@ -74,14 +74,22 @@ export class R2StorageService {
     body: Buffer,
     contentType: string,
   ): Promise<void> {
-    await this.client.send(
-      new PutObjectCommand({
-        Bucket: this.getBucketName(),
-        Key: key,
-        Body: body,
-        ContentType: contentType,
-      }),
-    );
+    try {
+      await this.client.send(
+        new PutObjectCommand({
+          Bucket: this.getBucketName(),
+          Key: key,
+          Body: body,
+          ContentType: contentType,
+        }),
+      );
+    } catch (error) {
+      if (error instanceof InternalServerErrorException) throw error;
+      const detail = error instanceof Error ? error.message : 'Unknown storage error';
+      throw new InternalServerErrorException(
+        `Unable to upload image to Cloudflare R2: ${detail}`,
+      );
+    }
   }
 
   async delete(key: string): Promise<void> {
