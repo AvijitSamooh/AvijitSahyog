@@ -107,7 +107,6 @@ class _AdminMediaSectionState extends State<AdminMediaSection> {
           spacing: 8,
           runSpacing: 8,
           children: _items.map((item) {
-            final media = item['media'];
             return Chip(
               avatar: const Icon(Icons.image_outlined, size: 18),
               label: Text(item['purpose']?.toString() ?? 'IMAGE'),
