@@ -9,6 +9,10 @@ import 'package:avijit_sahyog/core/widgets/app_navigation_bar.dart';
 import 'package:avijit_sahyog/features/causes/models/cause.dart';
 import 'package:avijit_sahyog/features/causes/models/organisation.dart';
 import 'package:avijit_sahyog/features/causes/presentation/causes_page.dart';
+import 'package:avijit_sahyog/features/home/home_page.dart';
+import 'package:avijit_sahyog/features/impact/models/beneficiary.dart';
+import 'package:avijit_sahyog/features/impact/presentation/impact_page.dart';
+import 'package:avijit_sahyog/features/impact/providers/beneficiaries_providers.dart';
 import 'package:avijit_sahyog/features/causes/presentation/cause_detail_page.dart';
 import 'package:avijit_sahyog/features/causes/providers/causes_providers.dart';
 import 'package:avijit_sahyog/features/donations/presentation/donation_page.dart';
@@ -282,6 +286,69 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Our Impact'), findsOneWidget);
     expect(find.text('Search by name'), findsOneWidget);
+  });
+
+  testWidgets('Causes tab keeps a single shell header and no nested app bar', (tester) async {
+    await pumpApp(
+      tester,
+      home: const HomePage(),
+      overrides: [
+        causesProvider('en').overrideWith((ref) async => const [_cause]),
+        beneficiariesProvider((search: '', sort: null))
+            .overrideWith((ref) async => const []),
+      ],
+    );
+
+    final navigation = AppShellScope.of(
+      tester.element(find.byType(HomePage)),
+    ).navigation;
+    navigation.select(1);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AppBar), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(CausesPage),
+        matching: find.byType(AppBar),
+      ),
+      findsNothing,
+      reason: 'CausesPage must remain body-only; HomePage owns the single app bar.',
+    );
+  });
+
+  testWidgets('Impact tab keeps a single shell header and no nested app bar', (tester) async {
+    await pumpApp(
+      tester,
+      home: const HomePage(),
+      overrides: [
+        causesProvider('en').overrideWith((ref) async => const [_cause]),
+        beneficiariesProvider((search: '', sort: null))
+            .overrideWith((ref) async => const <Beneficiary>[]),
+      ],
+    );
+
+    final navigation = AppShellScope.of(
+      tester.element(find.byType(HomePage)),
+    ).navigation;
+    navigation.select(2);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AppBar), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(HomePage),
+        matching: find.byType(AppBar),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byType(ImpactPage),
+        matching: find.byType(AppBar),
+      ),
+      findsNothing,
+      reason: 'ImpactPage must remain body-only; HomePage owns the single app bar.',
+    );
   });
 
   testWidgets('language selector opens and shows all supported languages', (tester) async {
