@@ -2,8 +2,9 @@ name: Cleanup Actions Runs
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '17 2 * * *'
+  # Enable scheduled cleanup later when Actions-hour usage allows it.
+  # schedule:
+  #   - cron: '17 2 * * *'
 
 permissions:
   actions: write
