@@ -1,342 +1,104 @@
-# Donation Platform --- Vision
+# Avijit Sahyog — Giving Layer Vision
+
+## 1. Product role
+
+Avijit Sahyog is the **giving and financial layer** of a broader Community OS.
+
+Its immediate product remains a trusted, multilingual donation platform. Its long-term architecture should allow giving to connect to a shared global identity, community organizations, digital knowledge and platform intelligence without compromising financial integrity.
+
+The broader ecosystem is:
+
+**Community + Giving + Knowledge + Identity + Intelligence**
+
+Avijit Sahyog should remain focused on giving rather than becoming a catch-all application. Integration with the other pillars should happen through explicit contracts and shared platform capabilities.
+
+## 2. Product Vision
+
+Build a trusted, multilingual donation platform that makes it simple for people to discover causes, understand where their money can be used, distribute a donation across causes, make payments through familiar UPI apps, and maintain a transparent history of their giving.
+
+The long-term product is a **donation platform**, not merely a donation app.
+
+It should support:
+- Multiple causes / donation buckets
+- Multiple affiliated organisations under each cause
+- Flexible donation allocation
+- One-time UPI donations
+- Donation history and receipts
+- Personal donation planning
+- Monthly UPI AutoPay / recurring donations
+- Multilingual content and UI
+- Transparent administration and reconciliation
+- Expansion to additional organisations and causes without an app release
+- Integration with a shared global user identity
+- Integration with organization/tenant context where giving is surfaced through Community OS
+- Privacy-conscious giving analytics and monitoring
+
+## 3. Relationship to the Digital Library
+
+A future Digital Library is a separate knowledge domain, not part of the donation domain. It may share:
+- Global user identity
+- Organization/tenant context
+- Payment abstraction
+- Entitlement primitives
+- Analytics and observability
+- Localization infrastructure
+
+The library proposal includes a monthly subscription, an initial **45 free reading minutes per user per month**, and paid reading/content access after the allowance according to configurable entitlements.
+
+Avijit Sahyog may provide payment infrastructure or payment-domain contracts for eligible library transactions, but library access rules must remain owned by the Library/Entitlement domain.
+
+## 4. Shared-platform architectural direction
+
+```mermaid
+flowchart TB
+    Identity[Global User Identity]
+    Tenant[Organization / Tenant Context]
+    Giving[Avijit Sahyog<br/>Giving & Financial Domain]
+    Library[Digital Library<br/>Knowledge Domain]
+    Community[Community OS]
+    Entitlement[Entitlement Engine]
+    Payments[Payment Abstraction]
+    Analytics[Analytics & Monitoring]
+    Audit[Audit / Trust]
+
+    Identity --> Giving
+    Identity --> Library
+    Identity --> Community
+    Tenant --> Giving
+    Tenant --> Library
+    Tenant --> Community
+    Giving --> Payments
+    Library --> Entitlement
+    Library --> Payments
+    Giving --> Analytics
+    Library --> Analytics
+    Community --> Analytics
+    Giving --> Audit
+    Library --> Audit
+    Community --> Audit
+```
+
+## 5. Boundary rule
+
+Avijit Sahyog owns financial truth for donations and giving transactions.
+
+The platform must not blur:
+- Donation intent with library entitlement
+- Donation allocation with organization routing
+- Payment status with client state
+- Analytics with financial truth
+
+Successful donations and allocations remain immutable. Historical donor intent must never be rewritten by later platform configuration.
+
+## 6. Future ecosystem opportunities
+
+The giving layer can eventually support:
+- Donations surfaced inside tenant experiences
+- Unified donor history across participating organizations where authorized
+- Recurring giving plans
+- Cause discovery across organizations
+- Transparent impact stories
+- Sponsored giving campaigns
+- Potential payment services for other platform domains through explicit interfaces
 
-## 1. Product Vision
-
-Build a trusted, multilingual donation platform that makes it simple for
-people to discover causes, understand where their money can be used,
-distribute a donation across causes, make payments through familiar UPI
-apps, and maintain a transparent history of their giving.
-
-The long-term product is a **donation platform**, not merely a donation
-app.
-
-It should support: - Multiple causes / donation buckets - Multiple
-affiliated organisations under each cause - Flexible donation
-allocation - One-time UPI donations - Donation history and receipts -
-Personal donation planning - Monthly UPI AutoPay / recurring donations -
-Multilingual content and UI - Transparent administration and
-reconciliation - Expansion to additional organisations and causes
-without an app release
-
-------------------------------------------------------------------------
-
-## 2. Product Principles
-
-### Trust first
-
-Every financial transaction must be traceable from donor → payment →
-donation → allocation → receipt → settlement/reconciliation.
-
-### Backend is the source of truth
-
-The client must never be trusted for payment success, donation status,
-allocation totals, or financial state.
-
-### Configurable, not hard-coded
-
-Causes, organisations, translations, display content, and allocation
-configuration should be backend-driven wherever practical.
-
-### Multilingual from day one
-
-English is the fallback language. Initial target languages: - English -
-Hindi - Marathi - Gujarati
-
-Adding another language should not require a database redesign.
-
-### Start simple
-
-The MVP should avoid unnecessary infrastructure and complexity. Use a
-modular monolith before considering microservices.
-
-### Platform-independent
-
-The primary client should be Flutter so the same product architecture
-can support Android, iOS, and web.
-
-### Payment-provider abstraction
-
-Payment logic must be isolated behind a backend payment interface so the
-provider can be changed without rewriting the donation domain.
-
-------------------------------------------------------------------------
-
-## 3. Target User Experience
-
-A donor should be able to:
-
-1.  Open the app.
-2.  Understand the platform and supported causes.
-3.  Explore causes such as Jeev Daya.
-4.  See affiliated organisations under a cause.
-5.  Choose a donation amount.
-6.  Distribute the amount:
-    -   by percentage
-    -   by equal share
-    -   by selecting all available causes
-7.  Review the exact allocation.
-8.  Start a UPI payment.
-9.  Choose an installed UPI app such as Google Pay, PhonePe, BHIM, etc.
-10. Complete the payment and return to the app.
-11. See the verified donation status.
-12. Receive/download a receipt.
-13. View past donations.
-14. Create a planner such as ₹2/day or ₹5/day.
-15. Later convert the planner into a monthly UPI AutoPay mandate.
-
-------------------------------------------------------------------------
-
-## 4. Core Domain Model
-
-The initial domain should be designed around these entities:
-
--   User
--   Language
--   Cause / Donation Bucket
--   Cause Translation
--   Organisation
--   Organisation Translation
--   Organisation-Cause relationship
--   Beneficiary / Impact Story
--   Donation
--   Donation Allocation
--   Payment
--   Receipt
--   Donation Planner
--   Mandate
--   Audit Log
-
-### Important financial invariant
-
-For every successful donation:
-
-`sum(allocation amounts) == donation amount`
-
-Successful donation allocations are immutable.
-
-Changing a user's future allocation preference must never modify
-historical donations.
-
-------------------------------------------------------------------------
-
-## 5. Allocation Model
-
-The platform supports:
-
-### Donor intent boundary
-
-A donor allocates money **only across Causes**. Affiliated Organisations are discovery and transparency entities beneath a Cause; the donor is never required or asked to choose which organisation receives an allocation.
-
-The platform records the donor's intent as:
-
-`Donation → DonationAllocation → Cause`
-
-Any later organisation-level routing, settlement or reconciliation is an administrative/platform responsibility and must not retroactively change the donor's recorded cause allocation.
-
-### Percentage allocation
-
-Example:
-
--   Jeev Daya: 50%
--   Education: 30%
--   Medical: 20%
-
-### Equal-share allocation
-
-Example:
-
-Three selected causes → each receives one third.
-
-### Select-all
-
-Selecting all active eligible causes results in an equal-share or
-explicitly configured allocation according to the product rule.
-
-The allocation engine belongs to the backend.
-
-The Flutter app may provide the UI, but the backend validates and
-persists the final allocation.
-
-------------------------------------------------------------------------
-
-## 6. Payment Architecture
-
-### One-time donation
-
-Initial preferred flow:
-
-Flutter → Backend → UPI Intent → Installed UPI app → Return to Flutter →
-Backend verification/reconciliation.
-
-The Flutter callback is not the final source of truth.
-
-The backend must verify payment status through the appropriate
-payment/banking mechanism before marking the donation successful.
-
-### Recurring donation
-
-Later phase:
-
-Flutter → Backend → UPI AutoPay mandate registration → User approval →
-Mandate active → Scheduled debit → Provider callback/webhook → Donation
-creation → Receipt.
-
-Recurring payments should not be implemented as a custom payment
-mechanism.
-
-------------------------------------------------------------------------
-
-## 7. Multilingual Architecture
-
-Flutter UI strings use Flutter localization resources.
-
-Backend-managed content uses translation records.
-
-Conceptually:
-
-`Cause → CauseTranslation(language_code, name, description)`
-
-`Organisation → OrganisationTranslation(language_code, name, description)`
-
-English is the mandatory fallback.
-
-Translations should be human-reviewed rather than dynamically translated
-on every request.
-
-------------------------------------------------------------------------
-
-## 8. Technology Direction
-
-### Client
-
--   Flutter
--   Dart
--   Riverpod
--   Flutter localization / ARB
-
-### Backend
-
--   Node.js
--   TypeScript
--   NestJS
--   REST API
-
-### Database
-
--   PostgreSQL
-
-### Supporting services
-
--   Firebase Authentication
--   Firebase Cloud Messaging
--   Firebase Crashlytics
--   Cloud Storage
-
-### Hosting
-
--   Google Cloud Run
-
-### Payments
-
--   Native UPI Intent for the initial one-time payment experience where
-    appropriate
--   Payment provider / UPI AutoPay for recurring mandates
--   Provider abstraction in the backend
-
-### CI/CD
-
--   GitHub Actions
-
-------------------------------------------------------------------------
-
-## 9. Security Principles
-
-Never store: - UPI PIN - Card CVV - Card credentials - Banking
-passwords - Other payment credentials that belong with the payment
-provider
-
-The backend must: - Validate authenticated users - Validate allocation
-totals - Generate donation/payment identifiers - Verify payment status -
-Prevent duplicate payment processing - Maintain audit records for
-material administrative changes - Treat payment callbacks/webhooks as
-untrusted input until verified - Make financial records immutable after
-successful completion
-
-------------------------------------------------------------------------
-
-## 10. MVP Boundary
-
-### MVP includes
-
--   Multilingual shell
--   Home / information experience
--   Causes
--   Affiliated organisations
--   Organisation details
--   Optional user authentication with public browsing
--   Role-based admin access
--   Donation planner without automatic payment
--   Donation allocation UI
--   Donation domain model
--   Basic admin/content model
--   Beneficiary / impact explorer
--   Automated tests
--   CI/CD foundation
-
-### MVP excludes
-
--   Live payment collection
--   UPI AutoPay
--   Settlement/distribution automation
--   Complex financial reconciliation
--   Microservices
--   Kubernetes
--   Advanced analytics
--   Large-scale notification campaigns
-
-The architecture must remain payment-ready without making payment
-implementation a prerequisite for the information MVP.
-
-------------------------------------------------------------------------
-
-## 11. Definition of Done
-
-A feature is not done merely because the screen works.
-
-A feature is done when: - UI is implemented - API/domain behavior is
-implemented where required - Validation exists - Error states are
-handled - Relevant automated tests exist - Localization is included -
-Accessibility/basic responsive behavior is considered - Documentation is
-updated - CI passes
-
-------------------------------------------------------------------------
-
-## 12. Long-Term Vision
-
-The platform should eventually allow a donor to say:
-
-> "I want to give ₹5 every day."
-
-and turn that intention into a transparent, manageable giving plan
-across causes and organisations, while giving the donor confidence
-about: - where the money is intended to go - what was actually paid -
-what was allocated - what receipt was issued - and what recurring
-commitments are active.
-
-The product succeeds when donating becomes simple, transparent,
-multilingual, and repeatable.
-
-------------------------------------------------------------------------
-
-## 13. Testing & Quality Target
-
-Coverage is a quality signal, not a substitute for meaningful tests.
-
-Initial targets:
-
-- **70% overall line coverage** as the project matures
-- **80%+ coverage for new domain/service logic**
-- **90%+ for critical financial, allocation and payment logic**
-- UI tests should cover primary journeys and important empty/error states
-
-CI must run analysis/build, automated tests and Prisma schema validation before merge.
+The goal is to make giving a reusable platform capability while keeping the financial domain independently auditable and secure.
