@@ -1,0 +1,84 @@
+name: Cleanup Actions Runs
+
+on:
+  workflow_dispatch:
+  # Enable scheduled cleanup later when Actions-hour usage allows it.
+  # schedule:
+  #   - cron: '17 2 * * *'
+
+permissions:
+  actions: write
+
+jobs:
+  cleanup:
+    name: Retain recent workflow runs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove old workflow runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          CURRENT_RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+
+          # GitHub permits deletion of completed workflow runs. For each
+          # workflow, keep the 10 newest successful runs, then keep the newest
+          # completed runs until there are at most 20 retained runs. The current
+          # cleanup run is always excluded from deletion.
+          mapfile -t RUNS < <(
+            gh api --paginate \
+              -H 'Accept: application/vnd.github+json' \
+              -H 'X-GitHub-Api-Version: 2026-03-10' \
+              "/repos/${REPOSITORY}/actions/runs?per_page=100" \
+              --jq '.workflow_runs[] | select(.status == "completed") | [.workflow_id, .id, .name, .conclusion, .created_at] | @tsv' \
+              | sort -k1,1n -k5,5r
+          )
+
+          declare -A KEEP=()
+          declare -A SUCCESS_COUNT=()
+          declare -A TOTAL_COUNT=()
+
+          # First preserve the 10 newest successful runs for each workflow.
+          for run in "${RUNS[@]}"; do
+            IFS=$'\t' read -r workflow_id run_id workflow_name conclusion created_at <<< "$run"
+            [[ "$run_id" == "$CURRENT_RUN_ID" ]] && continue
+
+            current_successes=${SUCCESS_COUNT[$workflow_id]:-0}
+            if [[ "$conclusion" == "success" && $current_successes -lt 10 ]]; then
+              KEEP["$run_id"]=1
+              SUCCESS_COUNT["$workflow_id"]=$((current_successes + 1))
+              TOTAL_COUNT["$workflow_id"]=$((${TOTAL_COUNT[$workflow_id]:-0} + 1))
+            fi
+          done
+
+          # Then preserve the newest remaining completed runs for each workflow
+          # until its hard ceiling of 20 retained runs is reached.
+          for run in "${RUNS[@]}"; do
+            IFS=$'\t' read -r workflow_id run_id workflow_name conclusion created_at <<< "$run"
+            [[ "$run_id" == "$CURRENT_RUN_ID" ]] && continue
+            [[ -n "${KEEP[$run_id]:-}" ]] && continue
+
+            current_total=${TOTAL_COUNT[$workflow_id]:-0}
+            if [[ $current_total -lt 20 ]]; then
+              KEEP["$run_id"]=1
+              TOTAL_COUNT["$workflow_id"]=$((current_total + 1))
+            fi
+          done
+
+          deleted=0
+          for run in "${RUNS[@]}"; do
+            IFS=$'\t' read -r workflow_id run_id workflow_name conclusion created_at <<< "$run"
+            [[ "$run_id" == "$CURRENT_RUN_ID" ]] && continue
+            [[ -n "${KEEP[$run_id]:-}" ]] && continue
+
+            echo "Deleting workflow run ${run_id} (${workflow_name}, ${conclusion}, ${created_at})"
+            gh api \
+              --method DELETE \
+              -H 'Accept: application/vnd.github+json' \
+              -H 'X-GitHub-Api-Version: 2026-03-10' \
+              "/repos/${REPOSITORY}/actions/runs/${run_id}"
+            deleted=$((deleted + 1))
+          done
+
+          echo "Cleanup complete; deleted ${deleted} old workflow runs."
