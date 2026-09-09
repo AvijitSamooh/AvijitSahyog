@@ -2,9 +2,11 @@
 
 ## 1. Product role
 
-Avijit Sahyog is focused exclusively on the **giving and financial domain**.
+Avijit Sahyog is an **independent donation and giving application**, being built specifically for **Maharaj Ji and the associated Sangh/community**.
 
-It should remain a trusted, multilingual donation platform rather than becoming a catch-all application. Any future integration with other platform capabilities should happen through explicit interfaces while financial ownership remains clear.
+It is a standalone product with its own product vision, architecture, data, operations and roadmap. It is **not part of the Jain Community Platform ecosystem** and must not acquire dependencies on that platform.
+
+Avijit Sahyog should remain focused exclusively on the **giving and financial domain** rather than becoming a general-purpose community platform.
 
 ## 2. Product Vision
 
@@ -23,41 +25,42 @@ It should support:
 - Multilingual content and UI
 - Transparent administration and reconciliation
 - Expansion to additional organisations and causes without an app release
-- Integration with a shared global identity when appropriate
-- Integration with organization/tenant context when giving is surfaced through a broader platform
 - Privacy-conscious giving analytics and monitoring
 
-## 3. Shared-platform boundaries
+## 3. Product Independence Boundary
 
-Avijit Sahyog owns financial truth for donations and giving transactions.
+Avijit Sahyog is a standalone application and should remain independently deployable and operable.
 
-Shared platform capabilities may provide identity, organization context, analytics/monitoring and integration contracts, but they must not blur domain ownership.
+It must not depend on:
+- Jain Community Platform services or databases
+- Jain Community Platform identity or tenancy models
+- Digital Library services, content or entitlement rules
+- Shri Andinath Jinalay application services
+- Shared business logic from unrelated applications
 
-The platform must not blur:
-- Donation intent with another domain's entitlement or access rules
-- Donation allocation with organization routing
-- Payment status with client state
-- Analytics with financial truth
+If external integrations are introduced in the future, they must be explicit, optional and contract-based. An integration must never make another application's architecture or roadmap a prerequisite for Avijit Sahyog to function.
 
-Successful donations and allocations remain immutable. Historical donor intent must never be rewritten by later platform configuration.
+Avijit Sahyog owns the financial truth for its own donation domain, including donation intent, allocations, payment state, receipts, recurring commitments and financial audit records.
 
 ## 4. Financial architecture
 
 ```mermaid
 flowchart TB
-    Identity[Global Identity]
-    Tenant[Organization Context]
-    Giving[Avijit Sahyog\nGiving & Financial Domain]
+    User[Donor / User]
+    App[Avijit Sahyog\nIndependent Giving Platform]
+    Giving[Giving & Financial Domain]
     Payments[Payment Provider Abstraction]
-    Analytics[Giving Analytics & Monitoring]
+    Analytics[Usage & Giving Analytics]
     Audit[Financial Audit / Trust]
 
-    Identity --> Giving
-    Tenant --> Giving
+    User --> App
+    App --> Giving
     Giving --> Payments
     Giving --> Analytics
     Giving --> Audit
 ```
+
+The architecture is intentionally self-contained. Any future third-party service integration should be introduced behind a stable interface without creating a dependency on another product ecosystem.
 
 ## 5. Donor experience
 
@@ -86,7 +89,7 @@ The platform records donor intent as:
 
 `Donation → DonationAllocation → Cause`
 
-Any later organization-level routing, settlement or reconciliation is an administrative/platform responsibility and must not retroactively change the donor's recorded cause allocation.
+Any later organization-level routing, settlement or reconciliation is an administrative responsibility and must not retroactively change the donor's recorded cause allocation.
 
 For every successful donation:
 
@@ -122,7 +125,30 @@ Never store UPI PIN, card CVV, card credentials, banking passwords or other paym
 
 The backend must validate authenticated users, allocation totals and payment status; prevent duplicate processing; maintain audit records; verify callbacks/webhooks; and make financial records immutable after successful completion.
 
-## 10. MVP boundary
+## 10. Monitoring and usage analytics
+
+The platform should include first-class monitoring for both operational health and product usage.
+
+Operational monitoring should cover:
+- API availability and latency
+- Database health
+- Error rates
+- Background jobs and scheduled work
+- Payment callback/webhook failures
+- Authentication and critical-flow failures
+- Deployment/CI health where appropriate
+
+Usage analytics should help answer questions such as:
+- How many users visit the platform?
+- How often do users return?
+- Which screens, causes and journeys are most used?
+- Which donation flows are started and completed?
+- Where do users drop off?
+- Which languages and device/platform combinations are being used?
+
+Analytics must be privacy-conscious and must not become the source of truth for financial records. Financial truth remains in the giving domain and its audit trail.
+
+## 11. MVP boundary
 
 ### MVP includes
 - Multilingual shell
@@ -152,11 +178,11 @@ The backend must validate authenticated users, allocation totals and payment sta
 
 The architecture remains payment-ready without making payment implementation a prerequisite for the information MVP.
 
-## 11. Definition of Done
+## 12. Definition of Done
 
 A feature is done when UI, required API/domain behavior, validation, error states, relevant automated tests, localization, accessibility/basic responsive behavior, documentation and CI requirements are satisfied.
 
-## 12. Long-Term Giving Vision
+## 13. Long-Term Giving Vision
 
 The platform should eventually allow a donor to say:
 
@@ -164,9 +190,9 @@ The platform should eventually allow a donor to say:
 
 and turn that intention into a transparent, manageable giving plan across causes and participating organizations, while giving the donor confidence about where the money is intended to go, what was actually paid, what was allocated, what receipt was issued and what recurring commitments are active.
 
-The product succeeds when donating becomes simple, transparent, multilingual and repeatable.
+The product succeeds when donating becomes simple, transparent, multilingual and repeatable for the people served by Maharaj Ji and the Sangh.
 
-## 13. Testing & Quality Target
+## 14. Testing & Quality Target
 
 - 70% overall line coverage as the project matures
 - 80%+ coverage for new domain/service logic
