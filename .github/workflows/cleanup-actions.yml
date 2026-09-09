@@ -21,56 +21,57 @@ jobs:
         run: |
           set -euo pipefail
 
-          # GitHub permits deletion of completed workflow runs. Keep the newest
-          # 10 successful runs, then keep the newest runs until there are at most
-          # 20 completed runs in the repository. The current cleanup run is
-          # always excluded from deletion.
+          # GitHub permits deletion of completed workflow runs. For each
+          # workflow, keep the 10 newest successful runs, then keep the newest
+          # completed runs until there are at most 20 retained runs. The current
+          # cleanup run is always excluded from deletion.
           mapfile -t RUNS < <(
             gh api --paginate \
               -H 'Accept: application/vnd.github+json' \
               -H 'X-GitHub-Api-Version: 2026-03-10' \
               "/repos/${REPOSITORY}/actions/runs?per_page=100" \
-              --jq '.workflow_runs[] | select(.status == "completed") | [.id, .conclusion, .created_at] | @tsv' \
-              | sort -k3,3r
+              --jq '.workflow_runs[] | select(.status == "completed") | [.workflow_id, .id, .name, .conclusion, .created_at] | @tsv' \
+              | sort -k1,1n -k5,5r
           )
 
           declare -A KEEP=()
-          successful_kept=0
-          total_kept=0
+          declare -A SUCCESS_COUNT=()
+          declare -A TOTAL_COUNT=()
 
-          # First preserve the 10 newest successful runs, regardless of which
-          # workflow produced them.
+          # First preserve the 10 newest successful runs for each workflow.
           for run in "${RUNS[@]}"; do
-            IFS=$'\t' read -r run_id conclusion created_at <<< "$run"
+            IFS=$'\t' read -r workflow_id run_id workflow_name conclusion created_at <<< "$run"
             [[ "$run_id" == "$CURRENT_RUN_ID" ]] && continue
-            if [[ "$conclusion" == "success" && $successful_kept -lt 10 ]]; then
+
+            current_successes=${SUCCESS_COUNT[$workflow_id]:-0}
+            if [[ "$conclusion" == "success" && $current_successes -lt 10 ]]; then
               KEEP["$run_id"]=1
-              successful_kept=$((successful_kept + 1))
-              total_kept=$((total_kept + 1))
+              SUCCESS_COUNT["$workflow_id"]=$((current_successes + 1))
+              TOTAL_COUNT["$workflow_id"]=$((${TOTAL_COUNT[$workflow_id]:-0} + 1))
             fi
           done
 
-          # Then preserve the newest remaining completed runs until the hard
-          # repository-wide ceiling of 20 retained runs is reached.
+          # Then preserve the newest remaining completed runs for each workflow
+          # until its hard ceiling of 20 retained runs is reached.
           for run in "${RUNS[@]}"; do
-            IFS=$'\t' read -r run_id conclusion created_at <<< "$run"
+            IFS=$'\t' read -r workflow_id run_id workflow_name conclusion created_at <<< "$run"
             [[ "$run_id" == "$CURRENT_RUN_ID" ]] && continue
             [[ -n "${KEEP[$run_id]:-}" ]] && continue
-            if [[ $total_kept -lt 20 ]]; then
+
+            current_total=${TOTAL_COUNT[$workflow_id]:-0}
+            if [[ $current_total -lt 20 ]]; then
               KEEP["$run_id"]=1
-              total_kept=$((total_kept + 1))
-            else
-              break
+              TOTAL_COUNT["$workflow_id"]=$((current_total + 1))
             fi
           done
 
           deleted=0
           for run in "${RUNS[@]}"; do
-            IFS=$'\t' read -r run_id conclusion created_at <<< "$run"
+            IFS=$'\t' read -r workflow_id run_id workflow_name conclusion created_at <<< "$run"
             [[ "$run_id" == "$CURRENT_RUN_ID" ]] && continue
             [[ -n "${KEEP[$run_id]:-}" ]] && continue
 
-            echo "Deleting workflow run ${run_id} (${conclusion}, ${created_at})"
+            echo "Deleting workflow run ${run_id} (${workflow_name}, ${conclusion}, ${created_at})"
             gh api \
               --method DELETE \
               -H 'Accept: application/vnd.github+json' \
@@ -79,4 +80,4 @@ jobs:
             deleted=$((deleted + 1))
           done
 
-          echo "Retained ${total_kept} completed runs (${successful_kept} successful); deleted ${deleted}."
+          echo "Cleanup complete; deleted ${deleted} old workflow runs."
