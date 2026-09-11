@@ -11,10 +11,10 @@ permissions:
 
 jobs:
   cleanup:
-    name: Retain recent workflow runs
+    name: Retain recent workflow runs and artifacts
     runs-on: ubuntu-latest
     steps:
-      - name: Remove old workflow runs
+      - name: Remove old workflow runs and artifacts
         env:
           GH_TOKEN: ${{ github.token }}
           REPOSITORY: ${{ github.repository }}
@@ -66,7 +66,7 @@ jobs:
             fi
           done
 
-          deleted=0
+          deleted_runs=0
           for run in "${RUNS[@]}"; do
             IFS=$'\t' read -r workflow_id run_id workflow_name conclusion created_at <<< "$run"
             [[ "$run_id" == "$CURRENT_RUN_ID" ]] && continue
@@ -78,7 +78,35 @@ jobs:
               -H 'Accept: application/vnd.github+json' \
               -H 'X-GitHub-Api-Version: 2026-03-10' \
               "/repos/${REPOSITORY}/actions/runs/${run_id}"
-            deleted=$((deleted + 1))
+            deleted_runs=$((deleted_runs + 1))
           done
 
-          echo "Cleanup complete; deleted ${deleted} old workflow runs."
+          # Delete artifacts belonging to runs that are not retained. This is
+          # what actually frees artifact storage quota; deleting a workflow run
+          # alone does not make the retention policy explicit for artifacts.
+          deleted_artifacts=0
+          mapfile -t ARTIFACTS < <(
+            gh api --paginate \
+              -H 'Accept: application/vnd.github+json' \
+              -H 'X-GitHub-Api-Version: 2026-03-10' \
+              "/repos/${REPOSITORY}/actions/artifacts?per_page=100" \
+              --jq '.artifacts[] | [.id, (.workflow_run.id // 0), .name, .expired] | @tsv'
+          )
+
+          for artifact in "${ARTIFACTS[@]}"; do
+            IFS=$'\t' read -r artifact_id artifact_run_id artifact_name artifact_expired <<< "$artifact"
+
+            # Expired artifacts are safe to delete regardless of their run.
+            # Otherwise retain artifacts only when their workflow run is in KEEP.
+            if [[ "$artifact_expired" == "true" || "$artifact_run_id" == "0" || -z "${KEEP[$artifact_run_id]:-}" ]]; then
+              echo "Deleting artifact ${artifact_id} (${artifact_name}, run ${artifact_run_id})"
+              gh api \
+                --method DELETE \
+                -H 'Accept: application/vnd.github+json' \
+                -H 'X-GitHub-Api-Version: 2026-03-10' \
+                "/repos/${REPOSITORY}/actions/artifacts/${artifact_id}"
+              deleted_artifacts=$((deleted_artifacts + 1))
+            fi
+          done
+
+          echo "Cleanup complete; deleted ${deleted_runs} old workflow runs and ${deleted_artifacts} artifacts."
