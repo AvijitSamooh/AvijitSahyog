@@ -6,6 +6,7 @@ import 'admin_dashboard_page.dart';
 import 'admin_beneficiaries_page.dart';
 import 'admin_causes_page.dart';
 import 'admin_organisations_page.dart';
+import 'admin_users_page.dart';
 
 class AdminPortalPage extends StatelessWidget {
   const AdminPortalPage({super.key});
@@ -32,6 +33,15 @@ class AdminPortalPage extends StatelessWidget {
             subtitle: l10n.adminDashboardSubtitle,
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const AdminDashboardPage()),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _AdminSectionCard(
+            icon: Icons.people_alt_rounded,
+            title: l10n.adminManageUsers,
+            subtitle: l10n.adminManageUsersSubtitle,
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const AdminUsersPage()),
             ),
           ),
           const SizedBox(height: 12),

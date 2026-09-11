@@ -24,7 +24,32 @@ model User {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
+  auditEvents       AuditLog[] @relation("AuditActor")
+  auditedUserEvents AuditLog[] @relation("AuditTargetUser")
+
   @@index([role])
+}
+
+enum AuditAction {
+  USER_ROLE_CHANGED
+}
+
+model AuditLog {
+  id           String      @id @default(uuid()) @db.Uuid
+  action       AuditAction
+  actorUserId  String      @db.Uuid
+  targetUserId String?     @db.Uuid
+  fromRole     UserRole?
+  toRole       UserRole?
+  metadata     Json?
+  createdAt    DateTime    @default(now())
+
+  actor       User  @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+  targetUser  User? @relation("AuditTargetUser", fields: [targetUserId], references: [id], onDelete: SetNull)
+
+  @@index([action, createdAt])
+  @@index([actorUserId, createdAt])
+  @@index([targetUserId, createdAt])
 }
 
 model Language {
@@ -246,7 +271,7 @@ model BeneficiaryMedia {
   id            String                  @id @default(uuid()) @db.Uuid
   beneficiaryId String                  @db.Uuid
   mediaId       String                  @db.Uuid
-  purpose       BeneficiaryMediaPurpose @default(GALLERY)
+  purpose        BeneficiaryMediaPurpose @default(GALLERY)
   displayOrder  Int                     @default(0)
   isPrimary     Boolean                 @default(false)
   createdAt     DateTime                @default(now())

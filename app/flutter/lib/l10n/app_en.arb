@@ -4,13 +4,7 @@
   "checkingBackend": "Checking backend...",
   "backendUnavailable": "Backend unavailable",
   "backendStatus": "{status} — {service}",
-  "@backendStatus": {
-    "description": "Verified backend health status shown in the development shell.",
-    "placeholders": {
-      "status": {},
-      "service": {}
-    }
-  },
+  "@backendStatus": {"description": "Verified backend health status shown in the development shell.", "placeholders": {"status": {}, "service": {}}},
   "welcomeTitle": "Welcome to Avijit Sahyog",
   "welcomeSubtitle": "Simple, transparent and meaningful giving.",
   "language": "Language",
@@ -62,17 +56,9 @@
   "impactLoadError": "Unable to load impact stories right now.",
   "tryAgain": "Try again",
   "supportedIn": "Supported in {year}",
-  "@supportedIn": {
-    "placeholders": {
-      "year": {}
-    }
-  },
+  "@supportedIn": {"placeholders": {"year": {}}},
   "contributionAmount": "₹{amount} Contribution",
-  "@contributionAmount": {
-    "placeholders": {
-      "amount": {}
-    }
-  },
+  "@contributionAmount": {"placeholders": {"amount": {}}},
   "viewStory": "View Story →",
   "impactStoryTitle": "Impact Story",
   "theirStory": "Their Story",
@@ -120,5 +106,23 @@
   "adminUploadPrimaryImage": "Upload primary image",
   "adminSelectPrimaryImage": "Select primary image",
   "adminAddGalleryImage": "Add gallery image",
-  "adminSelectGalleryImage": "Select gallery image"
+  "adminSelectGalleryImage": "Select gallery image",
+  "adminManageUsers": "Manage administrators",
+  "adminManageUsersSubtitle": "Promote users to administrators and review role changes",
+  "adminUsersTitle": "User access",
+  "adminUsersSubtitle": "Only existing administrators can promote another user. Role changes are recorded in the audit history.",
+  "adminMakeAdmin": "Make admin",
+  "adminMakeAdminConfirmation": "Make {user} an administrator? This action will be recorded in audit history.",
+  "@adminMakeAdminConfirmation": {"placeholders": {"user": {}}},
+  "adminPromotionSuccess": "User is now an administrator and the change was recorded.",
+  "adminRole": "Admin",
+  "adminNoUsers": "No users found.",
+  "adminNoEmail": "No email available",
+  "adminAuditHistory": "Audit history",
+  "adminNoAuditHistory": "No role changes have been recorded yet.",
+  "adminAuditPromotion": "{user} was promoted to administrator",
+  "@adminAuditPromotion": {"placeholders": {"user": {}}},
+  "adminAuditActor": "Changed by {admin}",
+  "@adminAuditActor": {"placeholders": {"admin": {}}},
+  "cancel": "Cancel"
 }

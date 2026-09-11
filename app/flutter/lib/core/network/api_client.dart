@@ -126,6 +126,31 @@ class ApiClient {
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
+  Future<List<Map<String, dynamic>>> getAdminUsers() async {
+    final response = await _client.get(Uri.parse('$baseUrl/admin/users'), headers: await _headers());
+    _ensureSuccess(response, 'Loading admin users');
+    return (jsonDecode(response.body) as List<dynamic>).cast<Map<String, dynamic>>();
+  }
+
+  Future<Map<String, dynamic>> makeAdmin(String userId) async {
+    final response = await _client.patch(
+      Uri.parse('$baseUrl/admin/users/$userId/role'),
+      headers: await _headers(json: true),
+      body: jsonEncode({'role': 'ADMIN'}),
+    );
+    _ensureSuccess(response, 'Making user an administrator');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<List<Map<String, dynamic>>> getAdminAuditHistory() async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/admin/users/audit-history'),
+      headers: await _headers(),
+    );
+    _ensureSuccess(response, 'Loading audit history');
+    return (jsonDecode(response.body) as List<dynamic>).cast<Map<String, dynamic>>();
+  }
+
   Future<List<Map<String, dynamic>>> getAdminBeneficiaries() async {
     final response = await _client.get(Uri.parse('$baseUrl/admin/beneficiaries'), headers: await _headers());
     _ensureSuccess(response, 'Loading admin beneficiaries');
