@@ -11,10 +11,10 @@ permissions:
 
 jobs:
   cleanup:
-    name: Retain recent workflow runs and artifacts
+    name: Retain five Android release artifacts
     runs-on: ubuntu-latest
     steps:
-      - name: Remove old workflow runs and artifacts
+      - name: Remove non-Android artifacts and related workflow runs
         env:
           GH_TOKEN: ${{ github.token }}
           REPOSITORY: ${{ github.repository }}
@@ -22,55 +22,73 @@ jobs:
         run: |
           set -euo pipefail
 
-          # GitHub permits deletion of completed workflow runs. For each
-          # workflow, keep the 10 newest successful runs, then keep the newest
-          # completed runs until there are at most 20 retained runs. The current
-          # cleanup run is always excluded from deletion.
+          # Storage policy:
+          # - Keep exactly the 5 newest Android release AAB artifacts.
+          # - Keep the workflow runs that produced those 5 artifacts.
+          # - Delete every other artifact.
+          # - Delete every other completed workflow run, including CI and old
+          #   cleanup runs. The currently running cleanup job is always kept.
+          ANDROID_ARTIFACT_PREFIX='avijit-sahyog-release-aab-'
+
+          declare -A KEEP_ARTIFACT=()
+          declare -A KEEP_RUN=()
+
+          mapfile -t ARTIFACTS < <(
+            gh api --paginate \
+              -H 'Accept: application/vnd.github+json' \
+              -H 'X-GitHub-Api-Version: 2026-03-10' \
+              "/repos/${REPOSITORY}/actions/artifacts?per_page=100" \
+              --jq '.artifacts[] | [.id, (.workflow_run.id // 0), .name, .expired, .created_at] | @tsv' \
+              | sort -t $'\t' -k5,5r
+          )
+
+          kept_android=0
+          for artifact in "${ARTIFACTS[@]}"; do
+            IFS=$'\t' read -r artifact_id artifact_run_id artifact_name artifact_expired artifact_created_at <<< "$artifact"
+
+            [[ "$artifact_name" == "${ANDROID_ARTIFACT_PREFIX}"* ]] || continue
+            [[ "$artifact_expired" == "true" ]] && continue
+            [[ "$artifact_run_id" == "0" ]] && continue
+
+            if [[ $kept_android -lt 5 ]]; then
+              KEEP_ARTIFACT["$artifact_id"]=1
+              KEEP_RUN["$artifact_run_id"]=1
+              kept_android=$((kept_android + 1))
+              echo "Keeping Android artifact ${artifact_id} (${artifact_name}, run ${artifact_run_id}, ${artifact_created_at})"
+            fi
+          done
+
+          echo "Selected ${kept_android} Android release artifact(s) to retain."
+
+          deleted_artifacts=0
+          for artifact in "${ARTIFACTS[@]}"; do
+            IFS=$'\t' read -r artifact_id artifact_run_id artifact_name artifact_expired artifact_created_at <<< "$artifact"
+
+            [[ -n "${KEEP_ARTIFACT[$artifact_id]:-}" ]] && continue
+
+            echo "Deleting artifact ${artifact_id} (${artifact_name}, run ${artifact_run_id})"
+            gh api \
+              --method DELETE \
+              -H 'Accept: application/vnd.github+json' \
+              -H 'X-GitHub-Api-Version: 2026-03-10' \
+              "/repos/${REPOSITORY}/actions/artifacts/${artifact_id}"
+            deleted_artifacts=$((deleted_artifacts + 1))
+          done
+
           mapfile -t RUNS < <(
             gh api --paginate \
               -H 'Accept: application/vnd.github+json' \
               -H 'X-GitHub-Api-Version: 2026-03-10' \
               "/repos/${REPOSITORY}/actions/runs?per_page=100" \
-              --jq '.workflow_runs[] | select(.status == "completed") | [.workflow_id, .id, .name, .conclusion, .created_at] | @tsv' \
-              | sort -k1,1n -k5,5r
+              --jq '.workflow_runs[] | select(.status == "completed") | [.id, .name, .conclusion, .created_at] | @tsv'
           )
-
-          declare -A KEEP=()
-          declare -A SUCCESS_COUNT=()
-          declare -A TOTAL_COUNT=()
-
-          # First preserve the 10 newest successful runs for each workflow.
-          for run in "${RUNS[@]}"; do
-            IFS=$'\t' read -r workflow_id run_id workflow_name conclusion created_at <<< "$run"
-            [[ "$run_id" == "$CURRENT_RUN_ID" ]] && continue
-
-            current_successes=${SUCCESS_COUNT[$workflow_id]:-0}
-            if [[ "$conclusion" == "success" && $current_successes -lt 10 ]]; then
-              KEEP["$run_id"]=1
-              SUCCESS_COUNT["$workflow_id"]=$((current_successes + 1))
-              TOTAL_COUNT["$workflow_id"]=$((${TOTAL_COUNT[$workflow_id]:-0} + 1))
-            fi
-          done
-
-          # Then preserve the newest remaining completed runs for each workflow
-          # until its hard ceiling of 20 retained runs is reached.
-          for run in "${RUNS[@]}"; do
-            IFS=$'\t' read -r workflow_id run_id workflow_name conclusion created_at <<< "$run"
-            [[ "$run_id" == "$CURRENT_RUN_ID" ]] && continue
-            [[ -n "${KEEP[$run_id]:-}" ]] && continue
-
-            current_total=${TOTAL_COUNT[$workflow_id]:-0}
-            if [[ $current_total -lt 20 ]]; then
-              KEEP["$run_id"]=1
-              TOTAL_COUNT["$workflow_id"]=$((current_total + 1))
-            fi
-          done
 
           deleted_runs=0
           for run in "${RUNS[@]}"; do
-            IFS=$'\t' read -r workflow_id run_id workflow_name conclusion created_at <<< "$run"
+            IFS=$'\t' read -r run_id workflow_name conclusion created_at <<< "$run"
+
             [[ "$run_id" == "$CURRENT_RUN_ID" ]] && continue
-            [[ -n "${KEEP[$run_id]:-}" ]] && continue
+            [[ -n "${KEEP_RUN[$run_id]:-}" ]] && continue
 
             echo "Deleting workflow run ${run_id} (${workflow_name}, ${conclusion}, ${created_at})"
             gh api \
@@ -81,32 +99,4 @@ jobs:
             deleted_runs=$((deleted_runs + 1))
           done
 
-          # Delete artifacts belonging to runs that are not retained. This is
-          # what actually frees artifact storage quota; deleting a workflow run
-          # alone does not make the retention policy explicit for artifacts.
-          deleted_artifacts=0
-          mapfile -t ARTIFACTS < <(
-            gh api --paginate \
-              -H 'Accept: application/vnd.github+json' \
-              -H 'X-GitHub-Api-Version: 2026-03-10' \
-              "/repos/${REPOSITORY}/actions/artifacts?per_page=100" \
-              --jq '.artifacts[] | [.id, (.workflow_run.id // 0), .name, .expired] | @tsv'
-          )
-
-          for artifact in "${ARTIFACTS[@]}"; do
-            IFS=$'\t' read -r artifact_id artifact_run_id artifact_name artifact_expired <<< "$artifact"
-
-            # Expired artifacts are safe to delete regardless of their run.
-            # Otherwise retain artifacts only when their workflow run is in KEEP.
-            if [[ "$artifact_expired" == "true" || "$artifact_run_id" == "0" || -z "${KEEP[$artifact_run_id]:-}" ]]; then
-              echo "Deleting artifact ${artifact_id} (${artifact_name}, run ${artifact_run_id})"
-              gh api \
-                --method DELETE \
-                -H 'Accept: application/vnd.github+json' \
-                -H 'X-GitHub-Api-Version: 2026-03-10' \
-                "/repos/${REPOSITORY}/actions/artifacts/${artifact_id}"
-              deleted_artifacts=$((deleted_artifacts + 1))
-            fi
-          done
-
-          echo "Cleanup complete; deleted ${deleted_runs} old workflow runs and ${deleted_artifacts} artifacts."
+          echo "Cleanup complete; retained ${kept_android} Android release artifacts and their workflow runs; deleted ${deleted_artifacts} artifacts and ${deleted_runs} workflow runs."
