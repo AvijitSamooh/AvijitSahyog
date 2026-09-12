@@ -23,11 +23,13 @@ jobs:
           set -euo pipefail
 
           # Storage policy:
-          # - Keep exactly the 5 newest Android release AAB artifacts.
-          # - Keep the workflow runs that produced those 5 artifacts.
+          # - Keep up to the 5 newest non-expired Android release AAB artifacts.
+          # - Keep the workflow runs that produced those artifacts.
           # - Delete every other artifact.
-          # - Delete every other completed workflow run, including CI and old
-          #   cleanup runs. The currently running cleanup job is always kept.
+          # - Delete every other completed workflow run.
+          # - Never delete anything until the Android artifact -> workflow-run
+          #   relationship has been validated. This makes a malformed API
+          #   response fail closed instead of deleting everything.
           ANDROID_ARTIFACT_PREFIX='avijit-sahyog-release-aab-'
 
           declare -A KEEP_ARTIFACT=()
@@ -42,6 +44,9 @@ jobs:
               | sort -t $'\t' -k5,5r
           )
 
+          # Select the 5 newest valid Android release artifacts first.
+          # Do not perform any deletion until this selection and its run IDs
+          # have both been validated.
           kept_android=0
           for artifact in "${ARTIFACTS[@]}"; do
             IFS=$'\t' read -r artifact_id artifact_run_id artifact_name artifact_expired artifact_created_at <<< "$artifact"
@@ -58,8 +63,25 @@ jobs:
             fi
           done
 
-          echo "Selected ${kept_android} Android release artifact(s) to retain."
+          # Fail closed. If Android artifacts exist but GitHub did not provide
+          # their workflow-run relationship, deleting anything could destroy
+          # the retained releases. If there are no Android artifacts at all,
+          # also stop rather than interpreting that as permission to delete all
+          # workflow history.
+          android_candidates=$(printf '%s\n' "${ARTIFACTS[@]}" | awk -F '\t' -v prefix="$ANDROID_ARTIFACT_PREFIX" '$3 ~ "^" prefix && $4 != "true" {count++} END {print count+0}')
+          if [[ "$android_candidates" -gt 0 && "$kept_android" -eq 0 ]]; then
+            echo "ERROR: Android release artifacts were found, but none could be safely mapped to a workflow run. Nothing was deleted."
+            exit 1
+          fi
 
+          if [[ "$kept_android" -gt 0 ]]; then
+            echo "Validated ${kept_android} Android release artifact(s) and their workflow run IDs."
+          else
+            echo "No non-expired Android release artifacts currently exist. Nothing was deleted."
+            exit 0
+          fi
+
+          # Delete non-retained artifacts only after the retention set is safe.
           deleted_artifacts=0
           for artifact in "${ARTIFACTS[@]}"; do
             IFS=$'\t' read -r artifact_id artifact_run_id artifact_name artifact_expired artifact_created_at <<< "$artifact"
@@ -75,6 +97,9 @@ jobs:
             deleted_artifacts=$((deleted_artifacts + 1))
           done
 
+          # Delete completed workflow runs only after the retained run set is
+          # known. Deleting a workflow run also deletes its artifacts, so the
+          # KEEP_RUN guard is the critical protection for the five releases.
           mapfile -t RUNS < <(
             gh api --paginate \
               -H 'Accept: application/vnd.github+json' \
