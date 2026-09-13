@@ -167,12 +167,9 @@ void main() {
 
     await scrollDown(tester);
     expect(find.text('Recent events'), findsOneWidget);
-    final eventTile = find.descendant(
-      of: find.byType(ListTile),
-      matching: find.textContaining('database timeout'),
-    );
-    expect(eventTile, findsOneWidget);
-    expect(find.descendant(of: eventTile, matching: find.text('500')), findsOneWidget);
+    expect(find.text('APP_ERROR'), findsOneWidget);
+    expect(find.textContaining('/health · GET · database timeout'), findsOneWidget);
+    expect(find.text('500'), findsOneWidget);
   });
 
   testWidgets('admin analytics exposes retry on load failure', (tester) async {
