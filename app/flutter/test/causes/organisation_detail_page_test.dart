@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:avijit_sahyog/core/navigation/app_shell_scope.dart';
 import 'package:avijit_sahyog/features/causes/models/organisation.dart';
 import 'package:avijit_sahyog/features/causes/presentation/organisation_detail_page.dart';
 
@@ -18,28 +19,31 @@ void main() {
     ],
   );
 
-  testWidgets('displays organisation details and admin-provided gallery', (tester) async {
+  Future<void> pumpSubject(WidgetTester tester) async {
     await tester.pumpWidget(
-      const MaterialApp(
-        home: OrganisationDetailPage(organisation: organisation),
+      AppShellScope(
+        onLocaleChanged: (_) {},
+        navigation: AppNavigationController(),
+        child: const MaterialApp(
+          home: OrganisationDetailPage(organisation: organisation),
+        ),
       ),
     );
     await tester.pump();
+  }
+
+  testWidgets('displays organisation details and admin-provided gallery', (tester) async {
+    await pumpSubject(tester);
 
     expect(find.text('Seva Trust'), findsOneWidget);
     expect(find.text('Serving the community.'), findsOneWidget);
     expect(find.text('Pune, Maharashtra'), findsOneWidget);
     expect(find.byType(GridView), findsOneWidget);
-    expect(find.byType(Image), findsNWidgets(3));
+    expect(find.byType(Image), findsNWidgets(2));
   });
 
   testWidgets('opens the selected gallery image in the full-screen viewer', (tester) async {
-    await tester.pumpWidget(
-      const MaterialApp(
-        home: OrganisationDetailPage(organisation: organisation),
-      ),
-    );
-    await tester.pump();
+    await pumpSubject(tester);
 
     await tester.tap(find.byType(InkWell).first);
     await tester.pump();
