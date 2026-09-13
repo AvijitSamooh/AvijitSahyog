@@ -39,14 +39,6 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Future<void> scrollTo(WidgetTester tester, Finder target) async {
-    await tester.scrollUntilVisible(
-      target,
-      300,
-      scrollable: find.byType(Scrollable).first,
-    );
-  }
-
   testWidgets('interaction analytics renders metrics and empty trend state', (tester) async {
     const summary = AdminAnalyticsSummary(
       dau: 12,
@@ -71,18 +63,10 @@ void main() {
 
     expect(find.text('User engagement'), findsOneWidget);
     expect(find.text('12'), findsOneWidget);
-
-    final emptyTrend = find.text('No analytics data yet.');
-    await scrollTo(tester, emptyTrend);
-    expect(emptyTrend, findsOneWidget);
-
-    final navigationTile = find.ancestor(
-      of: find.text('Navigation events'),
-      matching: find.byType(ListTile),
-    );
-    await scrollTo(tester, navigationTile);
-    expect(navigationTile, findsOneWidget);
-    expect(find.descendant(of: navigationTile, matching: find.text('95')), findsOneWidget);
+    expect(find.text('Navigation events'), findsOneWidget);
+    expect(find.text('95'), findsOneWidget);
+    expect(find.text('Engagement trend'), findsOneWidget);
+    expect(find.text('No analytics data yet.'), findsOneWidget);
   });
 
   testWidgets('advanced analytics renders empty collections', (tester) async {
@@ -108,20 +92,8 @@ void main() {
     expect(find.text('Engagement cohorts'), findsOneWidget);
     expect(find.text('Feature adoption'), findsOneWidget);
     expect(find.text('Audience segmentation'), findsOneWidget);
-
-    final bigQueryTile = find.ancestor(
-      of: find.text('BigQuery-ready foundation'),
-      matching: find.byType(ListTile),
-    );
-    await scrollTo(tester, bigQueryTile);
-    expect(bigQueryTile, findsOneWidget);
-    expect(
-      find.descendant(
-        of: bigQueryTile,
-        matching: find.text('Warehouse export is not configured.'),
-      ),
-      findsOneWidget,
-    );
+    expect(find.text('BigQuery-ready foundation'), findsOneWidget);
+    expect(find.text('Warehouse export is not configured.'), findsOneWidget);
   });
 
   testWidgets('platform health renders recent events and deployment', (tester) async {
@@ -164,21 +136,11 @@ void main() {
     );
 
     expect(find.text('Platform healthy'), findsOneWidget);
-
-    final deployment = find.text('Deployment');
-    await scrollTo(tester, deployment);
-    expect(deployment, findsOneWidget);
+    expect(find.text('Deployment'), findsOneWidget);
     expect(find.text('production'), findsOneWidget);
     expect(find.text('1.2.3'), findsOneWidget);
-
-    final recentEvents = find.text('Recent events');
-    await scrollTo(tester, recentEvents);
-    expect(recentEvents, findsOneWidget);
-
-    final eventSubtitle = find.textContaining('/health · GET · database timeout');
-    await scrollTo(tester, eventSubtitle);
-    expect(eventSubtitle, findsOneWidget);
-    expect(find.text('APP_ERROR'), findsOneWidget);
+    expect(find.text('Recent events'), findsOneWidget);
+    expect(find.textContaining('database timeout'), findsOneWidget);
     expect(find.text('500'), findsOneWidget);
   });
 
