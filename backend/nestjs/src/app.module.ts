@@ -10,20 +10,6 @@ import { AuthModule } from './auth/auth.module';
 import { AdminDashboardModule } from './admin-dashboard/admin-dashboard.module';
 import { MediaModule } from './media/media.module';
 import { AdminUsersModule } from './admin-users/admin-users.module';
-
-@Module({
-  imports: [
-    PrismaModule,
-    AuthModule,
-    CausesModule,
-    OrganisationsModule,
-    DonationsModule,
-    BeneficiariesModule,
-    AdminDashboardModule,
-    MediaModule,
-    AdminUsersModule,
-  ],
-  controllers: [AppController],
-  providers: [AppService],
-})
+import { AnalyticsModule } from './analytics/analytics.module';
+@Module({ imports: [PrismaModule, AuthModule, AnalyticsModule, CausesModule, OrganisationsModule, DonationsModule, BeneficiariesModule, AdminDashboardModule, MediaModule, AdminUsersModule], controllers: [AppController], providers: [AppService] })
 export class AppModule {}
