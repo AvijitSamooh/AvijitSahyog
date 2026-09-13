@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:math';
+import 'dart:ui' as ui;
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -113,6 +115,18 @@ class AnalyticsService {
         'API_BASE_URL',
         defaultValue: 'http://localhost:3000',
       ).replaceFirst(RegExp(r'/$'), '');
+      final language = ui.PlatformDispatcher.instance.locale.languageCode;
+      final deviceType = kIsWeb
+          ? 'web'
+          : switch (defaultTargetPlatform) {
+              TargetPlatform.android => 'android',
+              TargetPlatform.iOS => 'ios',
+              TargetPlatform.macOS => 'macos',
+              TargetPlatform.windows => 'windows',
+              TargetPlatform.linux => 'linux',
+              TargetPlatform.fuchsia => 'fuchsia',
+            };
+      final city = const String.fromEnvironment('ANALYTICS_CITY');
       await http.post(
         Uri.parse('$baseUrl/analytics/events'),
         headers: const {'Content-Type': 'application/json'},
@@ -121,6 +135,9 @@ class AnalyticsService {
           'sessionId': _sessionId,
           'eventName': eventName,
           'screenName': screenName,
+          'language': language,
+          'deviceType': deviceType,
+          if (city.isNotEmpty) 'city': city,
           if (interactionType != null) 'interactionType': interactionType,
           if (target != null) 'target': target,
         }),

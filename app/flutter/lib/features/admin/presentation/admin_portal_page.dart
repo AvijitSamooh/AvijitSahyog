@@ -5,6 +5,7 @@ import '../../../core/widgets/app_navigation_bar.dart';
 import '../../../core/widgets/app_settings_menu.dart';
 import '../../../features/auth/providers/auth_providers.dart';
 import '../../../l10n/app_localizations.dart';
+import 'advanced_analytics_page.dart';
 import 'admin_analytics_page.dart';
 import 'admin_dashboard_page.dart';
 import 'admin_beneficiaries_page.dart';
@@ -23,6 +24,8 @@ class AdminPortalPage extends ConsumerWidget {
       Text(l10n.adminPortalWelcome, style: Theme.of(context).textTheme.headlineSmall), const SizedBox(height: 8), Text(l10n.adminPortalDescription), const SizedBox(height: 24),
       if (isSuperAdmin) ...[
         _AdminSectionCard(icon: Icons.insights_rounded, title: 'Interaction analytics', subtitle: 'DAU, WAU, MAU, sessions, screen views and engagement trends', onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AdminAnalyticsPage()))),
+        const SizedBox(height: 12),
+        _AdminSectionCard(icon: Icons.auto_graph_rounded, title: 'Advanced analytics', subtitle: 'Retention, cohorts, feature adoption and audience segmentation', onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AdvancedAnalyticsPage()))),
         const SizedBox(height: 12),
         _AdminSectionCard(icon: Icons.monitor_heart_rounded, title: 'Platform health', subtitle: 'API health, errors, uploads, authentication, crashes and deployment status', onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PlatformHealthPage()))),
         const SizedBox(height: 12),
