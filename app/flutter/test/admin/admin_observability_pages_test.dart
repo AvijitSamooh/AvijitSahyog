@@ -42,14 +42,12 @@ void main() {
   Future<void> scrollToEnd(WidgetTester tester) async {
     final listView = find.byType(ListView).first;
     expect(listView, findsOneWidget);
-    final state = tester.state<ScrollableState>(
-      find.ancestor(
-        of: listView,
-        matching: find.byType(Scrollable),
-      ).first,
-    );
-    state.position.jumpTo(state.position.maxScrollExtent);
+    await tester.drag(listView, const Offset(0, -600));
     await tester.pumpAndSettle();
+    for (var i = 0; i < 10 && find.text('Recent events').evaluate().isEmpty && find.text('Navigation events').evaluate().isEmpty && find.text('BigQuery-ready foundation').evaluate().isEmpty; i++) {
+      await tester.drag(listView, const Offset(0, -600));
+      await tester.pumpAndSettle();
+    }
   }
 
   testWidgets('interaction analytics renders metrics and empty trend state', (tester) async {
