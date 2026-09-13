@@ -10,11 +10,13 @@ import { AuthModule } from './auth/auth.module';
 import { AdminDashboardModule } from './admin-dashboard/admin-dashboard.module';
 import { MediaModule } from './media/media.module';
 import { AdminUsersModule } from './admin-users/admin-users.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
     PrismaModule,
     AuthModule,
+    AnalyticsModule,
     CausesModule,
     OrganisationsModule,
     DonationsModule,
