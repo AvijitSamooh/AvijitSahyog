@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'features/home/home_page.dart';
+import 'core/analytics/analytics_service.dart';
 import 'core/navigation/app_shell_scope.dart';
 import 'features/impact/presentation/impact_page.dart';
 
@@ -146,6 +147,7 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: _buildTheme(),
+      navigatorObservers: [AnalyticsService.instance.observer],
       builder: (context, child) => AppShellScope(
         onLocaleChanged: setLocale,
         navigation: _navigation,
