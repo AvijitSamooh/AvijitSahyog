@@ -71,7 +71,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(OrganisationDetailPage), findsOneWidget);
-    expect(find.text('Seva Trust'), findsOneWidget);
+    expect(find.text('Seva Trust'), findsNWidgets(2));
     expect(find.text('Serving the community.'), findsOneWidget);
     expect(find.text('Pune, Maharashtra'), findsOneWidget);
     expect(find.byType(GridView), findsNothing);
@@ -80,11 +80,17 @@ void main() {
   testWidgets('opens an affiliated organisation with gallery', (tester) async {
     await pumpSubject(tester);
 
-    await tester.tap(find.text('Shiksha Trust'));
+    final organisationName = find.text('Shiksha Trust');
+    await tester.scrollUntilVisible(
+      organisationName,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(organisationName);
     await tester.pumpAndSettle();
 
     expect(find.byType(OrganisationDetailPage), findsOneWidget);
-    expect(find.text('Shiksha Trust'), findsOneWidget);
+    expect(find.text('Shiksha Trust'), findsNWidgets(2));
     expect(find.byType(GridView), findsOneWidget);
   });
 }
