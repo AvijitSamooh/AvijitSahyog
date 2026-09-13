@@ -5,6 +5,7 @@ class AdminAuditEntry {
     required this.fromRole,
     required this.toRole,
     required this.createdAt,
+    this.metadata,
     this.actorName,
     this.actorEmail,
     this.targetName,
@@ -16,6 +17,7 @@ class AdminAuditEntry {
   final String? fromRole;
   final String? toRole;
   final DateTime createdAt;
+  final Map<String, dynamic>? metadata;
   final String? actorName;
   final String? actorEmail;
   final String? targetName;
@@ -25,16 +27,23 @@ class AdminAuditEntry {
       actorName?.trim().isNotEmpty == true ? actorName! : (actorEmail ?? 'Administrator');
   String get targetLabel =>
       targetName?.trim().isNotEmpty == true ? targetName! : (targetEmail ?? 'User');
+  bool get isOrganisationDeletion => metadata?['eventType'] == 'ORGANISATION_DELETED';
+  String get organisationName =>
+      (metadata?['organisationName'] as String?) ??
+      (metadata?['organisationSlug'] as String?) ??
+      'Organisation';
 
   factory AdminAuditEntry.fromJson(Map<String, dynamic> json) {
     final actor = json['actor'] as Map<String, dynamic>?;
     final target = json['targetUser'] as Map<String, dynamic>?;
+    final metadata = json['metadata'];
     return AdminAuditEntry(
       id: json['id'] as String,
       action: json['action'] as String? ?? '',
       fromRole: json['fromRole'] as String?,
       toRole: json['toRole'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
+      metadata: metadata is Map<String, dynamic> ? metadata : null,
       actorName: actor?['displayName'] as String?,
       actorEmail: actor?['email'] as String?,
       targetName: target?['displayName'] as String?,
