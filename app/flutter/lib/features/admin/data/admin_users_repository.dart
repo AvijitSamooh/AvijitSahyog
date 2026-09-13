@@ -13,8 +13,10 @@ class AdminUsersRepository {
         .toList(growable: false);
   }
 
-  Future<AdminUser> makeAdmin(String userId) async {
-    return AdminUser.fromJson(await _apiClient.makeAdmin(userId));
+  Future<AdminUser> changeRole(String userId, String role) async {
+    return AdminUser.fromJson(
+      await _apiClient.makeAdmin(userId, role: role),
+    );
   }
 
   Future<List<AdminAuditEntry>> getAuditHistory() async {

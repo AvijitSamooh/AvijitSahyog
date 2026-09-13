@@ -11,21 +11,23 @@ export class AdminUsersController {
   constructor(private readonly service: AdminUsersService) {}
 
   @Get()
+  @UseGuards(SuperAdminGuard)
   listUsers() {
     return this.service.listUsers();
   }
 
   @Patch(':id/role')
   @UseGuards(SuperAdminGuard)
-  makeAdmin(
+  changeRole(
     @Param('id') id: string,
     @Body() body: { role?: string },
     @Req() request: Request & AuthenticatedRequest,
   ) {
-    return this.service.changeRoleToAdmin(id, request.user.uid, body.role);
+    return this.service.changeRole(id, request.user.uid, body.role);
   }
 
   @Get('audit-history')
+  @UseGuards(SuperAdminGuard)
   getAuditHistory() {
     return this.service.getAuditHistory();
   }

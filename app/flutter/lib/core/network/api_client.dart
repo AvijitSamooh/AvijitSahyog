@@ -132,13 +132,13 @@ class ApiClient {
     return (jsonDecode(response.body) as List<dynamic>).cast<Map<String, dynamic>>();
   }
 
-  Future<Map<String, dynamic>> makeAdmin(String userId) async {
+  Future<Map<String, dynamic>> makeAdmin(String userId, {String role = 'ADMIN'}) async {
     final response = await _client.patch(
       Uri.parse('$baseUrl/admin/users/$userId/role'),
       headers: await _headers(json: true),
-      body: jsonEncode({'role': 'ADMIN'}),
+      body: jsonEncode({'role': role}),
     );
-    _ensureSuccess(response, 'Making user an administrator');
+    _ensureSuccess(response, 'Changing administrator role');
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 

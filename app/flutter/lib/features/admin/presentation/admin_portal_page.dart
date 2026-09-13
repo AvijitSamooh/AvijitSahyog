@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/navigation/app_shell_scope.dart';
 import '../../../core/widgets/app_navigation_bar.dart';
 import '../../../core/widgets/app_settings_menu.dart';
 
+import '../../../features/auth/providers/auth_providers.dart';
 import '../../../l10n/app_localizations.dart';
 import 'admin_dashboard_page.dart';
 import 'admin_beneficiaries_page.dart';
@@ -10,7 +12,7 @@ import 'admin_causes_page.dart';
 import 'admin_organisations_page.dart';
 import 'admin_users_page.dart';
 
-class AdminPortalPage extends StatelessWidget {
+class AdminPortalPage extends ConsumerWidget {
   const AdminPortalPage({super.key});
 
   void _selectMainTab(BuildContext context, int index) {
@@ -20,9 +22,10 @@ class AdminPortalPage extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final shell = AppShellScope.of(context);
+    final isSuperAdmin = ref.watch(authProvider).user?.isSuperAdmin == true;
 
     return AnimatedBuilder(
       animation: shell.navigation,
@@ -50,15 +53,17 @@ class AdminPortalPage extends StatelessWidget {
                 MaterialPageRoute(builder: (_) => const AdminDashboardPage()),
               ),
             ),
-            const SizedBox(height: 12),
-            _AdminSectionCard(
-              icon: Icons.people_alt_rounded,
-              title: l10n.adminManageUsers,
-              subtitle: l10n.adminManageUsersSubtitle,
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const AdminUsersPage()),
+            if (isSuperAdmin) ...[
+              const SizedBox(height: 12),
+              _AdminSectionCard(
+                icon: Icons.admin_panel_settings_rounded,
+                title: l10n.adminManageUsers,
+                subtitle: l10n.adminManageUsersSubtitle,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const AdminUsersPage()),
+                ),
               ),
-            ),
+            ],
             const SizedBox(height: 12),
             _AdminSectionCard(
               icon: Icons.volunteer_activism_rounded,
