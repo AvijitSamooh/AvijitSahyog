@@ -1,86 +1,52 @@
+import 'dart:convert';
+import 'dart:math';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'analytics_events.dart';
 
-/// Application-level analytics facade.
-///
-/// Feature code should use this service instead of depending directly on
-/// Firebase Analytics. This keeps the event taxonomy centralized and makes
-/// future analytics providers or collection policies easier to introduce.
-///
-/// Analytics is optional until Firebase has been initialized. This is useful
-/// for widget tests and for app startup paths where Firebase configuration is
-/// not yet available; feature UI must not fail just because analytics is
-/// unavailable.
 class AnalyticsService {
-  AnalyticsService({FirebaseAnalytics? analytics})
-      : _analytics = analytics ?? _tryCreateAnalytics();
-
+  AnalyticsService({FirebaseAnalytics? analytics}) : _analytics = analytics ?? _tryCreateAnalytics();
   static final AnalyticsService instance = AnalyticsService();
-
+  static const _clientIdKey = 'analytics_client_id';
+  static final String _sessionId = _randomId();
   final FirebaseAnalytics? _analytics;
 
   static FirebaseAnalytics? _tryCreateAnalytics() {
-    if (Firebase.apps.isEmpty) {
-      return null;
-    }
+    if (Firebase.apps.isEmpty) return null;
     return FirebaseAnalytics.instance;
   }
 
-  FirebaseAnalyticsObserver? get observer => _analytics == null
-      ? null
-      : FirebaseAnalyticsObserver(analytics: _analytics!);
+  FirebaseAnalyticsObserver? get observer => _analytics == null ? null : FirebaseAnalyticsObserver(analytics: _analytics!);
 
-  Future<void> trackScreen(
-    String screenName, {
-    String? screenClass,
-  }) async {
+  Future<void> trackScreen(String screenName, {String? screenClass}) async {
     final analytics = _analytics;
-    if (analytics == null) return;
-
-    await analytics.logScreenView(
-      screenName: screenName,
-      screenClass: screenClass ?? screenName,
-    );
+    if (analytics != null) { try { await analytics.logScreenView(screenName: screenName, screenClass: screenClass ?? screenName); } catch (_) {} }
+    await _mirror(eventName: AnalyticsEvents.screenView, screenName: screenName);
   }
 
-  Future<void> trackInteraction({
-    required String screenName,
-    required String target,
-    String interactionType = AnalyticsInteractions.tap,
-    Map<String, Object>? parameters,
-  }) async {
+  Future<void> trackInteraction({required String screenName, required String target, String interactionType = AnalyticsInteractions.tap, Map<String, Object>? parameters}) async {
     final analytics = _analytics;
-    if (analytics == null) return;
-
-    final eventParameters = <String, Object>{
-      AnalyticsParameters.screenName: screenName,
-      AnalyticsParameters.interactionType: interactionType,
-      AnalyticsParameters.target: target,
-      ...?parameters,
-    };
-
-    await analytics.logEvent(
-      name: AnalyticsEvents.interaction,
-      parameters: eventParameters,
-    );
+    if (analytics != null) { try { await analytics.logEvent(name: AnalyticsEvents.interaction, parameters: {AnalyticsParameters.screenName: screenName, AnalyticsParameters.interactionType: interactionType, AnalyticsParameters.target: target, ...?parameters}); } catch (_) {} }
+    await _mirror(eventName: AnalyticsEvents.interaction, screenName: screenName, interactionType: interactionType, target: target);
   }
 
-  Future<void> trackNavigation({
-    required String destination,
-    required String screenName,
-  }) async {
+  Future<void> trackNavigation({required String destination, required String screenName}) async {
     final analytics = _analytics;
-    if (analytics == null) return;
-
-    await analytics.logEvent(
-      name: AnalyticsEvents.navigationSelect,
-      parameters: {
-        AnalyticsParameters.screenName: screenName,
-        AnalyticsParameters.destination: destination,
-        AnalyticsParameters.interactionType: AnalyticsInteractions.navigation,
-      },
-    );
+    if (analytics != null) { try { await analytics.logEvent(name: AnalyticsEvents.navigationSelect, parameters: {AnalyticsParameters.screenName: screenName, AnalyticsParameters.destination: destination, AnalyticsParameters.interactionType: AnalyticsInteractions.navigation}); } catch (_) {} }
+    await _mirror(eventName: AnalyticsEvents.navigationSelect, screenName: screenName, interactionType: AnalyticsInteractions.navigation, target: destination);
   }
+
+  Future<void> _mirror({required String eventName, required String screenName, String? interactionType, String? target}) async {
+    try {
+      final preferences = await SharedPreferences.getInstance();
+      var clientId = preferences.getString(_clientIdKey);
+      if (clientId == null || clientId.isEmpty) { clientId = _randomId(); await preferences.setString(_clientIdKey, clientId); }
+      final baseUrl = const String.fromEnvironment('API_BASE_URL', defaultValue: 'http://localhost:3000').replaceFirst(RegExp(r'/$'), '');
+      await http.post(Uri.parse('$baseUrl/analytics/events'), headers: const {'Content-Type': 'application/json'}, body: jsonEncode({'clientId': clientId, 'sessionId': _sessionId, 'eventName': eventName, 'screenName': screenName, if (interactionType != null) 'interactionType': interactionType, if (target != null) 'target': target}));
+    } catch (_) {}
+  }
+
+  static String _randomId() => List<int>.generate(16, (_) => Random.secure().nextInt(256)).map((value) => value.toRadixString(16).padLeft(2, '0')).join();
 }
