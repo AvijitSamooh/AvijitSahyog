@@ -26,11 +26,22 @@ describe('AppController', () => {
 
   describe('health', () => {
     it('should return a healthy status when the database check succeeds', async () => {
-      await expect(appController.getHealth()).resolves.toEqual({
+      const health = await appController.getHealth();
+
+      expect(health).toEqual({
         status: 'ok',
         service: 'avijit-sahyog-api',
         database: 'ok',
+        uptimeSeconds: expect.any(Number),
+        deployment: {
+          environment: 'test',
+          version: 'unknown',
+          deploymentId: 'unknown',
+          gitSha: 'unknown',
+          deployedAt: null,
+        },
       });
+      expect(health.uptimeSeconds).toBeGreaterThanOrEqual(0);
     });
 
     it('should return an error status when the database check fails', async () => {

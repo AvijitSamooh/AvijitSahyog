@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:avijit_sahyog/core/navigation/app_shell_scope.dart';
 import 'package:avijit_sahyog/features/causes/models/organisation.dart';
 import 'package:avijit_sahyog/features/causes/presentation/organisation_detail_page.dart';
+import 'package:avijit_sahyog/l10n/app_localizations.dart';
 
 void main() {
   const organisation = Organisation(
@@ -21,21 +23,26 @@ void main() {
 
   Future<void> pumpSubject(WidgetTester tester) async {
     await tester.pumpWidget(
-      AppShellScope(
-        onLocaleChanged: (_) {},
-        navigation: AppNavigationController(),
-        child: const MaterialApp(
-          home: OrganisationDetailPage(organisation: organisation),
+      ProviderScope(
+        child: AppShellScope(
+          onLocaleChanged: (_) {},
+          navigation: AppNavigationController(),
+          child: const MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: Locale('en'),
+            home: OrganisationDetailPage(organisation: organisation),
+          ),
         ),
       ),
     );
-    await tester.pump();
+    await tester.pumpAndSettle();
   }
 
   testWidgets('displays organisation details and admin-provided gallery', (tester) async {
     await pumpSubject(tester);
 
-    expect(find.text('Seva Trust'), findsOneWidget);
+    expect(find.text('Seva Trust'), findsNWidgets(2));
     expect(find.text('Serving the community.'), findsOneWidget);
     expect(find.text('Pune, Maharashtra'), findsOneWidget);
     expect(find.byType(GridView), findsOneWidget);
@@ -45,11 +52,16 @@ void main() {
   testWidgets('opens the selected gallery image in the full-screen viewer', (tester) async {
     await pumpSubject(tester);
 
-    await tester.tap(find.byType(InkWell).first);
+    final galleryImage = find.descendant(
+      of: find.byType(GridView),
+      matching: find.byType(InkWell),
+    );
+    await tester.tap(galleryImage.first);
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
 
-    expect(find.text('1 / 2'), findsOneWidget);
     expect(find.byType(PageView), findsOneWidget);
     expect(find.byType(InteractiveViewer), findsOneWidget);
+    expect(find.text('1 / 2'), findsOneWidget);
   });
 }
