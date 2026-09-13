@@ -26,18 +26,29 @@ class AdminBeneficiary {
   factory AdminBeneficiary.fromJson(Map<String, dynamic> json) {
     final cause = json['cause'] as Map<String, dynamic>?;
     final organisation = json['organisation'] as Map<String, dynamic>?;
+    final supportedYear = _asNum(json['supportedYear']);
+    final contributionAmount = _asNum(json['contributionAmount']);
+    if (supportedYear == null || contributionAmount == null) {
+      throw const FormatException('Beneficiary response contains invalid numeric values.');
+    }
     return AdminBeneficiary(
       id: json['id'] as String,
       name: json['name'] as String,
-      supportedYear: (json['supportedYear'] as num).toInt(),
-      contributionAmount: json['contributionAmount'] as num,
+      supportedYear: supportedYear.toInt(),
+      contributionAmount: contributionAmount,
       causeId: json['causeId'] as String? ?? cause?['id'] as String? ?? '',
       organisationId:
           json['organisationId'] as String? ?? organisation?['id'] as String?,
       isActive: json['isActive'] as bool? ?? true,
-      displayOrder: (json['displayOrder'] as num?)?.toInt() ?? 0,
+      displayOrder: (_asNum(json['displayOrder']) ?? 0).toInt(),
       photoUrl: json['photoUrl'] as String?,
       story: json['story'] as String?,
     );
+  }
+
+  static num? _asNum(dynamic value) {
+    if (value is num) return value;
+    if (value is String) return num.tryParse(value);
+    return null;
   }
 }
