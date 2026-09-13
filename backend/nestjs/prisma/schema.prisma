@@ -280,3 +280,26 @@ model BeneficiaryMedia {
   @@index([beneficiaryId, purpose, displayOrder])
   @@index([mediaId])
 }
+
+model AnalyticsEvent {
+  id              String   @id @default(uuid()) @db.Uuid
+  clientId        String   @db.VarChar(64)
+  sessionId       String   @db.VarChar(64)
+  eventName      String   @db.VarChar(64)
+  screenName      String?  @db.VarChar(64)
+  interactionType String?  @db.VarChar(32)
+  target          String?  @db.VarChar(128)
+  city            String?  @db.VarChar(100)
+  language        String?  @db.VarChar(10)
+  deviceType      String?  @db.VarChar(32)
+  createdAt       DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([clientId, createdAt])
+  @@index([sessionId, createdAt])
+  @@index([eventName, createdAt])
+  @@index([screenName, createdAt])
+  @@index([city, createdAt])
+  @@index([language, createdAt])
+  @@index([deviceType, createdAt])
+}
