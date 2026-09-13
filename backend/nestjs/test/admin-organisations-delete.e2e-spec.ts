@@ -8,7 +8,7 @@ import { OrganisationsService } from '../src/organisations/organisations.service
 import { PrismaService } from '../src/prisma/prisma.service';
 
 describe('Admin organisation deletion HTTP route', () => {
-  let app: INestApplication;
+  let app: INestApplication | undefined;
 
   const service = {
     findOneForAdmin: jest.fn(),
@@ -28,24 +28,24 @@ describe('Admin organisation deletion HTTP route', () => {
       providers: [
         { provide: OrganisationsService, useValue: service },
         { provide: PrismaService, useValue: prisma },
-        {
-          provide: AdminGuard,
-          useValue: {
-            canActivate: (context: any) => {
-              context.switchToHttp().getRequest().user = { uid: 'firebase-1' };
-              return true;
-            },
-          },
-        },
       ],
-    }).compile();
+    })
+      .overrideGuard(AdminGuard)
+      .useValue({
+        canActivate: (context: any) => {
+          context.switchToHttp().getRequest().user = { uid: 'firebase-1' };
+          return true;
+        },
+      })
+      .compile();
 
     app = moduleRef.createNestApplication();
     await app.init();
   });
 
   afterEach(async () => {
-    await app.close();
+    await app?.close();
+    app = undefined;
   });
 
   it('exposes DELETE /admin/organisations/:id and returns dependency conflict', async () => {
@@ -57,7 +57,7 @@ describe('Admin organisation deletion HTTP route', () => {
     prisma.donationAllocation.count.mockResolvedValue(1);
     prisma.beneficiary.count.mockResolvedValue(0);
 
-    const response = await request(app.getHttpServer())
+    const response = await request(app!.getHttpServer())
       .delete('/admin/organisations/org-1')
       .expect(409);
 
@@ -82,7 +82,7 @@ describe('Admin organisation deletion HTTP route', () => {
     };
     prisma.$transaction.mockImplementation(async (callback: (value: typeof tx) => unknown) => callback(tx));
 
-    await request(app.getHttpServer())
+    await request(app!.getHttpServer())
       .delete('/admin/organisations/org-1')
       .expect(200)
       .expect({ id: 'org-1', deleted: true });
