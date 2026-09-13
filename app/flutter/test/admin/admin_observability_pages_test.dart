@@ -74,8 +74,12 @@ void main() {
     expect(find.text('No analytics data yet.'), findsOneWidget);
 
     await scrollDown(tester);
-    expect(find.text('Navigation events'), findsOneWidget);
-    expect(find.text('95'), findsOneWidget);
+    final navigationTile = find.ancestor(
+      of: find.text('Navigation events'),
+      matching: find.byType(ListTile),
+    );
+    expect(navigationTile, findsOneWidget);
+    expect(find.descendant(of: navigationTile, matching: find.text('95')), findsOneWidget);
   });
 
   testWidgets('advanced analytics renders empty collections', (tester) async {
@@ -102,8 +106,18 @@ void main() {
     expect(find.text('Feature adoption'), findsOneWidget);
     expect(find.text('Audience segmentation'), findsOneWidget);
     await scrollDown(tester);
-    expect(find.text('BigQuery-ready foundation'), findsOneWidget);
-    expect(find.text('Warehouse export is not configured.'), findsOneWidget);
+    final bigQueryTile = find.ancestor(
+      of: find.text('BigQuery-ready foundation'),
+      matching: find.byType(ListTile),
+    );
+    expect(bigQueryTile, findsOneWidget);
+    expect(
+      find.descendant(
+        of: bigQueryTile,
+        matching: find.text('Warehouse export is not configured.'),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('platform health renders recent events and deployment', (tester) async {
@@ -153,14 +167,12 @@ void main() {
 
     await scrollDown(tester);
     expect(find.text('Recent events'), findsOneWidget);
-    expect(
-      find.descendant(
-        of: find.byType(ListTile),
-        matching: find.textContaining('database timeout'),
-      ),
-      findsOneWidget,
+    final eventTile = find.descendant(
+      of: find.byType(ListTile),
+      matching: find.textContaining('database timeout'),
     );
-    expect(find.text('500'), findsOneWidget);
+    expect(eventTile, findsOneWidget);
+    expect(find.descendant(of: eventTile, matching: find.text('500')), findsOneWidget);
   });
 
   testWidgets('admin analytics exposes retry on load failure', (tester) async {
