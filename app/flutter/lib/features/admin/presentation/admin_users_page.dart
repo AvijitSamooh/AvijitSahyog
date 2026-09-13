@@ -15,7 +15,16 @@ class AdminUsersPage extends ConsumerWidget {
     final audit = ref.watch(adminAuditHistoryProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.adminManageUsers)),
+      appBar: AppBar(
+        title: Text(l10n.adminManageUsers),
+        actions: [
+          IconButton(
+            tooltip: l10n.adminMakeAdmin,
+            icon: const Icon(Icons.person_add_alt_1),
+            onPressed: () => _showPromotionDialog(context, ref, l10n),
+          ),
+        ],
+      ),
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(adminUsersProvider);
@@ -46,6 +55,78 @@ class AdminUsersPage extends ConsumerWidget {
         ),
       ),
     );
+  }
+}
+
+Future<void> _showPromotionDialog(
+  BuildContext context,
+  WidgetRef ref,
+  AppLocalizations l10n,
+) async {
+  try {
+    final users = await ref.read(adminUsersProvider.future);
+    if (!context.mounted) return;
+    final candidates = users.where((user) => user.canBePromoted).toList(growable: false);
+    if (candidates.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.adminNoUsers)),
+      );
+      return;
+    }
+
+    final selected = await showDialog<AdminUser>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.adminMakeAdmin),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.separated(
+            shrinkWrap: true,
+            itemCount: candidates.length,
+            separatorBuilder: (_, __) => const Divider(height: 1),
+            itemBuilder: (_, index) {
+              final user = candidates[index];
+              return ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: user.photoUrl != null ? NetworkImage(user.photoUrl!) : null,
+                  child: user.photoUrl == null ? const Icon(Icons.person_outline) : null,
+                ),
+                title: Text(user.label),
+                subtitle: Text(user.email ?? l10n.adminNoEmail),
+                onTap: () => Navigator.of(dialogContext).pop(user),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+    if (selected == null || !context.mounted) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.adminMakeAdmin),
+        content: Text(l10n.adminMakeAdminConfirmation(selected.label)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(l10n.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(l10n.adminMakeAdmin)),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+
+    await ref.read(adminUsersRepositoryProvider).changeRole(selected.id, 'ADMIN');
+    ref.invalidate(adminUsersProvider);
+    ref.invalidate(adminAuditHistoryProvider);
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.adminPromotionSuccess)),
+      );
+    }
+  } catch (error) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
+    }
   }
 }
 
@@ -103,7 +184,7 @@ class _UserTile extends StatelessWidget {
                   onSelected: (role) => _confirmRoleChange(context, role),
                   itemBuilder: (context) => [
                     if (user.canBePromoted)
-                      const PopupMenuItem(value: 'ADMIN', child: Text('Make admin')),
+                      PopupMenuItem(value: 'ADMIN', child: Text(l10n.adminMakeAdmin)),
                     if (user.canBeDemoted)
                       const PopupMenuItem(value: 'USER', child: Text('Remove admin')),
                   ],
@@ -114,9 +195,9 @@ class _UserTile extends StatelessWidget {
 
   Future<void> _confirmRoleChange(BuildContext context, String role) async {
     final isPromotion = role == 'ADMIN';
-    final action = isPromotion ? 'Make admin' : 'Remove admin';
+    final action = isPromotion ? l10n.adminMakeAdmin : 'Remove admin';
     final description = isPromotion
-        ? 'Make ${user.label} an administrator? This action will be recorded in audit history.'
+        ? l10n.adminMakeAdminConfirmation(user.label)
         : 'Remove administrator access from ${user.label}? This action will be recorded in audit history.';
 
     final confirmed = await showDialog<bool>(
