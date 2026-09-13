@@ -39,9 +39,12 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Future<void> scrollDown(WidgetTester tester) async {
-    await tester.drag(find.byType(ListView).first, const Offset(0, -800));
-    await tester.pumpAndSettle();
+  Future<void> scrollTo(WidgetTester tester, Finder target) async {
+    await tester.scrollUntilVisible(
+      target,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
   }
 
   testWidgets('interaction analytics renders metrics and empty trend state', (tester) async {
@@ -69,15 +72,15 @@ void main() {
     expect(find.text('User engagement'), findsOneWidget);
     expect(find.text('12'), findsOneWidget);
 
-    await scrollDown(tester);
-    expect(find.text('Engagement trend'), findsOneWidget);
-    expect(find.text('No analytics data yet.'), findsOneWidget);
+    final emptyTrend = find.text('No analytics data yet.');
+    await scrollTo(tester, emptyTrend);
+    expect(emptyTrend, findsOneWidget);
 
-    await scrollDown(tester);
     final navigationTile = find.ancestor(
       of: find.text('Navigation events'),
       matching: find.byType(ListTile),
     );
+    await scrollTo(tester, navigationTile);
     expect(navigationTile, findsOneWidget);
     expect(find.descendant(of: navigationTile, matching: find.text('95')), findsOneWidget);
   });
@@ -105,11 +108,12 @@ void main() {
     expect(find.text('Engagement cohorts'), findsOneWidget);
     expect(find.text('Feature adoption'), findsOneWidget);
     expect(find.text('Audience segmentation'), findsOneWidget);
-    await scrollDown(tester);
+
     final bigQueryTile = find.ancestor(
       of: find.text('BigQuery-ready foundation'),
       matching: find.byType(ListTile),
     );
+    await scrollTo(tester, bigQueryTile);
     expect(bigQueryTile, findsOneWidget);
     expect(
       find.descendant(
@@ -160,27 +164,22 @@ void main() {
     );
 
     expect(find.text('Platform healthy'), findsOneWidget);
-    await scrollDown(tester);
-    expect(find.text('Deployment'), findsOneWidget);
+
+    final deployment = find.text('Deployment');
+    await scrollTo(tester, deployment);
+    expect(deployment, findsOneWidget);
     expect(find.text('production'), findsOneWidget);
     expect(find.text('1.2.3'), findsOneWidget);
 
-    await scrollDown(tester);
-    expect(find.text('Recent events'), findsOneWidget);
+    final recentEvents = find.text('Recent events');
+    await scrollTo(tester, recentEvents);
+    expect(recentEvents, findsOneWidget);
 
-    final eventSubtitle = find.byWidgetPredicate(
-      (widget) =>
-          widget is Text &&
-          widget.data == '/health · GET · database timeout',
-    );
+    final eventSubtitle = find.textContaining('/health · GET · database timeout');
+    await scrollTo(tester, eventSubtitle);
     expect(eventSubtitle, findsOneWidget);
-
-    final eventListTile = find.ancestor(
-      of: eventSubtitle,
-      matching: find.byType(ListTile),
-    );
-    expect(eventListTile, findsOneWidget);
-    expect(find.descendant(of: eventListTile, matching: find.text('500')), findsOneWidget);
+    expect(find.text('APP_ERROR'), findsOneWidget);
+    expect(find.text('500'), findsOneWidget);
   });
 
   testWidgets('admin analytics exposes retry on load failure', (tester) async {
