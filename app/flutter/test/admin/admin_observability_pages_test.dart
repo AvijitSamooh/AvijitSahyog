@@ -73,6 +73,8 @@ void main() {
     expect(find.text('12'), findsOneWidget);
     await scrollPageTo(tester, find.text('No analytics data yet.'));
     expect(find.text('No analytics data yet.'), findsOneWidget);
+
+    await scrollPageTo(tester, find.text('Navigation events'));
     expect(find.text('95'), findsOneWidget);
   });
 
@@ -146,6 +148,8 @@ void main() {
     await scrollPageTo(tester, find.text('production'));
     expect(find.text('production'), findsOneWidget);
     expect(find.text('1.2.3'), findsOneWidget);
+
+    await scrollPageTo(tester, find.text('database timeout'));
     expect(find.text('database timeout'), findsOneWidget);
     expect(find.text('500'), findsOneWidget);
   });
