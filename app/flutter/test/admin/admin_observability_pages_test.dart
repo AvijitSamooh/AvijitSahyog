@@ -40,11 +40,9 @@ void main() {
   }
 
   Future<void> scrollPageTo(WidgetTester tester, Finder target) async {
-    await tester.scrollUntilVisible(
-      target,
-      300,
-      scrollable: find.byType(Scrollable).first,
-    );
+    final listView = find.byType(ListView);
+    expect(listView, findsOneWidget);
+    await tester.scrollUntilVisible(target, 300, scrollable: listView);
   }
 
   testWidgets('interaction analytics renders metrics and empty trend state', (tester) async {
