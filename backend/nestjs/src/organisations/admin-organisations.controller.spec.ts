@@ -67,10 +67,10 @@ describe('AdminOrganisationsController media, create and deletion endpoints', ()
 
     const error = await controller
       .remove('org-1', { user: { uid: 'firebase-1' } } as never)
-      .catch((value: unknown) => value);
+      .catch((value: unknown) => value as Error);
 
     expect(error).toBeInstanceOf(ConflictException);
-    expect(error).toThrow('Deactivate it instead');
+    expect(error.message).toContain('Deactivate it instead');
     expect(prisma.$transaction).not.toHaveBeenCalled();
     expect(prisma.user.findUnique).not.toHaveBeenCalled();
   });
