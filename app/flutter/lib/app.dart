@@ -150,7 +150,7 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       theme: _buildTheme(),
       navigatorObservers: [
-        if (analyticsObserver != null) analyticsObserver,
+        ?analyticsObserver,
       ],
       builder: (context, child) => AppShellScope(
         onLocaleChanged: setLocale,
