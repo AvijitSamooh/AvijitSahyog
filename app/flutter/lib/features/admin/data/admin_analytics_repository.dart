@@ -30,4 +30,6 @@ class AdminAnalyticsRepository {
       jsonDecode(response.body) as Map<String, dynamic>,
     );
   }
+
+  void dispose() => _client.close();
 }
