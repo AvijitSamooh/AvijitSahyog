@@ -5,6 +5,7 @@ import '../../../core/widgets/app_settings_menu.dart';
 import '../../donations/presentation/donation_page.dart';
 import '../models/organisation.dart';
 import '../providers/causes_providers.dart';
+import 'organisation_detail_page.dart';
 
 class CauseDetailPage extends ConsumerWidget {
   const CauseDetailPage({super.key, required this.slug});
@@ -107,52 +108,73 @@ class _OrganisationInfoCard extends StatelessWidget {
     ].join(', ');
 
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(17),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFCE8C9),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: organisation.logoUrl?.trim().isNotEmpty == true
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(14),
-                      child: Image.network(
-                        organisation.logoUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => const Icon(Icons.account_balance_rounded,
-                            color: Color(0xFF6E1A14)),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => OrganisationDetailPage(organisation: organisation),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(17),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFCE8C9),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: organisation.logoUrl?.trim().isNotEmpty == true
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(14),
+                        child: Image.network(
+                          organisation.logoUrl!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) => const Icon(
+                            Icons.account_balance_rounded,
+                            color: Color(0xFF6E1A14),
+                          ),
+                        ),
+                      )
+                    : const Icon(
+                        Icons.account_balance_rounded,
+                        color: Color(0xFF6E1A14),
                       ),
-                    )
-                  : const Icon(Icons.account_balance_rounded,
-                      color: Color(0xFF6E1A14)),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(organisation.name, style: theme.textTheme.titleMedium),
-                  if (location.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(location, style: theme.textTheme.bodyMedium),
-                  ],
-                  if (organisation.description?.isNotEmpty == true) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      organisation.description!,
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                  ],
-                ],
               ),
-            ),
-          ],
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(organisation.name, style: theme.textTheme.titleMedium),
+                    if (location.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(location, style: theme.textTheme.bodyMedium),
+                    ],
+                    if (organisation.description?.isNotEmpty == true) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        organisation.description!,
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Padding(
+                padding: EdgeInsets.only(top: 14),
+                child: Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 16,
+                  color: Color(0xFF9A574C),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
