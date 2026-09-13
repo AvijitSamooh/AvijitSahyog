@@ -83,7 +83,7 @@ Future<void> _showPromotionDialog(
           child: ListView.separated(
             shrinkWrap: true,
             itemCount: candidates.length,
-            separatorBuilder: (_, __) => const Divider(height: 1),
+            separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (_, index) {
               final user = candidates[index];
               return ListTile(
