@@ -128,6 +128,7 @@ void main() {
   ) async {
     await tester.ensureVisible(finder);
     await tester.pump();
+    await tester.pump();
     await tester.tap(finder);
     await tester.enterText(finder, value);
     await tester.pump();
@@ -424,5 +425,243 @@ void main() {
 
     expect(find.text('Seva Trust'), findsOneWidget);
     expect(find.text('Pune, Maharashtra'), findsOneWidget);
+    expect(find.text('Support this Cause'), findsOneWidget);
   });
+
+  testWidgets('support cause button opens donation page', (tester) async {
+    await pumpApp(
+      tester,
+      home: const CauseDetailPage(slug: 'education'),
+      overrides: [
+        causeProvider((slug: 'education', languageCode: 'en'))
+            .overrideWith((ref) async => _cause),
+        causesProvider('en').overrideWith((ref) async => const [_cause]),
+      ],
+    );
+
+    await tapVisible(tester, find.text('Support this Cause'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(DonationPage), findsOneWidget);
+    expect(find.text(l10n(tester).chooseAmount), findsOneWidget);
+
+    final amountField = find.byKey(const ValueKey('donation_amount_input'));
+    expect(amountField, findsOneWidget);
+  });
+
+  testWidgets('contribution page keeps shared settings and bottom navigation visible', (tester) async {
+    await pumpDonationPage(tester);
+
+    expect(find.byKey(const ValueKey('app_settings_menu')), findsOneWidget);
+    expect(find.byType(AppNavigationBar), findsOneWidget);
+  });
+
+  testWidgets('donation defaults a single selected cause to 100 percent', (tester) async {
+    await pumpDonationPage(tester);
+    expect(
+      find.byKey(const ValueKey('donation_percentage_cause-1')),
+      findsNothing,
+      reason: 'The percentage input is intentionally lazy-built below the fold.',
+    );
+    final amountField = tester.widget<TextField>(
+      find.byKey(const ValueKey('donation_amount_input')),
+    );
+    expect(amountField.controller?.text, isEmpty);
+  });
+
+  testWidgets('selecting a second cause defaults allocation equally', (tester) async {
+    const causes = [
+      _cause,
+      Cause(id: 'cause-2', slug: 'jeev-daya', name: 'Jeev Daya'),
+    ];
+    await pumpDonationPage(tester, causes: causes);
+
+    await tapVisible(
+      tester,
+      find.byKey(const ValueKey('donation_cause_cause-2')),
+    );
+
+    expect(
+      tester.widget<TextFormField>(
+        find.byKey(const ValueKey('donation_percentage_cause-1')),
+      ).controller?.text,
+      '50',
+    );
+    expect(
+      tester.widget<TextFormField>(
+        find.byKey(const ValueKey('donation_percentage_cause-2')),
+      ).controller?.text,
+      '50',
+    );
+    expect(find.text('Total allocation: 100%'), findsOneWidget);
+  });
+
+  testWidgets('allocation percentage fields stay synchronized when causes change', (tester) async {
+    const causes = [
+      _cause,
+      Cause(id: 'cause-2', slug: 'jeev-daya', name: 'Jeev Daya'),
+      Cause(id: 'cause-3', slug: 'medical', name: 'Medical'),
+    ];
+    await pumpDonationPage(tester, causes: causes);
+
+    await enterVisibleText(
+      tester,
+      find.byKey(const ValueKey('donation_amount_input')),
+      '2000',
+    );
+    await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-2')));
+    await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-3')));
+
+    expect(
+      tester.widget<TextFormField>(
+        find.byKey(const ValueKey('donation_percentage_cause-1')),
+      ).controller?.text,
+      '34',
+    );
+    expect(
+      tester.widget<TextFormField>(
+        find.byKey(const ValueKey('donation_percentage_cause-2')),
+      ).controller?.text,
+      '33',
+    );
+    expect(
+      tester.widget<TextFormField>(
+        find.byKey(const ValueKey('donation_percentage_cause-3')),
+      ).controller?.text,
+      '33',
+    );
+
+    await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-3')));
+
+    expect(
+      tester.widget<TextFormField>(
+        find.byKey(const ValueKey('donation_percentage_cause-1')),
+      ).controller?.text,
+      '50',
+    );
+    expect(
+      tester.widget<TextFormField>(
+        find.byKey(const ValueKey('donation_percentage_cause-2')),
+      ).controller?.text,
+      '50',
+    );
+    expect(find.text('₹ 1000.00'), findsNWidgets(2));
+    expect(find.text('Total allocation: 100%'), findsOneWidget);
+  });
+
+  testWidgets('three selected causes default to a complete 100 percent split', (tester) async {
+    const causes = [
+      _cause,
+      Cause(id: 'cause-2', slug: 'jeev-daya', name: 'Jeev Daya'),
+      Cause(id: 'cause-3', slug: 'medical', name: 'Medical'),
+    ];
+    await pumpDonationPage(tester, causes: causes);
+
+    await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-2')));
+    await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-3')));
+
+    expect(find.text('Total allocation: 100%'), findsOneWidget);
+  });
+
+  testWidgets('donation attempt shows feature is not enabled message', (tester) async {
+    const causes = [
+      _cause,
+      Cause(id: 'cause-2', slug: 'jeev-daya', name: 'Jeev Daya'),
+    ];
+    await pumpDonationPage(tester, causes: causes);
+
+    await tapVisible(tester, find.byKey(const ValueKey('donation_amount_1000')));
+    await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-2')));
+    await enterVisibleText(
+      tester,
+      find.byKey(const ValueKey('donation_percentage_cause-1')),
+      '70',
+    );
+    await enterVisibleText(
+      tester,
+      find.byKey(const ValueKey('donation_percentage_cause-2')),
+      '30',
+    );
+
+    await tapVisible(tester, find.byKey(const ValueKey('donation_submit')));
+
+    expect(
+      find.text(l10n(tester).donationNotEnabledYet),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('donation submit is disabled when allocation does not total 100 percent', (tester) async {
+    const causes = [
+      _cause,
+      Cause(id: 'cause-2', slug: 'jeev-daya', name: 'Jeev Daya'),
+    ];
+    await pumpDonationPage(tester, causes: causes);
+
+    await tapVisible(tester, find.byKey(const ValueKey('donation_amount_1000')));
+    await tapVisible(tester, find.byKey(const ValueKey('donation_cause_cause-2')));
+    await enterVisibleText(
+      tester,
+      find.byKey(const ValueKey('donation_percentage_cause-1')),
+      '70',
+    );
+    await enterVisibleText(
+      tester,
+      find.byKey(const ValueKey('donation_percentage_cause-2')),
+      '20',
+    );
+
+    final submitFinder = find.byKey(const ValueKey('donation_submit'));
+    await tester.ensureVisible(submitFinder);
+    await tester.pump();
+    final submit = tester.widget<FilledButton>(submitFinder);
+    expect(submit.onPressed, isNull);
+    expect(find.text('Total allocation: 90%'), findsOneWidget);
+  });
+
+  testWidgets('preset amount updates donation amount field', (tester) async {
+    await pumpDonationPage(tester);
+
+    await tapVisible(tester, find.byKey(const ValueKey('donation_amount_500')));
+
+    expect(
+      tester
+          .widget<TextField>(
+            find.byKey(const ValueKey('donation_amount_input')),
+          )
+          .controller
+          ?.text,
+      '500',
+    );
+  });
+}
+
+class _AuthenticatedAdminController extends AuthController {
+  _AuthenticatedAdminController()
+      : super(_NoopAuthRepository()) {
+    state = const AuthState.authenticated(
+      AppUser(
+        id: 'admin-1',
+        email: 'admin@example.com',
+        displayName: 'Admin',
+        role: UserRole.admin,
+      ),
+    );
+  }
+}
+
+class _NoopAuthRepository implements AuthRepository {
+  @override
+  Future<AppUser> signInWithGoogle() => throw UnimplementedError();
+
+  @override
+  Future<AppUser?> restoreSession() async => const AppUser(
+        id: 'admin-1',
+        email: 'admin@example.com',
+        displayName: 'Admin',
+        role: UserRole.admin,
+      );
+
+  @override
+  Future<void> signOut() async {}
 }
