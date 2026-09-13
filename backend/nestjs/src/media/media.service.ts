@@ -8,7 +8,7 @@ import sharp from 'sharp';
 import { PrismaService } from '../prisma/prisma.service';
 import { R2StorageService } from './r2-storage.service';
 
-const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const ALLOWED_IMAGE_FORMATS = new Set(['jpeg', 'png', 'webp']);
 const MAX_UPLOAD_SIZE = 10 * 1024 * 1024;
 const MAX_DIMENSION = 1920;
 
@@ -24,17 +24,29 @@ export class MediaService {
       throw new BadRequestException('Image file is required.');
     }
 
-    if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
-      throw new BadRequestException(
-        'Only JPEG, PNG, and WebP images are allowed.',
-      );
-    }
-
     if (file.size > MAX_UPLOAD_SIZE) {
       throw new BadRequestException('Image must be 10 MB or smaller.');
     }
 
     try {
+      let inputMetadata: sharp.Metadata;
+      try {
+        inputMetadata = await sharp(file.buffer).metadata();
+      } catch (_) {
+        throw new BadRequestException(
+          'Only JPEG, PNG, and WebP images are allowed.',
+        );
+      }
+
+      if (
+        !inputMetadata.format ||
+        !ALLOWED_IMAGE_FORMATS.has(inputMetadata.format)
+      ) {
+        throw new BadRequestException(
+          'Only JPEG, PNG, and WebP images are allowed.',
+        );
+      }
+
       const processedBuffer = await sharp(file.buffer)
         .rotate()
         .resize({
