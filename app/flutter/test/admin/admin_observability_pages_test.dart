@@ -40,9 +40,14 @@ void main() {
   }
 
   Future<void> scrollToEnd(WidgetTester tester) async {
-    final scrollable = find.byType(Scrollable);
-    expect(scrollable, findsOneWidget);
-    final state = tester.state<ScrollableState>(scrollable);
+    final listView = find.byType(ListView).first;
+    expect(listView, findsOneWidget);
+    final state = tester.state<ScrollableState>(
+      find.ancestor(
+        of: listView,
+        matching: find.byType(Scrollable),
+      ).first,
+    );
     state.position.jumpTo(state.position.maxScrollExtent);
     await tester.pumpAndSettle();
   }
@@ -153,8 +158,8 @@ void main() {
     expect(find.text('production'), findsOneWidget);
     expect(find.text('1.2.3'), findsOneWidget);
     expect(find.text('Recent events'), findsOneWidget);
-    expect(find.text('APP_ERROR'), findsOneWidget);
-    expect(find.textContaining('/health · GET · database timeout'), findsOneWidget);
+    expect(find.text('APP ERROR'), findsOneWidget);
+    expect(find.textContaining('GET · /health · database timeout'), findsOneWidget);
     expect(find.text('500'), findsOneWidget);
   });
 
