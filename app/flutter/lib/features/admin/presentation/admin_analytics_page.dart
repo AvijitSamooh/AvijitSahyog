@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../models/admin_analytics_summary.dart';
 import '../providers/admin_analytics_providers.dart';
 
 class AdminAnalyticsPage extends ConsumerWidget {
@@ -24,12 +25,9 @@ class AdminAnalyticsPage extends ConsumerWidget {
           child: ListView(
             padding: const EdgeInsets.all(20),
             children: [
-              Text(
-                'User engagement',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
+              Text('User engagement', style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: 6),
-              Text('Rolling 30-day metrics with a 14-day engagement trend.'),
+              const Text('Rolling 30-day metrics with a 14-day engagement trend.'),
               const SizedBox(height: 18),
               _MetricGrid(metrics: [
                 _Metric('DAU', data.dau, Icons.today_rounded),
@@ -49,10 +47,7 @@ class AdminAnalyticsPage extends ConsumerWidget {
                   leading: const Icon(Icons.navigation_rounded),
                   title: const Text('Navigation events'),
                   subtitle: const Text('Included in interaction totals.'),
-                  trailing: Text(
-                    '${data.navigationEvents}',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
+                  trailing: Text('${data.navigationEvents}', style: Theme.of(context).textTheme.titleLarge),
                 ),
               ),
               const SizedBox(height: 12),
@@ -80,48 +75,43 @@ class _MetricGrid extends StatelessWidget {
   final List<_Metric> metrics;
 
   @override
-  Widget build(BuildContext context) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: metrics.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 1.55,
-      ),
-      itemBuilder: (context, index) {
-        final metric = metrics[index];
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Icon(metric.icon, size: 22),
-                Text(metric.label, style: Theme.of(context).textTheme.bodyMedium),
-                Text(
-                  '${metric.value}',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-              ],
+  Widget build(BuildContext context) => GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: metrics.length,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          childAspectRatio: 1.55,
+        ),
+        itemBuilder: (context, index) {
+          final metric = metrics[index];
+          return Card(
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Icon(metric.icon, size: 22),
+                  Text(metric.label, style: Theme.of(context).textTheme.bodyMedium),
+                  Text('${metric.value}', style: Theme.of(context).textTheme.headlineSmall),
+                ],
+              ),
             ),
-          ),
-        );
-      },
-    );
-  }
+          );
+        },
+      );
 }
 
 class _TrendCard extends StatelessWidget {
   const _TrendCard({required this.points});
-  final List<dynamic> points;
+  final List<AdminAnalyticsTrendPoint> points;
 
   @override
   Widget build(BuildContext context) {
-    final values = points.map((point) => (point.activeUsers as int)).toList();
+    final values = points.map((point) => point.activeUsers).toList();
     return Card(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
@@ -136,10 +126,7 @@ class _TrendCard extends StatelessWidget {
               height: 170,
               child: values.isEmpty
                   ? const Center(child: Text('No analytics data yet.'))
-                  : CustomPaint(
-                      painter: _TrendPainter(values),
-                      child: const SizedBox.expand(),
-                    ),
+                  : CustomPaint(painter: _TrendPainter(values), child: const SizedBox.expand()),
             ),
           ],
         ),
@@ -160,23 +147,17 @@ class _TrendPainter extends CustomPainter {
     final grid = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1;
-
     for (var i = 1; i < 4; i++) {
       final y = size.height * i / 4;
       canvas.drawLine(Offset(0, y), Offset(size.width, y), grid);
     }
-
     final maxValue = values.reduce((a, b) => a > b ? a : b).toDouble();
     final denominator = maxValue == 0 ? 1 : maxValue;
     final path = Path();
     for (var i = 0; i < values.length; i++) {
       final x = values.length == 1 ? size.width / 2 : size.width * i / (values.length - 1);
       final y = size.height - (values[i] / denominator) * (size.height - 12) - 6;
-      if (i == 0) {
-        path.moveTo(x, y);
-      } else {
-        path.lineTo(x, y);
-      }
+      if (i == 0) path.moveTo(x, y); else path.lineTo(x, y);
     }
     canvas.drawPath(path, line);
   }
