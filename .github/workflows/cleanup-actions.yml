@@ -82,21 +82,18 @@ jobs:
             fi
           done
 
-          # Fail closed in every ambiguous state. In particular, never treat
-          # an empty/malformed Android result as permission to delete history.
+          # Fail closed when Android artifacts exist but cannot be mapped.
+          # An empty Android artifact set is valid: it can happen immediately
+          # after cleanup and should still allow stale artifacts/runs to be purged.
           if [[ "$android_invalid" -gt 0 ]]; then
             echo "ERROR: ${android_invalid} Android release artifact(s) could not be validated. NOTHING WILL BE DELETED."
             exit 1
           fi
 
+          # If there are no Android artifacts, keep zero. This is a valid
+          # emergency-clean state, not an ambiguous API response.
           if [[ "$android_candidates" -eq 0 ]]; then
-            echo "ERROR: No non-expired Android release artifacts were found. NOTHING WILL BE DELETED."
-            exit 1
-          fi
-
-          if [[ "$kept_android" -eq 0 ]]; then
-            echo "ERROR: No Android release artifacts were selected. NOTHING WILL BE DELETED."
-            exit 1
+            echo "INFO: No non-expired Android release artifacts found; retaining zero Android artifacts."
           fi
 
           # Verify every retained run still exists in the run listing before
@@ -139,8 +136,8 @@ jobs:
           echo "Validated plan: delete ${artifact_delete_count} artifacts and ${run_delete_count} completed workflow runs; retain ${kept_android} Android release artifacts."
 
           # ------------------------------------------------------------------
-          # PHASE 2: DESTRUCTIVE. Re-check the retention guards immediately
-          # before every deletion. Any ambiguity aborts instead of guessing.
+          # PHASE 2: DESTRUCTIVE. The retention sets are fixed from the
+          # validated snapshot above. Nothing outside those sets is retained.
           # ------------------------------------------------------------------
           deleted_artifacts=0
           for artifact in "${ARTIFACTS[@]}"; do
