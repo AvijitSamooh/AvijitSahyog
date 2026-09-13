@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/analytics/analytics_events.dart';
+import '../../core/analytics/analytics_service.dart';
 import '../causes/presentation/causes_page.dart';
 import '../impact/presentation/impact_page.dart';
 import '../settings/settings_page.dart';
@@ -18,8 +20,48 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage> {
   int get _selectedIndex => AppShellScope.of(context).navigation.index;
 
-  void _openCauses() => AppShellScope.of(context).navigation.select(1);
+  void _openCauses() {
+    AnalyticsService.instance.trackInteraction(
+      screenName: AnalyticsScreens.home,
+      target: 'explore_causes',
+    );
+    AppShellScope.of(context).navigation.select(1);
+  }
 
+  void _openImpact() {
+    AnalyticsService.instance.trackInteraction(
+      screenName: AnalyticsScreens.home,
+      target: 'explore_impact',
+    );
+    AppShellScope.of(context).navigation.select(2);
+  }
+
+  String _screenForIndex(int index) {
+    switch (index) {
+      case 0:
+        return AnalyticsScreens.home;
+      case 1:
+        return AnalyticsScreens.causes;
+      case 2:
+        return AnalyticsScreens.impact;
+      case 3:
+        return AnalyticsScreens.settings;
+      default:
+        return AnalyticsScreens.unknown;
+    }
+  }
+
+  void _selectNavigation(int index) {
+    final screen = _screenForIndex(index);
+    AnalyticsService.instance.trackNavigation(
+      destination: screen,
+      screenName: AnalyticsScreens.home,
+    );
+    AppShellScope.of(context).navigation.select(index);
+    if (index != _selectedIndex) {
+      AnalyticsService.instance.trackScreen(screen);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +69,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     final pages = [
       _HomeContent(
         onExploreCauses: _openCauses,
-        onExploreImpact: () => shell.navigation.select(2),
+        onExploreImpact: _openImpact,
       ),
       const CausesPage(),
       const ImpactPage(),
@@ -52,7 +94,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       body: IndexedStack(index: _selectedIndex, children: pages),
       bottomNavigationBar: AppNavigationBar(
         selectedIndex: _selectedIndex,
-        onDestinationSelected: shell.navigation.select,
+        onDestinationSelected: _selectNavigation,
       ),
     ),
     );
