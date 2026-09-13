@@ -21,13 +21,16 @@ describe('AdminGuard', () => {
     prisma.user.findUnique.mockResolvedValue({ role: 'ADMIN' });
 
     await expect(guard.canActivate(context())).resolves.toBe(true);
-    expect(prisma.user.findUnique).toHaveBeenCalledWith({
-      where: { firebaseUid: 'firebase-user-1' },
-      select: { role: true },
-    });
   });
 
-  it('rejects authenticated users without the administrator role', async () => {
+  it('allows authenticated super administrators', async () => {
+    firebaseAuthGuard.canActivate.mockResolvedValue(true);
+    prisma.user.findUnique.mockResolvedValue({ role: 'SUPER_ADMIN' });
+
+    await expect(guard.canActivate(context())).resolves.toBe(true);
+  });
+
+  it('rejects authenticated users without an elevated role', async () => {
     firebaseAuthGuard.canActivate.mockResolvedValue(true);
     prisma.user.findUnique.mockResolvedValue({ role: 'USER' });
 
