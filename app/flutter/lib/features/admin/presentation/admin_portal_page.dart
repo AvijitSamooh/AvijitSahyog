@@ -86,6 +86,7 @@ class AdminPortalPage extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             _AdminSectionCard(
+              key: const ValueKey('admin_manage_beneficiaries'),
               icon: Icons.auto_awesome_rounded,
               title: l10n.adminManageBeneficiaries,
               subtitle: l10n.adminManageBeneficiariesSubtitle,
@@ -104,6 +105,7 @@ class AdminPortalPage extends ConsumerWidget {
 
 class _AdminSectionCard extends StatelessWidget {
   const _AdminSectionCard({
+    super.key,
     required this.icon,
     required this.title,
     required this.subtitle,
