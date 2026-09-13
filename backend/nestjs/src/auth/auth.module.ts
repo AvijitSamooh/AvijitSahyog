@@ -4,12 +4,19 @@ import { AuthService } from './auth.service';
 import { FirebaseAuthGuard } from './firebase-auth.guard';
 import { FirebaseTokenVerifierService } from './firebase-token-verifier.service';
 import { AdminGuard } from './admin.guard';
+import { SuperAdminGuard } from './super-admin.guard';
 import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
   imports: [PrismaModule],
   controllers: [AuthController],
-  providers: [AuthService, FirebaseAuthGuard, FirebaseTokenVerifierService, AdminGuard],
-  exports: [FirebaseAuthGuard, AdminGuard],
+  providers: [
+    AuthService,
+    FirebaseAuthGuard,
+    FirebaseTokenVerifierService,
+    AdminGuard,
+    SuperAdminGuard,
+  ],
+  exports: [FirebaseAuthGuard, AdminGuard, SuperAdminGuard],
 })
 export class AuthModule {}
