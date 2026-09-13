@@ -2,8 +2,7 @@ name: CI
 on:
   workflow_dispatch:
   push:
-    tags:
-      - 'v*'
+  pull_request:
 
 permissions:
   contents: read
@@ -89,3 +88,5 @@ jobs:
         with:
           name: flutter-coverage
           path: app/flutter/coverage
+
+# CI trigger refresh for PR #93
