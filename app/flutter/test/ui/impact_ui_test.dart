@@ -36,7 +36,7 @@ void main() {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         locale: Locale('en'),
-        home: ImpactPage(),
+        home: Scaffold(body: ImpactPage()),
       ),
     );
   }
@@ -63,8 +63,6 @@ void main() {
     await tester.tap(find.text('View Story →').first);
     await tester.pumpAndSettle();
 
-    // These assertions are intentionally above-the-fold. ListView lazily builds
-    // lower content in widget tests, so asserting the story section here is brittle.
     expect(find.text('Impact Story'), findsOneWidget);
     expect(find.text('Rahul Kumar'), findsWidgets);
     expect(find.text('Education'), findsOneWidget);
