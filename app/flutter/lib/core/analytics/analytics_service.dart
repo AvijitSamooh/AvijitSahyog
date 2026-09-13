@@ -138,8 +138,10 @@ class AnalyticsService {
           'language': language,
           'deviceType': deviceType,
           if (city.isNotEmpty) 'city': city,
-          if (interactionType != null) 'interactionType': interactionType,
-          if (target != null) 'target': target,
+          ...?interactionType == null
+              ? null
+              : {'interactionType': interactionType},
+          ...?target == null ? null : {'target': target},
         }),
       );
     } catch (_) {}
