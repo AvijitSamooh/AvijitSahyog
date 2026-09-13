@@ -57,7 +57,7 @@ void main() {
       matching: find.byType(InkWell),
     );
     await tester.tap(galleryImage.first);
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.text('1 / 2'), findsOneWidget);
     expect(find.byType(PageView), findsOneWidget);
