@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/widgets/app_settings_menu.dart';
 import '../models/organisation.dart';
 
 class OrganisationDetailPage extends StatelessWidget {
@@ -15,8 +16,8 @@ class OrganisationDetailPage extends StatelessWidget {
       if (organisation.state?.isNotEmpty == true) organisation.state!,
     ].join(', ');
 
-    return Scaffold(
-      appBar: AppBar(title: Text(organisation.name)),
+    return AppPageScaffold(
+      title: Text(organisation.name),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
         children: [
