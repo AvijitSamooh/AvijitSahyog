@@ -16,6 +16,9 @@ class AdminUser {
   final DateTime createdAt;
 
   bool get isAdmin => role == 'ADMIN';
+  bool get isSuperAdmin => role == 'SUPER_ADMIN';
+  bool get canBeDemoted => isAdmin;
+  bool get canBePromoted => role == 'USER';
 
   String get label =>
       displayName?.trim().isNotEmpty == true ? displayName! : (email ?? 'User');
