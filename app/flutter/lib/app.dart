@@ -141,13 +141,17 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
 
   @override
   Widget build(BuildContext context) {
+    final analyticsObserver = AnalyticsService.instance.observer;
+
     return MaterialApp(
       locale: _locale,
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: _buildTheme(),
-      navigatorObservers: [AnalyticsService.instance.observer],
+      navigatorObservers: [
+        if (analyticsObserver != null) analyticsObserver,
+      ],
       builder: (context, child) => AppShellScope(
         onLocaleChanged: setLocale,
         navigation: _navigation,
