@@ -12,6 +12,7 @@ import 'package:avijit_sahyog/features/admin/presentation/platform_health_page.d
 import 'package:avijit_sahyog/features/admin/providers/admin_analytics_providers.dart';
 import 'package:avijit_sahyog/features/admin/providers/advanced_analytics_providers.dart';
 import 'package:avijit_sahyog/features/admin/providers/platform_health_providers.dart';
+import 'package:avijit_sahyog/l10n/app_localizations.dart';
 
 void main() {
   Future<void> pumpPage(
@@ -27,6 +28,9 @@ void main() {
           navigation: AppNavigationController(),
           child: MaterialApp(
             theme: ThemeData(useMaterial3: true),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: const Locale('en'),
             home: page,
           ),
         ),
@@ -135,7 +139,7 @@ void main() {
     expect(find.text('500'), findsOneWidget);
   });
 
-  testWidgets('admin observability pages expose retry on load failure', (tester) async {
+  testWidgets('admin analytics exposes retry on load failure', (tester) async {
     await pumpPage(
       tester,
       const AdminAnalyticsPage(),
@@ -143,8 +147,11 @@ void main() {
         adminAnalyticsProvider.overrideWith((ref) async => throw Exception('failed')),
       ],
     );
-    expect(find.text('Retry'), findsOneWidget);
 
+    expect(find.text('Retry'), findsOneWidget);
+  });
+
+  testWidgets('advanced analytics exposes retry on load failure', (tester) async {
     await pumpPage(
       tester,
       const AdvancedAnalyticsPage(),
@@ -152,8 +159,11 @@ void main() {
         advancedAnalyticsProvider.overrideWith((ref) async => throw Exception('failed')),
       ],
     );
-    expect(find.text('Retry'), findsOneWidget);
 
+    expect(find.text('Retry'), findsOneWidget);
+  });
+
+  testWidgets('platform health exposes retry on load failure', (tester) async {
     await pumpPage(
       tester,
       const PlatformHealthPage(),
@@ -161,6 +171,7 @@ void main() {
         platformHealthProvider.overrideWith((ref) async => throw Exception('failed')),
       ],
     );
+
     expect(find.text('Retry'), findsOneWidget);
   });
 }
