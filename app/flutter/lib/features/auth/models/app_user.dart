@@ -1,4 +1,4 @@
-enum UserRole { user, admin }
+enum UserRole { user, admin, superAdmin }
 
 class AppUser {
   const AppUser({
@@ -17,5 +17,6 @@ class AppUser {
   final UserRole role;
   final String? preferredLanguage;
 
-  bool get isAdmin => role == UserRole.admin;
+  bool get isAdmin => role == UserRole.admin || role == UserRole.superAdmin;
+  bool get isSuperAdmin => role == UserRole.superAdmin;
 }

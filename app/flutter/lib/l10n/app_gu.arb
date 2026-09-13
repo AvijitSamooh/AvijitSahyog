@@ -120,5 +120,20 @@
   "adminUploadPrimaryImage": "મુખ્ય છબી અપલોડ કરો",
   "adminSelectPrimaryImage": "મુખ્ય છબી પસંદ કરો",
   "adminAddGalleryImage": "ગેલેરી છબી ઉમેરો",
-  "adminSelectGalleryImage": "ગેલેરી છબી પસંદ કરો"
+  "adminSelectGalleryImage": "ગેલેરી છબી પસંદ કરો",
+  "adminManageUsers": "એડમિન મેનેજ કરો",
+  "adminManageUsersSubtitle": "વપરાશકર્તાઓને એડમિન બનાવો અને ભૂમિકા ફેરફારોની સમીક્ષા કરો",
+  "adminUsersTitle": "વપરાશકર્તા ઍક્સેસ",
+  "adminUsersSubtitle": "માત્ર હાલના એડમિન જ બીજા વપરાશકર્તાને એડમિન બનાવી શકે છે. ભૂમિકા ફેરફારો ઓડિટ ઇતિહાસમાં નોંધાય છે.",
+  "adminMakeAdmin": "એડમિન બનાવો",
+  "adminMakeAdminConfirmation": "{user} ને એડમિન બનાવવા છે? આ કાર્યવાહી ઓડિટ ઇતિહાસમાં નોંધાશે.",
+  "adminPromotionSuccess": "વપરાશકર્તા હવે એડમિન છે અને ફેરફાર નોંધાઈ ગયો છે.",
+  "adminRole": "એડમિન",
+  "adminNoUsers": "કોઈ વપરાશકર્તા મળ્યો નથી.",
+  "adminNoEmail": "કોઈ ઈમેલ ઉપલબ્ધ નથી",
+  "adminAuditHistory": "ઓડિટ ઇતિહાસ",
+  "adminNoAuditHistory": "હજુ સુધી કોઈ ભૂમિકા ફેરફાર નોંધાયો નથી.",
+  "adminAuditPromotion": "{user} ને એડમિન બનાવવામાં આવ્યા",
+  "adminAuditActor": "ફેરફાર કરનાર: {admin}",
+  "cancel": "રદ કરો"
 }

@@ -120,5 +120,20 @@
   "adminUploadPrimaryImage": "मुख्य छवि अपलोड करें",
   "adminSelectPrimaryImage": "मुख्य छवि चुनें",
   "adminAddGalleryImage": "गैलरी छवि जोड़ें",
-  "adminSelectGalleryImage": "गैलरी छवि चुनें"
+  "adminSelectGalleryImage": "गैलरी छवि चुनें",
+  "adminManageUsers": "एडमिन प्रबंधित करें",
+  "adminManageUsersSubtitle": "उपयोगकर्ताओं को एडमिन बनाएं और भूमिका परिवर्तनों की समीक्षा करें",
+  "adminUsersTitle": "उपयोगकर्ता पहुंच",
+  "adminUsersSubtitle": "केवल मौजूदा एडमिन किसी अन्य उपयोगकर्ता को एडमिन बना सकते हैं। भूमिका परिवर्तन ऑडिट इतिहास में दर्ज होते हैं।",
+  "adminMakeAdmin": "एडमिन बनाएं",
+  "adminMakeAdminConfirmation": "{user} को एडमिन बनाएं? यह कार्रवाई ऑडिट इतिहास में दर्ज की जाएगी।",
+  "adminPromotionSuccess": "उपयोगकर्ता अब एडमिन है और परिवर्तन दर्ज कर लिया गया है।",
+  "adminRole": "एडमिन",
+  "adminNoUsers": "कोई उपयोगकर्ता नहीं मिला।",
+  "adminNoEmail": "कोई ईमेल उपलब्ध नहीं है",
+  "adminAuditHistory": "ऑडिट इतिहास",
+  "adminNoAuditHistory": "अभी तक कोई भूमिका परिवर्तन दर्ज नहीं किया गया है।",
+  "adminAuditPromotion": "{user} को एडमिन बनाया गया",
+  "adminAuditActor": "परिवर्तन करने वाले: {admin}",
+  "cancel": "रद्द करें"
 }

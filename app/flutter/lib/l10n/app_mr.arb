@@ -120,5 +120,20 @@
   "adminUploadPrimaryImage": "मुख्य प्रतिमा अपलोड करा",
   "adminSelectPrimaryImage": "मुख्य प्रतिमा निवडा",
   "adminAddGalleryImage": "गॅलरी प्रतिमा जोडा",
-  "adminSelectGalleryImage": "गॅलरी प्रतिमा निवडा"
+  "adminSelectGalleryImage": "गॅलरी प्रतिमा निवडा",
+  "adminManageUsers": "प्रशासक व्यवस्थापित करा",
+  "adminManageUsersSubtitle": "वापरकर्त्यांना प्रशासक बनवा आणि भूमिका बदलांचे पुनरावलोकन करा",
+  "adminUsersTitle": "वापरकर्ता प्रवेश",
+  "adminUsersSubtitle": "फक्त विद्यमान प्रशासक दुसऱ्या वापरकर्त्याला प्रशासक बनवू शकतात. भूमिका बदल ऑडिट इतिहासात नोंदवले जातात.",
+  "adminMakeAdmin": "प्रशासक बनवा",
+  "adminMakeAdminConfirmation": "{user} यांना प्रशासक बनवायचे? ही कृती ऑडिट इतिहासात नोंदवली जाईल.",
+  "adminPromotionSuccess": "वापरकर्ता आता प्रशासक आहे आणि बदलाची नोंद झाली आहे.",
+  "adminRole": "प्रशासक",
+  "adminNoUsers": "कोणतेही वापरकर्ते सापडले नाहीत.",
+  "adminNoEmail": "ईमेल उपलब्ध नाही",
+  "adminAuditHistory": "ऑडिट इतिहास",
+  "adminNoAuditHistory": "अद्याप कोणतेही भूमिका बदल नोंदवलेले नाहीत.",
+  "adminAuditPromotion": "{user} यांना प्रशासक बनवले",
+  "adminAuditActor": "बदल करणारे: {admin}",
+  "cancel": "रद्द करा"
 }

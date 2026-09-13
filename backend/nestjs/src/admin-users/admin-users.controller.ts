@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Patch, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { AdminGuard } from '../auth/admin.guard';
+import { SuperAdminGuard } from '../auth/super-admin.guard';
 import { AuthenticatedRequest } from '../auth/auth.types';
 import { AdminUsersService } from './admin-users.service';
 
@@ -15,6 +16,7 @@ export class AdminUsersController {
   }
 
   @Patch(':id/role')
+  @UseGuards(SuperAdminGuard)
   makeAdmin(
     @Param('id') id: string,
     @Body() body: { role?: string },

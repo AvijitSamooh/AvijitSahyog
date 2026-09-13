@@ -11,7 +11,7 @@ import { AuthenticatedRequest } from './auth.types';
 import { FirebaseAuthGuard } from './firebase-auth.guard';
 
 @Injectable()
-export class AdminGuard implements CanActivate {
+export class SuperAdminGuard implements CanActivate {
   constructor(
     private readonly firebaseAuthGuard: FirebaseAuthGuard,
     private readonly prisma: PrismaService,
@@ -29,8 +29,8 @@ export class AdminGuard implements CanActivate {
       select: { role: true },
     });
 
-    if (user?.role !== 'ADMIN' && user?.role !== 'SUPER_ADMIN') {
-      throw new ForbiddenException('Administrator access is required.');
+    if (user?.role !== 'SUPER_ADMIN') {
+      throw new ForbiddenException('Super administrator access is required.');
     }
 
     return true;

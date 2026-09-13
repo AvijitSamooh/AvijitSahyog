@@ -99,13 +99,19 @@ class FirebaseAuthRepository implements AuthRepository {
     }
 
     final json = jsonDecode(response.body) as Map<String, dynamic>;
+    final role = switch (json['role']) {
+      'SUPER_ADMIN' => UserRole.superAdmin,
+      'ADMIN' => UserRole.admin,
+      _ => UserRole.user,
+    };
+
     return AppUser(
       id: json['id'] as String,
       email: json['email'] as String?,
       displayName: json['displayName'] as String?,
       photoUrl: json['photoUrl'] as String?,
       preferredLanguage: json['preferredLanguage'] as String?,
-      role: json['role'] == 'ADMIN' ? UserRole.admin : UserRole.user,
+      role: role,
     );
   }
 
