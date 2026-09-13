@@ -39,6 +39,14 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  Future<void> scrollToEnd(WidgetTester tester) async {
+    final scrollable = find.byType(Scrollable);
+    expect(scrollable, findsOneWidget);
+    final state = tester.state<ScrollableState>(scrollable);
+    state.position.jumpTo(state.position.maxScrollExtent);
+    await tester.pumpAndSettle();
+  }
+
   testWidgets('interaction analytics renders metrics and empty trend state', (tester) async {
     const summary = AdminAnalyticsSummary(
       dau: 12,
@@ -61,13 +69,10 @@ void main() {
       ],
     );
 
-    final scrollable = find.byType(Scrollable).first;
-    expect(scrollable, findsOneWidget);
     expect(find.text('User engagement'), findsOneWidget);
     expect(find.text('12'), findsOneWidget);
 
-    await tester.drag(scrollable, const Offset(0, -10000));
-    await tester.pumpAndSettle();
+    await scrollToEnd(tester);
     expect(find.text('Navigation events'), findsOneWidget);
     expect(find.text('95'), findsOneWidget);
     expect(find.text('Engagement trend'), findsOneWidget);
@@ -98,10 +103,7 @@ void main() {
     expect(find.text('Feature adoption'), findsOneWidget);
     expect(find.text('Audience segmentation'), findsOneWidget);
 
-    final scrollable = find.byType(Scrollable).first;
-    expect(scrollable, findsOneWidget);
-    await tester.drag(scrollable, const Offset(0, -10000));
-    await tester.pumpAndSettle();
+    await scrollToEnd(tester);
     expect(find.text('BigQuery-ready foundation'), findsOneWidget);
     expect(find.text('Warehouse export is not configured.'), findsOneWidget);
   });
@@ -145,12 +147,8 @@ void main() {
       ],
     );
 
-    final scrollable = find.byType(Scrollable).first;
-    expect(scrollable, findsOneWidget);
     expect(find.text('Platform healthy'), findsOneWidget);
-
-    await tester.drag(scrollable, const Offset(0, -10000));
-    await tester.pumpAndSettle();
+    await scrollToEnd(tester);
     expect(find.text('Deployment'), findsOneWidget);
     expect(find.text('production'), findsOneWidget);
     expect(find.text('1.2.3'), findsOneWidget);
