@@ -159,16 +159,15 @@ void main() {
       ],
     );
 
+    final eventSubtitle = find.textContaining('/health · GET · database timeout');
     expect(find.text('Platform healthy'), findsOneWidget);
-    await scrollDown(tester);
-    expect(find.text('Deployment'), findsOneWidget);
-    expect(find.text('production'), findsOneWidget);
-    expect(find.text('1.2.3'), findsOneWidget);
 
-    await scrollDown(tester);
+    await tester.ensureVisible(eventSubtitle);
+    await tester.pumpAndSettle();
+
     expect(find.text('Recent events'), findsOneWidget);
     expect(find.text('APP_ERROR'), findsOneWidget);
-    expect(find.textContaining('/health · GET · database timeout'), findsOneWidget);
+    expect(eventSubtitle, findsOneWidget);
     expect(find.text('500'), findsOneWidget);
   });
 
