@@ -36,7 +36,7 @@ class AuthController extends StateNotifier<AuthState> {
 
   Future<void> refreshSession() async {
     try {
-      final user = await _repository.refreshSession();
+      final user = await _repository.restoreSession();
       if (!mounted || user == null) return;
       state = AuthState.authenticated(user);
     } catch (_) {
