@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - chore/backend-dependency-cleanup
+  pull_request:
+    types: [opened]
+    branches: [master]
 
 permissions:
   contents: write
