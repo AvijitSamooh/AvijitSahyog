@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:avijit_sahyog/core/navigation/app_shell_scope.dart';
@@ -22,14 +23,16 @@ void main() {
 
   Future<void> pumpSubject(WidgetTester tester) async {
     await tester.pumpWidget(
-      AppShellScope(
-        onLocaleChanged: (_) {},
-        navigation: AppNavigationController(),
-        child: const MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: Locale('en'),
-          home: OrganisationDetailPage(organisation: organisation),
+      ProviderScope(
+        child: AppShellScope(
+          onLocaleChanged: (_) {},
+          navigation: AppNavigationController(),
+          child: const MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: Locale('en'),
+            home: OrganisationDetailPage(organisation: organisation),
+          ),
         ),
       ),
     );
