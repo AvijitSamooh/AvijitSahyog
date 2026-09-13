@@ -49,8 +49,7 @@ export class CausesService {
                   include: { language: true },
                 },
                 media: {
-                  where: { purpose: 'LOGO' },
-                  orderBy: [{ isPrimary: 'desc' }, { displayOrder: 'asc' }],
+                  orderBy: [{ purpose: 'asc' }, { isPrimary: 'desc' }, { displayOrder: 'asc' }],
                   include: { media: true },
                 },
               },
@@ -70,6 +69,7 @@ export class CausesService {
         id: organisation.id,
         slug: organisation.slug,
         logoUrl: this.organisationLogoUrl(organisation) ?? organisation.logoUrl,
+        gallery: this.organisationGallery(organisation),
         websiteUrl: organisation.websiteUrl,
         phone: organisation.phone,
         email: organisation.email,
@@ -262,10 +262,26 @@ export class CausesService {
   }
 
   private organisationLogoUrl(organisation: any) {
-    const relation = organisation.media?.[0];
+    const relation = organisation.media?.find(
+      (item: any) => item.purpose === 'LOGO' && item.isPrimary,
+    ) ?? organisation.media?.find((item: any) => item.purpose === 'LOGO');
     if (!relation?.media) return null;
     const base = process.env.R2_PUBLIC_BASE_URL?.replace(/\/$/, '');
     return base ? `${base}/${relation.media.storageKey}` : relation.media.storageKey;
+  }
+
+  private organisationGallery(organisation: any) {
+    const base = process.env.R2_PUBLIC_BASE_URL?.replace(/\/$/, '');
+    return (organisation.media ?? [])
+      .filter((item: any) => item.purpose === 'GALLERY' && item.media)
+      .sort((a: any, b: any) => a.displayOrder - b.displayOrder)
+      .map((item: any) => ({
+        id: item.media.id,
+        url: base ? `${base}/${item.media.storageKey}` : item.media.storageKey,
+        mimeType: item.media.mimeType,
+        width: item.media.width,
+        height: item.media.height,
+      }));
   }
 
   private translation(translations: any[], languageCode: string) {
