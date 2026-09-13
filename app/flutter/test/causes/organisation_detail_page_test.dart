@@ -36,7 +36,7 @@ void main() {
         ),
       ),
     );
-    await tester.pump();
+    await tester.pumpAndSettle();
   }
 
   testWidgets('displays organisation details and admin-provided gallery', (tester) async {
@@ -57,10 +57,11 @@ void main() {
       matching: find.byType(InkWell),
     );
     await tester.tap(galleryImage.first);
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
 
-    expect(find.text('1 / 2'), findsOneWidget);
     expect(find.byType(PageView), findsOneWidget);
     expect(find.byType(InteractiveViewer), findsOneWidget);
+    expect(find.text('1 / 2'), findsOneWidget);
   });
 }
