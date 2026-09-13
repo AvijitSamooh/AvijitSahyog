@@ -61,8 +61,13 @@ void main() {
       ],
     );
 
+    final scrollable = find.byType(Scrollable).first;
+    expect(scrollable, findsOneWidget);
     expect(find.text('User engagement'), findsOneWidget);
     expect(find.text('12'), findsOneWidget);
+
+    await tester.drag(scrollable, const Offset(0, -10000));
+    await tester.pumpAndSettle();
     expect(find.text('Navigation events'), findsOneWidget);
     expect(find.text('95'), findsOneWidget);
     expect(find.text('Engagement trend'), findsOneWidget);
@@ -92,6 +97,11 @@ void main() {
     expect(find.text('Engagement cohorts'), findsOneWidget);
     expect(find.text('Feature adoption'), findsOneWidget);
     expect(find.text('Audience segmentation'), findsOneWidget);
+
+    final scrollable = find.byType(Scrollable).first;
+    expect(scrollable, findsOneWidget);
+    await tester.drag(scrollable, const Offset(0, -10000));
+    await tester.pumpAndSettle();
     expect(find.text('BigQuery-ready foundation'), findsOneWidget);
     expect(find.text('Warehouse export is not configured.'), findsOneWidget);
   });
@@ -135,12 +145,18 @@ void main() {
       ],
     );
 
+    final scrollable = find.byType(Scrollable).first;
+    expect(scrollable, findsOneWidget);
     expect(find.text('Platform healthy'), findsOneWidget);
+
+    await tester.drag(scrollable, const Offset(0, -10000));
+    await tester.pumpAndSettle();
     expect(find.text('Deployment'), findsOneWidget);
     expect(find.text('production'), findsOneWidget);
     expect(find.text('1.2.3'), findsOneWidget);
     expect(find.text('Recent events'), findsOneWidget);
-    expect(find.textContaining('database timeout'), findsOneWidget);
+    expect(find.text('APP_ERROR'), findsOneWidget);
+    expect(find.textContaining('/health · GET · database timeout'), findsOneWidget);
     expect(find.text('500'), findsOneWidget);
   });
 
