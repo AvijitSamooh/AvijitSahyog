@@ -104,6 +104,7 @@ export class AdminUsersService {
         action: true,
         fromRole: true,
         toRole: true,
+        metadata: true,
         createdAt: true,
         actor: { select: { id: true, displayName: true, email: true } },
         targetUser: { select: { id: true, displayName: true, email: true } },
