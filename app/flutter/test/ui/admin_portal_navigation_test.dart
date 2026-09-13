@@ -40,7 +40,7 @@ class _NavigationAuthRepository implements AuthRepository {
 }
 
 void main() {
-  testWidgets('admin portal keeps the shared bottom navigation visible', (tester) async {
+  testWidgets('admin portal keeps shared navigation and hides super-admin controls', (tester) async {
     final navigation = AppNavigationController();
 
     await tester.pumpWidget(
@@ -68,5 +68,10 @@ void main() {
     expect(find.text('Causes'), findsOneWidget);
     expect(find.text('Impact'), findsOneWidget);
     expect(find.text('Settings'), findsOneWidget);
+
+    expect(find.text('Interaction analytics'), findsNothing);
+    expect(find.text('Advanced analytics'), findsNothing);
+    expect(find.text('Platform health'), findsNothing);
+    expect(find.text('Manage administrators'), findsNothing);
   });
 }
