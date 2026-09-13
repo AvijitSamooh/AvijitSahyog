@@ -52,7 +52,7 @@ class FirebaseAuthRepository implements AuthRepository {
       final googleUser = await GoogleSignIn.instance.authenticate();
       final googleAuth = googleUser.authentication;
 
-      final credential = GoogleAuthProvider.credential(
+      final credential = FirebaseAuthProvider.credential(
         idToken: googleAuth.idToken,
       );
       final result = await _auth.signInWithCredential(credential);
@@ -99,13 +99,19 @@ class FirebaseAuthRepository implements AuthRepository {
     }
 
     final json = jsonDecode(response.body) as Map<String, dynamic>;
+    final role = switch (json['role']) {
+      'SUPER_ADMIN' => UserRole.superAdmin,
+      'ADMIN' => UserRole.admin,
+      _ => UserRole.user,
+    };
+
     return AppUser(
       id: json['id'] as String,
       email: json['email'] as String?,
       displayName: json['displayName'] as String?,
       photoUrl: json['photoUrl'] as String?,
       preferredLanguage: json['preferredLanguage'] as String?,
-      role: json['role'] == 'ADMIN' ? UserRole.admin : UserRole.user,
+      role: role,
     );
   }
 
