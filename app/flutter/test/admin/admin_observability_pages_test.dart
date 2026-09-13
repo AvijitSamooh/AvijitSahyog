@@ -159,16 +159,28 @@ void main() {
       ],
     );
 
-    final eventSubtitle = find.textContaining('/health · GET · database timeout');
     expect(find.text('Platform healthy'), findsOneWidget);
+    await scrollDown(tester);
+    expect(find.text('Deployment'), findsOneWidget);
+    expect(find.text('production'), findsOneWidget);
+    expect(find.text('1.2.3'), findsOneWidget);
 
-    await tester.ensureVisible(eventSubtitle);
-    await tester.pumpAndSettle();
-
+    await scrollDown(tester);
     expect(find.text('Recent events'), findsOneWidget);
-    expect(find.text('APP_ERROR'), findsOneWidget);
+
+    final eventSubtitle = find.byWidgetPredicate(
+      (widget) =>
+          widget is Text &&
+          widget.data == '/health · GET · database timeout',
+    );
     expect(eventSubtitle, findsOneWidget);
-    expect(find.text('500'), findsOneWidget);
+
+    final eventListTile = find.ancestor(
+      of: eventSubtitle,
+      matching: find.byType(ListTile),
+    );
+    expect(eventListTile, findsOneWidget);
+    expect(find.descendant(of: eventListTile, matching: find.text('500')), findsOneWidget);
   });
 
   testWidgets('admin analytics exposes retry on load failure', (tester) async {
