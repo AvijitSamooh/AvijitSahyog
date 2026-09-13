@@ -2,6 +2,15 @@ name: Android Release Bundle
 
 on:
   workflow_dispatch:
+    inputs:
+      validation:
+        description: 'Release validation level'
+        required: true
+        default: full
+        type: choice
+        options:
+          - full
+          - fast
   push:
     tags:
       - 'v*'
@@ -12,6 +21,9 @@ permissions:
 concurrency:
   group: google-play-testing
   cancel-in-progress: false
+
+env:
+  RELEASE_VALIDATION: ${{ github.event.inputs.validation || 'full' }}
 
 jobs:
   build-android:
@@ -44,6 +56,7 @@ jobs:
         run: flutter gen-l10n
 
       - name: Verify code
+        if: ${{ env.RELEASE_VALIDATION == 'full' }}
         run: |
           flutter analyze
           flutter test
@@ -66,18 +79,6 @@ jobs:
           keyAlias=$ANDROID_KEY_ALIAS
           storeFile=avijit-sahyog-upload.jks
           EOF
-
-      - name: Verify upload keystore fingerprint
-        env:
-          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
-          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-        run: |
-          echo "Upload keystore certificate fingerprint:"
-          keytool -list -v \
-            -keystore android/app/avijit-sahyog-upload.jks \
-            -alias "$ANDROID_KEY_ALIAS" \
-            -storepass "$ANDROID_STORE_PASSWORD" \
-            | grep -E "SHA1:|SHA-256:"
 
       - name: Configure and validate Firebase for Android
         env:
@@ -125,16 +126,6 @@ jobs:
           path: app/flutter/build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
           retention-days: 7
-
-      - name: Report AAB artifact upload result
-        if: ${{ !cancelled() }}
-        run: |
-          if [ "${{ steps.upload_aab_artifact.outcome }}" = "success" ]; then
-            echo "AAB artifact upload succeeded."
-          else
-            echo "WARNING: AAB artifact upload failed. The signed AAB build succeeded, so the workflow will still attempt Google Play publishing."
-            echo "If this was not an Actions artifact-storage quota failure, the Google Play step itself remains the final release gate."
-          fi
 
       - name: Publish to Google Play Internal and Closed Testing
         # The only build prerequisite is the signed AAB build. The optional
