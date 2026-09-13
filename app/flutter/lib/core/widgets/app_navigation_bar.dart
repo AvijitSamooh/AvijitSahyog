@@ -8,22 +8,32 @@ class AppNavigationBar extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onDestinationSelected;
 
+  String _screenForIndex(int index) {
+    switch (index) {
+      case 0:
+        return AnalyticsScreens.home;
+      case 1:
+        return AnalyticsScreens.causes;
+      case 2:
+        return AnalyticsScreens.impact;
+      case 3:
+        return AnalyticsScreens.settings;
+      default:
+        return AnalyticsScreens.unknown;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final destinations = [
-      l10n.navHome,
-      l10n.navCauses,
-      l10n.navImpact,
-      l10n.navSettings,
-    ];
 
     return NavigationBar(
       selectedIndex: selectedIndex,
       onDestinationSelected: (index) {
+        final destination = _screenForIndex(index);
         AnalyticsService.instance.trackInteraction(
-          screenName: AnalyticsScreens.home,
-          target: 'navigation_${destinations[index].toLowerCase()}',
+          screenName: _screenForIndex(selectedIndex),
+          target: destination,
           interactionType: AnalyticsInteractions.navigation,
         );
         onDestinationSelected(index);
