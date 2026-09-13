@@ -88,8 +88,6 @@ class OrganisationDetailPage extends StatelessWidget {
           ],
           if (organisation.gallery.isNotEmpty) ...[
             const SizedBox(height: 24),
-            Text('Gallery', style: theme.textTheme.titleLarge),
-            const SizedBox(height: 12),
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
