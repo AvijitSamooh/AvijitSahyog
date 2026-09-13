@@ -104,20 +104,33 @@ jobs:
           echo "Publishing versionCode: $PLAY_VERSION_CODE"
 
       - name: Build signed app bundle
+        id: build_aab
         run: |
           flutter build appbundle --release \
             --build-number="$PLAY_VERSION_CODE" \
             --dart-define=API_BASE_URL=${{ vars.API_BASE_URL }}
 
       - name: Upload AAB artifact
+        id: upload_aab_artifact
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: avijit-sahyog-release-aab-${{ env.PLAY_VERSION_CODE }}
           path: app/flutter/build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 7
+
+      - name: Report AAB artifact upload result
+        if: ${{ !cancelled() }}
+        run: |
+          if [ "${{ steps.upload_aab_artifact.outcome }}" = "success" ]; then
+            echo "AAB artifact upload succeeded."
+          else
+            echo "WARNING: AAB artifact upload failed (likely Actions artifact quota). Continuing to Google Play publishing because the signed AAB was built successfully."
+          fi
 
       - name: Publish to Google Play Internal and Closed Testing
+        if: ${{ !cancelled() && steps.build_aab.outcome == 'success' }}
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
