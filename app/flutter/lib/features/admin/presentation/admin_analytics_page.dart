@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../core/widgets/app_settings_menu.dart';
 import '../models/admin_analytics_summary.dart';
 import '../providers/admin_analytics_providers.dart';
@@ -14,7 +15,7 @@ class AdminAnalyticsPage extends ConsumerWidget {
       title: const Text('Interaction analytics'),
       body: analytics.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) => Center(
+        error: (_, _) => Center(
           child: FilledButton(
             onPressed: () => ref.invalidate(adminAnalyticsProvider),
             child: const Text('Retry'),
