@@ -43,7 +43,7 @@ void main() {
     await tester.scrollUntilVisible(
       target,
       300,
-      scrollable: find.byType(ListView).first,
+      scrollable: find.byType(Scrollable).first,
     );
   }
 
@@ -120,7 +120,7 @@ void main() {
       uploadFailures24h: 1,
       appErrors24h: 4,
       crashes24h: 0,
-      last7Days: {},
+      last7Days: <String, int>{},
       recentEvents: [
         PlatformHealthEvent(
           id: 'event-1',
