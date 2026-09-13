@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/widgets/app_settings_menu.dart';
+import '../data/platform_health_repository.dart';
 import '../providers/platform_health_providers.dart';
 
 class PlatformHealthPage extends ConsumerWidget {
