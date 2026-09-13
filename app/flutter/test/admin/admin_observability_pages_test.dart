@@ -39,10 +39,14 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Future<void> scrollPageTo(WidgetTester tester, Finder target) async {
-    final listView = find.byType(ListView);
-    expect(listView, findsOneWidget);
-    await tester.scrollUntilVisible(target, 300, scrollable: listView);
+  Future<void> scrollDown(WidgetTester tester) async {
+    await tester.drag(find.byType(ListView).first, const Offset(0, -800));
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> scrollToTop(WidgetTester tester) async {
+    await tester.drag(find.byType(ListView).first, const Offset(0, 1600));
+    await tester.pumpAndSettle();
   }
 
   testWidgets('interaction analytics renders metrics and empty trend state', (tester) async {
@@ -69,10 +73,13 @@ void main() {
 
     expect(find.text('User engagement'), findsOneWidget);
     expect(find.text('12'), findsOneWidget);
-    await scrollPageTo(tester, find.text('No analytics data yet.'));
+
+    await scrollDown(tester);
+    expect(find.text('Engagement trend'), findsOneWidget);
     expect(find.text('No analytics data yet.'), findsOneWidget);
 
-    await scrollPageTo(tester, find.text('Navigation events'));
+    await scrollDown(tester);
+    expect(find.text('Navigation events'), findsOneWidget);
     expect(find.text('95'), findsOneWidget);
   });
 
@@ -99,7 +106,7 @@ void main() {
     expect(find.text('Engagement cohorts'), findsOneWidget);
     expect(find.text('Feature adoption'), findsOneWidget);
     expect(find.text('Audience segmentation'), findsOneWidget);
-    await scrollPageTo(tester, find.text('Warehouse export is not configured.'));
+    await scrollDown(tester);
     expect(find.text('Warehouse export is not configured.'), findsOneWidget);
   });
 
@@ -143,11 +150,11 @@ void main() {
     );
 
     expect(find.text('Platform healthy'), findsOneWidget);
-    await scrollPageTo(tester, find.text('production'));
+    await scrollDown(tester);
     expect(find.text('production'), findsOneWidget);
     expect(find.text('1.2.3'), findsOneWidget);
 
-    await scrollPageTo(tester, find.text('database timeout'));
+    await scrollDown(tester);
     expect(find.text('database timeout'), findsOneWidget);
     expect(find.text('500'), findsOneWidget);
   });
