@@ -41,12 +41,44 @@ describe('MediaService', () => {
     expect(r2StorageService.upload).not.toHaveBeenCalled();
   });
 
-  it('rejects unsupported MIME types', async () => {
+  it('rejects invalid image bytes regardless of the multipart MIME type', async () => {
     await expect(
       service.uploadImage(createFile({ mimetype: 'application/pdf' })),
     ).rejects.toBeInstanceOf(BadRequestException);
 
     expect(r2StorageService.upload).not.toHaveBeenCalled();
+  });
+
+  it('accepts valid image bytes when the multipart MIME type is generic', async () => {
+    const input = await sharp({
+      create: {
+        width: 100,
+        height: 100,
+        channels: 3,
+        background: { r: 255, g: 255, b: 255 },
+      },
+    })
+      .jpeg()
+      .toBuffer();
+
+    const persistedMedia = { id: 'media-1' };
+    prisma.media.create.mockResolvedValue(persistedMedia);
+
+    await expect(
+      service.uploadImage(
+        createFile({
+          buffer: input,
+          mimetype: 'application/octet-stream',
+          size: input.length,
+        }),
+      ),
+    ).resolves.toEqual(persistedMedia);
+
+    expect(r2StorageService.upload).toHaveBeenCalledWith(
+      expect.stringMatching(/^uploads\/.+\.webp$/),
+      expect.any(Buffer),
+      'image/webp',
+    );
   });
 
   it('rejects files larger than 10 MB', async () => {
