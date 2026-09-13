@@ -29,7 +29,7 @@ export class AdminGuard implements CanActivate {
       select: { role: true },
     });
 
-    if (user?.role !== 'ADMIN') {
+    if (user?.role !== 'ADMIN' && user?.role !== 'SUPER_ADMIN') {
       throw new ForbiddenException('Administrator access is required.');
     }
 
