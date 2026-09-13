@@ -44,11 +44,6 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Future<void> scrollToTop(WidgetTester tester) async {
-    await tester.drag(find.byType(ListView).first, const Offset(0, 1600));
-    await tester.pumpAndSettle();
-  }
-
   testWidgets('interaction analytics renders metrics and empty trend state', (tester) async {
     const summary = AdminAnalyticsSummary(
       dau: 12,
@@ -107,6 +102,7 @@ void main() {
     expect(find.text('Feature adoption'), findsOneWidget);
     expect(find.text('Audience segmentation'), findsOneWidget);
     await scrollDown(tester);
+    expect(find.text('BigQuery-ready foundation'), findsOneWidget);
     expect(find.text('Warehouse export is not configured.'), findsOneWidget);
   });
 
@@ -151,11 +147,19 @@ void main() {
 
     expect(find.text('Platform healthy'), findsOneWidget);
     await scrollDown(tester);
+    expect(find.text('Deployment'), findsOneWidget);
     expect(find.text('production'), findsOneWidget);
     expect(find.text('1.2.3'), findsOneWidget);
 
     await scrollDown(tester);
-    expect(find.text('database timeout'), findsOneWidget);
+    expect(find.text('Recent events'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(ListTile),
+        matching: find.textContaining('database timeout'),
+      ),
+      findsOneWidget,
+    );
     expect(find.text('500'), findsOneWidget);
   });
 
