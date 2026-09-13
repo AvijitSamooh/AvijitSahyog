@@ -119,7 +119,6 @@ class FirebaseAuthRepository implements AuthRepository {
       displayName: json['displayName'] as String?,
       photoUrl: json['photoUrl'] as String?,
       preferredLanguage: json['preferredLanguage'] as String?,
-      preferredLanguage: json['preferredLanguage'] as String?,
       role: role,
     );
   }
