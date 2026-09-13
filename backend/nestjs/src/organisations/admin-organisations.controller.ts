@@ -1,6 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, ConflictException, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Request } from 'express';
 
 import { AdminGuard } from '../auth/admin.guard';
+import type { AuthenticatedRequest } from '../auth/auth.types';
+import { PrismaService } from '../prisma/prisma.service';
 import type { CreateOrganisationDto } from './dto/create-organisation.dto';
 import type { UpdateOrganisationDto } from './dto/update-organisation.dto';
 import type { AttachOrganisationMediaDto } from './dto/attach-organisation-media.dto';
@@ -10,7 +13,10 @@ import { OrganisationsService } from './organisations.service';
 @Controller('admin/organisations')
 @UseGuards(AdminGuard)
 export class AdminOrganisationsController {
-  constructor(private readonly organisationsService: OrganisationsService) {}
+  constructor(
+    private readonly organisationsService: OrganisationsService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   @Get()
   findAll() {
@@ -59,6 +65,57 @@ export class AdminOrganisationsController {
   @Delete(':id/media/:mediaId')
   removeMedia(@Param('id') id: string, @Param('mediaId') mediaId: string) {
     return this.organisationsService.removeMedia(id, mediaId);
+  }
+
+  @Delete(':id')
+  async remove(
+    @Param('id') id: string,
+    @Req() request: Request & AuthenticatedRequest,
+  ) {
+    const organisation = await this.organisationsService.findOneForAdmin(id);
+
+    const [allocationCount, beneficiaryCount] = await Promise.all([
+      this.prisma.donationAllocation.count({ where: { organisationId: id } }),
+      this.prisma.beneficiary.count({ where: { organisationId: id } }),
+    ]);
+
+    if (allocationCount > 0 || beneficiaryCount > 0) {
+      throw new ConflictException(
+        `This organisation cannot be deleted because it is linked to ${allocationCount} donation allocation(s) and ${beneficiaryCount} beneficiary record(s). Deactivate it instead.`,
+      );
+    }
+
+    const actor = await this.prisma.user.findUnique({
+      where: { firebaseUid: request.user.uid },
+      select: { id: true },
+    });
+    if (!actor) {
+      throw new ConflictException('Administrator account was not found.');
+    }
+
+    const displayName =
+      organisation.translations.find((item: any) => item.language?.code === 'en')?.name ??
+      organisation.translations[0]?.name ??
+      organisation.slug;
+
+    return this.prisma.$transaction(async (tx) => {
+      await tx.organisation.delete({ where: { id } });
+
+      await tx.auditLog.create({
+        data: {
+          action: 'USER_ROLE_CHANGED',
+          actorUserId: actor.id,
+          metadata: {
+            eventType: 'ORGANISATION_DELETED',
+            organisationId: id,
+            organisationSlug: organisation.slug,
+            organisationName: displayName,
+          },
+        },
+      });
+
+      return { id, deleted: true };
+    });
   }
 
   @Patch(':id/activate')

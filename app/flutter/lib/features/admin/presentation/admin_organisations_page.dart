@@ -65,14 +65,41 @@ class _OrganisationTile extends ConsumerWidget {
         key: ValueKey('admin_organisation_${organisation.id}'),
         title: Text(organisation.displayName),
         subtitle: Text('${organisation.slug} • ${organisation.causeIds.length} causes'),
-        trailing: Switch(
-          value: organisation.isActive,
-          onChanged: (value) async {
-            await ref
-                .read(adminOrganisationsRepositoryProvider)
-                .setActive(organisation.id, value);
-            ref.invalidate(adminOrganisationsProvider);
-          },
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Switch(
+              value: organisation.isActive,
+              onChanged: (value) async {
+                try {
+                  await ref
+                      .read(adminOrganisationsRepositoryProvider)
+                      .setActive(organisation.id, value);
+                  ref.invalidate(adminOrganisationsProvider);
+                } catch (error) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(error.toString())),
+                    );
+                  }
+                }
+              },
+            ),
+            PopupMenuButton<String>(
+              tooltip: 'Organisation actions',
+              onSelected: (action) {
+                if (action == 'delete') {
+                  _deleteOrganisation(context, ref);
+                }
+              },
+              itemBuilder: (_) => const [
+                PopupMenuItem<String>(
+                  value: 'delete',
+                  child: Text('Delete organisation'),
+                ),
+              ],
+            ),
+          ],
         ),
         onTap: () async {
           await Navigator.of(context).push(
@@ -85,5 +112,46 @@ class _OrganisationTile extends ConsumerWidget {
         },
       ),
     );
+  }
+
+  Future<void> _deleteOrganisation(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete organisation?'),
+        content: Text(
+          'Delete “${organisation.displayName}” permanently? This cannot be undone. If it has donation allocations or beneficiary records, deletion will be blocked and the organisation must be deactivated instead.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton.tonal(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+
+    try {
+      await ref
+          .read(adminOrganisationsRepositoryProvider)
+          .delete(organisation.id);
+      ref.invalidate(adminOrganisationsProvider);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('“${organisation.displayName}” was deleted.')),
+        );
+      }
+    } catch (error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error.toString())),
+        );
+      }
+    }
   }
 }
