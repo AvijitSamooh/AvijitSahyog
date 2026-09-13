@@ -9,6 +9,7 @@ import '../models/app_user.dart';
 abstract class AuthRepository {
   Future<AppUser> signInWithGoogle();
   Future<AppUser?> restoreSession();
+  Future<AppUser?> refreshSession();
   Future<void> signOut();
 }
 
@@ -79,6 +80,13 @@ class FirebaseAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<AppUser?> refreshSession() async {
+    final user = _auth.currentUser;
+    if (user == null) return null;
+    return _resolveBackendUser(user);
+  }
+
+  @override
   Future<void> signOut() async {
     await _auth.signOut();
   }
@@ -110,6 +118,7 @@ class FirebaseAuthRepository implements AuthRepository {
       email: json['email'] as String?,
       displayName: json['displayName'] as String?,
       photoUrl: json['photoUrl'] as String?,
+      preferredLanguage: json['preferredLanguage'] as String?,
       preferredLanguage: json['preferredLanguage'] as String?,
       role: role,
     );
