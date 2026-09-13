@@ -39,6 +39,14 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  Future<void> scrollPageTo(WidgetTester tester, Finder target) async {
+    await tester.scrollUntilVisible(
+      target,
+      300,
+      scrollable: find.byType(ListView).first,
+    );
+  }
+
   testWidgets('interaction analytics renders metrics and empty trend state', (tester) async {
     const summary = AdminAnalyticsSummary(
       dau: 12,
@@ -63,6 +71,7 @@ void main() {
 
     expect(find.text('User engagement'), findsOneWidget);
     expect(find.text('12'), findsOneWidget);
+    await scrollPageTo(tester, find.text('No analytics data yet.'));
     expect(find.text('No analytics data yet.'), findsOneWidget);
     expect(find.text('95'), findsOneWidget);
   });
@@ -90,6 +99,7 @@ void main() {
     expect(find.text('Engagement cohorts'), findsOneWidget);
     expect(find.text('Feature adoption'), findsOneWidget);
     expect(find.text('Audience segmentation'), findsOneWidget);
+    await scrollPageTo(tester, find.text('Warehouse export is not configured.'));
     expect(find.text('Warehouse export is not configured.'), findsOneWidget);
   });
 
@@ -133,6 +143,7 @@ void main() {
     );
 
     expect(find.text('Platform healthy'), findsOneWidget);
+    await scrollPageTo(tester, find.text('production'));
     expect(find.text('production'), findsOneWidget);
     expect(find.text('1.2.3'), findsOneWidget);
     expect(find.text('database timeout'), findsOneWidget);
