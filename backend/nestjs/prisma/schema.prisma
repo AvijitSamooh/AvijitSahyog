@@ -11,6 +11,7 @@ datasource db {
 enum UserRole {
   USER
   ADMIN
+  SUPER_ADMIN
 }
 
 model User {
@@ -222,10 +223,6 @@ model Beneficiary {
   @@index([name])
 }
 
-// -----------------------------------------------------------------------------
-// Media domain
-// -----------------------------------------------------------------------------
-
 model Media {
   id         String   @id @default(uuid()) @db.Uuid
   storageKey String   @unique @db.VarChar(1000)
@@ -271,7 +268,7 @@ model BeneficiaryMedia {
   id            String                  @id @default(uuid()) @db.Uuid
   beneficiaryId String                  @db.Uuid
   mediaId       String                  @db.Uuid
-  purpose        BeneficiaryMediaPurpose @default(GALLERY)
+  purpose       BeneficiaryMediaPurpose @default(GALLERY)
   displayOrder  Int                     @default(0)
   isPrimary     Boolean                 @default(false)
   createdAt     DateTime                @default(now())
