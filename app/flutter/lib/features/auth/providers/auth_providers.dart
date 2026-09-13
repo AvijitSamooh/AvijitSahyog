@@ -34,6 +34,16 @@ class AuthController extends StateNotifier<AuthState> {
     }
   }
 
+  Future<void> refreshSession() async {
+    try {
+      final user = await _repository.refreshSession();
+      if (!mounted || user == null) return;
+      state = AuthState.authenticated(user);
+    } catch (_) {
+      // Keep the current authenticated state when a background refresh fails.
+    }
+  }
+
   Future<void> signInWithGoogle() async {
     state = const AuthState.loading();
     try {
