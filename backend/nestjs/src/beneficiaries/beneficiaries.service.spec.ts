@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { BeneficiariesService } from './beneficiaries.service';
 
 describe('BeneficiariesService', () => {
@@ -107,6 +107,7 @@ describe('BeneficiariesService', () => {
       NotFoundException,
     );
   });
+
   it('creates a beneficiary after validating cause and organisation', async () => {
     prisma.cause.findUnique.mockResolvedValue({ id: 'cause-1' });
     prisma.organisation.findUnique.mockResolvedValue({ id: 'org-1' });
@@ -131,7 +132,7 @@ describe('BeneficiariesService', () => {
         contributionAmount: 0,
         causeId: 'cause-1',
       }),
-    ).rejects.toBeInstanceOf(require('@nestjs/common').BadRequestException);
+    ).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('rejects an unknown cause during creation', async () => {
@@ -144,7 +145,23 @@ describe('BeneficiariesService', () => {
         contributionAmount: 100,
         causeId: 'missing',
       }),
-    ).rejects.toBeInstanceOf(require('@nestjs/common').BadRequestException);
+    ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it('rejects an unknown organisation during creation', async () => {
+    prisma.cause.findUnique.mockResolvedValue({ id: 'cause-1' });
+    prisma.organisation.findUnique.mockResolvedValue(null);
+
+    await expect(
+      service.create({
+        name: 'Rahul',
+        supportedYear: 2025,
+        contributionAmount: 100,
+        causeId: 'cause-1',
+        organisationId: 'missing-org',
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(prisma.beneficiary.create).not.toHaveBeenCalled();
   });
 
   it('deactivates an existing beneficiary', async () => {
@@ -155,6 +172,4 @@ describe('BeneficiariesService', () => {
       expect.objectContaining({ isActive: false }),
     );
   });
-
-
 });
