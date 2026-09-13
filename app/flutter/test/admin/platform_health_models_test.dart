@@ -20,7 +20,7 @@ void main() {
       'uploadFailures24h': 1,
       'appErrors24h': 4,
       'crashes24h': 0,
-      'last7Days': {'2026-09-13': 2},
+      'last7Days': <String, int>{'2026-09-13': 2},
       'recentEvents': [
         {
           'id': 'event-1',
@@ -59,7 +59,7 @@ void main() {
       'uploadFailures24h': 0,
       'appErrors24h': 0,
       'crashes24h': 0,
-      'last7Days': {},
+      'last7Days': <String, int>{},
       'recentEvents': [
         {
           'id': 'event-2',
