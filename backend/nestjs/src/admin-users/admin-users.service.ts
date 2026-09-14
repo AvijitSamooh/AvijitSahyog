@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { UserRole } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
 type ManagedRole = 'USER' | 'ADMIN';
@@ -24,7 +25,7 @@ export class AdminUsersService {
       ? Math.min(Math.floor(query.pageSize!), 20)
       : 3;
     const search = query.search?.trim();
-    const role = query.role === 'USER' || query.role === 'ADMIN' ? query.role : 'ADMIN';
+    const role: UserRole = query.role === 'USER' ? UserRole.USER : UserRole.ADMIN;
 
     const where = {
       role,
