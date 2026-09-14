@@ -19,12 +19,6 @@ AdminUser _user(String id, String name) => AdminUser(
 void main() {
   testWidgets('shows only the current server page of administrators', (tester) async {
     final pageOne = PaginatedAdminUsers(
-      items: const [],
-      page: 1,
-      pageSize: 3,
-      total: 4,
-    );
-    final pageOneWithUsers = PaginatedAdminUsers(
       items: [_user('one', 'Admin One'), _user('two', 'Admin Two'), _user('three', 'Admin Three')],
       page: 1,
       pageSize: 3,
@@ -42,7 +36,7 @@ void main() {
         overrides: [
           adminUsersProvider.overrideWith((ref, query) async {
             if (query.page == 2) return pageTwo;
-            return pageOneWithUsers;
+            return pageOne;
           }),
           adminAuditHistoryProvider.overrideWith((ref) async => const []),
         ],
@@ -62,7 +56,6 @@ void main() {
     expect(find.text('Admin Three'), findsOneWidget);
     expect(find.text('Admin Four'), findsNothing);
     expect(find.text('1 / 2'), findsOneWidget);
-    expect(pageOne.total, 4);
 
     await tester.tap(find.byIcon(Icons.chevron_right).first);
     await tester.pumpAndSettle();
