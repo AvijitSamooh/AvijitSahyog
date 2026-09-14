@@ -65,12 +65,12 @@ describe('AdminOrganisationsController media, create and deletion endpoints', ()
     prisma.donationAllocation.count.mockResolvedValue(1);
     prisma.beneficiary.count.mockResolvedValue(0);
 
-    await expect(
-      controller.remove('org-1', { user: { uid: 'firebase-1' } } as never),
-    ).rejects.toBeInstanceOf(ConflictException);
-    await expect(
-      controller.remove('org-1', { user: { uid: 'firebase-1' } } as never),
-    ).rejects.toThrow('Deactivate it instead');
+    const error = await controller
+      .remove('org-1', { user: { uid: 'firebase-1' } } as never)
+      .catch((value: unknown) => value as Error);
+
+    expect(error).toBeInstanceOf(ConflictException);
+    expect(error.message).toContain('Deactivate it instead');
     expect(prisma.$transaction).not.toHaveBeenCalled();
     expect(prisma.user.findUnique).not.toHaveBeenCalled();
   });
