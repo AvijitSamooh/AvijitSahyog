@@ -11,6 +11,8 @@ on:
         options:
           - full
           - fast
+  schedule:
+    - cron: '30 14 * * *'
   push:
     tags:
       - 'v*'
@@ -111,12 +113,6 @@ jobs:
             --build-number="$PLAY_VERSION_CODE" \
             --dart-define=API_BASE_URL=${{ vars.API_BASE_URL }}
 
-      # Artifact storage is optional for release publishing. We deliberately
-      # tolerate upload failure here because GitHub can reject artifact creation
-      # when the repository/account is at its artifact-storage limit.
-      # IMPORTANT: Google Play is gated by the successful AAB build above, not
-      # by the artifact step. No build failure can reach this point because a
-      # failed build step stops the job before the artifact step is evaluated.
       - name: Upload AAB artifact
         id: upload_aab_artifact
         continue-on-error: true
@@ -128,9 +124,6 @@ jobs:
           retention-days: 7
 
       - name: Publish to Google Play Internal and Closed Testing
-        # The only build prerequisite is the signed AAB build. The optional
-        # GitHub artifact is not a release prerequisite because artifact storage
-        # can be exhausted independently of the Android build.
         if: ${{ !cancelled() && steps.build_aab.outcome == 'success' }}
         uses: r0adkll/upload-google-play@v1
         with:
