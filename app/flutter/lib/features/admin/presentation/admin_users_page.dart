@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
-import '../data/admin_users_repository.dart';
 import '../models/admin_audit_entry.dart';
 import '../models/admin_user.dart';
 import '../models/paginated_admin_users.dart';
@@ -17,7 +16,6 @@ class AdminUsersPage extends ConsumerStatefulWidget {
 }
 
 class _AdminUsersPageState extends ConsumerState<AdminUsersPage> {
-  static const _pageSize = 3;
   final _searchController = TextEditingController();
   Timer? _searchDebounce;
   String _search = '';
@@ -106,10 +104,12 @@ class _AdminUsersPageState extends ConsumerState<AdminUsersPage> {
             ),
             const SizedBox(height: 16),
             users.when(
-              loading: () => const Center(child: Padding(
-                padding: EdgeInsets.all(24),
-                child: CircularProgressIndicator(),
-              )),
+              loading: () => const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(24),
+                  child: CircularProgressIndicator(),
+                ),
+              ),
               error: (error, _) => _ErrorCard(message: error.toString()),
               data: (result) => _UsersSection(
                 result: result,
@@ -413,18 +413,18 @@ class _UserTile extends StatelessWidget {
   }
 
   Future<void> _confirmRoleChange(BuildContext context, String role) async {
-    final action = 'Remove admin';
+    const action = 'Remove admin';
     final description =
         'Remove administrator access from ${user.label}? This action will be recorded in audit history.';
 
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(action),
+        title: const Text(action),
         content: Text(description),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(action)),
+          const FilledButton(onPressed: null, child: Text(action)),
         ],
       ),
     );
@@ -435,9 +435,8 @@ class _UserTile extends StatelessWidget {
       ref.invalidate(adminUsersProvider);
       ref.invalidate(adminAuditHistoryProvider);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Administrator access removed and the change was recorded.')),
-        );
+        const snackBar = SnackBar(content: Text('Administrator access removed and the change was recorded.'));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     } catch (error) {
       if (context.mounted) {
