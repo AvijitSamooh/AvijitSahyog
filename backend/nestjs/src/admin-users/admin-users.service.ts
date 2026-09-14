@@ -7,23 +7,61 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 
 type ManagedRole = 'USER' | 'ADMIN';
+type ListUsersQuery = {
+  search?: string;
+  role?: string;
+  page?: number;
+  pageSize?: number;
+};
 
 @Injectable()
 export class AdminUsersService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async listUsers() {
-    return this.prisma.user.findMany({
-      orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        email: true,
-        displayName: true,
-        photoUrl: true,
-        role: true,
-        createdAt: true,
-      },
-    });
+  async listUsers(query: ListUsersQuery = {}) {
+    const page = Number.isFinite(query.page) && (query.page ?? 0) > 0 ? Math.floor(query.page!) : 1;
+    const pageSize = Number.isFinite(query.pageSize) && (query.pageSize ?? 0) > 0
+      ? Math.min(Math.floor(query.pageSize!), 20)
+      : 3;
+    const search = query.search?.trim();
+    const role = query.role === 'USER' || query.role === 'ADMIN' ? query.role : 'ADMIN';
+
+    const where = {
+      role,
+      ...(search
+        ? {
+            OR: [
+              { displayName: { contains: search, mode: 'insensitive' as const } },
+              { email: { contains: search, mode: 'insensitive' as const } },
+            ],
+          }
+        : {}),
+    };
+
+    const [total, items] = await this.prisma.$transaction([
+      this.prisma.user.count({ where }),
+      this.prisma.user.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        select: {
+          id: true,
+          email: true,
+          displayName: true,
+          photoUrl: true,
+          role: true,
+          createdAt: true,
+        },
+      }),
+    ]);
+
+    return {
+      items,
+      page,
+      pageSize,
+      total,
+    };
   }
 
   async changeRole(targetUserId: string, actorFirebaseUid: string, requestedRole?: string) {
