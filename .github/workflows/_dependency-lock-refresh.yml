@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   refresh:
-    if: github.head_ref == 'chore/backend-dependency-cleanup' || contains(github.event.head_commit.message, 'refresh backend dependencies')
+    if: github.ref_name == 'chore/backend-dependency-cleanup' || contains(github.event.head_commit.message, 'refresh backend dependencies')
     runs-on: ubuntu-latest
     defaults:
       run:
