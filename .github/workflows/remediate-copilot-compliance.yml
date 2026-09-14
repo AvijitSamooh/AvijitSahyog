@@ -27,20 +27,18 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Install validation dependencies
+      - name: Refresh backend lockfile
         working-directory: backend/nestjs
-        run: npm install --save class-validator@^0.14.2 class-transformer@^0.5.1
+        run: npm install --package-lock-only
 
-      - name: Apply compliance fixes
-        env:
-          REPO_ROOT: ${{ github.workspace }}
-        run: node .github/scripts/remediate-copilot-compliance.cjs
+      - name: Add organisation localisation
+        run: node .github/scripts/add-organisation-localization.cjs
 
-      - name: Verify backend build and tests
+      - name: Verify backend
         working-directory: backend/nestjs
-        run: npm test -- --runInBand && npm run build
+        run: npm ci && npm test -- --runInBand && npm run build
 
-      - name: Verify Flutter localization generation
+      - name: Verify Flutter
         working-directory: app/flutter
         run: |
           flutter pub get
