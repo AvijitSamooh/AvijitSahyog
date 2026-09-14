@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Param, Patch, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { AdminGuard } from '../auth/admin.guard';
 import { SuperAdminGuard } from '../auth/super-admin.guard';
 import { AuthenticatedRequest } from '../auth/auth.types';
+import { AdminUsersQueryDto } from './dto/admin-users-query.dto';
 import { AdminUsersService } from './admin-users.service';
 
 @Controller('admin/users')
@@ -12,18 +13,10 @@ export class AdminUsersController {
 
   @Get()
   @UseGuards(SuperAdminGuard)
-  listUsers(
-    @Query('search') search?: string,
-    @Query('role') role?: string,
-    @Query('page') page?: string,
-    @Query('pageSize') pageSize?: string,
-  ) {
-    return this.service.listUsers({
-      search,
-      role,
-      page: page ? Number(page) : undefined,
-      pageSize: pageSize ? Number(pageSize) : undefined,
-    });
+  listUsers(@Req() request: Request) {
+    return this.service.listUsers(
+      AdminUsersQueryDto.fromQuery(request.query as Record<string, unknown>),
+    );
   }
 
   @Patch(':id/role')
