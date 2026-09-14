@@ -117,6 +117,14 @@ class _AdminUsersPageState extends ConsumerState<AdminUsersPage> {
                 ref: ref,
                 onPrevious: result.hasPreviousPage ? () => setState(() => _page--) : null,
                 onNext: result.hasNextPage ? () => setState(() => _page++) : null,
+                onSearchUsers: _search.isEmpty
+                    ? null
+                    : () => _showPromotionDialog(
+                          context,
+                          ref,
+                          l10n,
+                          initialSearch: _search,
+                        ),
               ),
             ),
             const SizedBox(height: 28),
@@ -137,11 +145,12 @@ class _AdminUsersPageState extends ConsumerState<AdminUsersPage> {
 Future<void> _showPromotionDialog(
   BuildContext context,
   WidgetRef ref,
-  AppLocalizations l10n,
-) async {
+  AppLocalizations l10n, {
+  String? initialSearch,
+}) async {
   final selected = await showDialog<AdminUser>(
     context: context,
-    builder: (_) => const _PromotionDialog(),
+    builder: (_) => _PromotionDialog(initialSearch: initialSearch),
   );
   if (selected == null || !context.mounted) return;
 
@@ -175,7 +184,9 @@ Future<void> _showPromotionDialog(
 }
 
 class _PromotionDialog extends StatefulWidget {
-  const _PromotionDialog();
+  const _PromotionDialog({this.initialSearch});
+
+  final String? initialSearch;
 
   @override
   State<_PromotionDialog> createState() => _PromotionDialogState();
@@ -194,6 +205,9 @@ class _PromotionDialogState extends State<_PromotionDialog> {
   @override
   void initState() {
     super.initState();
+    final initialSearch = widget.initialSearch?.trim() ?? '';
+    _search = initialSearch;
+    _searchController.text = initialSearch;
     _load();
   }
 
@@ -329,6 +343,7 @@ class _UsersSection extends StatelessWidget {
     required this.ref,
     required this.onPrevious,
     required this.onNext,
+    required this.onSearchUsers,
   });
 
   final PaginatedAdminUsers result;
@@ -336,6 +351,7 @@ class _UsersSection extends StatelessWidget {
   final WidgetRef ref;
   final VoidCallback? onPrevious;
   final VoidCallback? onNext;
+  final VoidCallback? onSearchUsers;
 
   @override
   Widget build(BuildContext context) {
@@ -343,7 +359,20 @@ class _UsersSection extends StatelessWidget {
       return Card(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Text(l10n.adminNoUsers),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.adminNoUsers),
+              if (onSearchUsers != null) ...[
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: onSearchUsers,
+                  icon: const Icon(Icons.person_add_alt_1),
+                  label: Text(l10n.adminMakeAdmin),
+                ),
+              ],
+            ],
+          ),
         ),
       );
     }
