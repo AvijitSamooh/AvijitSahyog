@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Query, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { AdminGuard } from '../auth/admin.guard';
 import { SuperAdminGuard } from '../auth/super-admin.guard';
@@ -12,8 +12,18 @@ export class AdminUsersController {
 
   @Get()
   @UseGuards(SuperAdminGuard)
-  listUsers() {
-    return this.service.listUsers();
+  listUsers(
+    @Query('search') search?: string,
+    @Query('role') role?: string,
+    @Query('page') page?: string,
+    @Query('pageSize') pageSize?: string,
+  ) {
+    return this.service.listUsers({
+      search,
+      role,
+      page: page ? Number(page) : undefined,
+      pageSize: pageSize ? Number(pageSize) : undefined,
+    });
   }
 
   @Patch(':id/role')
