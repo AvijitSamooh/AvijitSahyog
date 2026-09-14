@@ -113,6 +113,21 @@ jobs:
             --build-number="$PLAY_VERSION_CODE" \
             --dart-define=API_BASE_URL=${{ vars.API_BASE_URL }}
 
+      - name: Assert release manifest excludes Advertising ID
+        run: |
+          MANIFEST_DIR="build/app/intermediates/merged_manifests/release"
+          if [ ! -d "$MANIFEST_DIR" ]; then
+            echo "Release merged manifest directory not found: $MANIFEST_DIR"
+            exit 1
+          fi
+
+          if grep -R --include='AndroidManifest.xml' -n -E 'com\.google\.android\.gms\.permission\.AD_ID' "$MANIFEST_DIR"; then
+            echo "Advertising ID permission found in the release merged manifest."
+            exit 1
+          fi
+
+          echo "Release merged manifest does not declare AD_ID permission."
+
       - name: Upload AAB artifact
         id: upload_aab_artifact
         continue-on-error: true
