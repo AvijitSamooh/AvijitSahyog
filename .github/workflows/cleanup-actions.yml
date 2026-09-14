@@ -2,6 +2,8 @@ name: Cleanup Actions Runs
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '30 14 */3 * *'
 
 permissions:
   actions: write
@@ -28,10 +30,6 @@ jobs:
           declare -A KNOWN_RUN=()
           declare -A SUCCESSFUL_RUN_COUNT=()
 
-          # ------------------------------------------------------------------
-          # PHASE 1: READ + VALIDATE. No DELETE calls are allowed before this
-          # phase completes successfully.
-          # ------------------------------------------------------------------
           mapfile -t ARTIFACTS < <(
             gh api --paginate \
               -H 'Accept: application/vnd.github+json' \
@@ -54,8 +52,6 @@ jobs:
             KNOWN_RUN["$run_id"]=1
           done
 
-          # Retain the five newest non-expired Android release artifacts and
-          # their associated workflow runs.
           android_candidates=0
           android_invalid=0
           kept_android=0
@@ -77,7 +73,6 @@ jobs:
               KEEP_ARTIFACT["$artifact_id"]=1
               KEEP_RUN["$artifact_run_id"]=1
               kept_android=$((kept_android + 1))
-              echo "PLAN KEEP Android artifact=${artifact_id} name=${artifact_name} run=${artifact_run_id} created=${artifact_created_at}"
             fi
           done
 
@@ -86,8 +81,6 @@ jobs:
             exit 1
           fi
 
-          # Keep the last 10 successful runs PER WORKFLOW. This protects CI,
-          # backend, Flutter, release, and other workflows independently.
           for run in "${RUNS[@]}"; do
             IFS=$'\t' read -r run_id workflow_name status conclusion created_at <<< "$run"
             [[ "$status" == "completed" && "$conclusion" == "success" ]] || continue
@@ -97,7 +90,6 @@ jobs:
             if [[ "$count" -lt "$MAX_SUCCESSFUL_RUNS" ]]; then
               KEEP_RUN["$run_id"]=1
               SUCCESSFUL_RUN_COUNT["$workflow_name"]=$((count + 1))
-              echo "PLAN KEEP successful run=${run_id} workflow=${workflow_name} created=${created_at}"
             fi
           done
 
@@ -108,69 +100,28 @@ jobs:
             fi
           done
 
-          echo ""
-          echo "VALIDATION PASSED"
-          echo "Android release artifacts found: ${android_candidates}"
-          echo "Android release artifacts retained: ${kept_android}"
-          echo "Protected workflow runs: ${#KEEP_RUN[@]}"
-          echo "Successful-run retention: last ${MAX_SUCCESSFUL_RUNS} per workflow"
-          echo ""
-          echo "Planned artifact deletions:"
-          artifact_delete_count=0
+          echo "VALIDATION PASSED: retaining ${kept_android} Android release artifacts and the last ${MAX_SUCCESSFUL_RUNS} successful runs per workflow."
+
           for artifact in "${ARTIFACTS[@]}"; do
             IFS=$'\t' read -r artifact_id artifact_run_id artifact_name artifact_expired artifact_created_at <<< "$artifact"
             [[ -n "${KEEP_ARTIFACT[$artifact_id]:-}" ]] && continue
-            echo "PLAN DELETE artifact=${artifact_id} name=${artifact_name} run=${artifact_run_id}"
-            artifact_delete_count=$((artifact_delete_count + 1))
-          done
-
-          echo ""
-          echo "Planned workflow-run deletions:"
-          run_delete_count=0
-          for run in "${RUNS[@]}"; do
-            IFS=$'\t' read -r run_id workflow_name status conclusion created_at <<< "$run"
-            [[ "$run_id" == "$CURRENT_RUN_ID" ]] && continue
-            [[ -n "${KEEP_RUN[$run_id]:-}" ]] && continue
-            [[ "$status" == "completed" ]] || continue
-            echo "PLAN DELETE run=${run_id} workflow=${workflow_name} conclusion=${conclusion} created=${created_at}"
-            run_delete_count=$((run_delete_count + 1))
-          done
-
-          echo ""
-          echo "Validated plan: delete ${artifact_delete_count} artifacts and ${run_delete_count} completed workflow runs."
-
-          # ------------------------------------------------------------------
-          # PHASE 2: DESTRUCTIVE. Only objects excluded from the validated
-          # retention sets are deleted.
-          # ------------------------------------------------------------------
-          deleted_artifacts=0
-          for artifact in "${ARTIFACTS[@]}"; do
-            IFS=$'\t' read -r artifact_id artifact_run_id artifact_name artifact_expired artifact_created_at <<< "$artifact"
-            [[ -n "${KEEP_ARTIFACT[$artifact_id]:-}" ]] && continue
-
             echo "DELETE artifact=${artifact_id} name=${artifact_name}"
-            gh api \
-              --method DELETE \
+            gh api --method DELETE \
               -H 'Accept: application/vnd.github+json' \
               -H 'X-GitHub-Api-Version: 2026-03-10' \
               "/repos/${REPOSITORY}/actions/artifacts/${artifact_id}"
-            deleted_artifacts=$((deleted_artifacts + 1))
           done
 
-          deleted_runs=0
           for run in "${RUNS[@]}"; do
             IFS=$'\t' read -r run_id workflow_name status conclusion created_at <<< "$run"
             [[ "$run_id" == "$CURRENT_RUN_ID" ]] && continue
             [[ -n "${KEEP_RUN[$run_id]:-}" ]] && continue
             [[ "$status" == "completed" ]] || continue
-
             echo "DELETE run=${run_id} workflow=${workflow_name}"
-            gh api \
-              --method DELETE \
+            gh api --method DELETE \
               -H 'Accept: application/vnd.github+json' \
               -H 'X-GitHub-Api-Version: 2026-03-10' \
               "/repos/${REPOSITORY}/actions/runs/${run_id}"
-            deleted_runs=$((deleted_runs + 1))
           done
 
-          echo "Cleanup complete: retained ${kept_android} Android release artifacts, protected the last ${MAX_SUCCESSFUL_RUNS} successful runs per workflow, deleted ${deleted_artifacts} artifacts and ${deleted_runs} completed workflow runs."
+          echo "Cleanup complete."
