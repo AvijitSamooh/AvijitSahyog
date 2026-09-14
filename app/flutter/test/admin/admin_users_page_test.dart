@@ -7,12 +7,12 @@ import 'package:avijit_sahyog/features/admin/presentation/admin_users_page.dart'
 import 'package:avijit_sahyog/features/admin/providers/admin_users_providers.dart';
 import 'package:avijit_sahyog/l10n/app_localizations.dart';
 
-AdminUser _user(String id, String name) => AdminUser(
+AdminUser _user(String id, String name, {String role = 'ADMIN'}) => AdminUser(
       id: id,
       displayName: name,
       email: '$id@example.com',
       photoUrl: null,
-      role: 'ADMIN',
+      role: role,
       createdAt: DateTime.utc(2026, 9, 14),
     );
 
@@ -98,5 +98,35 @@ void main() {
 
     expect(observed, (search: 'nikita', page: 1));
     expect(find.text('Nikita'), findsOneWidget);
+  });
+
+  testWidgets('offers to search users for promotion when no administrator matches', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          adminUsersProvider.overrideWith((ref, query) async => PaginatedAdminUsers(
+                items: const [],
+                page: query.page,
+                pageSize: 3,
+                total: 0,
+              )),
+          adminAuditHistoryProvider.overrideWith((ref) async => const []),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+          home: const AdminUsersPage(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).first, 'nikita');
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pumpAndSettle();
+
+    expect(find.text('No users found.'), findsOneWidget);
+    expect(find.text('Make admin'), findsOneWidget);
   });
 }
