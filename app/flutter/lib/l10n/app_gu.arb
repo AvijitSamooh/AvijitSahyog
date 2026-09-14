@@ -4,13 +4,7 @@
   "checkingBackend": "બેકએન્ડ તપાસી રહ્યા છીએ...",
   "backendUnavailable": "બેકએન્ડ ઉપલબ્ધ નથી",
   "backendStatus": "{status} — {service}",
-  "@backendStatus": {
-    "description": "વિકાસ સ્થિતિમાં દર્શાવાતી ચકાસાયેલ બેકએન્ડ આરોગ્ય સ્થિતિ.",
-    "placeholders": {
-      "status": {},
-      "service": {}
-    }
-  },
+  "@backendStatus": {"description": "વિકાસ સ્થિતિમાં દર્શાવાતી ચકાસાયેલ બેકએન્ડ આરોગ્ય સ્થિતિ.", "placeholders": {"status": {}, "service": {}}},
   "welcomeTitle": "અવિજિત સહયોગમાં આપનું સ્વાગત છે",
   "welcomeSubtitle": "સરળ, પારદર્શક અને અર્થપૂર્ણ સહયોગ.",
   "language": "ભાષા",
@@ -62,17 +56,9 @@
   "impactLoadError": "હાલમાં અસરની વાર્તાઓ લોડ કરી શકાઈ નથી.",
   "tryAgain": "ફરી પ્રયાસ કરો",
   "supportedIn": "{year} માં સહાય",
-  "@supportedIn": {
-    "placeholders": {
-      "year": {}
-    }
-  },
+  "@supportedIn": {"placeholders": {"year": {}}},
   "contributionAmount": "₹{amount} યોગદાન",
-  "@contributionAmount": {
-    "placeholders": {
-      "amount": {}
-    }
-  },
+  "@contributionAmount": {"placeholders": {"amount": {}}},
   "viewStory": "વાર્તા જુઓ →",
   "impactStoryTitle": "અસરની વાર્તા",
   "theirStory": "તેમની વાર્તા",
@@ -135,5 +121,17 @@
   "adminNoAuditHistory": "હજુ સુધી કોઈ ભૂમિકા ફેરફાર નોંધાયો નથી.",
   "adminAuditPromotion": "{user} ને એડમિન બનાવવામાં આવ્યા",
   "adminAuditActor": "ફેરફાર કરનાર: {admin}",
+  "adminCreateOrganisation": "સંસ્થા બનાવો",
+  "adminRetryLoadingOrganisations": "સંસ્થાઓ લોડ કરવા માટે ફરી પ્રયાસ કરો",
+  "adminNoOrganisations": "હજુ સુધી કોઈ સંસ્થા બનાવવામાં આવી નથી.",
+  "adminOrganisationCauseCount": "{count} સેવા ક્ષેત્રો",
+  "@adminOrganisationCauseCount": {"placeholders": {"count": {}}},
+  "adminOrganisationActions": "સંસ્થાની ક્રિયાઓ",
+  "adminDeleteOrganisation": "સંસ્થા કાઢી નાખો",
+  "adminDeleteOrganisationTitle": "સંસ્થા કાઢી નાખવી છે?",
+  "adminDeleteOrganisationConfirmation": "શું તમે “{organisation}”ને કાયમ માટે કાઢી નાખવા માંગો છો? આ પાછું કરી શકાશે નહીં. જો તેમાં દાન ફાળવણી અથવા લાભાર્થી રેકોર્ડ હોય, તો કાઢી નાખવાનું અટકાવવામાં આવશે અને સંસ્થાને નિષ્ક્રિય કરવી પડશે.",
+  "@adminDeleteOrganisationConfirmation": {"placeholders": {"organisation": {}}},
+  "adminDeleteOrganisationSuccess": "“{organisation}” કાઢી નાખવામાં આવી.",
+  "@adminDeleteOrganisationSuccess": {"placeholders": {"organisation": {}}},
   "cancel": "રદ કરો"
 }
