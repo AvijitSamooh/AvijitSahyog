@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Param, Patch, Req, UseGuards } from '@nestjs/common';
-import { Request } from 'express';
+import type { Request } from 'express';
 import { AdminGuard } from '../auth/admin.guard';
 import { SuperAdminGuard } from '../auth/super-admin.guard';
-import { AuthenticatedRequest } from '../auth/auth.types';
+import type { AuthenticatedRequest } from '../auth/auth.types';
 import { AdminUsersQueryDto } from './dto/admin-users-query.dto';
 import { AdminUsersService } from './admin-users.service';
 
