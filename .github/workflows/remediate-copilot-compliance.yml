@@ -22,6 +22,11 @@ jobs:
           cache: npm
           cache-dependency-path: backend/nestjs/package-lock.json
 
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
       - name: Install validation dependencies
         working-directory: backend/nestjs
         run: npm install --save class-validator@^0.14.2 class-transformer@^0.5.1
