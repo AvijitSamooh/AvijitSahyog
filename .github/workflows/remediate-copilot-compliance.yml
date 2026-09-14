@@ -1,0 +1,52 @@
+name: Remediate Copilot Compliance
+
+on:
+  push:
+    paths:
+      - '.github/workflows/remediate-copilot-compliance.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  remediate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/nestjs/package-lock.json
+
+      - name: Install validation dependencies
+        working-directory: backend/nestjs
+        run: npm install --save class-validator@^0.14.2 class-transformer@^0.5.1
+
+      - name: Apply compliance fixes
+        env:
+          REPO_ROOT: ${{ github.workspace }}
+        run: node .github/scripts/remediate-copilot-compliance.cjs
+
+      - name: Verify backend build and tests
+        working-directory: backend/nestjs
+        run: npm test -- --runInBand && npm run build
+
+      - name: Verify Flutter localization generation
+        working-directory: app/flutter
+        run: |
+          flutter pub get
+          flutter gen-l10n
+          flutter analyze
+          flutter test test/l10n/admin_organisation_localization_test.dart
+
+      - name: Commit remediation changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/flutter/lib/features/admin/presentation/admin_organisations_page.dart app/flutter/lib/l10n/app_*.arb app/flutter/test/l10n/admin_organisation_localization_test.dart backend/nestjs/package.json backend/nestjs/package-lock.json backend/nestjs/src/admin-users
+          git commit -m 'fix: close Copilot instruction compliance gaps'
+          git push
