@@ -7,6 +7,7 @@ import { AdminUsersService } from './admin-users.service';
 describe('AdminUsersService', () => {
   const prisma = {
     user: {
+      count: jest.fn(),
       findUnique: jest.fn(),
       findMany: jest.fn(),
       update: jest.fn(),
@@ -25,9 +26,69 @@ describe('AdminUsersService', () => {
       user: { update: jest.fn().mockResolvedValue(updated) },
       auditLog: { create: jest.fn().mockResolvedValue({ id: 'audit-1' }) },
     };
-    prisma.$transaction.mockImplementation(async (callback: any) => callback(tx));
+    prisma.$transaction.mockImplementation(async (operation: any) => {
+      if (Array.isArray(operation)) return Promise.all(operation);
+      return operation(tx);
+    });
     return tx;
   }
+
+  it('lists administrators with server-side search and pagination', async () => {
+    prisma.user.count.mockResolvedValue(7);
+    prisma.user.findMany.mockResolvedValue([
+      {
+        id: 'admin-1',
+        email: 'nikita@example.com',
+        displayName: 'Nikita',
+        photoUrl: null,
+        role: 'ADMIN',
+        createdAt: new Date('2026-09-14T00:00:00Z'),
+      },
+    ]);
+
+    const service = new AdminUsersService(prisma);
+    const result = await service.listUsers({
+      search: 'nikita',
+      role: 'ADMIN',
+      page: 2,
+      pageSize: 3,
+    });
+
+    expect(result).toEqual({
+      items: expect.any(Array),
+      page: 2,
+      pageSize: 3,
+      total: 7,
+    });
+    expect(prisma.user.count).toHaveBeenCalledWith(expect.objectContaining({
+      where: expect.objectContaining({ role: 'ADMIN' }),
+    }));
+    expect(prisma.user.findMany).toHaveBeenCalledWith(expect.objectContaining({
+      skip: 3,
+      take: 3,
+      where: expect.objectContaining({
+        role: 'ADMIN',
+        OR: expect.arrayContaining([
+          expect.objectContaining({ displayName: expect.any(Object) }),
+          expect.objectContaining({ email: expect.any(Object) }),
+        ]),
+      }),
+    }));
+  });
+
+  it('lists regular users for the make-admin search flow', async () => {
+    prisma.user.count.mockResolvedValue(11);
+    prisma.user.findMany.mockResolvedValue([]);
+
+    const service = new AdminUsersService(prisma);
+    const result = await service.listUsers({ role: 'USER', page: 1, pageSize: 10 });
+
+    expect(result).toEqual({ items: [], page: 1, pageSize: 10, total: 11 });
+    expect(prisma.user.findMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: { role: 'USER' },
+      take: 10,
+    }));
+  });
 
   it('promotes a user and records the role change in the same transaction', async () => {
     const tx = setupTransaction();
@@ -65,9 +126,7 @@ describe('AdminUsersService', () => {
     const result = await service.changeRole('target-1', 'firebase-actor', 'USER');
 
     expect(result).toEqual({ id: 'target-1', role: 'USER' });
-    expect(tx.user.update).toHaveBeenCalledWith(expect.objectContaining({
-      data: { role: 'USER' },
-    }));
+    expect(tx.user.update).toHaveBeenCalledWith(expect.objectContaining({ data: { role: 'USER' } }));
     expect(tx.auditLog.create).toHaveBeenCalledWith(expect.objectContaining({
       data: expect.objectContaining({
         fromRole: 'ADMIN',
