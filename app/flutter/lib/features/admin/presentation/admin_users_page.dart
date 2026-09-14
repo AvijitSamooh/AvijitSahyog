@@ -141,7 +141,7 @@ Future<void> _showPromotionDialog(
 ) async {
   final selected = await showDialog<AdminUser>(
     context: context,
-    builder: (dialogContext) => const _PromotionDialog(),
+    builder: (_) => const _PromotionDialog(),
   );
   if (selected == null || !context.mounted) return;
 
@@ -424,7 +424,7 @@ class _UserTile extends StatelessWidget {
         content: Text(description),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
-          const FilledButton(onPressed: null, child: Text(action)),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text(action)),
         ],
       ),
     );
