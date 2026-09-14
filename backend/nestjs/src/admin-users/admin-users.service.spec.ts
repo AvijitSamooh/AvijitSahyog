@@ -19,7 +19,16 @@ describe('AdminUsersService', () => {
     $transaction: jest.fn(),
   } as any;
 
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.clearAllMocks();
+    prisma.$transaction.mockImplementation(async (operation: any) => {
+      if (Array.isArray(operation)) return Promise.all(operation);
+      return operation({
+        user: { update: jest.fn() },
+        auditLog: { create: jest.fn() },
+      });
+    });
+  });
 
   function setupTransaction(updated: any = { id: 'target-1', role: 'ADMIN' }) {
     const tx = {
