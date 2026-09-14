@@ -4,13 +4,7 @@
   "checkingBackend": "बॅकएंडची तपासणी सुरू आहे...",
   "backendUnavailable": "बॅकएंड उपलब्ध नाही",
   "backendStatus": "{status} — {service}",
-  "@backendStatus": {
-    "description": "विकास अवस्थेत दाखवला जाणारा सत्यापित बॅकएंड आरोग्य स्थिती संदेश.",
-    "placeholders": {
-      "status": {},
-      "service": {}
-    }
-  },
+  "@backendStatus": {"description": "विकास अवस्थेत दाखवला जाणारा सत्यापित बॅकएंड आरोग्य स्थिती संदेश.", "placeholders": {"status": {}, "service": {}}},
   "welcomeTitle": "अविजित सहयोगमध्ये आपले स्वागत आहे",
   "welcomeSubtitle": "सोपे, पारदर्शक आणि अर्थपूर्ण योगदान.",
   "language": "भाषा",
@@ -62,17 +56,9 @@
   "impactLoadError": "सध्या प्रभावाच्या कथा लोड करता आल्या नाहीत.",
   "tryAgain": "पुन्हा प्रयत्न करा",
   "supportedIn": "{year} मध्ये सहाय्य",
-  "@supportedIn": {
-    "placeholders": {
-      "year": {}
-    }
-  },
+  "@supportedIn": {"placeholders": {"year": {}}},
   "contributionAmount": "₹{amount} योगदान",
-  "@contributionAmount": {
-    "placeholders": {
-      "amount": {}
-    }
-  },
+  "@contributionAmount": {"placeholders": {"amount": {}}},
   "viewStory": "कथा पहा →",
   "impactStoryTitle": "प्रभावाची कथा",
   "theirStory": "त्यांची कथा",
@@ -135,5 +121,17 @@
   "adminNoAuditHistory": "अद्याप कोणतेही भूमिका बदल नोंदवलेले नाहीत.",
   "adminAuditPromotion": "{user} यांना प्रशासक बनवले",
   "adminAuditActor": "बदल करणारे: {admin}",
+  "adminCreateOrganisation": "संस्था तयार करा",
+  "adminRetryLoadingOrganisations": "संस्था लोड करण्यासाठी पुन्हा प्रयत्न करा",
+  "adminNoOrganisations": "अद्याप कोणतीही संस्था तयार केलेली नाही.",
+  "adminOrganisationCauseCount": "{count} सेवा क्षेत्रे",
+  "@adminOrganisationCauseCount": {"placeholders": {"count": {}}},
+  "adminOrganisationActions": "संस्था कृती",
+  "adminDeleteOrganisation": "संस्था हटवा",
+  "adminDeleteOrganisationTitle": "संस्था हटवायची?",
+  "adminDeleteOrganisationConfirmation": "“{organisation}” कायमची हटवायची का? ही कृती पूर्ववत करता येणार नाही. दान वाटप किंवा लाभार्थी नोंदी असल्यास हटवणे रोखले जाईल आणि संस्था निष्क्रिय करावी लागेल.",
+  "@adminDeleteOrganisationConfirmation": {"placeholders": {"organisation": {}}},
+  "adminDeleteOrganisationSuccess": "“{organisation}” हटवली.",
+  "@adminDeleteOrganisationSuccess": {"placeholders": {"organisation": {}}},
   "cancel": "रद्द करा"
 }

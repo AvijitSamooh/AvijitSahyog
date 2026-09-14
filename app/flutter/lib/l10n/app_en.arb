@@ -124,5 +124,17 @@
   "@adminAuditPromotion": {"placeholders": {"user": {}}},
   "adminAuditActor": "Changed by {admin}",
   "@adminAuditActor": {"placeholders": {"admin": {}}},
+  "adminCreateOrganisation": "Create organisation",
+  "adminRetryLoadingOrganisations": "Retry loading organisations",
+  "adminNoOrganisations": "No organisations created yet.",
+  "adminOrganisationCauseCount": "{count} causes",
+  "@adminOrganisationCauseCount": {"placeholders": {"count": {}}},
+  "adminOrganisationActions": "Organisation actions",
+  "adminDeleteOrganisation": "Delete organisation",
+  "adminDeleteOrganisationTitle": "Delete organisation?",
+  "adminDeleteOrganisationConfirmation": "Delete “{organisation}” permanently? This cannot be undone. If it has donation allocations or beneficiary records, deletion will be blocked and the organisation must be deactivated instead.",
+  "@adminDeleteOrganisationConfirmation": {"placeholders": {"organisation": {}}},
+  "adminDeleteOrganisationSuccess": "“{organisation}” was deleted.",
+  "@adminDeleteOrganisationSuccess": {"placeholders": {"organisation": {}}},
   "cancel": "Cancel"
 }

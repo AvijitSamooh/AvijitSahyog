@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/widgets/app_settings_menu.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../models/admin_organisation.dart';
 import '../providers/admin_organisations_providers.dart';
 import 'admin_organisation_editor_page.dart';
@@ -11,13 +12,14 @@ class AdminOrganisationsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final organisations = ref.watch(adminOrganisationsProvider);
     return AppPageScaffold(
-      title: const Text('Manage organisations'),
+      title: Text(l10n.adminManageOrganisations),
       floatingActionButton: FloatingActionButton.extended(
         key: const ValueKey('admin_create_organisation'),
         icon: const Icon(Icons.add),
-        label: const Text('Create organisation'),
+        label: Text(l10n.adminCreateOrganisation),
         onPressed: () async {
           await Navigator.of(context).push(
             MaterialPageRoute(
@@ -32,11 +34,11 @@ class AdminOrganisationsPage extends ConsumerWidget {
         error: (error, stackTrace) => Center(
           child: FilledButton(
             onPressed: () => ref.invalidate(adminOrganisationsProvider),
-            child: const Text('Retry loading organisations'),
+            child: Text(l10n.adminRetryLoadingOrganisations),
           ),
         ),
         data: (items) => items.isEmpty
-            ? const Center(child: Text('No organisations created yet.'))
+            ? Center(child: Text(l10n.adminNoOrganisations))
             : RefreshIndicator(
                 onRefresh: () async =>
                     ref.refresh(adminOrganisationsProvider.future),
@@ -60,11 +62,14 @@ class _OrganisationTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       child: ListTile(
         key: ValueKey('admin_organisation_${organisation.id}'),
         title: Text(organisation.displayName),
-        subtitle: Text('${organisation.slug} • ${organisation.causeIds.length} causes'),
+        subtitle: Text(
+          '${organisation.slug} • ${l10n.adminOrganisationCauseCount(organisation.causeIds.length)}',
+        ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -86,16 +91,16 @@ class _OrganisationTile extends ConsumerWidget {
               },
             ),
             PopupMenuButton<String>(
-              tooltip: 'Organisation actions',
+              tooltip: l10n.adminOrganisationActions,
               onSelected: (action) {
                 if (action == 'delete') {
                   _deleteOrganisation(context, ref);
                 }
               },
-              itemBuilder: (_) => const [
+              itemBuilder: (_) => [
                 PopupMenuItem<String>(
                   value: 'delete',
-                  child: Text('Delete organisation'),
+                  child: Text(l10n.adminDeleteOrganisation),
                 ),
               ],
             ),
@@ -115,21 +120,22 @@ class _OrganisationTile extends ConsumerWidget {
   }
 
   Future<void> _deleteOrganisation(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete organisation?'),
+        title: Text(l10n.adminDeleteOrganisationTitle),
         content: Text(
-          'Delete “${organisation.displayName}” permanently? This cannot be undone. If it has donation allocations or beneficiary records, deletion will be blocked and the organisation must be deactivated instead.',
+          l10n.adminDeleteOrganisationConfirmation(organisation.displayName),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           FilledButton.tonal(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Delete'),
+            child: Text(l10n.adminDeleteOrganisation),
           ),
         ],
       ),
@@ -143,7 +149,11 @@ class _OrganisationTile extends ConsumerWidget {
       ref.invalidate(adminOrganisationsProvider);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('“${organisation.displayName}” was deleted.')),
+          SnackBar(
+            content: Text(
+              l10n.adminDeleteOrganisationSuccess(organisation.displayName),
+            ),
+          ),
         );
       }
     } catch (error) {

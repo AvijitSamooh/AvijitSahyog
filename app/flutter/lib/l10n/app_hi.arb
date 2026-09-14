@@ -4,13 +4,7 @@
   "checkingBackend": "बैकएंड की जाँच हो रही है...",
   "backendUnavailable": "बैकएंड उपलब्ध नहीं है",
   "backendStatus": "{status} — {service}",
-  "@backendStatus": {
-    "description": "विकास अवस्था में दिखाया जाने वाला सत्यापित बैकएंड स्वास्थ्य स्टेटस।",
-    "placeholders": {
-      "status": {},
-      "service": {}
-    }
-  },
+  "@backendStatus": {"description": "विकास अवस्था में दिखाया जाने वाला सत्यापित बैकएंड स्वास्थ्य स्टेटस।", "placeholders": {"status": {}, "service": {}}},
   "welcomeTitle": "अविजित सहयोग में आपका स्वागत है",
   "welcomeSubtitle": "सरल, पारदर्शी और सार्थक सहयोग।",
   "language": "भाषा",
@@ -62,17 +56,9 @@
   "impactLoadError": "अभी प्रभाव की कहानियाँ लोड नहीं हो सकीं।",
   "tryAgain": "पुनः प्रयास करें",
   "supportedIn": "{year} में सहयोग मिला",
-  "@supportedIn": {
-    "placeholders": {
-      "year": {}
-    }
-  },
+  "@supportedIn": {"placeholders": {"year": {}}},
   "contributionAmount": "₹{amount} योगदान",
-  "@contributionAmount": {
-    "placeholders": {
-      "amount": {}
-    }
-  },
+  "@contributionAmount": {"placeholders": {"amount": {}}},
   "viewStory": "कहानी देखें →",
   "impactStoryTitle": "प्रभाव की कहानी",
   "theirStory": "उनकी कहानी",
@@ -135,5 +121,17 @@
   "adminNoAuditHistory": "अभी तक कोई भूमिका परिवर्तन दर्ज नहीं किया गया है।",
   "adminAuditPromotion": "{user} को एडमिन बनाया गया",
   "adminAuditActor": "परिवर्तन करने वाले: {admin}",
+  "adminCreateOrganisation": "संस्था बनाएँ",
+  "adminRetryLoadingOrganisations": "संस्थाओं को लोड करने के लिए पुनः प्रयास करें",
+  "adminNoOrganisations": "अभी तक कोई संस्था नहीं बनाई गई है।",
+  "adminOrganisationCauseCount": "{count} सेवा क्षेत्र",
+  "@adminOrganisationCauseCount": {"placeholders": {"count": {}}},
+  "adminOrganisationActions": "संस्था के विकल्प",
+  "adminDeleteOrganisation": "संस्था हटाएँ",
+  "adminDeleteOrganisationTitle": "संस्था हटाएँ?",
+  "adminDeleteOrganisationConfirmation": "क्या आप “{organisation}” को स्थायी रूप से हटाना चाहते हैं? इसे वापस नहीं किया जा सकता। यदि इसमें दान आवंटन या लाभार्थी रिकॉर्ड हैं, तो हटाना रोका जाएगा और संस्था को निष्क्रिय करना होगा।",
+  "@adminDeleteOrganisationConfirmation": {"placeholders": {"organisation": {}}},
+  "adminDeleteOrganisationSuccess": "“{organisation}” हटा दी गई।",
+  "@adminDeleteOrganisationSuccess": {"placeholders": {"organisation": {}}},
   "cancel": "रद्द करें"
 }
