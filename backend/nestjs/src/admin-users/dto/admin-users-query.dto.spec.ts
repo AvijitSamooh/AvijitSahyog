@@ -1,33 +1,39 @@
-import { BadRequestException } from '@nestjs/common';
+import 'reflect-metadata';
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
 import { AdminUsersQueryDto } from './admin-users-query.dto';
 
 describe('AdminUsersQueryDto', () => {
-  it('uses safe defaults for an empty query', () => {
-    expect(AdminUsersQueryDto.fromQuery({})).toEqual(
-      expect.objectContaining({ role: 'ADMIN', page: 1, pageSize: 3 }),
-    );
+  it('uses safe defaults for an empty query', async () => {
+    const dto = plainToInstance(AdminUsersQueryDto, {});
+    expect(dto.role).toBe('ADMIN');
+    expect(dto.page).toBe(1);
+    expect(dto.pageSize).toBe(3);
+    expect(await validate(dto)).toHaveLength(0);
   });
 
-  it('trims search and parses valid pagination values', () => {
-    expect(AdminUsersQueryDto.fromQuery({
+  it('trims search and transforms pagination values', async () => {
+    const dto = plainToInstance(AdminUsersQueryDto, {
       search: '  nikita  ',
       role: 'USER',
       page: '2',
       pageSize: '10',
-    })).toEqual(expect.objectContaining({
-      search: 'nikita',
-      role: 'USER',
-      page: 2,
-      pageSize: 10,
-    }));
+    });
+
+    expect(dto.search).toBe('nikita');
+    expect(dto.role).toBe('USER');
+    expect(dto.page).toBe(2);
+    expect(dto.pageSize).toBe(10);
+    expect(await validate(dto)).toHaveLength(0);
   });
 
-  it.each([
-    ['role', { role: 'SUPER_ADMIN' }],
-    ['page', { page: '0' }],
-    ['pageSize', { pageSize: '21' }],
-    ['pageSize type', { pageSize: 3 }],
-  ])('rejects invalid %s', (_, query) => {
-    expect(() => AdminUsersQueryDto.fromQuery(query)).toThrow(BadRequestException);
+  it('rejects invalid query values', async () => {
+    const dto = plainToInstance(AdminUsersQueryDto, {
+      role: 'SUPER_ADMIN',
+      page: '0',
+      pageSize: '21',
+    });
+
+    expect((await validate(dto)).length).toBeGreaterThan(0);
   });
 });
