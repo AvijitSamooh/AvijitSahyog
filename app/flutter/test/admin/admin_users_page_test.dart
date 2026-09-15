@@ -263,6 +263,8 @@ void main() {
     await tester.pumpWidget(_buildPage(repository));
     await tester.pumpAndSettle();
 
+    await tester.tap(find.byType(PopupMenuButton<String>).first);
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Remove admin'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Cancel'));
@@ -279,6 +281,8 @@ void main() {
     await tester.pumpWidget(_buildPage(repository));
     await tester.pumpAndSettle();
 
+    await tester.tap(find.byType(PopupMenuButton<String>).first);
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Remove admin'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Remove admin').last);
@@ -295,6 +299,8 @@ void main() {
     await tester.pumpWidget(_buildPage(repository));
     await tester.pumpAndSettle();
 
+    await tester.tap(find.byType(PopupMenuButton<String>).first);
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Remove admin'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Remove admin').last);
