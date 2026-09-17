@@ -150,7 +150,10 @@ Future<void> _showPromotionDialog(
 }) async {
   final selected = await showDialog<AdminUser>(
     context: context,
-    builder: (_) => _PromotionDialog(initialSearch: initialSearch),
+    builder: (_) => _PromotionDialog(
+      initialSearch: initialSearch,
+      repository: ref.read(adminUsersRepositoryProvider),
+    ),
   );
   if (selected == null || !context.mounted) return;
 
@@ -184,9 +187,10 @@ Future<void> _showPromotionDialog(
 }
 
 class _PromotionDialog extends StatefulWidget {
-  const _PromotionDialog({this.initialSearch});
+  const _PromotionDialog({this.initialSearch, required this.repository});
 
   final String? initialSearch;
+  final AdminUsersRepository repository;
 
   @override
   State<_PromotionDialog> createState() => _PromotionDialogState();
@@ -224,12 +228,12 @@ class _PromotionDialogState extends State<_PromotionDialog> {
       _error = null;
     });
     try {
-      final result = await ProviderScope.containerOf(context).read(adminUsersRepositoryProvider).getUsers(
-            search: _search.isEmpty ? null : _search,
-            role: 'USER',
-            page: _page,
-            pageSize: _pageSize,
-          );
+      final result = await widget.repository.getUsers(
+        search: _search.isEmpty ? null : _search,
+        role: 'USER',
+        page: _page,
+        pageSize: _pageSize,
+      );
       if (!mounted) return;
       setState(() {
         _result = result;
@@ -417,111 +421,3 @@ class _UserTile extends StatelessWidget {
   final AdminUser user;
   final AppLocalizations l10n;
   final WidgetRef ref;
-
-  @override
-  Widget build(BuildContext context) {
-    final canChange = user.canBeDemoted;
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundImage: user.photoUrl != null ? NetworkImage(user.photoUrl!) : null,
-        child: user.photoUrl == null ? const Icon(Icons.person_outline) : null,
-      ),
-      title: Text(user.label),
-      subtitle: Text(user.email ?? l10n.adminNoEmail),
-      trailing: user.isSuperAdmin
-          ? const Icon(Icons.shield_rounded)
-          : canChange
-              ? PopupMenuButton<String>(
-                  onSelected: (role) => _confirmRoleChange(context, role),
-                  itemBuilder: (context) => [
-                    PopupMenuItem(value: 'USER', child: Text(l10n.adminRemoveAdmin)),
-                  ],
-                )
-              : Chip(label: Text(l10n.adminRole)),
-    );
-  }
-
-  Future<void> _confirmRoleChange(BuildContext context, String role) async {
-    final description = l10n.adminRemoveAdminConfirmation(user.label);
-
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.adminRemoveAdmin),
-        content: Text(description),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(l10n.adminRemoveAdmin)),
-        ],
-      ),
-    );
-    if (confirmed != true || !context.mounted) return;
-
-    try {
-      await ref.read(adminUsersRepositoryProvider).changeRole(user.id, role);
-      ref.invalidate(adminUsersProvider);
-      ref.invalidate(adminAuditHistoryProvider);
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.adminDemotionSuccess)),
-        );
-      }
-    } catch (error) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
-      }
-    }
-  }
-}
-
-class _AuditCard extends StatelessWidget {
-  const _AuditCard({required this.entries, required this.l10n});
-
-  final List<AdminAuditEntry> entries;
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context) {
-    if (entries.isEmpty) {
-      return Card(child: Padding(padding: const EdgeInsets.all(16), child: Text(l10n.adminNoAuditHistory)));
-    }
-    return Card(
-      child: Column(
-        children: [
-          for (var i = 0; i < entries.length; i++) ...[
-            ListTile(
-              leading: const Icon(Icons.history),
-              title: Text(_auditTitle(entries[i])),
-              subtitle: Text('${l10n.adminAuditActor(entries[i].actorLabel)} · ${entries[i].fromRole ?? '—'} → ${entries[i].toRole ?? '—'}'),
-              trailing: Text(
-                MaterialLocalizations.of(context).formatMediumDate(entries[i].createdAt.toLocal()),
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ),
-            if (i < entries.length - 1) const Divider(height: 1),
-          ],
-        ],
-      ),
-    );
-  }
-
-  String _auditTitle(AdminAuditEntry entry) {
-    if (entry.fromRole == 'ADMIN' && entry.toRole == 'USER') {
-      return l10n.adminAuditDemotion(entry.targetLabel);
-    }
-    return l10n.adminAuditPromotion(entry.targetLabel);
-  }
-}
-
-class _ErrorCard extends StatelessWidget {
-  const _ErrorCard({required this.message});
-  final String message;
-
-  @override
-  Widget build(BuildContext context) => Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Text(message),
-        ),
-      );
-}
