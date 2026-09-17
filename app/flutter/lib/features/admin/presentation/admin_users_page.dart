@@ -434,7 +434,7 @@ class _UserTile extends StatelessWidget {
               ? PopupMenuButton<String>(
                   onSelected: (role) => _confirmRoleChange(context, role),
                   itemBuilder: (context) => [
-                    const PopupMenuItem(value: 'USER', child: Text('Remove admin')),
+                    PopupMenuItem(value: 'USER', child: Text(l10n.adminRemoveAdmin)),
                   ],
                 )
               : Chip(label: Text(l10n.adminRole)),
@@ -442,18 +442,16 @@ class _UserTile extends StatelessWidget {
   }
 
   Future<void> _confirmRoleChange(BuildContext context, String role) async {
-    const action = 'Remove admin';
-    final description =
-        'Remove administrator access from ${user.label}? This action will be recorded in audit history.';
+    final description = l10n.adminRemoveAdminConfirmation(user.label);
 
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text(action),
+        title: Text(l10n.adminRemoveAdmin),
         content: Text(description),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text(action)),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(l10n.adminRemoveAdmin)),
         ],
       ),
     );
@@ -464,8 +462,9 @@ class _UserTile extends StatelessWidget {
       ref.invalidate(adminUsersProvider);
       ref.invalidate(adminAuditHistoryProvider);
       if (context.mounted) {
-        const snackBar = SnackBar(content: Text('Administrator access removed and the change was recorded.'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.adminDemotionSuccess)),
+        );
       }
     } catch (error) {
       if (context.mounted) {
@@ -508,7 +507,7 @@ class _AuditCard extends StatelessWidget {
 
   String _auditTitle(AdminAuditEntry entry) {
     if (entry.fromRole == 'ADMIN' && entry.toRole == 'USER') {
-      return 'Administrator access removed from ${entry.targetLabel}';
+      return l10n.adminAuditDemotion(entry.targetLabel);
     }
     return l10n.adminAuditPromotion(entry.targetLabel);
   }
