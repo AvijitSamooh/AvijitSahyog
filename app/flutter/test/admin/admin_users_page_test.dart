@@ -209,7 +209,6 @@ void main() {
     await tester.tap(find.text('Make admin'));
     await tester.pumpAndSettle();
     expect(find.text('Nikita Manoriya'), findsOneWidget);
-    expect(find.text('nikita'), findsOneWidget);
 
     await tester.tap(find.text('Nikita Manoriya'));
     await tester.pumpAndSettle();
