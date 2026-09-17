@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../l10n/app_localizations.dart';
+import '../data/admin_users_repository.dart';
 import '../models/admin_audit_entry.dart';
 import '../models/admin_user.dart';
 import '../models/paginated_admin_users.dart';
@@ -117,6 +118,14 @@ class _AdminUsersPageState extends ConsumerState<AdminUsersPage> {
                 ref: ref,
                 onPrevious: result.hasPreviousPage ? () => setState(() => _page--) : null,
                 onNext: result.hasNextPage ? () => setState(() => _page++) : null,
+                onSearchUsers: _search.isEmpty
+                    ? null
+                    : () => _showPromotionDialog(
+                          context,
+                          ref,
+                          l10n,
+                          initialSearch: _search,
+                        ),
               ),
             ),
             const SizedBox(height: 28),
@@ -137,11 +146,15 @@ class _AdminUsersPageState extends ConsumerState<AdminUsersPage> {
 Future<void> _showPromotionDialog(
   BuildContext context,
   WidgetRef ref,
-  AppLocalizations l10n,
-) async {
+  AppLocalizations l10n, {
+  String? initialSearch,
+}) async {
   final selected = await showDialog<AdminUser>(
     context: context,
-    builder: (_) => const _PromotionDialog(),
+    builder: (_) => _PromotionDialog(
+      initialSearch: initialSearch,
+      repository: ref.read(adminUsersRepositoryProvider),
+    ),
   );
   if (selected == null || !context.mounted) return;
 
@@ -175,7 +188,10 @@ Future<void> _showPromotionDialog(
 }
 
 class _PromotionDialog extends StatefulWidget {
-  const _PromotionDialog();
+  const _PromotionDialog({this.initialSearch, required this.repository});
+
+  final String? initialSearch;
+  final AdminUsersRepository repository;
 
   @override
   State<_PromotionDialog> createState() => _PromotionDialogState();
@@ -194,6 +210,9 @@ class _PromotionDialogState extends State<_PromotionDialog> {
   @override
   void initState() {
     super.initState();
+    final initialSearch = widget.initialSearch?.trim() ?? '';
+    _search = initialSearch;
+    _searchController.text = initialSearch;
     _load();
   }
 
@@ -210,12 +229,12 @@ class _PromotionDialogState extends State<_PromotionDialog> {
       _error = null;
     });
     try {
-      final result = await ProviderScope.containerOf(context).read(adminUsersRepositoryProvider).getUsers(
-            search: _search.isEmpty ? null : _search,
-            role: 'USER',
-            page: _page,
-            pageSize: _pageSize,
-          );
+      final result = await widget.repository.getUsers(
+        search: _search.isEmpty ? null : _search,
+        role: 'USER',
+        page: _page,
+        pageSize: _pageSize,
+      );
       if (!mounted) return;
       setState(() {
         _result = result;
@@ -329,6 +348,7 @@ class _UsersSection extends StatelessWidget {
     required this.ref,
     required this.onPrevious,
     required this.onNext,
+    required this.onSearchUsers,
   });
 
   final PaginatedAdminUsers result;
@@ -336,6 +356,7 @@ class _UsersSection extends StatelessWidget {
   final WidgetRef ref;
   final VoidCallback? onPrevious;
   final VoidCallback? onNext;
+  final VoidCallback? onSearchUsers;
 
   @override
   Widget build(BuildContext context) {
@@ -343,7 +364,20 @@ class _UsersSection extends StatelessWidget {
       return Card(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Text(l10n.adminNoUsers),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.adminNoUsers),
+              if (onSearchUsers != null) ...[
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: onSearchUsers,
+                  icon: const Icon(Icons.person_add_alt_1),
+                  label: Text(l10n.adminMakeAdmin),
+                ),
+              ],
+            ],
+          ),
         ),
       );
     }
@@ -405,7 +439,7 @@ class _UserTile extends StatelessWidget {
               ? PopupMenuButton<String>(
                   onSelected: (role) => _confirmRoleChange(context, role),
                   itemBuilder: (context) => [
-                    const PopupMenuItem(value: 'USER', child: Text('Remove admin')),
+                    PopupMenuItem(value: 'USER', child: Text(l10n.adminRemoveAdmin)),
                   ],
                 )
               : Chip(label: Text(l10n.adminRole)),
@@ -413,18 +447,16 @@ class _UserTile extends StatelessWidget {
   }
 
   Future<void> _confirmRoleChange(BuildContext context, String role) async {
-    const action = 'Remove admin';
-    final description =
-        'Remove administrator access from ${user.label}? This action will be recorded in audit history.';
+    final description = l10n.adminRemoveAdminConfirmation(user.label);
 
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text(action),
+        title: Text(l10n.adminRemoveAdmin),
         content: Text(description),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text(action)),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(l10n.adminRemoveAdmin)),
         ],
       ),
     );
@@ -435,8 +467,9 @@ class _UserTile extends StatelessWidget {
       ref.invalidate(adminUsersProvider);
       ref.invalidate(adminAuditHistoryProvider);
       if (context.mounted) {
-        const snackBar = SnackBar(content: Text('Administrator access removed and the change was recorded.'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.adminDemotionSuccess)),
+        );
       }
     } catch (error) {
       if (context.mounted) {
@@ -479,7 +512,7 @@ class _AuditCard extends StatelessWidget {
 
   String _auditTitle(AdminAuditEntry entry) {
     if (entry.fromRole == 'ADMIN' && entry.toRole == 'USER') {
-      return 'Administrator access removed from ${entry.targetLabel}';
+      return l10n.adminAuditDemotion(entry.targetLabel);
     }
     return l10n.adminAuditPromotion(entry.targetLabel);
   }
