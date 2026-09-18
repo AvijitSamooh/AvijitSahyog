@@ -34,7 +34,7 @@ class ApplicationsPage extends ConsumerWidget {
       title: Text(l10n.applicationsTitle),
       body: applications.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) => Center(child: Text(l10n.applicationLoadError)),
+        error: (_, _) => Center(child: Text(l10n.applicationLoadError)),
         data: (items) => ListView(
           padding: const EdgeInsets.all(20),
           children: [
@@ -148,7 +148,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
             TextField(controller: _amount, keyboardType: const TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(labelText: l10n.requestedAmount, prefixText: '₹')),
           if (widget.application?.rejectionReason != null) ...[
-            Text(l10n.rejectionReason + ': ' + widget.application!.rejectionReason!),
+            Text('${l10n.rejectionReason}: ${widget.application!.rejectionReason!}'),
             const SizedBox(height: 12),
           ],
           const SizedBox(height: 16),
@@ -157,7 +157,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
           const SizedBox(height: 16),
           OutlinedButton.icon(onPressed: _busy ? null : _pickImages, icon: const Icon(Icons.upload_file_rounded), label: Text(l10n.chooseImages)),
           if (_mediaIds.isNotEmpty)
-            Padding(padding: const EdgeInsets.only(top: 8), child: Text(_mediaIds.length.toString() + ' ' + l10n.applicationEvidence)),
+            Padding(padding: const EdgeInsets.only(top: 8), child: Text('${_mediaIds.length} ${l10n.applicationEvidence}')),
           const SizedBox(height: 24),
           FilledButton(onPressed: _busy ? null : _submit, child: Text(_busy ? l10n.uploadingImage : l10n.submitApplication)),
         ],
@@ -178,11 +178,11 @@ class _ApplicationCard extends StatelessWidget {
       child: ListTile(
         title: Text(_typeLabel(l10n, application.type)),
         subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(l10n.applicationStatus + ': ' + application.status),
-          if (application.requestedAmount != null) Text(l10n.requestedAmount + ': ₹' + application.requestedAmount.toString()),
-          if (application.approvedAmount != null) Text(l10n.approvedAmount + ': ₹' + application.approvedAmount.toString()),
-          if (application.rejectionReason != null) Text(l10n.rejectionReason + ': ' + application.rejectionReason!),
-          if (application.clarification != null) Text(l10n.clarification + ': ' + application.clarification!),
+          Text('${l10n.applicationStatus}: ${application.status}'),
+          if (application.requestedAmount != null) Text('${l10n.requestedAmount}: ₹${application.requestedAmount}'),
+          if (application.approvedAmount != null) Text('${l10n.approvedAmount}: ₹${application.approvedAmount}'),
+          if (application.rejectionReason != null) Text('${l10n.rejectionReason}: ${application.rejectionReason!}'),
+          if (application.clarification != null) Text('${l10n.clarification}: ${application.clarification!}'),
         ]),
         isThreeLine: true,
         trailing: canResubmit ? IconButton(
