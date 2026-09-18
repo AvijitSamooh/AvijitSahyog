@@ -40,16 +40,19 @@ UPDATE "CauseTranslation" ct
 SET name = v.name,
     description = v.description,
     "updatedAt" = NOW()
-FROM "Cause" c
-JOIN "Language" l ON l.id = ct."languageId"
-JOIN (
-  VALUES
-    ('en', 'Education Assistance', 'Need-based support for students who need help continuing their education.'),
-    ('hi', 'शिक्षा सहायता', 'शिक्षा जारी रखने के लिए आवश्यकता वाले विद्यार्थियों को सहयोग।'),
-    ('mr', 'शिक्षण सहाय्य', 'शिक्षण सुरू ठेवण्यासाठी गरजू विद्यार्थ्यांना सहकार्य.'),
-    ('gu', 'શિક્ષણ સહાય', 'શિક્ષણ ચાલુ રાખવા માટે જરૂરિયાતમંદ વિદ્યાર્થીઓને સહાય.')
-) AS v(code, name, description) ON v.code = l.code
-WHERE c.id = ct."causeId" AND c.slug = 'education-assistance';
+FROM "Cause" c,
+     "Language" l,
+     (
+       VALUES
+         ('en', 'Education Assistance', 'Need-based support for students who need help continuing their education.'),
+         ('hi', 'शिक्षा सहायता', 'शिक्षा जारी रखने के लिए आवश्यकता वाले विद्यार्थियों को सहयोग।'),
+         ('mr', 'शिक्षण सहाय्य', 'शिक्षण सुरू ठेवण्यासाठी गरजू विद्यार्थ्यांना सहकार्य.'),
+         ('gu', 'શિક્ષણ સહાય', 'શિક્ષણ ચાલુ રાખવા માટે જરૂરિયાતમંદ વિદ્યાર્થીઓને સહાય.')
+     ) AS v(code, name, description)
+WHERE c.id = ct."causeId"
+  AND l.id = ct."languageId"
+  AND v.code = l.code
+  AND c.slug = 'education-assistance';
 
 INSERT INTO "CauseTranslation" (id, "causeId", "languageId", name, description, "createdAt", "updatedAt")
 SELECT md5(c.id::text || l.id::text)::uuid, c.id, l.id, v.name, v.description, NOW(), NOW()
