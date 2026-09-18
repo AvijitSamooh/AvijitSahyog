@@ -52,7 +52,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const ValueKey('admin_beneficiary_actions_beneficiary-1')));
+    await tester.tap(find.byKey(const ValueKey('admin_beneficiary_delete_beneficiary-1')));
     await tester.pumpAndSettle();
 
     expect(find.text('Delete beneficiary'), findsOneWidget);
