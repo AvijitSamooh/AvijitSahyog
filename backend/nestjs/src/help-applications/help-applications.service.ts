@@ -13,7 +13,7 @@ export class HelpApplicationsService {
   async create(identity: FirebaseIdentity, dto: CreateHelpApplicationDto) {
     const user = await this.user(identity);
     this.validateSubmission(dto.type, dto.requestedAmount, dto.mediaIds);
-    const media = await this.validateMedia(dto.mediaIds);
+    const media = await this.validateMedia(dto.mediaIds, user.id);
     const item = await this.prisma.helpApplication.create({
       data: {
         applicantId: user.id,
@@ -55,7 +55,7 @@ export class HelpApplicationsService {
       throw new BadRequestException('Only rejected or clarification-requested applications can be resubmitted.');
     }
     this.validateSubmission(existing.type, dto.requestedAmount ?? Number(existing.requestedAmount ?? 0), dto.mediaIds);
-    const media = await this.validateMedia(dto.mediaIds);
+    const media = await this.validateMedia(dto.mediaIds, user.id);
     return this.prisma.$transaction(async (tx) => {
       await tx.helpApplicationMedia.deleteMany({ where: { applicationId: id } });
       const updated = await tx.helpApplication.update({
@@ -140,9 +140,9 @@ export class HelpApplicationsService {
     if (!amount || amount <= 0) throw new BadRequestException('Requested amount must be greater than zero.');
   }
 
-  private async validateMedia(ids: string[]) {
+  private async validateMedia(ids: string[], uploadedById: string) {
     const unique = [...new Set(ids)];
-    const media = await this.prisma.media.findMany({ where: { id: { in: unique } }, select: { id: true } });
+    const media = await this.prisma.media.findMany({ where: { id: { in: unique }, uploadedById }, select: { id: true } });
     if (media.length !== unique.length) throw new BadRequestException('One or more supporting images are unavailable.');
     return unique;
   }
