@@ -23,6 +23,10 @@ import 'package:avijit_sahyog/features/admin/presentation/admin_dashboard_page.d
 import 'package:avijit_sahyog/features/admin/providers/admin_dashboard_providers.dart';
 import 'package:avijit_sahyog/features/admin/models/admin_dashboard_summary.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_beneficiaries_page.dart';
+import 'package:avijit_sahyog/features/admin/presentation/admin_organisation_editor_page.dart';
+import 'package:avijit_sahyog/features/admin/models/admin_organisation.dart';
+import 'package:avijit_sahyog/features/applications/presentation/applications_page.dart';
+import 'package:avijit_sahyog/features/applications/providers/help_applications_providers.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_causes_page.dart';
 import 'package:avijit_sahyog/features/admin/providers/admin_beneficiaries_providers.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_organisations_page.dart';
@@ -145,6 +149,16 @@ void main() {
     expect(find.text('See Our Impact'), findsOneWidget);
   });
 
+  testWidgets('home exposes the assistance applications workflow', (tester) async {
+    await pumpApp(tester);
+
+    await tester.tap(find.byKey(const ValueKey('home_applications')));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ApplicationsPage), findsOneWidget);
+    expect(find.text('Please sign in to submit an application.'), findsOneWidget);
+  });
+
   testWidgets('public home exposes login from the shared settings menu', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
     await tester.pump();
@@ -159,6 +173,21 @@ void main() {
 
     expect(find.byType(LoginPage), findsOneWidget);
     expect(find.text('Continue as Guest'), findsOneWidget);
+  });
+
+  testWidgets('authenticated user can see all application choices', (tester) async {
+    await pumpApp(
+      tester,
+      home: const ApplicationsPage(),
+      overrides: [
+        authProvider.overrideWith((ref) => _AuthenticatedAdminController()),
+        myHelpApplicationsProvider.overrideWith((ref) async => const []),
+      ],
+    );
+
+    expect(find.byKey(const ValueKey('application_education')), findsOneWidget);
+    expect(find.byKey(const ValueKey('application_medical')), findsOneWidget);
+    expect(find.byKey(const ValueKey('application_pratibha')), findsOneWidget);
   });
 
   testWidgets('authenticated admin can see the admin portal entry', (tester) async {
@@ -270,6 +299,35 @@ void main() {
     );
   });
 
+  testWidgets('admin organisation editor exposes the dedicated mobile number field', (tester) async {
+    const organisation = AdminOrganisation(
+      id: 'org-1',
+      slug: 'seva-trust',
+      isActive: true,
+      displayOrder: 0,
+      translations: [
+        AdminOrganisationTranslation(languageCode: 'en', name: 'Seva Trust'),
+      ],
+      causeIds: [],
+      mobileNumber: '+919876543210',
+    );
+
+    await pumpApp(
+      tester,
+      home: AdminOrganisationEditorPage(organisation: organisation),
+      overrides: [
+        adminCausesProvider.overrideWith((ref) async => const []),
+      ],
+    );
+
+    final mobileField = find.byKey(const ValueKey('admin_organisation_mobile_number'));
+    expect(mobileField, findsOneWidget);
+    expect(
+      tester.widget<TextField>(mobileField).controller?.text,
+      '+919876543210',
+    );
+  });
+
   testWidgets('home hero loads Maharaj Ji image asset', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
     await tester.pump();
@@ -378,6 +436,23 @@ void main() {
 
     final preferences = await SharedPreferences.getInstance();
     expect(preferences.getString('selected_locale'), 'hi');
+  });
+
+  testWidgets('causes page exposes both education assistance and Pratibha Samman categories', (tester) async {
+    const causes = [
+      Cause(id: 'education-assistance', slug: 'education-assistance', name: 'Education Assistance'),
+      Cause(id: 'pratibha-samman', slug: 'pratibha-samman', name: 'Pratibha Samman'),
+    ];
+    await pumpApp(
+      tester,
+      home: const CausesPage(),
+      overrides: [
+        causesProvider('en').overrideWith((ref) async => causes),
+      ],
+    );
+
+    expect(find.text('Education Assistance'), findsOneWidget);
+    expect(find.text('Pratibha Samman'), findsOneWidget);
   });
 
   testWidgets('causes page displays mocked causes', (tester) async {
