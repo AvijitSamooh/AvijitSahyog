@@ -18,6 +18,13 @@ export class HelpApplicationsService {
       data: {
         applicantId: user.id,
         type: dto.type,
+        applicantName: dto.applicantName.trim(),
+        mobileNumber: dto.mobileNumber.trim(),
+        email: dto.email?.trim() || null,
+        address: dto.address.trim(),
+        city: dto.city.trim(),
+        state: dto.state.trim(),
+        pincode: dto.pincode.trim(),
         requestedAmount: dto.requestedAmount,
         clarification: dto.clarification?.trim() || null,
         media: { create: media.map((mediaId) => ({ mediaId })) },
@@ -183,7 +190,7 @@ export class HelpApplicationsService {
   }
 
   private toResponse(item: any) {
-    return { id: item.id, type: item.type, status: item.status, requestedAmount: item.requestedAmount, approvedAmount: item.approvedAmount, rejectionReason: item.rejectionReason, clarification: item.clarification, adminNote: item.adminNote, submittedAt: item.submittedAt, reviewedAt: item.reviewedAt, media: (item.media ?? []).map((m: any) => this.mediaResponse(m)) };
+    return { id: item.id, type: item.type, status: item.status, applicantName: item.applicantName, mobileNumber: item.mobileNumber, email: item.email, address: item.address, city: item.city, state: item.state, pincode: item.pincode, requestedAmount: item.requestedAmount, approvedAmount: item.approvedAmount, rejectionReason: item.rejectionReason, clarification: item.clarification, adminNote: item.adminNote, submittedAt: item.submittedAt, reviewedAt: item.reviewedAt, media: (item.media ?? []).map((m: any) => this.mediaResponse(m)) };
   }
 
   private toAdminResponse(item: any) {
