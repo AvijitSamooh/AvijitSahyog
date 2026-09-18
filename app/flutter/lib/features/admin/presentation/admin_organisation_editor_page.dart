@@ -78,6 +78,7 @@ class _AdminOrganisationEditorPageState
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context)!;
     final translations = _languages
         .where((language) => _names[language]!.text.trim().isNotEmpty)
         .map((language) => {
@@ -88,7 +89,7 @@ class _AdminOrganisationEditorPageState
             })
         .toList();
     if (translations.isEmpty) {
-      _error('Add at least one translation.');
+      _error(l10n.adminAddAtLeastOneTranslation);
       return;
     }
 
@@ -119,7 +120,7 @@ class _AdminOrganisationEditorPageState
           await _attachPendingMedia(created.id);
         } catch (error) {
           if (mounted) {
-            _error('Organisation was created, but some follow-up changes failed: $error. Open it again to retry.');
+            _error(l10n.adminOrganisationCreatedPartialFailure(error.toString()));
             Navigator.of(context).pop();
           }
           return;
@@ -127,7 +128,7 @@ class _AdminOrganisationEditorPageState
         if (mounted) Navigator.of(context).pop();
       }
     } catch (error) {
-      if (mounted) _error('Unable to save organisation: $error');
+      if (mounted) _error(l10n.adminOrganisationSaveFailed(error.toString()));
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -145,32 +146,48 @@ class _AdminOrganisationEditorPageState
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
+  String _languageLabel(AppLocalizations l10n, String language) {
+    switch (language) {
+      case 'en':
+        return l10n.languageEnglish;
+      case 'hi':
+        return l10n.languageHindi;
+      case 'mr':
+        return l10n.languageMarathi;
+      case 'gu':
+        return l10n.languageGujarati;
+      default:
+        return language.toUpperCase();
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final causes = ref.watch(adminCausesProvider);
     final l10n = AppLocalizations.of(context)!;
     return AppPageScaffold(
-      title: Text(_editing ? 'Edit organisation' : 'Create organisation'),
+      title: Text(_editing ? l10n.adminEditOrganisation : l10n.adminCreateOrganisation),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
         children: [
-          TextField(controller: _website, decoration: const InputDecoration(labelText: 'Website')),
+          TextField(controller: _website, decoration: InputDecoration(labelText: l10n.adminOrganisationWebsite)),
           TextField(controller: _phone, decoration: InputDecoration(labelText: l10n.adminOrganisationPhone)),
           TextField(controller: _mobileNumber, keyboardType: TextInputType.phone, decoration: InputDecoration(labelText: l10n.adminOrganisationMobileNumber, hintText: l10n.adminOrganisationMobileNumberHint)),
-          TextField(controller: _email, keyboardType: TextInputType.emailAddress, decoration: const InputDecoration(labelText: 'Email')),
-          TextField(controller: _address, decoration: const InputDecoration(labelText: 'Address')),
+          TextField(controller: _email, keyboardType: TextInputType.emailAddress, decoration: InputDecoration(labelText: l10n.adminOrganisationEmail)),
+          TextField(controller: _address, decoration: InputDecoration(labelText: l10n.adminOrganisationAddress)),
           Row(children: [
-            Expanded(child: TextField(controller: _city, decoration: const InputDecoration(labelText: 'City'))),
+            Expanded(child: TextField(controller: _city, decoration: InputDecoration(labelText: l10n.adminOrganisationCity))),
             const SizedBox(width: 12),
-            Expanded(child: TextField(controller: _state, decoration: const InputDecoration(labelText: 'State'))),
+            Expanded(child: TextField(controller: _state, decoration: InputDecoration(labelText: l10n.adminOrganisationState))),
           ]),
-          TextField(controller: _country, decoration: const InputDecoration(labelText: 'Country')),
-          TextField(controller: _order, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Display order')),
+          TextField(controller: _country, decoration: InputDecoration(labelText: l10n.adminOrganisationCountry)),
+          TextField(controller: _order, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: l10n.adminOrganisationDisplayOrder)),
           const SizedBox(height: 24),
-          Text('Supported causes', style: Theme.of(context).textTheme.titleLarge),
+          Text(l10n.adminSupportedCauses, style: Theme.of(context).textTheme.titleLarge),
           causes.when(
             loading: () => const LinearProgressIndicator(),
-            error: (error, stackTrace) => const Text('Unable to load causes.'),
+            error: (error, stackTrace) => Text(l10n.adminOrganisationLoadCausesFailed),
             data: (items) => Column(
               children: items.map((cause) => CheckboxListTile(
                 value: _causeIds.contains(cause.id),
@@ -191,18 +208,18 @@ class _AdminOrganisationEditorPageState
             entity: _editing ? 'organisations' : null,
             entityId: _editing ? widget.organisation!.id : null,
             primaryPurpose: 'LOGO',
-            title: 'Organisation images',
+            title: l10n.adminOrganisationImages,
             onPendingChanged: (items) => _pendingMedia = items,
           ),
           const SizedBox(height: 24),
-          Text('Translations', style: Theme.of(context).textTheme.titleLarge),
+          Text(l10n.adminTranslations, style: Theme.of(context).textTheme.titleLarge),
           for (final language in _languages) Card(
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: Column(children: [
-                Align(alignment: Alignment.centerLeft, child: Text(language.toUpperCase())),
-                TextField(key: ValueKey('admin_organisation_name_$language'), controller: _names[language], decoration: const InputDecoration(labelText: 'Name')),
-                TextField(controller: _descriptions[language], minLines: 2, maxLines: 4, decoration: const InputDecoration(labelText: 'Description')),
+                Align(alignment: Alignment.centerLeft, child: Text(_languageLabel(l10n, language))),
+                TextField(key: ValueKey('admin_organisation_name_$language'), controller: _names[language], decoration: InputDecoration(labelText: l10n.adminTranslationName)),
+                TextField(controller: _descriptions[language], minLines: 2, maxLines: 4, decoration: InputDecoration(labelText: l10n.adminTranslationDescription)),
               ]),
             ),
           ),
@@ -216,7 +233,7 @@ class _AdminOrganisationEditorPageState
             child: FilledButton(
               key: const ValueKey('admin_save_organisation'),
               onPressed: _saving ? null : _save,
-              child: Text(_saving ? 'Saving...' : (_editing ? 'Save changes' : 'Create organisation')),
+              child: Text(_saving ? l10n.adminOrganisationSaving : (_editing ? l10n.adminSaveChanges : l10n.adminCreateOrganisation)),
             ),
           ),
         ),

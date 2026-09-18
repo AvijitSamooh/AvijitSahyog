@@ -160,4 +160,26 @@
   "affiliateCallFailed": "फ़ोन डायलर नहीं खोला जा सका।",
   "affiliateWhatsAppFailed": "WhatsApp नहीं खोला जा सका।"
 
+,
+  "adminEditOrganisation": "संस्था संपादित करें",
+  "adminOrganisationWebsite": "वेबसाइट",
+  "adminOrganisationEmail": "ईमेल",
+  "adminOrganisationAddress": "पता",
+  "adminOrganisationCity": "शहर",
+  "adminOrganisationState": "राज्य",
+  "adminOrganisationCountry": "देश",
+  "adminOrganisationDisplayOrder": "प्रदर्शन क्रम",
+  "adminSupportedCauses": "समर्थित सेवा क्षेत्र",
+  "adminOrganisationImages": "संस्था की तस्वीरें",
+  "adminTranslations": "अनुवाद",
+  "adminTranslationName": "नाम",
+  "adminTranslationDescription": "विवरण",
+  "adminOrganisationSaving": "सहेजा जा रहा है...",
+  "adminSaveChanges": "परिवर्तन सहेजें",
+  "adminAddAtLeastOneTranslation": "कम से कम एक अनुवाद जोड़ें।",
+  "adminOrganisationCreatedPartialFailure": "संस्था बनाई गई, लेकिन कुछ आगे के बदलाव विफल रहे: {error}। पुनः प्रयास करने के लिए इसे फिर खोलें।",
+  "@adminOrganisationCreatedPartialFailure": {"placeholders":{"error":{}}},
+  "adminOrganisationSaveFailed": "संस्था सहेजी नहीं जा सकी: {error}",
+  "@adminOrganisationSaveFailed": {"placeholders":{"error":{}}},
+  "adminOrganisationLoadCausesFailed": "सेवा क्षेत्र लोड नहीं किए जा सके।"
 }
