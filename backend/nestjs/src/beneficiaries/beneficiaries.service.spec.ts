@@ -9,6 +9,7 @@ describe('BeneficiariesService', () => {
       findUnique: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
+      delete: jest.fn(),
     },
     cause: { findUnique: jest.fn() },
     organisation: { findUnique: jest.fn() },
@@ -162,6 +163,20 @@ describe('BeneficiariesService', () => {
       }),
     ).rejects.toBeInstanceOf(BadRequestException);
     expect(prisma.beneficiary.create).not.toHaveBeenCalled();
+  });
+
+
+  it('deletes an existing beneficiary', async () => {
+    prisma.beneficiary.findUnique.mockResolvedValue(record);
+    prisma.beneficiary.delete.mockResolvedValue({ id: 'beneficiary-1' });
+
+    await expect(service.remove('beneficiary-1')).resolves.toEqual({
+      id: 'beneficiary-1',
+    });
+
+    expect(prisma.beneficiary.delete).toHaveBeenCalledWith({
+      where: { id: 'beneficiary-1' },
+    });
   });
 
   it('deactivates an existing beneficiary', async () => {
