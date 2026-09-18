@@ -27,6 +27,8 @@ model User {
 
   auditEvents       AuditLog[] @relation("AuditActor")
   auditedUserEvents AuditLog[] @relation("AuditTargetUser")
+  helpApplications HelpApplication[]
+  helpApplicationVotes HelpApplicationVote[]
 
   @@index([role])
 }
@@ -236,6 +238,7 @@ model Media {
 
   organisationMedia OrganisationMedia[]
   beneficiaryMedia  BeneficiaryMedia[]
+  helpApplicationMedia HelpApplicationMedia[]
 }
 
 enum OrganisationMediaPurpose {
