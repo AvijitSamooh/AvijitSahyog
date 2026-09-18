@@ -188,19 +188,22 @@ class _AdminOrganisationEditorPageState
           causes.when(
             loading: () => const LinearProgressIndicator(),
             error: (error, stackTrace) => Text(l10n.adminOrganisationLoadCausesFailed),
-            data: (items) => Column(
-              children: items.map((cause) => CheckboxListTile(
-                value: _causeIds.contains(cause.id),
-                title: Text(cause.displayName),
-                onChanged: (selected) => setState(() {
-                  if (selected ?? false) {
-                    _causeIds.add(cause.id);
-                  } else {
-                    _causeIds.remove(cause.id);
-                  }
-                }),
-              )).toList(),
-            ),
+            data: (items) {
+              final leafCauses = items.expand((cause) => cause.children.isEmpty ? [cause] : cause.children).toList(growable: false);
+              return Column(
+                children: leafCauses.map((cause) => CheckboxListTile(
+                  value: _causeIds.contains(cause.id),
+                  title: Text(cause.displayName),
+                  onChanged: (selected) => setState(() {
+                    if (selected ?? false) {
+                      _causeIds.add(cause.id);
+                    } else {
+                      _causeIds.remove(cause.id);
+                    }
+                  }),
+                )).toList(),
+              );
+            },
           ),
           const SizedBox(height: 24),
           AdminMediaSection(
