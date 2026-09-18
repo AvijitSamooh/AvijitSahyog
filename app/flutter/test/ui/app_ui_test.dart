@@ -241,7 +241,7 @@ void main() {
       ],
     );
 
-    await tester.tap(find.byKey(const ValueKey('admin_manage_beneficiaries')));
+    await tapVisible(tester, find.byKey(const ValueKey('admin_manage_beneficiaries')));
     await tester.pumpAndSettle();
 
     expect(find.byType(AdminBeneficiariesPage), findsOneWidget);
