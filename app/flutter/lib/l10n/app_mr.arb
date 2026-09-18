@@ -233,4 +233,11 @@
   "uploadingImage": "प्रतिमा अपलोड होत आहे...",
   "applicationDetails": "अर्ज तपशील",
   "voteAverage": "सरासरी गुण"
+  "statusSubmitted": "सादर केले",
+  "statusUnderReview": "पुनरावलोकनात",
+  "statusClarification": "स्पष्टीकरण आवश्यक",
+  "statusApproved": "मदतीसाठी मंजूर",
+  "statusRejected": "नाकारले",
+  "statusConsidered": "सन्मानासाठी विचाराधीन",
+  "statusNotSelected": "निवडलेले नाही"
 }
