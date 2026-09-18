@@ -224,6 +224,60 @@ class ApiClient {
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
+  Future<Map<String, dynamic>> uploadApplicationImage(String path) async {
+    final request = http.MultipartRequest('POST', Uri.parse('$baseUrl/media/upload'))
+      ..headers.addAll(await _headers())
+      ..files.add(await http.MultipartFile.fromPath('file', path));
+    final response = await http.Response.fromStream(await request.send());
+    _ensureSuccess(response, 'Uploading supporting image');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> createHelpApplication(Map<String, dynamic> payload) async {
+    final response = await _client.post(Uri.parse('$baseUrl/applications'), headers: await _headers(json: true), body: jsonEncode(payload));
+    _ensureSuccess(response, 'Submitting application');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<List<Map<String, dynamic>>> getMyHelpApplications() async {
+    final response = await _client.get(Uri.parse('$baseUrl/applications/mine'), headers: await _headers());
+    _ensureSuccess(response, 'Loading applications');
+    return (jsonDecode(response.body) as List<dynamic>).cast<Map<String, dynamic>>();
+  }
+
+  Future<Map<String, dynamic>> getMyHelpApplication(String id) async {
+    final response = await _client.get(Uri.parse('$baseUrl/applications/mine/$id'), headers: await _headers());
+    _ensureSuccess(response, 'Loading application');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> resubmitHelpApplication(String id, Map<String, dynamic> payload) async {
+    final response = await _client.patch(Uri.parse('$baseUrl/applications/mine/$id/resubmit'), headers: await _headers(json: true), body: jsonEncode(payload));
+    _ensureSuccess(response, 'Resubmitting application');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<List<Map<String, dynamic>>> getAdminHelpApplications({String? type, String? status}) async {
+    final uri = Uri.parse('$baseUrl/admin/applications').replace(queryParameters: {
+      if (type != null && type.isNotEmpty) 'type': type,
+      if (status != null && status.isNotEmpty) 'status': status,
+    });
+    final response = await _client.get(uri, headers: await _headers());
+    _ensureSuccess(response, 'Loading applications');
+    return (jsonDecode(response.body) as List<dynamic>).cast<Map<String, dynamic>>();
+  }
+
+  Future<void> voteHelpApplication(String id, int score, {String? comment}) async {
+    final response = await _client.post(Uri.parse('$baseUrl/admin/applications/$id/vote'), headers: await _headers(json: true), body: jsonEncode({'score': score, if (comment != null) 'comment': comment}));
+    _ensureSuccess(response, 'Saving application vote');
+  }
+
+  Future<Map<String, dynamic>> reviewHelpApplication(String id, Map<String, dynamic> payload) async {
+    final response = await _client.patch(Uri.parse('$baseUrl/admin/applications/$id/review'), headers: await _headers(json: true), body: jsonEncode(payload));
+    _ensureSuccess(response, 'Reviewing application');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
   void _ensureSuccess(http.Response response, String operation) {
     if (response.statusCode < 200 || response.statusCode >= 300) {
       final body = response.body.trim();
