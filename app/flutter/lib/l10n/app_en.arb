@@ -181,7 +181,7 @@
   "@adminOrganisationCreatedPartialFailure": {"placeholders":{"error":{}}},
   "adminOrganisationSaveFailed": "Unable to save organisation: {error}",
   "@adminOrganisationSaveFailed": {"placeholders":{"error":{}}},
-  "adminOrganisationLoadCausesFailed": "Unable to load causes.",
+  "adminOrganisationLoadCausesFailed": "Unable to load causes.",,
   "adminDeleteBeneficiary": "Delete beneficiary",
   "adminDeleteBeneficiaryTitle": "Delete beneficiary?",
   "adminDeleteBeneficiaryConfirmation": "Delete “{beneficiary}” permanently? This cannot be undone.",
