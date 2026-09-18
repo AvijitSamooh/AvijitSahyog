@@ -190,4 +190,8 @@
   "@adminDeleteBeneficiarySuccess": {"placeholders":{"beneficiary":{}}},
   "adminDeleteBeneficiaryFailed": "Unable to delete beneficiary: {error}",
   "@adminDeleteBeneficiaryFailed": {"placeholders":{"error":{}}}
+  "causeDetailsTitle": "Cause Details",
+  "supportThisCause": "Support this Cause",
+  "causeReachTitle": "How your contribution reaches people",
+  "causeReachDescription": "Your contribution supports this cause. These affiliated organisations help turn that support into real impact."
 }
