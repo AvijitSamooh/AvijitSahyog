@@ -291,7 +291,7 @@ void main() {
     await tester.tap(find.text('Remove admin').last);
     await tester.pumpAndSettle();
 
-    expect(repository.roleChanges, [('nikita-admin', 'USER')]);
+    expect(repository.roleChanges, [('nikita-user', 'USER')]);
     expect(repository.users['nikita-user']!.role, 'USER');
     expect(find.text('Nikita Manoriya'), findsNothing);
   });
