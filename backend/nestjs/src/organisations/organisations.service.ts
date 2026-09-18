@@ -137,12 +137,14 @@ export class OrganisationsService {
     this.validateTranslations(dto.translations);
     const slug = await this.generateUniqueSlug(dto.slug, dto.translations);
     const languages = await this.resolveLanguages(dto.translations);
+    const mobileNumber = this.normalizeMobileNumber(dto.mobileNumber);
     return this.prisma.organisation.create({
       data: {
         slug,
         logoUrl: dto.logoUrl,
         websiteUrl: dto.websiteUrl,
         phone: dto.phone,
+        mobileNumber,
         email: dto.email,
         address: dto.address,
         city: dto.city,
@@ -216,6 +218,9 @@ export class OrganisationsService {
           ...(dto.logoUrl !== undefined ? { logoUrl: dto.logoUrl } : {}),
           ...(dto.websiteUrl !== undefined ? { websiteUrl: dto.websiteUrl } : {}),
           ...(dto.phone !== undefined ? { phone: dto.phone } : {}),
+          ...(dto.mobileNumber !== undefined
+            ? { mobileNumber: this.normalizeMobileNumber(dto.mobileNumber) }
+            : {}),
           ...(dto.email !== undefined ? { email: dto.email } : {}),
           ...(dto.address !== undefined ? { address: dto.address } : {}),
           ...(dto.city !== undefined ? { city: dto.city } : {}),
@@ -357,6 +362,21 @@ export class OrganisationsService {
     });
   }
 
+  private normalizeMobileNumber(value: string | undefined): string | null {
+    if (value === undefined || value.trim() === '') return null;
+
+    const digits = value.replace(/\\D/g, '');
+    const indianMobile = /^[6-9]\\d{9}$/;
+    const indianWithCountryCode = /^91[6-9]\\d{9}$/;
+
+    if (indianMobile.test(digits)) return `+91${digits}`;
+    if (indianWithCountryCode.test(digits)) return `+${digits}`;
+
+    throw new BadRequestException(
+      'Mobile number must be a valid 10-digit Indian mobile number.',
+    );
+  }
+
   private async generateUniqueSlug(
     requestedSlug: string | undefined,
     translations: { languageCode: string; name: string }[],
@@ -423,6 +443,7 @@ export class OrganisationsService {
       gallery: this.galleryMedia(entity.media, 'GALLERY'),
       websiteUrl: entity.websiteUrl,
       phone: entity.phone,
+      mobileNumber: entity.mobileNumber,
       email: entity.email,
       address: entity.address,
       city: entity.city,
