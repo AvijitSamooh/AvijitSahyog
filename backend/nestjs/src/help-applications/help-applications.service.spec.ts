@@ -34,12 +34,19 @@ describe('HelpApplicationsService', () => {
       rejectionReason: null,
       clarification: null,
       adminNote: null,
+      applicantName: 'Test User', mobileNumber: '9876543210', email: null, address: '123 Test Street', city: 'Pune', state: 'Maharashtra', pincode: '411001',
       media: [{ media: { id: 'media-1', storageKey: 'applications/a.webp', mimeType: 'image/webp' } }],
     });
 
     const service = new HelpApplicationsService(prisma);
     const result = await service.create(identity, {
       type: 'EDUCATION_ASSISTANCE',
+      applicantName: 'Test User',
+      mobileNumber: '9876543210',
+      address: '123 Test Street',
+      city: 'Pune',
+      state: 'Maharashtra',
+      pincode: '411001',
       requestedAmount: 25000,
       mediaIds: ['media-1'],
     });
@@ -52,6 +59,12 @@ describe('HelpApplicationsService', () => {
     const service = new HelpApplicationsService(prisma);
     await expect(service.create(identity, {
       type: 'MEDICAL_HELP',
+      applicantName: 'Test User',
+      mobileNumber: '9876543210',
+      address: '123 Test Street',
+      city: 'Pune',
+      state: 'Maharashtra',
+      pincode: '411001',
       requestedAmount: undefined,
       mediaIds: [],
     })).rejects.toBeInstanceOf(BadRequestException);
@@ -62,6 +75,12 @@ describe('HelpApplicationsService', () => {
     const service = new HelpApplicationsService(prisma);
     await expect(service.create(identity, {
       type: 'PRATIBHA_SAMMAN',
+      applicantName: 'Test User',
+      mobileNumber: '9876543210',
+      address: '123 Test Street',
+      city: 'Pune',
+      state: 'Maharashtra',
+      pincode: '411001',
       mediaIds: [],
     })).rejects.toBeInstanceOf(BadRequestException);
   });
