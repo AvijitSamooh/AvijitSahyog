@@ -30,6 +30,7 @@ class AdminOrganisation {
     required this.causeIds,
     this.websiteUrl,
     this.phone,
+    this.mobileNumber,
     this.email,
     this.address,
     this.city,
@@ -45,6 +46,7 @@ class AdminOrganisation {
   final List<String> causeIds;
   final String? websiteUrl;
   final String? phone;
+  final String? mobileNumber;
   final String? email;
   final String? address;
   final String? city;
@@ -69,6 +71,7 @@ class AdminOrganisation {
           .toList(growable: false),
       websiteUrl: json['websiteUrl'] as String?,
       phone: json['phone'] as String?,
+      mobileNumber: json['mobileNumber'] as String?,
       email: json['email'] as String?,
       address: json['address'] as String?,
       city: json['city'] as String?,
