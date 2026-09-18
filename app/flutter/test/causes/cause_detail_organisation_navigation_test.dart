@@ -27,6 +27,7 @@ const _organisationWithGallery = Organisation(
   city: 'Mumbai',
   state: 'Maharashtra',
   gallery: ['https://images.example.com/one.webp'],
+  mobileNumber: '+919876543210',
 );
 
 const _cause = Cause(
@@ -75,6 +76,8 @@ void main() {
     expect(find.text('Serving the community.'), findsOneWidget);
     expect(find.text('Pune, Maharashtra'), findsOneWidget);
     expect(find.byType(GridView), findsNothing);
+    expect(find.byKey(const ValueKey('affiliate_call_org-1')), findsNothing);
+    expect(find.byKey(const ValueKey('affiliate_whatsapp_org-1')), findsNothing);
   });
 
   testWidgets('opens an affiliated organisation with gallery', (tester) async {
@@ -92,5 +95,7 @@ void main() {
     expect(find.byType(OrganisationDetailPage), findsOneWidget);
     expect(find.text('Shiksha Trust'), findsNWidgets(2));
     expect(find.byType(GridView), findsOneWidget);
+    expect(find.byKey(const ValueKey('affiliate_call_org-2')), findsOneWidget);
+    expect(find.byKey(const ValueKey('affiliate_whatsapp_org-2')), findsOneWidget);
   });
 }
