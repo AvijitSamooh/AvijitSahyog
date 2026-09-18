@@ -38,15 +38,17 @@ describe('CausesService', () => {
       {
         id: 'cause-1',
         slug: 'jeev-daya',
+        parentId: null,
         displayOrder: 1,
         name: 'Jeev Daya',
         description: 'Animal welfare',
+        children: [],
       },
     ]);
 
     expect(prisma.cause.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { isActive: true },
+        where: { isActive: true, parentId: null },
         orderBy: { displayOrder: 'asc' },
       }),
     );
