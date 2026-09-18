@@ -25,6 +25,8 @@ This section is the source of truth when asking **“what is pending?”**. Upda
 
 ## In Progress
 
+- [ ] Help & Recognition Applications — Education Assistance, Medical Help and Pratibha Samman applicant/reviewer workflows.
+
 - [ ] Split Education into Education Assistance and Pratibha Samman.
 
 
