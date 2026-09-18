@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/widgets/app_settings_menu.dart';
+import '../../../l10n/app_localizations.dart';
 
 import '../models/admin_organisation.dart';
 import '../providers/admin_causes_providers.dart';
