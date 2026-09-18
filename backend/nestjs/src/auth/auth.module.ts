@@ -17,6 +17,6 @@ import { PrismaModule } from '../prisma/prisma.module';
     AdminGuard,
     SuperAdminGuard,
   ],
-  exports: [AuthService, FirebaseAuthGuard, AdminGuard, SuperAdminGuard],
+  exports: [AuthService, FirebaseAuthGuard, FirebaseTokenVerifierService, AdminGuard, SuperAdminGuard],
 })
 export class AuthModule {}
