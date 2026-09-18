@@ -517,6 +517,8 @@ Prepare for real users.
 
 ### Product
 
+-   **Hierarchical cause navigation** — Education is presented as a parent cause with Education Assistance and Pratibha Samman as child causes; donation and beneficiary workflows select leaf causes.
+
 -   Accessibility review
 -   Localization review
 -   Error-state review
