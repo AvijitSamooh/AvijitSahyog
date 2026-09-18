@@ -90,7 +90,7 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
       final pageContext = context;
       final controller = TextEditingController();
       reason = await showDialog<String>(
-        context: context,
+        context: pageContext,
         builder: (context) => AlertDialog(
           title: Text(decision == 'REJECT' ? l10n.rejectionReason : l10n.clarification),
           content: TextField(controller: controller, minLines: 3, maxLines: 6),
@@ -101,7 +101,8 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
     }
 
     final trimmedReason = reason?.trim();
-    final payload = <String, dynamic>{'decision': decision, if (approvedAmount != null) 'approvedAmount': approvedAmount, if (trimmedReason?.isNotEmpty == true) 'reason': trimmedReason};
+    final payloadReason = trimmedReason?.isNotEmpty == true ? trimmedReason : null;
+    final payload = <String, dynamic>{'decision': decision, ?'approvedAmount': approvedAmount, ?'reason': payloadReason};
     await ref.read(helpApplicationsRepositoryProvider).review(item['id'] as String, payload);
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.reviewSaved)));
