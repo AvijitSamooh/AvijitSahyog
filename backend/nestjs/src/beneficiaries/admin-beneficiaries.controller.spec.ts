@@ -2,6 +2,7 @@ import { AdminBeneficiariesController } from './admin-beneficiaries.controller';
 
 describe('AdminBeneficiariesController media endpoints', () => {
   const service = {
+    remove: jest.fn(),
     listMedia: jest.fn(),
     attachMedia: jest.fn(),
     updateMedia: jest.fn(),
@@ -10,6 +11,12 @@ describe('AdminBeneficiariesController media endpoints', () => {
   const controller = new AdminBeneficiariesController(service as never);
 
   beforeEach(() => jest.clearAllMocks());
+
+  it('delegates deleting a beneficiary', async () => {
+    service.remove.mockResolvedValue({ id: 'beneficiary-1' });
+    await expect(controller.remove('beneficiary-1')).resolves.toEqual({ id: 'beneficiary-1' });
+    expect(service.remove).toHaveBeenCalledWith('beneficiary-1');
+  });
 
   it('delegates listing media', async () => {
     service.listMedia.mockResolvedValue([]);
