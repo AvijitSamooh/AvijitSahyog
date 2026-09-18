@@ -243,4 +243,5 @@
   "statusRejected": "अस्वीकृत",
   "statusConsidered": "सम्मान के लिए विचाराधीन",
   "statusNotSelected": "चयनित नहीं"
+  ,"applicantDetails":"आवेदक का विवरण","fullNameRequired":"पूरा नाम *","mobileNumberRequired":"मोबाइल नंबर *","emailOptional":"ईमेल (वैकल्पिक)","addressRequired":"पता *","cityRequired":"शहर *","stateRequired":"राज्य *","pincodeRequired":"पिन कोड *","explainNeed":"अपनी आवश्यकता बताएं *","achievementDetails":"उपलब्धि का विवरण *","supportingDocuments":"सहायक दस्तावेज़ / चित्र *","supportingDocumentsHint":"संबंधित बिल, पर्ची, फीस रसीद, प्रमाणपत्र या अन्य दस्तावेज़ अपलोड करें। अधिकतम 10 चित्र।","gallery":"गैलरी","camera":"कैमरा","uploadedCount":"{count}/10 अपलोड किए गए","@uploadedCount":{"placeholders":{"count":{"type":"int"}}},"imageUploadFailed":"चित्र अपलोड नहीं हुआ। कृपया दूसरा चित्र चुनकर फिर प्रयास करें।"
 }

@@ -100,3 +100,23 @@ Administrator endpoints:
 ## Product boundary
 
 Approval makes an assistance application suitable for donation; it does not itself create a donation or move money. Payment, donation allocation and settlement remain separate financial workflows.
+
+
+## Applicant information
+
+Every new help or recognition application collects a contact snapshot from the applicant:
+
+- Full name
+- Mobile number
+- Email (optional)
+- Address
+- City
+- State
+- PIN code
+- Requested amount for assistance applications
+- Need/achievement explanation
+- Supporting documents or images
+
+The applicant details are stored with the application so administrators can review the request even if the user's profile later changes.
+
+Supporting images are uploaded through the authenticated user media endpoint before the application is submitted. The UI supports gallery selection and camera capture, shows uploaded previews/count, limits an application to 10 images, and surfaces upload errors so the user can retry.
