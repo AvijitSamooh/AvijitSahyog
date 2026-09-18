@@ -12,9 +12,10 @@ import { MediaModule } from './media/media.module';
 import { AdminUsersModule } from './admin-users/admin-users.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { PlatformHealthModule } from './platform-health/platform-health.module';
+import { HelpApplicationsModule } from './help-applications/help-applications.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, AnalyticsModule, PlatformHealthModule, CausesModule, OrganisationsModule, DonationsModule, BeneficiariesModule, AdminDashboardModule, MediaModule, AdminUsersModule],
+  imports: [PrismaModule, AuthModule, AnalyticsModule, PlatformHealthModule, HelpApplicationsModule, CausesModule, OrganisationsModule, DonationsModule, BeneficiariesModule, AdminDashboardModule, MediaModule, AdminUsersModule],
   controllers: [AppController],
   providers: [AppService],
 })
