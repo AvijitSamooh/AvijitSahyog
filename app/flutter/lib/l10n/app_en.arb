@@ -242,4 +242,5 @@
   "statusRejected": "Rejected",
   "statusConsidered": "Considered for Samman",
   "statusNotSelected": "Not selected"
+  ,"applicantDetails":"Applicant details","fullNameRequired":"Full name *","mobileNumberRequired":"Mobile number *","emailOptional":"Email (optional)","addressRequired":"Address *","cityRequired":"City *","stateRequired":"State *","pincodeRequired":"PIN code *","explainNeed":"Explain your need *","achievementDetails":"Achievement details *","supportingDocuments":"Supporting documents / images *","supportingDocumentsHint":"Upload relevant bills, prescriptions, fee receipts, certificates or other supporting documents. Up to 10 images.","gallery":"Gallery","camera":"Camera","uploadedCount":"{count}/10 uploaded","@uploadedCount":{"placeholders":{"count":{"type":"int"}}},"imageUploadFailed":"Image upload failed. Please retry with another image."
 }
