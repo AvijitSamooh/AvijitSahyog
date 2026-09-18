@@ -85,6 +85,50 @@ describe('AdminUsersService', () => {
     }));
   });
 
+  it('searches across all roles without applying a role filter', async () => {
+    prisma.user.count.mockResolvedValue(2);
+    prisma.user.findMany.mockResolvedValue([
+      {
+        id: 'admin-1',
+        email: 'nikita.admin@example.com',
+        displayName: 'Nikita Manoriya',
+        photoUrl: null,
+        role: 'ADMIN',
+        createdAt: new Date('2026-09-14T00:00:00Z'),
+      },
+      {
+        id: 'user-1',
+        email: 'nikita.user@example.com',
+        displayName: 'Nikita Sharma',
+        photoUrl: null,
+        role: 'USER',
+        createdAt: new Date('2026-09-13T00:00:00Z'),
+      },
+    ]);
+
+    const service = new AdminUsersService(prisma);
+    const result = await service.listUsers({
+      search: 'nikita',
+      role: 'ALL',
+      page: 1,
+      pageSize: 10,
+    });
+
+    expect(result).toEqual({
+      items: expect.any(Array),
+      page: 1,
+      pageSize: 10,
+      total: 2,
+    });
+    expect(prisma.user.count).toHaveBeenCalledWith(expect.objectContaining({
+      where: expect.objectContaining({
+        OR: expect.any(Array),
+      }),
+    }));
+    expect(prisma.user.count.mock.calls[0][0].where.role).toBeUndefined();
+    expect(prisma.user.findMany.mock.calls[0][0].where.role).toBeUndefined();
+  });
+
   it('lists regular users for the make-admin search flow', async () => {
     prisma.user.count.mockResolvedValue(11);
     prisma.user.findMany.mockResolvedValue([]);
