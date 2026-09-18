@@ -102,7 +102,7 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
 
     final trimmedReason = reason?.trim();
     final payloadReason = trimmedReason?.isNotEmpty == true ? trimmedReason : null;
-    final payload = <String, dynamic>{'decision': decision, ?'approvedAmount': approvedAmount, ?'reason': payloadReason};
+    final payload = <String, dynamic>{'decision': decision, if (approvedAmount != null) 'approvedAmount': approvedAmount, if (payloadReason != null) 'reason': payloadReason};
     await ref.read(helpApplicationsRepositoryProvider).review(item['id'] as String, payload);
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.reviewSaved)));
