@@ -334,14 +334,28 @@ async function main() {
   ];
 
   for (const beneficiary of beneficiarySeeds) {
-    const existing = await prisma.beneficiary.findFirst({
-      where: { name: beneficiary.name, causeId: causeIds.get(beneficiary.cause)! },
-      select: { id: true },
-    });
     const organisation = await prisma.organisation.findUnique({
       where: { slug: beneficiary.organisation },
       select: { id: true },
     });
+    const matchingSeeds = await prisma.beneficiary.findMany({
+      where: {
+        name: beneficiary.name,
+        causeId: causeIds.get(beneficiary.cause)!,
+        organisationId: organisation?.id,
+        supportedYear: beneficiary.year,
+        contributionAmount: beneficiary.amount,
+        photoUrl: beneficiary.photoUrl,
+      },
+      orderBy: { createdAt: 'asc' },
+      select: { id: true },
+    });
+    const existing = matchingSeeds[0];
+    if (matchingSeeds.length > 1) {
+      await prisma.beneficiary.deleteMany({
+        where: { id: { in: matchingSeeds.slice(1).map((item) => item.id) } },
+      });
+    }
     const data = {
       name: beneficiary.name,
       photoUrl: beneficiary.photoUrl,
