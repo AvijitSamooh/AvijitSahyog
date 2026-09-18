@@ -212,9 +212,9 @@ void main() {
     expect(find.text('nikita-admin@example.com'), findsOneWidget);
     expect(find.text('User'), findsOneWidget);
     expect(find.text('Admin'), findsOneWidget);
-    expect(find.text('Make admin'), findsOneWidget);
+    expect(find.text('Make admin'), findsNWidgets(3));
 
-    await tester.tap(find.text('Make admin'));
+    await tester.tap(find.byType(FilledButton).first);
     await tester.pumpAndSettle();
     expect(find.text('Make admin'), findsOneWidget);
     await tester.tap(find.text('Make admin').last);
