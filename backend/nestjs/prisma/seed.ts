@@ -29,20 +29,42 @@ const causes = [
     },
   },
   {
-    slug: 'education',
+    slug: 'education-assistance',
     displayOrder: 2,
     translations: {
       en: {
-        name: 'Education',
-        description: 'Support for education and learning opportunities.',
+        name: 'Education Assistance',
+        description: 'Need-based support for students who need help continuing their education.',
       },
       hi: {
-        name: 'शिक्षा',
-        description: 'शिक्षा और सीखने के अवसरों के लिए सहयोग।',
+        name: 'शिक्षा सहायता',
+        description: 'शिक्षा जारी रखने के लिए आवश्यकता वाले विद्यार्थियों को सहयोग।',
       },
       mr: {
-        name: 'शिक्षण',
-        description: 'शिक्षण आणि शिकण्याच्या संधींसाठी सहकार्य.',
+        name: 'शिक्षण सहाय्य',
+        description: 'शिक्षण सुरू ठेवण्यासाठी गरजू विद्यार्थ्यांना सहकार्य.',
+      },
+    },
+  },
+  {
+    slug: 'pratibha-samman',
+    displayOrder: 3,
+    translations: {
+      en: {
+        name: 'Pratibha Samman',
+        description: 'Recognize and honour exceptional achievements in education, profession, sports, arts, culture and community service.',
+      },
+      hi: {
+        name: 'प्रतिभा सम्मान',
+        description: 'शिक्षा, पेशे, खेल, कला, संस्कृति और समाज सेवा में उत्कृष्ट उपलब्धियों का सम्मान और अभिनंदन।',
+      },
+      mr: {
+        name: 'प्रतिभा सन्मान',
+        description: 'शिक्षण, व्यवसाय, क्रीडा, कला, संस्कृती आणि समाजसेवेत उल्लेखनीय कामगिरीचा सन्मान.',
+      },
+      gu: {
+        name: 'પ્રતિભા સન્માન',
+        description: 'શિક્ષણ, વ્યવસાય, રમતગમત, કલા, સંસ્કૃતિ અને સમાજસેવામાં ઉત્કૃષ્ટ સિદ્ધિઓનું સન્માન.',
       },
     },
   },
@@ -103,7 +125,7 @@ const organisations = [
       hi: { name: 'डेमो शिक्षा सहयोग संस्था', description: 'सीड/डेमो संस्था। वास्तविक संस्था की सत्यापित जानकारी से बदलें।' },
       mr: { name: 'डेमो शिक्षण सहकार्य संस्था', description: 'सीड/डेमो संस्था. सत्यापित संस्थेच्या माहितीसह बदला.' },
     },
-    causes: ['education'],
+    causes: ['education-assistance'],
   },
   {
     slug: 'demo-healthcare-support',
@@ -247,7 +269,7 @@ async function main() {
   const beneficiarySeeds = [
     {
       name: 'Rahul Kumar',
-      cause: 'education',
+      cause: 'education-assistance',
       organisation: 'demo-education-support',
       year: 2025,
       amount: '25000',
