@@ -233,4 +233,11 @@
   "uploadingImage": "છબી અપલોડ થઈ રહી છે...",
   "applicationDetails": "અરજી વિગતો",
   "voteAverage": "સરેરાશ સ્કોર"
+  "statusSubmitted": "સબમિટ થયેલ",
+  "statusUnderReview": "સમીક્ષા હેઠળ",
+  "statusClarification": "સ્પષ્ટતા જરૂરી",
+  "statusApproved": "સહાય માટે મંજૂર",
+  "statusRejected": "નકારેલ",
+  "statusConsidered": "સન્માન માટે વિચારાધીન",
+  "statusNotSelected": "પસંદ થયેલ નથી"
 }
