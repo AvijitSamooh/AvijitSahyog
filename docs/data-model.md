@@ -192,6 +192,16 @@ After an image is uploaded into the Media domain, an administrator explicitly at
 
 Supported purposes are `LOGO` and `GALLERY`.
 
+### Admin beneficiary API
+
+- `GET /admin/beneficiaries`
+- `GET /admin/beneficiaries/:id`
+- `POST /admin/beneficiaries`
+- `PATCH /admin/beneficiaries/:id`
+- `DELETE /admin/beneficiaries/:id`
+- `PATCH /admin/beneficiaries/:id/activate`
+- `PATCH /admin/beneficiaries/:id/deactivate`
+
 ### Beneficiary media API
 
 - `GET /admin/beneficiaries/:id/media`
