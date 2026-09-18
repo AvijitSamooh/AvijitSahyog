@@ -152,12 +152,12 @@
   "adminDeleteOrganisationSuccess": "“{organisation}” हटा दी गई।",
   "@adminDeleteOrganisationSuccess": {"placeholders": {"organisation": {}}},
   "cancel": "रद्द करें",
-  "adminOrganisationPhone": "फ़ोन",,
-  "adminOrganisationMobileNumber": "मोबाइल नंबर",,
-  "adminOrganisationMobileNumberHint": "10 अंकों का भारतीय मोबाइल नंबर",,
-  "affiliateCall": "संबद्ध संस्था को कॉल करें",,
-  "affiliateWhatsApp": "संबद्ध संस्था को WhatsApp करें",,
-  "affiliateCallFailed": "फ़ोन डायलर नहीं खोला जा सका।",,
+  "adminOrganisationPhone": "फ़ोन",
+  "adminOrganisationMobileNumber": "मोबाइल नंबर",
+  "adminOrganisationMobileNumberHint": "10 अंकों का भारतीय मोबाइल नंबर",
+  "affiliateCall": "संबद्ध संस्था को कॉल करें",
+  "affiliateWhatsApp": "संबद्ध संस्था को WhatsApp करें",
+  "affiliateCallFailed": "फ़ोन डायलर नहीं खोला जा सका।",
   "affiliateWhatsAppFailed": "WhatsApp नहीं खोला जा सका।"
 
 }
