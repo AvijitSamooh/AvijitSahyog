@@ -78,7 +78,6 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     super.initState();
     final existing = widget.application;
     if (existing?.requestedAmount != null) _amount.text = existing!.requestedAmount.toString();
-    if (existing?.clarification != null) _clarification.text = existing!.clarification!;
   }
 
   @override
@@ -147,6 +146,10 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
           if (!isSamman)
             TextField(controller: _amount, keyboardType: const TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(labelText: l10n.requestedAmount, prefixText: '₹')),
+          if (widget.application?.rejectionReason != null) ...[
+            Text(l10n.rejectionReason + ': ' + widget.application!.rejectionReason!),
+            const SizedBox(height: 12),
+          ],
           const SizedBox(height: 16),
           TextField(controller: _clarification, minLines: 4, maxLines: 8,
             decoration: InputDecoration(labelText: l10n.clarification)),
