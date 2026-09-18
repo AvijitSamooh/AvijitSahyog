@@ -37,13 +37,22 @@ class AdminCausesPage extends ConsumerWidget {
             return const Center(child: Text('No causes created yet.'));
           }
 
+          final roots = items.where((item) => item.parentId == null).toList(growable: false);
           return RefreshIndicator(
             onRefresh: () async => ref.refresh(adminCausesProvider.future),
-            child: ListView.separated(
+            child: ListView(
               padding: const EdgeInsets.all(16),
-              itemCount: items.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 8),
-              itemBuilder: (_, index) => _CauseTile(cause: items[index]),
+              children: [
+                for (final cause in roots) ...[
+                  _CauseTile(cause: cause),
+                  for (final child in cause.children)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 28, top: 6),
+                      child: _CauseTile(cause: child, child: true),
+                    ),
+                  const SizedBox(height: 8),
+                ],
+              ],
             ),
           );
         },
@@ -53,19 +62,35 @@ class AdminCausesPage extends ConsumerWidget {
 }
 
 class _CauseTile extends ConsumerWidget {
-  const _CauseTile({required this.cause});
+  const _CauseTile({required this.cause, this.child = false});
 
   final AdminCause cause;
+  final bool child;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       child: ListTile(
         key: ValueKey('admin_cause_${cause.id}'),
-        title: Text(cause.displayName),
-        subtitle: Text('${cause.slug} • Order ${cause.displayOrder}'),
+        contentPadding: EdgeInsets.only(left: child ? 12 : 16, right: 8),
+        title: Row(
+          children: [
+            if (child) ...[
+              const Icon(Icons.subdirectory_arrow_right_rounded, size: 18),
+              const SizedBox(width: 8),
+            ],
+            Expanded(child: Text(cause.displayName)),
+          ],
+        ),
+        subtitle: Text(
+          child ? cause.slug : '${cause.slug} • Order ${cause.displayOrder}',
+        ),
         leading: Icon(
-          cause.isActive ? Icons.check_circle_rounded : Icons.pause_circle,
+          child
+              ? Icons.label_outline_rounded
+              : (cause.children.isNotEmpty
+                  ? Icons.account_tree_rounded
+                  : Icons.check_circle_rounded),
         ),
         trailing: Switch(
           key: ValueKey('admin_cause_active_${cause.id}'),
