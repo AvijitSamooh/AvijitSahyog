@@ -185,9 +185,9 @@
   "adminDeleteBeneficiary": "Delete beneficiary",
   "adminDeleteBeneficiaryTitle": "Delete beneficiary?",
   "adminDeleteBeneficiaryConfirmation": "Delete “{beneficiary}” permanently? This cannot be undone.",
-  "@adminDeleteBeneficiaryConfirmation": {"placeholders":{"beneficiary":{},"error":{}}},
+  "@adminDeleteBeneficiaryConfirmation": {"placeholders":{"beneficiary":{}}},
   "adminDeleteBeneficiarySuccess": "“{beneficiary}” was deleted.",
-  "@adminDeleteBeneficiarySuccess": {"placeholders":{"beneficiary":{},"error":{}}},
+  "@adminDeleteBeneficiarySuccess": {"placeholders":{"beneficiary":{}}},
   "adminDeleteBeneficiaryFailed": "Unable to delete beneficiary: {error}",
-  "@adminDeleteBeneficiaryFailed": {"placeholders":{"beneficiary":{},"error":{}}}
+  "@adminDeleteBeneficiaryFailed": {"placeholders":{"error":{}}}
 }
