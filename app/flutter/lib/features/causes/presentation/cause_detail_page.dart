@@ -170,14 +170,14 @@ class _OrganisationInfoCard extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            key: ValueKey('affiliate_call_' + organisation.id),
+                            key: ValueKey('affiliate_call_${organisation.id}'),
                             tooltip: l10n.affiliateCall,
                             visualDensity: VisualDensity.compact,
                             icon: const Icon(Icons.phone_rounded),
                             onPressed: () => _callAffiliate(context, organisation.mobileNumber!),
                           ),
                           IconButton(
-                            key: ValueKey('affiliate_whatsapp_' + organisation.id),
+                            key: ValueKey('affiliate_whatsapp_${organisation.id}'),
                             tooltip: l10n.affiliateWhatsApp,
                             visualDensity: VisualDensity.compact,
                             icon: const Icon(Icons.chat_rounded),
@@ -211,7 +211,7 @@ bool _hasValidMobileNumber(String? value) {
 
   String _whatsAppNumber(String value) {
     final digits = value.replaceAll(RegExp(r'\D'), '');
-    return digits.length == 10 ? '91' + digits : digits;
+    return digits.length == 10 ? '91$digits' : digits;
   }
 
   Future<void> _callAffiliate(BuildContext context, String value) async {
@@ -224,7 +224,7 @@ bool _hasValidMobileNumber(String? value) {
   }
 
   Future<void> _openWhatsApp(BuildContext context, String value) async {
-    final uri = Uri.parse('https://wa.me/' + _whatsAppNumber(value));
+    final uri = Uri.parse('https://wa.me/${_whatsAppNumber(value)}');
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!launched && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
