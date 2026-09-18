@@ -7,6 +7,7 @@ import 'package:avijit_sahyog/features/admin/data/admin_beneficiaries_repository
 import 'package:avijit_sahyog/features/admin/models/admin_beneficiary.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_beneficiaries_page.dart';
 import 'package:avijit_sahyog/features/admin/providers/admin_beneficiaries_providers.dart';
+import 'package:avijit_sahyog/l10n/app_localizations.dart';
 
 class _FakeRepository extends AdminBeneficiariesRepository {
   _FakeRepository() : super(ApiClient());
@@ -42,8 +43,10 @@ void main() {
         overrides: [
           adminBeneficiariesRepositoryProvider.overrideWithValue(repository),
         ],
-        child: const MaterialApp(
-          home: AdminBeneficiariesPage(),
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const AdminBeneficiariesPage(),
         ),
       ),
     );
