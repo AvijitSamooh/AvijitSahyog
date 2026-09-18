@@ -186,7 +186,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
       if (images.isEmpty) return;
       await _uploadImages(images.take(remaining).toList());
     } catch (error) {
-      if (mounted) _showError('Unable to select images: $error');
+      if (mounted) _showError('${l10n.imageUploadFailed} $error');
     }
   }
 
@@ -197,7 +197,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
       if (image == null) return;
       await _uploadImages([image]);
     } catch (error) {
-      if (mounted) _showError('Unable to capture image: $error');
+      if (mounted) _showError('${l10n.imageUploadFailed} $error');
     }
   }
 
@@ -212,7 +212,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
           _selectedImages.add(image);
         } catch (error) {
           if (mounted) {
-            _showError('Image upload failed. Please retry with another image. $error');
+            _showError('${l10n.imageUploadFailed} $error');
           }
           break;
         }
@@ -293,34 +293,34 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 110),
           children: [
-            Text('Applicant details', style: Theme.of(context).textTheme.titleLarge),
+            Text(l10n.applicantDetails, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 12),
             TextFormField(
               key: const ValueKey('application_applicant_name'),
               controller: _name,
               textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(labelText: 'Full name *', prefixIcon: Icon(Icons.person_outline)),
+              decoration: const InputDecoration(labelText: l10n.fullNameRequired, prefixIcon: Icon(Icons.person_outline)),
               validator: (v) => _required(v, 'Full name'),
             ),
             TextFormField(
               key: const ValueKey('application_mobile'),
               controller: _mobile,
               keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(labelText: 'Mobile number *', prefixIcon: Icon(Icons.phone_outlined)),
+              decoration: const InputDecoration(labelText: l10n.mobileNumberRequired, prefixIcon: Icon(Icons.phone_outlined)),
               validator: _mobileValidator,
             ),
             TextFormField(
               key: const ValueKey('application_email'),
               controller: _email,
               keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(labelText: 'Email (optional)', prefixIcon: Icon(Icons.email_outlined)),
+              decoration: const InputDecoration(labelText: l10n.emailOptional, prefixIcon: Icon(Icons.email_outlined)),
             ),
             TextFormField(
               key: const ValueKey('application_address'),
               controller: _address,
               minLines: 2,
               maxLines: 4,
-              decoration: const InputDecoration(labelText: 'Address *', prefixIcon: Icon(Icons.home_outlined)),
+              decoration: const InputDecoration(labelText: l10n.addressRequired, prefixIcon: Icon(Icons.home_outlined)),
               validator: (v) => _required(v, 'Address'),
             ),
             Row(
@@ -329,14 +329,14 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
                 Expanded(child: TextFormField(
                   key: const ValueKey('application_city'),
                   controller: _city,
-                  decoration: const InputDecoration(labelText: 'City *'),
+                  decoration: const InputDecoration(labelText: l10n.cityRequired),
                   validator: (v) => _required(v, 'City'),
                 )),
                 const SizedBox(width: 12),
                 Expanded(child: TextFormField(
                   key: const ValueKey('application_state'),
                   controller: _state,
-                  decoration: const InputDecoration(labelText: 'State *'),
+                  decoration: const InputDecoration(labelText: l10n.stateRequired),
                   validator: (v) => _required(v, 'State'),
                 )),
               ],
@@ -345,7 +345,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
               key: const ValueKey('application_pincode'),
               controller: _pincode,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'PIN code *', prefixIcon: Icon(Icons.location_on_outlined)),
+              decoration: const InputDecoration(labelText: l10n.pincodeRequired, prefixIcon: Icon(Icons.location_on_outlined)),
               validator: _pincodeValidator,
             ),
             const SizedBox(height: 20),
@@ -366,17 +366,17 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
               minLines: 4,
               maxLines: 8,
               decoration: InputDecoration(
-                labelText: isSamman ? 'Achievement details *' : 'Explain your need *',
+                labelText: isSamman ? l10n.achievementDetails : l10n.explainNeed,
                 alignLabelWithHint: true,
                 prefixIcon: const Icon(Icons.description_outlined),
               ),
-              validator: (v) => _required(v, isSamman ? 'Achievement details' : 'Explanation'),
+              validator: (v) => _required(v, isSamman ? l10n.achievementDetails : l10n.explainNeed),
             ),
             const SizedBox(height: 20),
-            Text('Supporting documents / images *', style: Theme.of(context).textTheme.titleMedium),
+            Text(l10n.supportingDocuments, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
             Text(
-              'Upload relevant bills, prescriptions, fee receipts, certificates or other supporting documents. Up to 10 images.',
+              l10n.supportingDocumentsHint,
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 10),
@@ -386,14 +386,14 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
                   key: const ValueKey('application_gallery'),
                   onPressed: _busy || _mediaIds.length >= 10 ? null : _pickImages,
                   icon: const Icon(Icons.photo_library_outlined),
-                  label: const Text('Gallery'),
+                  label: Text(l10n.gallery),
                 )),
                 const SizedBox(width: 10),
                 Expanded(child: OutlinedButton.icon(
                   key: const ValueKey('application_camera'),
                   onPressed: _busy || _mediaIds.length >= 10 ? null : _takePhoto,
                   icon: const Icon(Icons.camera_alt_outlined),
-                  label: const Text('Camera'),
+                  label: Text(l10n.camera),
                 )),
               ],
             ),
@@ -421,7 +421,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
             if (_mediaIds.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: Text('${_mediaIds.length}/10 uploaded'),
+                child: Text(l10n.uploadedCount(_mediaIds.length)),
               ),
             const SizedBox(height: 24),
             FilledButton.icon(
