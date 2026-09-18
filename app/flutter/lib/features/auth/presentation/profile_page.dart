@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/widgets/app_settings_menu.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../admin/presentation/admin_portal_page.dart';
+import '../../applications/presentation/applications_page.dart';
 import '../providers/auth_providers.dart';
 
 class ProfilePage extends ConsumerWidget {
@@ -32,6 +33,15 @@ class ProfilePage extends ConsumerWidget {
                   ),
                   title: Text(user.displayName ?? l10n.profile),
                   subtitle: Text(user.email ?? ''),
+                ),
+                const Divider(),
+                ListTile(
+                  leading: const Icon(Icons.assignment_rounded),
+                  title: Text(l10n.applicationsTitle),
+                  subtitle: Text(l10n.applicationHistory),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const ApplicationsPage()),
+                  ),
                 ),
                 const Divider(),
                 if (user.isAdmin)

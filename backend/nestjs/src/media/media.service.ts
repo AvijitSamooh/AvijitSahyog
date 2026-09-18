@@ -19,7 +19,7 @@ export class MediaService {
     private readonly prisma: PrismaService,
   ) {}
 
-  async uploadImage(file: Express.Multer.File, folder = 'uploads') {
+  async uploadImage(file: Express.Multer.File, folder = 'uploads', uploadedById?: string) {
     if (!file) {
       throw new BadRequestException('Image file is required.');
     }
@@ -70,6 +70,7 @@ export class MediaService {
       try {
         return await this.prisma.media.create({
           data: {
+            ...(uploadedById ? { uploadedById } : {}),
             storageKey: key,
             mimeType: 'image/webp',
             fileSize: processedBuffer.length,
