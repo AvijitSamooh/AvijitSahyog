@@ -160,4 +160,26 @@
   "affiliateCallFailed": "ફોન ડાયલર ખોલી શકાયું નથી.",
   "affiliateWhatsAppFailed": "WhatsApp ખોલી શકાયું નથી."
 
+,
+  "adminEditOrganisation": "સંસ્થા સંપાદિત કરો",
+  "adminOrganisationWebsite": "વેબસાઇટ",
+  "adminOrganisationEmail": "ઈમેલ",
+  "adminOrganisationAddress": "સરનામું",
+  "adminOrganisationCity": "શહેર",
+  "adminOrganisationState": "રાજ્ય",
+  "adminOrganisationCountry": "દેશ",
+  "adminOrganisationDisplayOrder": "પ્રદર્શન ક્રમ",
+  "adminSupportedCauses": "સમર્થિત સેવા ક્ષેત્રો",
+  "adminOrganisationImages": "સંસ્થાની છબીઓ",
+  "adminTranslations": "અનુવાદ",
+  "adminTranslationName": "નામ",
+  "adminTranslationDescription": "વર્ણન",
+  "adminOrganisationSaving": "સાચવી રહ્યા છીએ...",
+  "adminSaveChanges": "ફેરફારો સાચવો",
+  "adminAddAtLeastOneTranslation": "ઓછામાં ઓછો એક અનુવાદ ઉમેરો.",
+  "adminOrganisationCreatedPartialFailure": "સંસ્થા બનાવવામાં આવી, પરંતુ કેટલાક અનુગામી ફેરફારો નિષ્ફળ રહ્યા: {error}. ફરી પ્રયાસ કરવા માટે તેને ફરીથી ખોલો.",
+  "@adminOrganisationCreatedPartialFailure": {"placeholders":{"error":{}}},
+  "adminOrganisationSaveFailed": "સંસ્થા સાચવી શકાઈ નથી: {error}",
+  "@adminOrganisationSaveFailed": {"placeholders":{"error":{}}},
+  "adminOrganisationLoadCausesFailed": "સેવા ક્ષેત્રો લોડ કરી શકાયા નથી."
 }
