@@ -12,6 +12,7 @@ import { memoryStorage } from 'multer';
 import { AdminGuard } from '../auth/admin.guard';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { AuthenticatedRequest } from '../auth/auth.types';
+import { AuthService } from '../auth/auth.service';
 import { Request } from 'express';
 import { MediaService } from './media.service';
 import { R2StorageService } from './r2-storage.service';
@@ -52,7 +53,7 @@ export class MediaController {
 @Controller('media')
 @UseGuards(FirebaseAuthGuard)
 export class UserMediaController {
-  constructor(private readonly mediaService: MediaService) {}
+  constructor(private readonly mediaService: MediaService, private readonly authService: AuthService) {}
 
   @Post('upload')
   @UseInterceptors(
@@ -62,6 +63,7 @@ export class UserMediaController {
     }),
   )
   async uploadUserImage(@Req() req: Request & AuthenticatedRequest, @UploadedFile() file: Express.Multer.File) {
-    return this.mediaService.uploadImage(file, 'applications', req.user.uid);
+    const user = await this.authService.getCurrentUser(req.user);
+    return this.mediaService.uploadImage(file, 'applications', user.id);
   }
 }
