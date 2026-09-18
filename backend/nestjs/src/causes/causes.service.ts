@@ -14,12 +14,22 @@ export class CausesService {
 
   async findAll(languageCode = 'en') {
     const causes = await this.prisma.cause.findMany({
-      where: { isActive: true },
+      where: { isActive: true, parentId: null },
       orderBy: { displayOrder: 'asc' },
       include: {
         translations: {
           where: { language: { code: { in: [languageCode, 'en'] } } },
           include: { language: true },
+        },
+        children: {
+          where: { isActive: true },
+          orderBy: { displayOrder: 'asc' },
+          include: {
+            translations: {
+              where: { language: { code: { in: [languageCode, 'en'] } } },
+              include: { language: true },
+            },
+          },
         },
       },
     });
@@ -34,6 +44,16 @@ export class CausesService {
         translations: {
           where: { language: { code: { in: [languageCode, 'en'] } } },
           include: { language: true },
+        },
+        children: {
+          where: { isActive: true },
+          orderBy: { displayOrder: 'asc' },
+          include: {
+            translations: {
+              where: { language: { code: { in: [languageCode, 'en'] } } },
+              include: { language: true },
+            },
+          },
         },
         organisations: {
           where: {
@@ -132,6 +152,7 @@ export class CausesService {
     return this.prisma.cause.create({
       data: {
         slug: dto.slug,
+        parentId: dto.parentId ?? null,
         displayOrder: dto.displayOrder ?? 0,
         translations: {
           create: dto.translations.map((translation) => ({
@@ -199,6 +220,7 @@ export class CausesService {
         where: { id },
         data: {
           ...(dto.slug !== undefined ? { slug: dto.slug } : {}),
+          ...(dto.parentId !== undefined ? { parentId: dto.parentId } : {}),
           ...(dto.displayOrder !== undefined
             ? { displayOrder: dto.displayOrder }
             : {}),
@@ -257,8 +279,16 @@ export class CausesService {
     return {
       id: entity.id,
       slug: entity.slug,
+      parentId: entity.parentId ?? null,
       displayOrder: entity.displayOrder,
       ...this.translation(entity.translations, languageCode),
+      children: (entity.children ?? []).map((child: any) => ({
+        id: child.id,
+        slug: child.slug,
+        parentId: child.parentId ?? entity.id,
+        displayOrder: child.displayOrder,
+        ...this.translation(child.translations ?? [], languageCode),
+      })),
     };
   }
 
