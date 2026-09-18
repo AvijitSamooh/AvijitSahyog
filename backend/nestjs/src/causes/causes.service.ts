@@ -78,8 +78,8 @@ export class CausesService {
         city: organisation.city,
         state: organisation.state,
         country: organisation.country,
-        latitude: organisation.latitude,
-        longitude: organisation.longitude,
+        latitude: organisation.latitude == null ? null : Number(organisation.latitude),
+        longitude: organisation.longitude == null ? null : Number(organisation.longitude),
         ...this.translation(organisation.translations, languageCode),
       })),
     };
