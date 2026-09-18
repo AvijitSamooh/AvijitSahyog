@@ -89,13 +89,14 @@ void main() {
       300,
       scrollable: find.byType(Scrollable).first,
     );
+    expect(find.byKey(const ValueKey('affiliate_call_org-2')), findsOneWidget);
+    expect(find.byKey(const ValueKey('affiliate_whatsapp_org-2')), findsOneWidget);
+
     await tester.tap(organisationName);
     await tester.pumpAndSettle();
 
     expect(find.byType(OrganisationDetailPage), findsOneWidget);
     expect(find.text('Shiksha Trust'), findsNWidgets(2));
     expect(find.byType(GridView), findsOneWidget);
-    expect(find.byKey(const ValueKey('affiliate_call_org-2')), findsOneWidget);
-    expect(find.byKey(const ValueKey('affiliate_whatsapp_org-2')), findsOneWidget);
   });
 }
