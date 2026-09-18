@@ -23,7 +23,8 @@ class _FakeAdminUsersRepository extends AdminUsersRepository {
 
   bool failRoleChange;
   final Map<String, AdminUser> users = {
-    'nikita': _user('nikita', 'Nikita Manoriya', role: 'USER'),
+    'nikita-user': _user('nikita-user', 'Nikita Manoriya', role: 'USER'),
+    'nikita-admin': _user('nikita-admin', 'Nikita Sharma', role: 'ADMIN'),
   };
   final List<(String userId, String role)> roleChanges = [];
 
@@ -37,7 +38,7 @@ class _FakeAdminUsersRepository extends AdminUsersRepository {
     final normalizedSearch = search?.trim().toLowerCase() ?? '';
     final matching = users.values
         .where((user) =>
-            user.role == role &&
+            (role == 'ALL' || user.role == role) &&
             (normalizedSearch.isEmpty ||
                 user.label.toLowerCase().contains(normalizedSearch) ||
                 (user.email?.toLowerCase().contains(normalizedSearch) ?? false)))
@@ -165,7 +166,7 @@ void main() {
     expect(find.text('Nikita'), findsOneWidget);
   });
 
-  testWidgets('offers to search users for promotion when no administrator matches', (tester) async {
+  testWidgets('shows a genuine no-results state when no user matches the search', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -187,15 +188,15 @@ void main() {
     );
 
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField).first, 'nikita');
+    await tester.enterText(find.byType(TextField).first, 'does-not-exist');
     await tester.pump(const Duration(milliseconds: 400));
     await tester.pumpAndSettle();
 
     expect(find.text('No users found.'), findsOneWidget);
-    expect(find.text('Make admin'), findsOneWidget);
+    expect(find.text('Make admin'), findsNothing);
   });
 
-  testWidgets('recovers a former administrator through search, promotes them, and refreshes the list', (tester) async {
+  testWidgets('search shows multiple matching users with details and allows selecting the correct user', (tester) async {
     final repository = _FakeAdminUsersRepository();
     await tester.pumpWidget(_buildPage(repository));
     await tester.pumpAndSettle();
@@ -203,24 +204,25 @@ void main() {
     await tester.enterText(find.byType(TextField).first, 'nikita');
     await tester.pump(const Duration(milliseconds: 400));
     await tester.pumpAndSettle();
-    expect(find.text('Nikita Manoriya'), findsNothing);
+
+    expect(find.text('2 matching users'), findsOneWidget);
+    expect(find.text('Nikita Manoriya'), findsOneWidget);
+    expect(find.text('Nikita Sharma'), findsOneWidget);
+    expect(find.text('nikita-user@example.com'), findsOneWidget);
+    expect(find.text('nikita-admin@example.com'), findsOneWidget);
+    expect(find.text('User'), findsOneWidget);
+    expect(find.text('Admin'), findsOneWidget);
     expect(find.text('Make admin'), findsOneWidget);
 
     await tester.tap(find.text('Make admin'));
     await tester.pumpAndSettle();
-    expect(find.text('Nikita Manoriya'), findsOneWidget);
-
-    await tester.tap(find.text('Nikita Manoriya'));
-    await tester.pumpAndSettle();
-    expect(find.text('Make admin'), findsWidgets);
-
+    expect(find.text('Make admin'), findsOneWidget);
     await tester.tap(find.text('Make admin').last);
     await tester.pumpAndSettle();
 
-    expect(repository.roleChanges, [('nikita', 'ADMIN')]);
-    expect(repository.users['nikita']!.role, 'ADMIN');
+    expect(repository.roleChanges, [('nikita-user', 'ADMIN')]);
+    expect(repository.users['nikita-user']!.role, 'ADMIN');
     expect(find.text('User is now an administrator and the change was recorded.'), findsOneWidget);
-    expect(find.text('Nikita Manoriya'), findsOneWidget);
   });
 
   testWidgets('cancelling promotion leaves the user unchanged', (tester) async {
@@ -236,7 +238,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repository.roleChanges, isEmpty);
-    expect(repository.users['nikita']!.role, 'USER');
+    expect(repository.users['nikita-admin']!.role, 'USER');
   });
 
   testWidgets('promotion failure keeps the user as a normal user and shows the error', (tester) async {
@@ -258,7 +260,7 @@ void main() {
 
   testWidgets('cancelling demotion keeps the administrator unchanged', (tester) async {
     final repository = _FakeAdminUsersRepository();
-    repository.users['nikita'] = _user('nikita', 'Nikita Manoriya');
+    repository.users.remove('nikita-user');
     await tester.pumpWidget(_buildPage(repository));
     await tester.pumpAndSettle();
 
@@ -287,14 +289,14 @@ void main() {
     await tester.tap(find.text('Remove admin').last);
     await tester.pumpAndSettle();
 
-    expect(repository.roleChanges, [('nikita', 'USER')]);
+    expect(repository.roleChanges, [('nikita-admin', 'USER')]);
     expect(repository.users['nikita']!.role, 'USER');
     expect(find.text('Nikita Manoriya'), findsNothing);
   });
 
   testWidgets('demotion failure keeps the administrator visible', (tester) async {
     final repository = _FakeAdminUsersRepository(failRoleChange: true);
-    repository.users['nikita'] = _user('nikita', 'Nikita Manoriya');
+    repository.users.remove('nikita-user');
     await tester.pumpWidget(_buildPage(repository));
     await tester.pumpAndSettle();
 
