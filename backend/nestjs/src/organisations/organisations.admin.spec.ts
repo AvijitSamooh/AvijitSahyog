@@ -47,6 +47,38 @@ describe('OrganisationsService admin operations', () => {
     ).resolves.toEqual({ id: 'org-1', slug: 'help-foundation' });
   });
 
+
+  it('normalizes a valid Indian mobile number to E.164 format', async () => {
+    prisma.organisation.findUnique.mockResolvedValue(null);
+    prisma.language.findMany.mockResolvedValue([{ id: 'en-id', code: 'en' }]);
+    prisma.organisation.create.mockResolvedValue({ id: 'org-1', slug: 'help-foundation' });
+
+    await service.create({
+      mobileNumber: '98765 43210',
+      translations: [{ languageCode: 'en', name: 'Help Foundation' }],
+    });
+
+    expect(prisma.organisation.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ mobileNumber: '+919876543210' }),
+      }),
+    );
+  });
+
+  it('rejects an invalid Indian mobile number', async () => {
+    prisma.organisation.findUnique.mockResolvedValue(null);
+    prisma.language.findMany.mockResolvedValue([{ id: 'en-id', code: 'en' }]);
+
+    await expect(
+      service.create({
+        mobileNumber: '12345',
+        translations: [{ languageCode: 'en', name: 'Help Foundation' }],
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+
+    expect(prisma.organisation.create).not.toHaveBeenCalled();
+  });
+
   it('rejects duplicate translation languages', async () => {
     await expect(
       service.create({
