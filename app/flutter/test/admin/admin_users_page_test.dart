@@ -217,8 +217,13 @@ void main() {
 
     await tester.tap(promoteButtons);
     await tester.pumpAndSettle();
-    expect(find.text('Make admin'), findsOneWidget);
-    await tester.tap(find.text('Make admin').last);
+    final confirmation = find.byType(AlertDialog).last;
+    final confirmButton = find.descendant(
+      of: confirmation,
+      matching: find.byType(FilledButton),
+    );
+    expect(confirmButton, findsOneWidget);
+    await tester.tap(confirmButton);
     await tester.pumpAndSettle();
 
     expect(repository.roleChanges, [('nikita-user', 'ADMIN')]);
