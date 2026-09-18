@@ -190,4 +190,8 @@
   "@adminDeleteBeneficiarySuccess": {"placeholders":{"beneficiary":{}}},
   "adminDeleteBeneficiaryFailed": "લાભાર્થી કાઢી શકાયો નથી: {error}",
   "@adminDeleteBeneficiaryFailed": {"placeholders":{"error":{}}}
+  "causeDetailsTitle": "સેવા ક્ષેત્રની વિગતો",
+  "supportThisCause": "આ સેવા ક્ષેત્રને ટેકો આપો",
+  "causeReachTitle": "તમારું યોગદાન લોકો સુધી કેવી રીતે પહોંચે છે",
+  "causeReachDescription": "તમારું યોગદાન આ સેવા ક્ષેત્રને ટેકો આપે છે. આ સંલગ્ન સંસ્થાઓ આ સહાયને વાસ્તવિક અસરમાં ફેરવવામાં મદદ કરે છે."
 }
