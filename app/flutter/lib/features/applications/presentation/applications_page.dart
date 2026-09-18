@@ -209,7 +209,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
           _mediaIds.add(id);
           _selectedImages.add(image);
         } catch (error) {
-          if (mounted) _showError(AppLocalizations.of(context)!.imageUploadFailed + ' ' + error.toString());
+          if (mounted) _showError('${AppLocalizations.of(context)!.imageUploadFailed} ${error.toString()}');
           break;
         }
       }
