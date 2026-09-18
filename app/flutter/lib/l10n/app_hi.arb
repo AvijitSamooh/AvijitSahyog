@@ -189,7 +189,7 @@
   "adminDeleteBeneficiarySuccess": "“{beneficiary}” हटा दिया गया।",
   "@adminDeleteBeneficiarySuccess": {"placeholders":{"beneficiary":{}}},
   "adminDeleteBeneficiaryFailed": "लाभार्थी हटाया नहीं जा सका: {error}",
-  "@adminDeleteBeneficiaryFailed": {"placeholders":{"error":{}}}
+  "@adminDeleteBeneficiaryFailed": {"placeholders":{"error":{}}},
   "causeDetailsTitle": "सेवा क्षेत्र विवरण",
   "supportThisCause": "इस सेवा क्षेत्र का समर्थन करें",
   "causeReachTitle": "आपका योगदान लोगों तक कैसे पहुँचता है",
