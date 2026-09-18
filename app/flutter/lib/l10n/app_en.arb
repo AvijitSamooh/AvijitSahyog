@@ -233,4 +233,11 @@
   "uploadingImage": "Uploading image...",
   "applicationDetails": "Application details",
   "voteAverage": "Average vote"
+  "statusSubmitted": "Submitted",
+  "statusUnderReview": "Under review",
+  "statusClarification": "Clarification required",
+  "statusApproved": "Approved for donation",
+  "statusRejected": "Rejected",
+  "statusConsidered": "Considered for Samman",
+  "statusNotSelected": "Not selected"
 }
