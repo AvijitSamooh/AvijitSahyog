@@ -46,7 +46,7 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
         )),
       ),
     );
-    if (score == null) return;
+    if (score == null || !mounted) return;
     await ref.read(helpApplicationsRepositoryProvider).vote(item['id'] as String, score);
     await _load();
   }
@@ -70,15 +70,14 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
         ],
       ),
     );
-    if (decision == null) return;
+    if (decision == null || !mounted) return;
 
     double? approvedAmount;
     String? reason;
     if (decision == 'APPROVE') {
-      final pageContext = context;
       final controller = TextEditingController();
       approvedAmount = double.tryParse((await showDialog<String>(
-        context: pageContext,
+        context: context,
         builder: (context) => AlertDialog(
           title: Text(l10n.approvedAmount),
           content: TextField(controller: controller, keyboardType: const TextInputType.numberWithOptions(decimal: true)),
@@ -87,10 +86,10 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
       ) ?? ''));
       controller.dispose();
     } else if (decision == 'REJECT' || decision == 'CLARIFICATION_REQUIRED') {
-      final pageContext = context;
+      if (!mounted) return;
       final controller = TextEditingController();
       reason = await showDialog<String>(
-        context: pageContext,
+        context: context,
         builder: (context) => AlertDialog(
           title: Text(decision == 'REJECT' ? l10n.rejectionReason : l10n.clarification),
           content: TextField(controller: controller, minLines: 3, maxLines: 6),
@@ -102,7 +101,7 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
 
     final trimmedReason = reason?.trim();
     final payloadReason = trimmedReason?.isNotEmpty == true ? trimmedReason : null;
-    final payload = <String, dynamic>{'decision': decision, if (approvedAmount != null) 'approvedAmount': approvedAmount, if (payloadReason != null) 'reason': payloadReason};
+    final payload = <String, dynamic>{'decision': decision, 'approvedAmount': ?approvedAmount, 'reason': ?payloadReason};
     await ref.read(helpApplicationsRepositoryProvider).review(item['id'] as String, payload);
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.reviewSaved)));
