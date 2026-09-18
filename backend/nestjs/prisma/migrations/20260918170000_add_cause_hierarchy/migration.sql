@@ -23,13 +23,15 @@ VALUES (
 )
 ON CONFLICT ("slug") DO NOTHING;
 
-INSERT INTO "CauseTranslation" ("id", "causeId", "languageId", "name", "description")
+INSERT INTO "CauseTranslation" ("id", "causeId", "languageId", "name", "description", "createdAt", "updatedAt")
 SELECT
   md5('education-parent-' || l.id::text)::uuid,
   c.id,
   l.id,
   v.name,
-  v.description
+  v.description,
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 FROM "Cause" c
 CROSS JOIN "Language" l
 JOIN (
