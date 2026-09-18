@@ -9,12 +9,26 @@ class HelpApplicationsRepository {
   Future<HelpApplication> create({
     required String type,
     required double? requestedAmount,
+    required String applicantName,
+    required String mobileNumber,
+    required String address,
+    required String city,
+    required String state,
+    required String pincode,
+    String? email,
     required List<String> mediaIds,
     String? clarification,
   }) async {
     final trimmedClarification = clarification?.trim();
     return HelpApplication.fromJson(await client.createHelpApplication({
       'type': type,
+      'applicantName': applicantName.trim(),
+      'mobileNumber': mobileNumber.trim(),
+      'email': ?(email?.trim().isNotEmpty == true ? email!.trim() : null),
+      'address': address.trim(),
+      'city': city.trim(),
+      'state': state.trim(),
+      'pincode': pincode.trim(),
       'requestedAmount': ?requestedAmount,
       'mediaIds': mediaIds,
       'clarification': ?(trimmedClarification?.isNotEmpty == true ? trimmedClarification : null),
