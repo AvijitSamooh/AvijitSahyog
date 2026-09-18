@@ -316,6 +316,13 @@ model HelpApplication {
   type            HelpApplicationType
   status          HelpApplicationStatus @default(SUBMITTED)
   requestedAmount Decimal?              @db.Decimal(12, 2)
+  applicantName   String                @db.VarChar(250)
+  mobileNumber    String                @db.VarChar(20)
+  email           String?               @db.VarChar(320)
+  address         String                @db.Text
+  city            String                @db.VarChar(100)
+  state           String                @db.VarChar(100)
+  pincode         String                @db.VarChar(10)
   approvedAmount  Decimal?              @db.Decimal(12, 2)
   rejectionReason String?               @db.Text
   clarification   String?               @db.Text
