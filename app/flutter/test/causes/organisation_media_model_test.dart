@@ -17,4 +17,17 @@ void main() {
     expect(organisation.logoUrl, 'https://images.example.com/logo.webp');
     expect(organisation.gallery, hasLength(2));
   });
+  test('organisation model accepts coordinates serialized as strings', () {
+    final organisation = Organisation.fromJson({
+      'id': 'org-2',
+      'slug': 'pune-trust',
+      'name': 'Pune Trust',
+      'latitude': '18.5204',
+      'longitude': '73.8567',
+    });
+
+    expect(organisation.latitude, closeTo(18.5204, 0.000001));
+    expect(organisation.longitude, closeTo(73.8567, 0.000001));
+  });
+
 }
