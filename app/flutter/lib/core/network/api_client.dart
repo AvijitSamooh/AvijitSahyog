@@ -155,6 +155,14 @@ class ApiClient {
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
+  Future<void> deleteAdminBeneficiary(String id) async {
+    final response = await _client.delete(
+      Uri.parse('$baseUrl/admin/beneficiaries/$id'),
+      headers: await _headers(),
+    );
+    _ensureSuccess(response, 'Deleting beneficiary');
+  }
+
   Future<void> setAdminBeneficiaryActive(String id, bool active) async {
     final action = active ? 'activate' : 'deactivate';
     final response = await _client.patch(Uri.parse('$baseUrl/admin/beneficiaries/$id/$action'), headers: await _headers());
