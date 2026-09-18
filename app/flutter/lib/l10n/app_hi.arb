@@ -233,4 +233,11 @@
   "uploadingImage": "छवि अपलोड हो रही है...",
   "applicationDetails": "आवेदन विवरण",
   "voteAverage": "औसत अंक"
+  "statusSubmitted": "जमा किया गया",
+  "statusUnderReview": "समीक्षा में",
+  "statusClarification": "स्पष्टीकरण आवश्यक",
+  "statusApproved": "सहायता के लिए स्वीकृत",
+  "statusRejected": "अस्वीकृत",
+  "statusConsidered": "सम्मान के लिए विचाराधीन",
+  "statusNotSelected": "चयनित नहीं"
 }
