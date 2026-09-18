@@ -158,7 +158,7 @@ export class HelpApplicationsService {
     if (!dto.applicantName.trim() || !dto.address.trim() || !dto.city.trim() || !dto.state.trim()) {
       throw new BadRequestException('Name, address, city and state are required.');
     }
-    if (!/^\\+?[0-9]{10,13}$/.test(mobile)) {
+    if (!/^\+?[0-9]{10,13}$/.test(mobile)) {
       throw new BadRequestException('Enter a valid mobile number.');
     }
     if (!/^[0-9]{6}$/.test(pincode)) {
