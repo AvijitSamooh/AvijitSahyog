@@ -110,6 +110,19 @@ class _BeneficiaryTile extends ConsumerWidget {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            IconButton(
+              key: ValueKey('admin_beneficiary_edit_${beneficiary.id}'),
+              tooltip: AppLocalizations.of(context)!.adminEditBeneficiary,
+              icon: const Icon(Icons.edit_outlined),
+              onPressed: () async {
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => AdminBeneficiaryEditorPage(beneficiary: beneficiary),
+                  ),
+                );
+                ref.invalidate(adminBeneficiariesProvider);
+              },
+            ),
             Switch(
               key: ValueKey('admin_beneficiary_active_${beneficiary.id}'),
               value: beneficiary.isActive,
@@ -128,33 +141,14 @@ class _BeneficiaryTile extends ConsumerWidget {
                 }
               },
             ),
-            PopupMenuButton<String>(
-              key: ValueKey('admin_beneficiary_actions_${beneficiary.id}'),
-              onSelected: (value) async {
-                if (value == 'delete') {
-                  await _deleteBeneficiary(context, ref);
-                }
-              },
-              itemBuilder: (context) {
-                final l10n = AppLocalizations.of(context)!;
-                return [
-                  PopupMenuItem(
-                    value: 'delete',
-                    child: Text(l10n.adminDeleteBeneficiary),
-                  ),
-                ];
-              },
+            IconButton(
+              key: ValueKey('admin_beneficiary_delete_${beneficiary.id}'),
+              tooltip: AppLocalizations.of(context)!.adminDeleteBeneficiary,
+              icon: const Icon(Icons.delete_outline_rounded),
+              onPressed: () => _deleteBeneficiary(context, ref),
             ),
           ],
         ),
-        onTap: () async {
-          await Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => AdminBeneficiaryEditorPage(beneficiary: beneficiary),
-            ),
-          );
-          ref.invalidate(adminBeneficiariesProvider);
-        },
       ),
     );
   }

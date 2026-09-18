@@ -25,9 +25,11 @@ This section is the source of truth when asking **“what is pending?”**. Upda
 
 ## In Progress
 
-- [ ] Help & Recognition Applications — Education Assistance, Medical Help and Pratibha Samman applicant/reviewer workflows.
+- [ ] Split Education into Education Assistance and Pratibha Samman — production migration recovery/deployment verification remains.
 
-- [ ] Split Education into Education Assistance and Pratibha Samman.
+## Recently Completed
+
+- [x] Help & Recognition Applications — Education Assistance, Medical Help and Pratibha Samman applicant/reviewer workflows, including user entry point, submission/history, evidence upload and admin review actions.
 
 
 ## Pending Next

@@ -153,9 +153,9 @@ class _HomeContent extends StatelessWidget {
         _ActionCard(
           key: const ValueKey('home_applications'),
           icon: Icons.assignment_rounded,
-          title: AppLocalizations.of(context)!.applicationsTitle,
-          subtitle: AppLocalizations.of(context)!.applicationHistory,
-          action: AppLocalizations.of(context)!.explore,
+          title: AppLocalizations.of(context)!.homeHelpTitle,
+          subtitle: AppLocalizations.of(context)!.homeApplicationsSubtitle,
+          action: AppLocalizations.of(context)!.applyNow,
           onTap: onApplications,
         ),
         const SizedBox(height: 14),

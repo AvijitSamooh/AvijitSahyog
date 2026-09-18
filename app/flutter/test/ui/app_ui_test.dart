@@ -22,6 +22,7 @@ import 'package:avijit_sahyog/features/admin/presentation/admin_portal_page.dart
 import 'package:avijit_sahyog/features/admin/presentation/admin_dashboard_page.dart';
 import 'package:avijit_sahyog/features/admin/providers/admin_dashboard_providers.dart';
 import 'package:avijit_sahyog/features/admin/models/admin_dashboard_summary.dart';
+import 'package:avijit_sahyog/features/admin/models/admin_beneficiary.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_beneficiaries_page.dart';
 import 'package:avijit_sahyog/features/applications/presentation/applications_page.dart';
 import 'package:avijit_sahyog/features/applications/providers/help_applications_providers.dart';
@@ -189,6 +190,39 @@ void main() {
     expect(find.byKey(const ValueKey('application_education')), findsOneWidget);
     expect(find.byKey(const ValueKey('application_medical')), findsOneWidget);
     expect(find.byKey(const ValueKey('application_pratibha')), findsOneWidget);
+  });
+
+  testWidgets('home clearly exposes the help and recognition entry point', (tester) async {
+    await pumpApp(tester);
+
+    final applicationsEntry = find.byKey(const ValueKey('home_applications'));
+    expect(applicationsEntry, findsOneWidget);
+    expect(find.text(l10n(tester).homeHelpTitle), findsOneWidget);
+  });
+
+  testWidgets('admin beneficiary card exposes delete action', (tester) async {
+    const beneficiary = AdminBeneficiary(
+      id: 'beneficiary-1',
+      name: 'Rahul Kumar',
+      supportedYear: 2025,
+      contributionAmount: 25000,
+      causeId: 'cause-1',
+      isActive: true,
+      displayOrder: 1,
+    );
+
+    await pumpApp(
+      tester,
+      home: const AdminBeneficiariesPage(),
+      overrides: [
+        adminBeneficiariesProvider.overrideWith((ref) async => [beneficiary]),
+      ],
+    );
+
+    expect(
+      find.byKey(const ValueKey('admin_beneficiary_delete_beneficiary-1')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('authenticated admin can see the admin portal entry', (tester) async {
