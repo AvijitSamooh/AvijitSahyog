@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -136,34 +138,80 @@ class HelpApplicationFormPage extends ConsumerStatefulWidget {
 }
 
 class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _name = TextEditingController();
+  final _mobile = TextEditingController();
+  final _email = TextEditingController();
+  final _address = TextEditingController();
+  final _city = TextEditingController();
+  final _state = TextEditingController();
+  final _pincode = TextEditingController();
   final _amount = TextEditingController();
   final _clarification = TextEditingController();
   final _picker = ImagePicker();
   final List<String> _mediaIds = [];
+  final List<XFile> _selectedImages = [];
   bool _busy = false;
 
   @override
   void initState() {
     super.initState();
     final existing = widget.application;
+    _name.text = existing?.applicantName ?? '';
+    _mobile.text = existing?.mobileNumber ?? '';
+    _email.text = existing?.email ?? '';
+    _address.text = existing?.address ?? '';
+    _city.text = existing?.city ?? '';
+    _state.text = existing?.state ?? '';
+    _pincode.text = existing?.pincode ?? '';
     if (existing?.requestedAmount != null) _amount.text = existing!.requestedAmount.toString();
+    _clarification.text = existing?.clarification ?? '';
   }
 
   @override
   void dispose() {
-    _amount.dispose();
-    _clarification.dispose();
+    for (final controller in [_name, _mobile, _email, _address, _city, _state, _pincode, _amount, _clarification]) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
   Future<void> _pickImages() async {
-    final images = await _picker.pickMultiImage(imageQuality: 82, maxWidth: 1920);
-    if (images.isEmpty) return;
+    final remaining = 10 - _mediaIds.length;
+    if (remaining <= 0 || _busy) return;
+    try {
+      final images = await _picker.pickMultiImage(imageQuality: 82, maxWidth: 1920);
+      if (images.isEmpty) return;
+      await _uploadImages(images.take(remaining).toList());
+    } catch (error) {
+      if (mounted) _showError('Unable to select images: $error');
+    }
+  }
+
+  Future<void> _takePhoto() async {
+    if (_mediaIds.length >= 10 || _busy) return;
+    try {
+      final image = await _picker.pickImage(source: ImageSource.camera, imageQuality: 82, maxWidth: 1920);
+      if (image == null) return;
+      await _uploadImages([image]);
+    } catch (error) {
+      if (mounted) _showError('Unable to capture image: $error');
+    }
+  }
+
+  Future<void> _uploadImages(List<XFile> images) async {
     setState(() => _busy = true);
     try {
-      for (final image in images.take(10 - _mediaIds.length)) {
-        final id = await ref.read(helpApplicationsRepositoryProvider).uploadImage(image.path);
-        _mediaIds.add(id);
+      final repo = ref.read(helpApplicationsRepositoryProvider);
+      for (final image in images) {
+        try {
+          final id = await repo.uploadImage(image.path);
+          _mediaIds.add(id);
+          _selectedImages.add(image);
+        } catch (error) {
+          if (mounted) _showError(AppLocalizations.of(context)!.imageUploadFailed + ' ' + error.toString());
+          break;
+        }
       }
       if (mounted) setState(() {});
     } finally {
@@ -171,8 +219,27 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     }
   }
 
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), duration: const Duration(seconds: 5)));
+  }
+
+  String? _required(String? value, String label) => value == null || value.trim().isEmpty ? '$label is required' : null;
+
+  String? _mobileValidator(String? value) {
+    final required = _required(value, 'Mobile number');
+    if (required != null) return required;
+    return RegExp(r'^\+?[0-9]{10,13}$').hasMatch(value!.trim()) ? null : 'Enter a valid mobile number';
+  }
+
+  String? _pincodeValidator(String? value) {
+    final required = _required(value, 'PIN code');
+    if (required != null) return required;
+    return RegExp(r'^[0-9]{6}$').hasMatch(value!.trim()) ? null : 'Enter a valid 6-digit PIN code';
+  }
+
   Future<void> _submit() async {
     final l10n = AppLocalizations.of(context)!;
+    if (!_formKey.currentState!.validate()) return;
     if (_mediaIds.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.imagesRequired)));
       return;
@@ -189,7 +256,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     try {
       final repo = ref.read(helpApplicationsRepositoryProvider);
       if (widget.application == null) {
-        await repo.create(type: widget.type, requestedAmount: amount, mediaIds: _mediaIds, clarification: _clarification.text);
+        await repo.create(type: widget.type, requestedAmount: amount, applicantName: _name.text, mobileNumber: _mobile.text, email: _email.text, address: _address.text, city: _city.text, state: _state.text, pincode: _pincode.text, mediaIds: _mediaIds, clarification: _clarification.text);
       } else {
         await repo.resubmit(id: widget.application!.id, clarification: _clarification.text, mediaIds: _mediaIds, requestedAmount: amount);
       }
