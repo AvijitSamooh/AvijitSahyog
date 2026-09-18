@@ -283,7 +283,7 @@ async function main() {
     },
     {
       name: 'Amit Patel',
-      cause: 'education',
+      cause: 'education-assistance',
       organisation: 'demo-education-support',
       year: 2025,
       amount: '12000',
