@@ -273,7 +273,12 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
   String? _mobileValidator(String? value) {
     final error = _required(value, 'Mobile number');
     if (error != null) return error;
-    if (!RegExp(r'^\+?[0-9]{10,13}
+    if (!RegExp(r'^\\+?[0-9]{10,13}\\$').hasMatch(value!.trim())) return 'Enter a valid mobile number';
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isSamman = widget.type == 'PRATIBHA_SAMMAN';
     return AppPageScaffold(
@@ -287,7 +292,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
             const SizedBox(height: 12),
             TextFormField(controller: _name, decoration: const InputDecoration(labelText: 'Full name *', prefixIcon: Icon(Icons.person_outline)), validator: (v) => _required(v, 'Full name')),
             TextFormField(controller: _mobile, keyboardType: TextInputType.phone, decoration: const InputDecoration(labelText: 'Mobile number *', prefixIcon: Icon(Icons.phone_outlined)), validator: _mobileValidator),
-            TextFormField(controller: _email, keyboardType: TextInputType.emailAddress, decoration: const InputDecoration(labelText: 'Email (optional)', prefixIcon: Icon(Icons.email_outlined)),
+            TextFormField(controller: _email, keyboardType: TextInputType.emailAddress, decoration: const InputDecoration(labelText: 'Email (optional)', prefixIcon: Icon(Icons.email_outlined))),
             TextFormField(controller: _address, minLines: 2, maxLines: 4, decoration: const InputDecoration(labelText: 'Address *', prefixIcon: Icon(Icons.home_outlined)), validator: (v) => _required(v, 'Address')),
             Row(children: [
               Expanded(child: TextFormField(controller: _city, decoration: const InputDecoration(labelText: 'City *'), validator: (v) => _required(v, 'City'))),
@@ -297,11 +302,45 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
             TextFormField(controller: _pincode, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'PIN code *', prefixIcon: Icon(Icons.location_on_outlined)), validator: (v) {
               final error = _required(v, 'PIN code');
               if (error != null) return error;
-              return RegExp(r'^[0-9]{6}
+              return RegExp(r'^[0-9]{6}\\$').hasMatch(v!.trim()) ? null : 'Enter a valid 6-digit PIN code';
+            }),
+            const SizedBox(height: 20),
+            if (!isSamman) TextFormField(controller: _amount, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: l10n.requestedAmount, prefixText: '₹')),
+            if (widget.application?.rejectionReason != null) ...[
+              const SizedBox(height: 12),
+              Text(l10n.rejectionReason + ': ' + widget.application!.rejectionReason!),
+            ],
+            const SizedBox(height: 16),
+            TextFormField(controller: _clarification, minLines: 4, maxLines: 8, decoration: InputDecoration(labelText: isSamman ? 'Achievement details' : 'Explain your need', alignLabelWithHint: true, prefixIcon: const Icon(Icons.description_outlined)), validator: (v) => _required(v, isSamman ? 'Achievement details' : 'Explanation')),
+            const SizedBox(height: 18),
+            Text('Supporting documents / images *', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            Row(children: [
+              Expanded(child: OutlinedButton.icon(onPressed: _busy || _mediaIds.length >= 10 ? null : _pickImages, icon: const Icon(Icons.photo_library_outlined), label: const Text('Gallery'))),
+              const SizedBox(width: 10),
+              Expanded(child: OutlinedButton.icon(onPressed: _busy || _mediaIds.length >= 10 ? null : _takePhoto, icon: const Icon(Icons.camera_alt_outlined), label: const Text('Camera'))),
+            ]),
+            if (_selectedImages.isNotEmpty) Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: SizedBox(
+                height: 92,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _selectedImages.length,
+                  separatorBuilder: (_, _) => const SizedBox(width: 8),
+                  itemBuilder: (_, index) => ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.file(File(_selectedImages[index].path), width: 92, height: 92, fit: BoxFit.cover)),
+                ),
+              ),
+            ),
+            if (_mediaIds.isNotEmpty) Padding(padding: const EdgeInsets.only(top: 8), child: Text(_mediaIds.length.toString() + '/10 uploaded')),
+            const SizedBox(height: 24),
+            FilledButton.icon(onPressed: _busy ? null : _submit, icon: const Icon(Icons.send_rounded), label: Text(_busy ? l10n.uploadingImage : l10n.submitApplication)),
+          ],
+        ),
+      ),
     );
   }
 }
-
 class _ApplicationCard extends StatelessWidget {
   const _ApplicationCard({required this.application});
   final HelpApplication application;
