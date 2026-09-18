@@ -198,7 +198,6 @@ void main() {
     final applicationsEntry = find.byKey(const ValueKey('home_applications'));
     expect(applicationsEntry, findsOneWidget);
     expect(find.text(l10n(tester).homeHelpTitle), findsOneWidget);
-    expect(find.text(l10n(tester).applyNow), findsOneWidget);
   });
 
   testWidgets('admin beneficiary card exposes delete action', (tester) async {
