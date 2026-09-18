@@ -74,6 +74,14 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
   bool _busy = false;
 
   @override
+  void initState() {
+    super.initState();
+    final existing = widget.application;
+    if (existing?.requestedAmount != null) _amount.text = existing!.requestedAmount.toString();
+    if (existing?.clarification != null) _clarification.text = existing!.clarification!;
+  }
+
+  @override
   void dispose() {
     _amount.dispose();
     _clarification.dispose();
