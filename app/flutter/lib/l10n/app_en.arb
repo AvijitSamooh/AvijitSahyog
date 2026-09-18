@@ -152,12 +152,12 @@
   "adminDeleteOrganisationSuccess": "“{organisation}” was deleted.",
   "@adminDeleteOrganisationSuccess": {"placeholders": {"organisation": {}}},
   "cancel": "Cancel",
-  "adminOrganisationPhone": "Phone",,
-  "adminOrganisationMobileNumber": "Mobile number",,
-  "adminOrganisationMobileNumberHint": "10-digit Indian mobile number",,
-  "affiliateCall": "Call affiliate",,
-  "affiliateWhatsApp": "WhatsApp affiliate",,
-  "affiliateCallFailed": "Unable to open the phone dialer.",,
+  "adminOrganisationPhone": "Phone",
+  "adminOrganisationMobileNumber": "Mobile number",
+  "adminOrganisationMobileNumberHint": "10-digit Indian mobile number",
+  "affiliateCall": "Call affiliate",
+  "affiliateWhatsApp": "WhatsApp affiliate",
+  "affiliateCallFailed": "Unable to open the phone dialer.",
   "affiliateWhatsAppFailed": "Unable to open WhatsApp."
 
 }
