@@ -173,7 +173,7 @@ class _AdminOrganisationEditorPageState
         children: [
           TextField(controller: _website, decoration: InputDecoration(labelText: l10n.adminOrganisationWebsite)),
           TextField(controller: _phone, decoration: InputDecoration(labelText: l10n.adminOrganisationPhone)),
-          TextField(controller: _mobileNumber, keyboardType: TextInputType.phone, decoration: InputDecoration(labelText: l10n.adminOrganisationMobileNumber, hintText: l10n.adminOrganisationMobileNumberHint)),
+          TextField(key: const ValueKey('admin_organisation_mobile_number'), controller: _mobileNumber, keyboardType: TextInputType.phone, decoration: InputDecoration(labelText: l10n.adminOrganisationMobileNumber, hintText: l10n.adminOrganisationMobileNumberHint)),
           TextField(controller: _email, keyboardType: TextInputType.emailAddress, decoration: InputDecoration(labelText: l10n.adminOrganisationEmail)),
           TextField(controller: _address, decoration: InputDecoration(labelText: l10n.adminOrganisationAddress)),
           Row(children: [
