@@ -60,8 +60,8 @@ class _AdminPortalPageState extends ConsumerState<AdminPortalPage> {
             if (isSuperAdmin) ...[
               _AdminSectionCard(
                 icon: Icons.insights_rounded,
-                title: 'Interaction analytics',
-                subtitle: 'DAU, WAU, MAU, sessions, screen views and engagement trends',
+                title: l10n.adminInteractionAnalytics,
+                subtitle: l10n.adminInteractionAnalyticsSubtitle,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const AdminAnalyticsPage()),
                 ),
@@ -69,8 +69,8 @@ class _AdminPortalPageState extends ConsumerState<AdminPortalPage> {
               const SizedBox(height: 12),
               _AdminSectionCard(
                 icon: Icons.auto_graph_rounded,
-                title: 'Advanced analytics',
-                subtitle: 'Retention, cohorts, feature adoption and audience segmentation',
+                title: l10n.adminAdvancedAnalytics,
+                subtitle: l10n.adminAdvancedAnalyticsSubtitle,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const AdvancedAnalyticsPage()),
                 ),
@@ -78,8 +78,8 @@ class _AdminPortalPageState extends ConsumerState<AdminPortalPage> {
               const SizedBox(height: 12),
               _AdminSectionCard(
                 icon: Icons.monitor_heart_rounded,
-                title: 'Platform health',
-                subtitle: 'API health, errors, uploads, authentication, crashes and deployment status',
+                title: l10n.adminPlatformHealth,
+                subtitle: l10n.adminPlatformHealthSubtitle,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const PlatformHealthPage()),
                 ),
