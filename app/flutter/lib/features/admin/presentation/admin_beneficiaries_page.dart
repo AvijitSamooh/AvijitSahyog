@@ -107,22 +107,45 @@ class _BeneficiaryTile extends ConsumerWidget {
         subtitle: Text(
           '${beneficiary.supportedYear} • ₹${beneficiary.contributionAmount} • ${beneficiary.isActive ? 'Active' : 'Inactive'}',
         ),
-        trailing: PopupMenuButton<String>(
-          key: ValueKey('admin_beneficiary_actions_${beneficiary.id}'),
-          onSelected: (value) async {
-            if (value == 'delete') {
-              await _deleteBeneficiary(context, ref);
-            }
-          },
-          itemBuilder: (context) {
-            final l10n = AppLocalizations.of(context)!;
-            return [
-              PopupMenuItem(
-                value: 'delete',
-                child: Text(l10n.adminDeleteBeneficiary),
-              ),
-            ];
-          },
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Switch(
+              key: ValueKey('admin_beneficiary_active_${beneficiary.id}'),
+              value: beneficiary.isActive,
+              onChanged: (value) async {
+                try {
+                  await ref
+                      .read(adminBeneficiariesRepositoryProvider)
+                      .setActive(beneficiary.id, value);
+                  ref.invalidate(adminBeneficiariesProvider);
+                } catch (error) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Unable to update beneficiary status: $error')),
+                    );
+                  }
+                }
+              },
+            ),
+            PopupMenuButton<String>(
+              key: ValueKey('admin_beneficiary_actions_${beneficiary.id}'),
+              onSelected: (value) async {
+                if (value == 'delete') {
+                  await _deleteBeneficiary(context, ref);
+                }
+              },
+              itemBuilder: (context) {
+                final l10n = AppLocalizations.of(context)!;
+                return [
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Text(l10n.adminDeleteBeneficiary),
+                  ),
+                ];
+              },
+            ),
+          ],
         ),
         onTap: () async {
           await Navigator.of(context).push(
