@@ -12,12 +12,12 @@ class HelpApplicationsRepository {
     required List<String> mediaIds,
     String? clarification,
   }) async {
+    final trimmedClarification = clarification?.trim();
     return HelpApplication.fromJson(await client.createHelpApplication({
       'type': type,
-      if (requestedAmount != null) 'requestedAmount': requestedAmount,
+      'requestedAmount': ?requestedAmount,
       'mediaIds': mediaIds,
-      if (clarification != null && clarification.trim().isNotEmpty)
-        'clarification': clarification.trim(),
+      'clarification': ?(trimmedClarification?.isNotEmpty == true ? trimmedClarification : null),
     }));
   }
 
@@ -35,7 +35,7 @@ class HelpApplicationsRepository {
     return HelpApplication.fromJson(await client.resubmitHelpApplication(id, {
       'clarification': clarification,
       'mediaIds': mediaIds,
-      if (requestedAmount != null) 'requestedAmount': requestedAmount,
+      'requestedAmount': ?requestedAmount,
     }));
   }
 
