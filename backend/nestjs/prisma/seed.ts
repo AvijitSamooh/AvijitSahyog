@@ -44,6 +44,10 @@ const causes = [
         name: 'शिक्षण सहाय्य',
         description: 'शिक्षण सुरू ठेवण्यासाठी गरजू विद्यार्थ्यांना सहकार्य.',
       },
+      gu: {
+        name: 'શિક્ષણ સહાય',
+        description: 'શિક્ષણ ચાલુ રાખવા માટે જરૂરિયાતમંદ વિદ્યાર્થીઓને સહાય.',
+      },
     },
   },
   {
@@ -70,7 +74,7 @@ const causes = [
   },
   {
     slug: 'healthcare',
-    displayOrder: 3,
+    displayOrder: 4,
     translations: {
       en: {
         name: 'Healthcare',
@@ -88,7 +92,7 @@ const causes = [
   },
   {
     slug: 'community-support',
-    displayOrder: 4,
+    displayOrder: 5,
     translations: {
       en: {
         name: 'Community Support',
