@@ -23,6 +23,8 @@ import 'package:avijit_sahyog/features/admin/presentation/admin_dashboard_page.d
 import 'package:avijit_sahyog/features/admin/providers/admin_dashboard_providers.dart';
 import 'package:avijit_sahyog/features/admin/models/admin_dashboard_summary.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_beneficiaries_page.dart';
+import 'package:avijit_sahyog/features/applications/presentation/applications_page.dart';
+import 'package:avijit_sahyog/features/applications/providers/help_applications_providers.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_causes_page.dart';
 import 'package:avijit_sahyog/features/admin/providers/admin_beneficiaries_providers.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_organisations_page.dart';
@@ -145,6 +147,19 @@ void main() {
     expect(find.text('See Our Impact'), findsOneWidget);
   });
 
+  testWidgets('home exposes the assistance applications workflow', (tester) async {
+    await pumpApp(tester);
+
+    final applicationsEntry = find.byKey(const ValueKey('home_applications'));
+    await tester.ensureVisible(applicationsEntry);
+    await tester.pump();
+    await tester.tap(applicationsEntry);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ApplicationsPage), findsOneWidget);
+    expect(find.text('Please sign in to submit an application.'), findsOneWidget);
+  });
+
   testWidgets('public home exposes login from the shared settings menu', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
     await tester.pump();
@@ -159,6 +174,21 @@ void main() {
 
     expect(find.byType(LoginPage), findsOneWidget);
     expect(find.text('Continue as Guest'), findsOneWidget);
+  });
+
+  testWidgets('authenticated user can see all application choices', (tester) async {
+    await pumpApp(
+      tester,
+      home: const ApplicationsPage(),
+      overrides: [
+        authProvider.overrideWith((ref) => _AuthenticatedAdminController()),
+        myHelpApplicationsProvider.overrideWith((ref) async => const []),
+      ],
+    );
+
+    expect(find.byKey(const ValueKey('application_education')), findsOneWidget);
+    expect(find.byKey(const ValueKey('application_medical')), findsOneWidget);
+    expect(find.byKey(const ValueKey('application_pratibha')), findsOneWidget);
   });
 
   testWidgets('authenticated admin can see the admin portal entry', (tester) async {
@@ -378,6 +408,23 @@ void main() {
 
     final preferences = await SharedPreferences.getInstance();
     expect(preferences.getString('selected_locale'), 'hi');
+  });
+
+  testWidgets('causes page exposes both education assistance and Pratibha Samman categories', (tester) async {
+    const causes = [
+      Cause(id: 'education-assistance', slug: 'education-assistance', name: 'Education Assistance'),
+      Cause(id: 'pratibha-samman', slug: 'pratibha-samman', name: 'Pratibha Samman'),
+    ];
+    await pumpApp(
+      tester,
+      home: const CausesPage(),
+      overrides: [
+        causesProvider('en').overrideWith((ref) async => causes),
+      ],
+    );
+
+    expect(find.text('Education Assistance'), findsOneWidget);
+    expect(find.text('Pratibha Samman'), findsOneWidget);
   });
 
   testWidgets('causes page displays mocked causes', (tester) async {
