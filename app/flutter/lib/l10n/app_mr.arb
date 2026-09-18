@@ -185,9 +185,9 @@
   "adminDeleteBeneficiary": "लाभार्थी हटवा",
   "adminDeleteBeneficiaryTitle": "लाभार्थी हटवायचा?",
   "adminDeleteBeneficiaryConfirmation": "“{beneficiary}” कायमचा हटवायचा का? ही कृती पूर्ववत करता येणार नाही.",
-  "@adminDeleteBeneficiaryConfirmation": {"placeholders":{"beneficiary":{},"error":{}}},
+  "@adminDeleteBeneficiaryConfirmation": {"placeholders":{"beneficiary":{}}},
   "adminDeleteBeneficiarySuccess": "“{beneficiary}” हटवला.",
-  "@adminDeleteBeneficiarySuccess": {"placeholders":{"beneficiary":{},"error":{}}},
+  "@adminDeleteBeneficiarySuccess": {"placeholders":{"beneficiary":{}}},
   "adminDeleteBeneficiaryFailed": "लाभार्थी हटवता आला नाही: {error}",
-  "@adminDeleteBeneficiaryFailed": {"placeholders":{"beneficiary":{},"error":{}}}
+  "@adminDeleteBeneficiaryFailed": {"placeholders":{"error":{}}}
 }
