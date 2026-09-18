@@ -158,9 +158,8 @@
   "affiliateCall": "संलग्न संस्थेला कॉल करा",
   "affiliateWhatsApp": "संलग्न संस्थेला WhatsApp करा",
   "affiliateCallFailed": "फोन डायलर उघडता आला नाही.",
-  "affiliateWhatsAppFailed": "WhatsApp उघडता आले नाही."
+  "affiliateWhatsAppFailed": "WhatsApp उघडता आले नाही.",
 
-,
   "adminEditOrganisation": "संस्था संपादित करा",
   "adminOrganisationWebsite": "वेबसाइट",
   "adminOrganisationEmail": "ईमेल",
@@ -193,7 +192,7 @@
   "causeDetailsTitle": "सेवा क्षेत्राचे तपशील",
   "supportThisCause": "या सेवा क्षेत्राला पाठिंबा द्या",
   "causeReachTitle": "तुमचे योगदान लोकांपर्यंत कसे पोहोचते",
-  "causeReachDescription": "तुमचे योगदान या सेवा क्षेत्राला पाठिंबा देते. या संलग्न संस्था त्या मदतीचे प्रत्यक्ष परिणामात रूपांतर करण्यास मदत करतात."
+  "causeReachDescription": "तुमचे योगदान या सेवा क्षेत्राला पाठिंबा देते. या संलग्न संस्था त्या मदतीचे प्रत्यक्ष परिणामात रूपांतर करण्यास मदत करतात.",
   "applicationsTitle": "माझे अर्ज",
   "applyEducationHelp": "शिक्षण सहाय्यासाठी अर्ज करा",
   "applyMedicalHelp": "वैद्यकीय मदतीसाठी अर्ज करा",
@@ -232,7 +231,7 @@
   "pratibhaSamman": "प्रतिभा सन्मान",
   "uploadingImage": "प्रतिमा अपलोड होत आहे...",
   "applicationDetails": "अर्ज तपशील",
-  "voteAverage": "सरासरी गुण"
+  "voteAverage": "सरासरी गुण",
   "statusSubmitted": "सादर केले",
   "statusUnderReview": "पुनरावलोकनात",
   "statusClarification": "स्पष्टीकरण आवश्यक",
