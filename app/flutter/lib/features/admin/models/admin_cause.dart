@@ -33,6 +33,8 @@ class AdminCause {
     required this.isActive,
     required this.displayOrder,
     required this.translations,
+    this.parentId,
+    this.children = const [],
   });
 
   final String id;
@@ -40,6 +42,8 @@ class AdminCause {
   final bool isActive;
   final int displayOrder;
   final List<AdminCauseTranslation> translations;
+  final String? parentId;
+  final List<AdminCause> children;
 
   factory AdminCause.fromJson(Map<String, dynamic> json) {
     return AdminCause(
@@ -47,6 +51,10 @@ class AdminCause {
       slug: json['slug'] as String,
       isActive: json['isActive'] as bool? ?? true,
       displayOrder: (json['displayOrder'] as num?)?.toInt() ?? 0,
+      parentId: json['parentId'] as String?,
+      children: (json['children'] as List<dynamic>? ?? [])
+          .map((item) => AdminCause.fromJson(item as Map<String, dynamic>))
+          .toList(growable: false),
       translations: (json['translations'] as List<dynamic>? ?? [])
           .map((item) => AdminCauseTranslation.fromJson(
                 item as Map<String, dynamic>,
