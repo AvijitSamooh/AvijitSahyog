@@ -12,11 +12,19 @@ export class HelpApplicationsService {
 
   async create(identity: FirebaseIdentity, dto: CreateHelpApplicationDto) {
     const user = await this.user(identity);
+    this.validateApplicantDetails(dto);
     this.validateSubmission(dto.type, dto.requestedAmount, dto.mediaIds);
     const media = await this.validateMedia(dto.mediaIds, user.id);
     const item = await this.prisma.helpApplication.create({
       data: {
         applicantId: user.id,
+        applicantName: dto.applicantName.trim(),
+        mobileNumber: dto.mobileNumber.trim(),
+        email: dto.email?.trim() || null,
+        address: dto.address.trim(),
+        city: dto.city.trim(),
+        state: dto.state.trim(),
+        pincode: dto.pincode.trim(),
         type: dto.type,
         requestedAmount: dto.requestedAmount,
         clarification: dto.clarification?.trim() || null,
@@ -144,6 +152,20 @@ export class HelpApplicationsService {
     return this.toAdminResponse(item);
   }
 
+  private validateApplicantDetails(dto: CreateHelpApplicationDto) {
+    const mobile = dto.mobileNumber.trim();
+    const pincode = dto.pincode.trim();
+    if (!dto.applicantName.trim() || !dto.address.trim() || !dto.city.trim() || !dto.state.trim()) {
+      throw new BadRequestException('Name, address, city and state are required.');
+    }
+    if (!/^\\+?[0-9]{10,13}$/.test(mobile)) {
+      throw new BadRequestException('Enter a valid mobile number.');
+    }
+    if (!/^[0-9]{6}$/.test(pincode)) {
+      throw new BadRequestException('Enter a valid 6-digit PIN code.');
+    }
+  }
+
   private validateSubmission(type: string, amount: number | undefined, mediaIds: string[]) {
     if (!mediaIds?.length || mediaIds.length > 10) throw new BadRequestException('Upload between 1 and 10 supporting images.');
     if (type === HelpApplicationTypeDto.PRATIBHA_SAMMAN) return;
@@ -183,7 +205,7 @@ export class HelpApplicationsService {
   }
 
   private toResponse(item: any) {
-    return { id: item.id, type: item.type, status: item.status, requestedAmount: item.requestedAmount, approvedAmount: item.approvedAmount, rejectionReason: item.rejectionReason, clarification: item.clarification, adminNote: item.adminNote, submittedAt: item.submittedAt, reviewedAt: item.reviewedAt, media: (item.media ?? []).map((m: any) => this.mediaResponse(m)) };
+    return { id: item.id, type: item.type, status: item.status, applicantName: item.applicantName, mobileNumber: item.mobileNumber, email: item.email, address: item.address, city: item.city, state: item.state, pincode: item.pincode, requestedAmount: item.requestedAmount, approvedAmount: item.approvedAmount, rejectionReason: item.rejectionReason, clarification: item.clarification, adminNote: item.adminNote, submittedAt: item.submittedAt, reviewedAt: item.reviewedAt, media: (item.media ?? []).map((m: any) => this.mediaResponse(m)) };
   }
 
   private toAdminResponse(item: any) {
