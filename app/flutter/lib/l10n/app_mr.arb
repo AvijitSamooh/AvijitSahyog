@@ -243,4 +243,5 @@
   "statusRejected": "नाकारले",
   "statusConsidered": "सन्मानासाठी विचाराधीन",
   "statusNotSelected": "निवडलेले नाही"
+  ,"applicantDetails":"अर्जदाराचा तपशील","fullNameRequired":"पूर्ण नाव *","mobileNumberRequired":"मोबाईल क्रमांक *","emailOptional":"ईमेल (ऐच्छिक)","addressRequired":"पत्ता *","cityRequired":"शहर *","stateRequired":"राज्य *","pincodeRequired":"पिन कोड *","explainNeed":"आपली गरज सांगा *","achievementDetails":"उपलब्धीचा तपशील *","supportingDocuments":"समर्थन कागदपत्रे / प्रतिमा *","supportingDocumentsHint":"संबंधित बिले, प्रिस्क्रिप्शन, फी पावत्या, प्रमाणपत्रे किंवा इतर कागदपत्रे अपलोड करा. कमाल 10 प्रतिमा.","gallery":"गॅलरी","camera":"कॅमेरा","uploadedCount":"{count}/10 अपलोड केले","@uploadedCount":{"placeholders":{"count":{"type":"int"}}},"imageUploadFailed":"प्रतिमा अपलोड झाली नाही. कृपया दुसरी प्रतिमा निवडून पुन्हा प्रयत्न करा."
 }
