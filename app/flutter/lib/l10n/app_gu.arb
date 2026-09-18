@@ -151,5 +151,13 @@
   "@adminDeleteOrganisationConfirmation": {"placeholders": {"organisation": {}}},
   "adminDeleteOrganisationSuccess": "“{organisation}” કાઢી નાખવામાં આવી.",
   "@adminDeleteOrganisationSuccess": {"placeholders": {"organisation": {}}},
-  "cancel": "રદ કરો"
+  "cancel": "રદ કરો",
+  "adminOrganisationPhone": "ફોન",,
+  "adminOrganisationMobileNumber": "મોબાઇલ નંબર",,
+  "adminOrganisationMobileNumberHint": "10 અંકનો ભારતીય મોબાઇલ નંબર",,
+  "affiliateCall": "સંલગ્ન સંસ્થાને કૉલ કરો",,
+  "affiliateWhatsApp": "સંલગ્ન સંસ્થાને WhatsApp કરો",,
+  "affiliateCallFailed": "ફોન ડાયલર ખોલી શકાયું નથી.",,
+  "affiliateWhatsAppFailed": "WhatsApp ખોલી શકાયું નથી."
+
 }
