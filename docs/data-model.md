@@ -43,7 +43,7 @@ Names and descriptions are stored in `CauseTranslation`.
 
 Represents an affiliated organisation associated with one or more causes.
 
-Operational/contact fields include logo URL compatibility, website, phone/email, address, location, active state and display order. Names and descriptions are stored in `OrganisationTranslation`.
+Operational/contact fields include logo URL compatibility, website, phone, dedicated mobile number, email, address, location, active state and display order. Mobile numbers are normalized to Indian E.164 format and are exposed to the public cause response for contact actions. Names and descriptions are stored in `OrganisationTranslation`.
 
 Managed images are represented through `OrganisationMedia`.
 
