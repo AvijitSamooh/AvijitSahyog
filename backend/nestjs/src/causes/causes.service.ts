@@ -113,6 +113,18 @@ export class CausesService {
           include: { language: true },
           orderBy: { language: { code: 'asc' } },
         },
+        parent: {
+          select: { id: true, slug: true },
+        },
+        children: {
+          orderBy: { displayOrder: 'asc' },
+          include: {
+            translations: {
+              include: { language: true },
+              orderBy: { language: { code: 'asc' } },
+            },
+          },
+        },
       },
     });
   }
@@ -124,6 +136,18 @@ export class CausesService {
         translations: {
           include: { language: true },
           orderBy: { language: { code: 'asc' } },
+        },
+        parent: {
+          select: { id: true, slug: true },
+        },
+        children: {
+          orderBy: { displayOrder: 'asc' },
+          include: {
+            translations: {
+              include: { language: true },
+              orderBy: { language: { code: 'asc' } },
+            },
+          },
         },
       },
     });
