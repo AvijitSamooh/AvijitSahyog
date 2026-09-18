@@ -18,6 +18,13 @@ class HelpApplication {
     required this.id,
     required this.type,
     required this.status,
+    this.applicantName,
+    this.mobileNumber,
+    this.email,
+    this.address,
+    this.city,
+    this.state,
+    this.pincode,
     this.requestedAmount,
     this.approvedAmount,
     this.rejectionReason,
@@ -30,6 +37,13 @@ class HelpApplication {
 
   final String id;
   final String type;
+  final String? applicantName;
+  final String? mobileNumber;
+  final String? email;
+  final String? address;
+  final String? city;
+  final String? state;
+  final String? pincode;
   final String status;
   final num? requestedAmount;
   final num? approvedAmount;
@@ -45,6 +59,13 @@ class HelpApplication {
         id: json['id'] as String,
         type: json['type'] as String,
         status: json['status'] as String,
+        applicantName: json['applicantName'] as String?,
+        mobileNumber: json['mobileNumber'] as String?,
+        email: json['email'] as String?,
+        address: json['address'] as String?,
+        city: json['city'] as String?,
+        state: json['state'] as String?,
+        pincode: json['pincode'] as String?,
         requestedAmount: (json['requestedAmount'] as num?),
         approvedAmount: (json['approvedAmount'] as num?),
         rejectionReason: json['rejectionReason'] as String?,
