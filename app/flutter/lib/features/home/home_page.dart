@@ -4,6 +4,7 @@ import '../../core/analytics/analytics_events.dart';
 import '../../core/analytics/analytics_service.dart';
 import '../causes/presentation/causes_page.dart';
 import '../impact/presentation/impact_page.dart';
+import '../applications/presentation/applications_page.dart';
 import '../settings/settings_page.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/navigation/app_shell_scope.dart';
@@ -26,6 +27,16 @@ class _HomePageState extends ConsumerState<HomePage> {
       target: 'explore_causes',
     );
     AppShellScope.of(context).navigation.select(1);
+  }
+
+  void _openApplications() {
+    AnalyticsService.instance.trackInteraction(
+      screenName: AnalyticsScreens.home,
+      target: 'applications',
+    );
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const ApplicationsPage()),
+    );
   }
 
   void _openImpact() {
@@ -70,6 +81,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       _HomeContent(
         onExploreCauses: _openCauses,
         onExploreImpact: _openImpact,
+        onApplications: _openApplications,
       ),
       const CausesPage(),
       const ImpactPage(),
@@ -105,10 +117,12 @@ class _HomeContent extends StatelessWidget {
   const _HomeContent({
     required this.onExploreCauses,
     required this.onExploreImpact,
+    required this.onApplications,
   });
 
   final VoidCallback onExploreCauses;
   final VoidCallback onExploreImpact;
+  final VoidCallback onApplications;
 
   @override
   Widget build(BuildContext context) {
@@ -134,6 +148,15 @@ class _HomeContent extends StatelessWidget {
           subtitle: AppLocalizations.of(context)!.homeExploreCausesSubtitle,
           action: AppLocalizations.of(context)!.explore,
           onTap: onExploreCauses,
+        ),
+        const SizedBox(height: 14),
+        _ActionCard(
+          key: const ValueKey('home_applications'),
+          icon: Icons.assignment_rounded,
+          title: AppLocalizations.of(context)!.applicationsTitle,
+          subtitle: AppLocalizations.of(context)!.applicationHistory,
+          action: AppLocalizations.of(context)!.explore,
+          onTap: onApplications,
         ),
         const SizedBox(height: 14),
         _ActionCard(
@@ -251,6 +274,7 @@ class _HeroSection extends StatelessWidget {
 
 class _ActionCard extends StatelessWidget {
   const _ActionCard({
+    super.key,
     required this.icon,
     required this.title,
     required this.subtitle,
