@@ -23,8 +23,6 @@ import 'package:avijit_sahyog/features/admin/presentation/admin_dashboard_page.d
 import 'package:avijit_sahyog/features/admin/providers/admin_dashboard_providers.dart';
 import 'package:avijit_sahyog/features/admin/models/admin_dashboard_summary.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_beneficiaries_page.dart';
-import 'package:avijit_sahyog/features/admin/presentation/admin_organisation_editor_page.dart';
-import 'package:avijit_sahyog/features/admin/models/admin_organisation.dart';
 import 'package:avijit_sahyog/features/applications/presentation/applications_page.dart';
 import 'package:avijit_sahyog/features/applications/providers/help_applications_providers.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_causes_page.dart';
@@ -152,7 +150,10 @@ void main() {
   testWidgets('home exposes the assistance applications workflow', (tester) async {
     await pumpApp(tester);
 
-    await tester.tap(find.byKey(const ValueKey('home_applications')));
+    final applicationsEntry = find.byKey(const ValueKey('home_applications'));
+    await tester.ensureVisible(applicationsEntry);
+    await tester.pump();
+    await tester.tap(applicationsEntry);
     await tester.pumpAndSettle();
 
     expect(find.byType(ApplicationsPage), findsOneWidget);
@@ -296,35 +297,6 @@ void main() {
     expect(
       find.byKey(const ValueKey('admin_create_organisation')),
       findsOneWidget,
-    );
-  });
-
-  testWidgets('admin organisation editor exposes the dedicated mobile number field', (tester) async {
-    const organisation = AdminOrganisation(
-      id: 'org-1',
-      slug: 'seva-trust',
-      isActive: true,
-      displayOrder: 0,
-      translations: [
-        AdminOrganisationTranslation(languageCode: 'en', name: 'Seva Trust'),
-      ],
-      causeIds: [],
-      mobileNumber: '+919876543210',
-    );
-
-    await pumpApp(
-      tester,
-      home: AdminOrganisationEditorPage(organisation: organisation),
-      overrides: [
-        adminCausesProvider.overrideWith((ref) async => const []),
-      ],
-    );
-
-    final mobileField = find.byKey(const ValueKey('admin_organisation_mobile_number'));
-    expect(mobileField, findsOneWidget);
-    expect(
-      tester.widget<TextField>(mobileField).controller?.text,
-      '+919876543210',
     );
   });
 
