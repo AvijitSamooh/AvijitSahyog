@@ -9,6 +9,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { AdminGuard } from '../auth/admin.guard';
+import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { MediaService } from './media.service';
 import { R2StorageService } from './r2-storage.service';
 
@@ -41,4 +42,16 @@ export class MediaController {
   async uploadImage(@UploadedFile() file: Express.Multer.File) {
     return this.mediaService.uploadImage(file);
   }
+  @Post('user-upload')
+  @UseGuards(FirebaseAuthGuard)
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+      limits: { fileSize: 10 * 1024 * 1024 },
+    }),
+  )
+  async uploadUserImage(@UploadedFile() file: Express.Multer.File) {
+    return this.mediaService.uploadImage(file, 'applications');
+  }
+
 }
