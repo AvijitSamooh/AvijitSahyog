@@ -181,6 +181,7 @@
   "adminOrganisationSaveFailed": "संस्था सहेजी नहीं जा सकी: {error}",
   "@adminOrganisationSaveFailed": {"placeholders":{"error":{}}},
   "adminOrganisationLoadCausesFailed": "सेवा क्षेत्र लोड नहीं किए जा सके।",
+  "adminEditBeneficiary": "लाभार्थी संपादित करें",
   "adminDeleteBeneficiary": "लाभार्थी हटाएँ",
   "adminDeleteBeneficiaryTitle": "लाभार्थी हटाएँ?",
   "adminDeleteBeneficiaryConfirmation": "क्या आप “{beneficiary}” को स्थायी रूप से हटाना चाहते हैं? इसे वापस नहीं किया जा सकता।",
