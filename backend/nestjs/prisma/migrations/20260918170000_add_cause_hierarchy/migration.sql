@@ -12,12 +12,14 @@ CREATE INDEX "Cause_parentId_isActive_displayOrder_idx"
 
 -- Create the Education parent while keeping existing Education Assistance
 -- and Pratibha Samman records intact.
-INSERT INTO "Cause" ("id", "slug", "isActive", "displayOrder")
+INSERT INTO "Cause" ("id", "slug", "isActive", "displayOrder", "createdAt", "updatedAt")
 VALUES (
   '00000000-0000-0000-0000-000000000002',
   'education',
   true,
-  2
+  2,
+  CURRENT_TIMESTAMP,
+  CURRENT_TIMESTAMP
 )
 ON CONFLICT ("slug") DO NOTHING;
 
