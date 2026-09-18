@@ -180,6 +180,7 @@
   "adminOrganisationSaveFailed": "Unable to save organisation: {error}",
   "@adminOrganisationSaveFailed": {"placeholders":{"error":{}}},
   "adminOrganisationLoadCausesFailed": "Unable to load causes.",
+  "adminEditBeneficiary": "Edit beneficiary",
   "adminDeleteBeneficiary": "Delete beneficiary",
   "adminDeleteBeneficiaryTitle": "Delete beneficiary?",
   "adminDeleteBeneficiaryConfirmation": "Delete “{beneficiary}” permanently? This cannot be undone.",
