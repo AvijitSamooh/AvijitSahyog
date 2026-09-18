@@ -282,6 +282,75 @@ model BeneficiaryMedia {
   @@index([mediaId])
 }
 
+
+enum HelpApplicationType {
+  EDUCATION_ASSISTANCE
+  MEDICAL_HELP
+  PRATIBHA_SAMMAN
+}
+
+enum HelpApplicationStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  CLARIFICATION_REQUIRED
+  APPROVED_FOR_DONATION
+  REJECTED
+  CONSIDERED_FOR_SAMMAN
+  NOT_SELECTED
+}
+
+model HelpApplication {
+  id              String                @id @default(uuid()) @db.Uuid
+  applicantId     String                @db.Uuid
+  type            HelpApplicationType
+  status          HelpApplicationStatus @default(SUBMITTED)
+  requestedAmount Decimal?              @db.Decimal(12, 2)
+  approvedAmount  Decimal?              @db.Decimal(12, 2)
+  rejectionReason String?               @db.Text
+  clarification   String?               @db.Text
+  adminNote       String?               @db.Text
+  submittedAt     DateTime              @default(now())
+  reviewedAt      DateTime?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  applicant User @relation(fields: [applicantId], references: [id], onDelete: Restrict)
+  media     HelpApplicationMedia[]
+  votes     HelpApplicationVote[]
+
+  @@index([applicantId, createdAt])
+  @@index([type, status, createdAt])
+}
+
+model HelpApplicationMedia {
+  id            String          @id @default(uuid()) @db.Uuid
+  applicationId String          @db.Uuid
+  mediaId       String          @db.Uuid
+  createdAt     DateTime        @default(now())
+
+  application HelpApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  media       Media           @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@unique([applicationId, mediaId])
+  @@index([mediaId])
+}
+
+model HelpApplicationVote {
+  id            String          @id @default(uuid()) @db.Uuid
+  applicationId String          @db.Uuid
+  adminId       String          @db.Uuid
+  score         Int
+  comment       String?         @db.Text
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  application HelpApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  admin       User            @relation(fields: [adminId], references: [id], onDelete: Restrict)
+
+  @@unique([applicationId, adminId])
+  @@index([applicationId, score])
+}
+
 model AnalyticsEvent {
   id              String   @id @default(uuid()) @db.Uuid
   clientId        String   @db.VarChar(64)
