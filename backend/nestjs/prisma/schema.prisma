@@ -107,6 +107,7 @@ model Organisation {
   logoUrl      String?  @db.VarChar(1000)
   websiteUrl   String?  @db.VarChar(1000)
   phone        String?  @db.VarChar(30)
+  mobileNumber String?  @db.VarChar(20)
   email        String?  @db.VarChar(320)
   address      String?  @db.Text
   city         String?  @db.VarChar(100)
