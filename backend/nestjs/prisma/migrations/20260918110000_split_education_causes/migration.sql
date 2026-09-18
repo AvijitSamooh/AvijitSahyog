@@ -14,7 +14,7 @@ SET "displayOrder" = EXCLUDED."displayOrder",
 
 INSERT INTO "CauseTranslation" (id, "causeId", "languageId", name, description, "createdAt", "updatedAt")
 SELECT
-  gen_random_uuid(),
+  md5(c.id || l.id)::uuid,
   c.id,
   l.id,
   v.name,
@@ -52,7 +52,7 @@ JOIN (
 WHERE c.id = ct."causeId" AND c.slug = 'education-assistance';
 
 INSERT INTO "CauseTranslation" (id, "causeId", "languageId", name, description, "createdAt", "updatedAt")
-SELECT gen_random_uuid(), c.id, l.id, v.name, v.description, NOW(), NOW()
+SELECT md5(c.id || l.id)::uuid, c.id, l.id, v.name, v.description, NOW(), NOW()
 FROM "Cause" c
 CROSS JOIN (
   VALUES
