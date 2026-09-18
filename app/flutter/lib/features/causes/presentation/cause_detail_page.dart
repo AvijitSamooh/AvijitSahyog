@@ -206,16 +206,6 @@ class _OrganisationInfoCard extends StatelessWidget {
   }
 }
 
-class _CauseErrorState extends StatelessWidget {
-  const _CauseErrorState();
-
-  @override
-  Widget build(BuildContext context) => const Center(
-        child: Padding(
-          padding: EdgeInsets.all(24),
-          child: Text('Unable to load this cause right now.'),
-        ),
-      );
   bool _hasValidMobileNumber(String? value) {
     final digits = (value ?? '').replaceAll(RegExp(r'\D'), '');
     return RegExp(r'^(?:91)?[6-9]\d{9}$').hasMatch(digits);
@@ -244,4 +234,16 @@ class _CauseErrorState extends StatelessWidget {
       );
     }
   }
+
+class _CauseErrorState extends StatelessWidget {
+  const _CauseErrorState();
+
+  @override
+  Widget build(BuildContext context) => const Center(
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Text('Unable to load this cause right now.'),
+        ),
+      );
+
 }
