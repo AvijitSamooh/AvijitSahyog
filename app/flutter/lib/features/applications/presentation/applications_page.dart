@@ -38,13 +38,13 @@ class ApplicationsPage extends ConsumerWidget {
         data: (items) => ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            _ActionCard(icon: Icons.school_rounded, title: l10n.applyEducationHelp,
+            _ActionCard(key: const ValueKey('application_education'), icon: Icons.school_rounded, title: l10n.applyEducationHelp,
               onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HelpApplicationFormPage(type: 'EDUCATION_ASSISTANCE')))),
             const SizedBox(height: 12),
-            _ActionCard(icon: Icons.medical_services_rounded, title: l10n.applyMedicalHelp,
+            _ActionCard(key: const ValueKey('application_medical'), icon: Icons.medical_services_rounded, title: l10n.applyMedicalHelp,
               onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HelpApplicationFormPage(type: 'MEDICAL_HELP')))),
             const SizedBox(height: 12),
-            _ActionCard(icon: Icons.workspace_premium_rounded, title: l10n.applyPratibhaSamman,
+            _ActionCard(key: const ValueKey('application_pratibha'), icon: Icons.workspace_premium_rounded, title: l10n.applyPratibhaSamman,
               onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HelpApplicationFormPage(type: 'PRATIBHA_SAMMAN')))),
             const SizedBox(height: 28),
             Text(l10n.applicationHistory, style: Theme.of(context).textTheme.titleLarge),
@@ -197,7 +197,7 @@ class _ApplicationCard extends StatelessWidget {
 }
 
 class _ActionCard extends StatelessWidget {
-  const _ActionCard({required this.icon, required this.title, required this.onTap});
+  const _ActionCard({super.key, required this.icon, required this.title, required this.onTap});
   final IconData icon;
   final String title;
   final VoidCallback onTap;
