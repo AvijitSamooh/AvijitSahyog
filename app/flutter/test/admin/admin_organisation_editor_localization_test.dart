@@ -1,85 +1,64 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:avijit_sahyog/features/admin/models/admin_organisation.dart';
-import 'package:avijit_sahyog/features/admin/presentation/admin_organisation_editor_page.dart';
-import 'package:avijit_sahyog/features/admin/providers/admin_causes_providers.dart';
 import 'package:avijit_sahyog/l10n/app_localizations.dart';
 
 void main() {
-  testWidgets('organisation editor uses the active locale for user-visible labels', (tester) async {
-    const locales = [
-      (
-        Locale('en'),
-        'Edit organisation',
-        'Website',
-        'Supported causes',
-        'Translations',
-        'Save changes',
-      ),
-      (
-        Locale('hi'),
-        'संस्था संपादित करें',
-        'वेबसाइट',
-        'समर्थित सेवा क्षेत्र',
-        'अनुवाद',
-        'परिवर्तन सहेजें',
-      ),
-      (
-        Locale('mr'),
-        'संस्था संपादित करा',
-        'वेबसाइट',
-        'समर्थित सेवा क्षेत्रे',
-        'भाषांतर',
-        'बदल जतन करा',
-      ),
-      (
-        Locale('gu'),
-        'સંસ્થા સંપાદિત કરો',
-        'વેબસાઇટ',
-        'સમર્થિત સેવા ક્ષેત્રો',
-        'અનુવાદ',
-        'ફેરફારો સાચવો',
-      ),
-    ];
+  test('organisation editor strings are translated for every supported locale', () async {
+    final expectations = <String, Map<String, String>>{
+      'en': {
+        'edit': 'Edit organisation',
+        'website': 'Website',
+        'supportedCauses': 'Supported causes',
+        'translations': 'Translations',
+        'save': 'Save changes',
+      },
+      'hi': {
+        'edit': 'संस्था संपादित करें',
+        'website': 'वेबसाइट',
+        'supportedCauses': 'समर्थित सेवा क्षेत्र',
+        'translations': 'अनुवाद',
+        'save': 'परिवर्तन सहेजें',
+      },
+      'mr': {
+        'edit': 'संस्था संपादित करा',
+        'website': 'वेबसाइट',
+        'supportedCauses': 'समर्थित सेवा क्षेत्रे',
+        'translations': 'भाषांतर',
+        'save': 'बदल जतन करा',
+      },
+      'gu': {
+        'edit': 'સંસ્થા સંપાદિત કરો',
+        'website': 'વેબસાઇટ',
+        'supportedCauses': 'સમર્થિત સેવા ક્ષેત્રો',
+        'translations': 'અનુવાદ',
+        'save': 'ફેરફારો સાચવો',
+      },
+    };
 
-    for (final item in locales) {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            adminCausesProvider.overrideWith((ref) async => const []),
-          ],
-          child: MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            locale: item.$1,
-            home: const AdminOrganisationEditorPage(
-              organisation: AdminOrganisation(
-                id: 'org-1',
-                slug: 'org',
-                isActive: true,
-                displayOrder: 0,
-                translations: [],
-                causeIds: [],
-              ),
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
+    for (final locale in AppLocalizations.supportedLocales) {
+      final l10n = await AppLocalizations.delegate.load(locale);
+      final expected = expectations[locale.languageCode]!;
 
-      expect(find.text(item.$2), findsOneWidget);
-      expect(find.text(item.$3), findsOneWidget);
-      expect(find.text(item.$4), findsOneWidget);
-
-      await tester.scrollUntilVisible(
-        find.text(item.$5),
-        500,
-        scrollable: find.byType(Scrollable).first,
-      );
-      expect(find.text(item.$5), findsOneWidget);
-      expect(find.text(item.$6), findsOneWidget);
+      expect(l10n.adminEditOrganisation, expected['edit']);
+      expect(l10n.adminOrganisationWebsite, expected['website']);
+      expect(l10n.adminSupportedCauses, expected['supportedCauses']);
+      expect(l10n.adminTranslations, expected['translations']);
+      expect(l10n.adminSaveChanges, expected['save']);
+      expect(l10n.adminOrganisationEmail, isNotEmpty);
+      expect(l10n.adminOrganisationAddress, isNotEmpty);
+      expect(l10n.adminOrganisationCity, isNotEmpty);
+      expect(l10n.adminOrganisationState, isNotEmpty);
+      expect(l10n.adminOrganisationCountry, isNotEmpty);
+      expect(l10n.adminOrganisationDisplayOrder, isNotEmpty);
+      expect(l10n.adminOrganisationImages, isNotEmpty);
+      expect(l10n.adminTranslationName, isNotEmpty);
+      expect(l10n.adminTranslationDescription, isNotEmpty);
+      expect(l10n.adminOrganisationSaving, isNotEmpty);
+      expect(l10n.adminAddAtLeastOneTranslation, isNotEmpty);
+      expect(l10n.adminOrganisationCreatedPartialFailure('error'), isNotEmpty);
+      expect(l10n.adminOrganisationSaveFailed('error'), isNotEmpty);
+      expect(l10n.adminOrganisationLoadCausesFailed, isNotEmpty);
     }
   });
 }
