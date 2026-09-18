@@ -160,4 +160,26 @@
   "affiliateCallFailed": "Unable to open the phone dialer.",
   "affiliateWhatsAppFailed": "Unable to open WhatsApp."
 
+,
+  "adminEditOrganisation": "Edit organisation",
+  "adminOrganisationWebsite": "Website",
+  "adminOrganisationEmail": "Email",
+  "adminOrganisationAddress": "Address",
+  "adminOrganisationCity": "City",
+  "adminOrganisationState": "State",
+  "adminOrganisationCountry": "Country",
+  "adminOrganisationDisplayOrder": "Display order",
+  "adminSupportedCauses": "Supported causes",
+  "adminOrganisationImages": "Organisation images",
+  "adminTranslations": "Translations",
+  "adminTranslationName": "Name",
+  "adminTranslationDescription": "Description",
+  "adminOrganisationSaving": "Saving...",
+  "adminSaveChanges": "Save changes",
+  "adminAddAtLeastOneTranslation": "Add at least one translation.",
+  "adminOrganisationCreatedPartialFailure": "Organisation was created, but some follow-up changes failed: {error}. Open it again to retry.",
+  "@adminOrganisationCreatedPartialFailure": {"placeholders":{"error":{}}},
+  "adminOrganisationSaveFailed": "Unable to save organisation: {error}",
+  "@adminOrganisationSaveFailed": {"placeholders":{"error":{}}},
+  "adminOrganisationLoadCausesFailed": "Unable to load causes."
 }
