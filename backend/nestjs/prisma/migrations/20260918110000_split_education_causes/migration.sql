@@ -6,7 +6,7 @@ SET slug = 'education-assistance'
 WHERE slug = 'education';
 
 INSERT INTO "Cause" (id, slug, "displayOrder", "isActive", "createdAt", "updatedAt")
-VALUES (gen_random_uuid(), 'pratibha-samman', 3, true, NOW(), NOW())
+VALUES ('7b3c1d5e-4f8a-4a7d-9c21-6e5f8b2a3147', 'pratibha-samman', 3, true, NOW(), NOW())
 ON CONFLICT (slug) DO UPDATE
 SET "displayOrder" = EXCLUDED."displayOrder",
     "isActive" = true,
