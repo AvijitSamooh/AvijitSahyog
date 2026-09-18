@@ -86,7 +86,11 @@ export class HelpApplicationsService {
         votes: { include: { admin: { select: { id: true, displayName: true } } }, orderBy: { updatedAt: 'desc' } },
       },
     });
-    return items.map((item) => this.toAdminResponse(item));
+    const responses = items.map((item) => this.toAdminResponse(item));
+    if (type === 'PRATIBHA_SAMMAN') {
+      responses.sort((a, b) => (b.voteAverage ?? -1) - (a.voteAverage ?? -1));
+    }
+    return responses;
   }
 
   async vote(identity: FirebaseIdentity, id: string, dto: VoteHelpApplicationDto) {
