@@ -182,4 +182,12 @@
   "adminOrganisationSaveFailed": "Unable to save organisation: {error}",
   "@adminOrganisationSaveFailed": {"placeholders":{"error":{}}},
   "adminOrganisationLoadCausesFailed": "Unable to load causes."
+  "adminDeleteBeneficiary": "Delete beneficiary",
+  "adminDeleteBeneficiaryTitle": "Delete beneficiary?",
+  "adminDeleteBeneficiaryConfirmation": "Delete “{beneficiary}” permanently? This cannot be undone.",
+  "@adminDeleteBeneficiaryConfirmation": {"placeholders":{"beneficiary":{},"error":{}}},
+  "adminDeleteBeneficiarySuccess": "“{beneficiary}” was deleted.",
+  "@adminDeleteBeneficiarySuccess": {"placeholders":{"beneficiary":{},"error":{}}},
+  "adminDeleteBeneficiaryFailed": "Unable to delete beneficiary: {error}",
+  "@adminDeleteBeneficiaryFailed": {"placeholders":{"beneficiary":{},"error":{}}}
 }
