@@ -111,6 +111,7 @@ describe('HelpApplicationsService', () => {
       type: 'PRATIBHA_SAMMAN',
       media: [],
     });
+    prisma.$transaction.mockImplementation(async (callback: any) => callback(prisma));
     prisma.helpApplicationVote.upsert.mockResolvedValue({
       id: 'vote-1',
       applicationId: 'app-1',
