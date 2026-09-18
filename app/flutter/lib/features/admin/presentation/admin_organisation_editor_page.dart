@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/widgets/app_settings_menu.dart';
+import '../../../l10n/app_localizations.dart';
 
 import '../models/admin_organisation.dart';
 import '../providers/admin_causes_providers.dart';
@@ -21,6 +22,7 @@ class _AdminOrganisationEditorPageState
   static const _languages = ['en', 'hi', 'mr', 'gu'];
   late final TextEditingController _website;
   late final TextEditingController _phone;
+  late final TextEditingController _mobileNumber;
   late final TextEditingController _email;
   late final TextEditingController _address;
   late final TextEditingController _city;
@@ -41,6 +43,7 @@ class _AdminOrganisationEditorPageState
     final organisation = widget.organisation;
     _website = TextEditingController(text: organisation?.websiteUrl ?? '');
     _phone = TextEditingController(text: organisation?.phone ?? '');
+    _mobileNumber = TextEditingController(text: organisation?.mobileNumber ?? '');
     _email = TextEditingController(text: organisation?.email ?? '');
     _address = TextEditingController(text: organisation?.address ?? '');
     _city = TextEditingController(text: organisation?.city ?? '');
@@ -66,7 +69,7 @@ class _AdminOrganisationEditorPageState
   @override
   void dispose() {
     for (final controller in [
-      _website, _phone, _email, _address, _city, _state, _country, _order,
+      _website, _phone, _mobileNumber, _email, _address, _city, _state, _country, _order,
       ..._names.values, ..._descriptions.values,
     ]) {
       controller.dispose();
@@ -94,6 +97,7 @@ class _AdminOrganisationEditorPageState
       final payload = {
         'websiteUrl': _website.text.trim(),
         'phone': _phone.text.trim(),
+        'mobileNumber': _mobileNumber.text.trim(),
         'email': _email.text.trim(),
         'address': _address.text.trim(),
         'city': _city.text.trim(),
@@ -144,13 +148,15 @@ class _AdminOrganisationEditorPageState
   @override
   Widget build(BuildContext context) {
     final causes = ref.watch(adminCausesProvider);
+    final l10n = AppLocalizations.of(context)!;
     return AppPageScaffold(
       title: Text(_editing ? 'Edit organisation' : 'Create organisation'),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
         children: [
           TextField(controller: _website, decoration: const InputDecoration(labelText: 'Website')),
-          TextField(controller: _phone, decoration: const InputDecoration(labelText: 'Phone')),
+          TextField(controller: _phone, decoration: InputDecoration(labelText: l10n.adminOrganisationPhone)),
+          TextField(controller: _mobileNumber, keyboardType: TextInputType.phone, decoration: InputDecoration(labelText: l10n.adminOrganisationMobileNumber, hintText: l10n.adminOrganisationMobileNumberHint)),
           TextField(controller: _email, keyboardType: TextInputType.emailAddress, decoration: const InputDecoration(labelText: 'Email')),
           TextField(controller: _address, decoration: const InputDecoration(labelText: 'Address')),
           Row(children: [

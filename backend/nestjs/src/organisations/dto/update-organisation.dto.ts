@@ -5,6 +5,7 @@ export interface UpdateOrganisationDto {
   logoUrl?: string;
   websiteUrl?: string;
   phone?: string;
+  mobileNumber?: string;
   email?: string;
   address?: string;
   city?: string;

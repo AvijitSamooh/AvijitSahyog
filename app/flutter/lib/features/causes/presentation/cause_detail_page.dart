@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/widgets/app_settings_menu.dart';
+import '../../../l10n/app_localizations.dart';
 
 import '../../donations/presentation/donation_page.dart';
 import '../models/organisation.dart';
@@ -102,6 +104,7 @@ class _OrganisationInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final location = [
       if (organisation.city?.isNotEmpty == true) organisation.city!,
       if (organisation.state?.isNotEmpty == true) organisation.state!,
@@ -161,6 +164,28 @@ class _OrganisationInfoCard extends StatelessWidget {
                         style: theme.textTheme.bodyMedium,
                       ),
                     ],
+                    if (_hasValidMobileNumber(organisation.mobileNumber)) ...[
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            key: ValueKey('affiliate_call_${organisation.id}'),
+                            tooltip: l10n.affiliateCall,
+                            visualDensity: VisualDensity.compact,
+                            icon: const Icon(Icons.phone_rounded),
+                            onPressed: () => _callAffiliate(context, organisation.mobileNumber!),
+                          ),
+                          IconButton(
+                            key: ValueKey('affiliate_whatsapp_${organisation.id}'),
+                            tooltip: l10n.affiliateWhatsApp,
+                            visualDensity: VisualDensity.compact,
+                            icon: const Icon(Icons.chat_rounded),
+                            onPressed: () => _openWhatsApp(context, organisation.mobileNumber!),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -179,8 +204,35 @@ class _OrganisationInfoCard extends StatelessWidget {
       ),
     );
   }
-}
+bool _hasValidMobileNumber(String? value) {
+    final digits = (value ?? '').replaceAll(RegExp(r'\D'), '');
+    return RegExp(r'^(?:91)?[6-9]\d{9}$').hasMatch(digits);
+  }
 
+  String _whatsAppNumber(String value) {
+    final digits = value.replaceAll(RegExp(r'\D'), '');
+    return digits.length == 10 ? '91$digits' : digits;
+  }
+
+  Future<void> _callAffiliate(BuildContext context, String value) async {
+    final launched = await launchUrl(Uri(scheme: 'tel', path: value));
+    if (!launched && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.affiliateCallFailed)),
+      );
+    }
+  }
+
+  Future<void> _openWhatsApp(BuildContext context, String value) async {
+    final uri = Uri.parse('https://wa.me/${_whatsAppNumber(value)}');
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!launched && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.affiliateWhatsAppFailed)),
+      );
+    }
+  }
+}
 class _CauseErrorState extends StatelessWidget {
   const _CauseErrorState();
 
@@ -191,4 +243,5 @@ class _CauseErrorState extends StatelessWidget {
           child: Text('Unable to load this cause right now.'),
         ),
       );
+
 }
