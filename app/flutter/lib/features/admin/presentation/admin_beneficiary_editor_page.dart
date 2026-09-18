@@ -130,13 +130,16 @@ class _AdminBeneficiaryEditorPageState
           causes.when(
             loading: () => const LinearProgressIndicator(),
             error: (error, stackTrace) => const Text('Unable to load causes.'),
-            data: (items) => DropdownButtonFormField<String>(
+            data: (items) {
+              final leafCauses = items.expand((item) => item.children.isEmpty ? [item] : item.children).toList(growable: false);
+              return DropdownButtonFormField<String>(
               key: const ValueKey('admin_beneficiary_cause'),
               initialValue: items.any((item) => item.id == _causeId) ? _causeId : null,
               decoration: const InputDecoration(labelText: 'Cause'),
-              items: items.map((AdminCause item) => DropdownMenuItem(value: item.id, child: Text(item.displayName))).toList(),
+              items: leafCauses.map((AdminCause item) => DropdownMenuItem(value: item.id, child: Text(item.displayName))).toList(),
               onChanged: (value) => setState(() => _causeId = value),
-            ),
+            );
+            },
           ),
           const SizedBox(height: 24),
           AdminMediaSection(
