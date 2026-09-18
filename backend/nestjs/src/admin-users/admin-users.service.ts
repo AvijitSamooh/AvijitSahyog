@@ -10,7 +10,7 @@ import { PrismaService } from '../prisma/prisma.service';
 type ManagedRole = 'USER' | 'ADMIN';
 type ListUsersQuery = {
   search?: string;
-  role?: string;
+  role?: 'USER' | 'ADMIN' | 'ALL';
   page?: number;
   pageSize?: number;
 };
@@ -25,10 +25,10 @@ export class AdminUsersService {
       ? Math.min(Math.floor(query.pageSize!), 20)
       : 3;
     const search = query.search?.trim();
-    const role: UserRole = query.role === 'USER' ? UserRole.USER : UserRole.ADMIN;
+    const role = query.role === 'USER' ? UserRole.USER : query.role === 'ADMIN' ? UserRole.ADMIN : undefined;
 
     const where = {
-      role,
+      ...(role ? { role } : {}),
       ...(search
         ? {
             OR: [

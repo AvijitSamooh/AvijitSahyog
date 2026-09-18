@@ -27,6 +27,12 @@ describe('AdminUsersQueryDto', () => {
     expect(await validate(dto)).toHaveLength(0);
   });
 
+  it('accepts ALL for cross-role search', async () => {
+    const dto = plainToInstance(AdminUsersQueryDto, { role: 'ALL' });
+    expect(dto.role).toBe('ALL');
+    expect(await validate(dto)).toHaveLength(0);
+  });
+
   it('rejects invalid query values', async () => {
     const dto = plainToInstance(AdminUsersQueryDto, {
       role: 'SUPER_ADMIN',

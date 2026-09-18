@@ -54,7 +54,7 @@ class _AdminUsersPageState extends ConsumerState<AdminUsersPage> {
     final users = ref.watch(adminUsersProvider((
       search: _search.isEmpty ? null : _search,
       page: _page,
-      role: 'ADMIN',
+      role: _search.isEmpty ? 'ADMIN' : 'ALL',
     )));
     final audit = ref.watch(adminAuditHistoryProvider);
 
@@ -118,14 +118,7 @@ class _AdminUsersPageState extends ConsumerState<AdminUsersPage> {
                 ref: ref,
                 onPrevious: result.hasPreviousPage ? () => setState(() => _page--) : null,
                 onNext: result.hasNextPage ? () => setState(() => _page++) : null,
-                onSearchUsers: _search.isEmpty
-                    ? null
-                    : () => _showPromotionDialog(
-                          context,
-                          ref,
-                          l10n,
-                          initialSearch: _search,
-                        ),
+                isSearchResult: _search.isNotEmpty,
               ),
             ),
             const SizedBox(height: 28),
@@ -348,7 +341,7 @@ class _UsersSection extends StatelessWidget {
     required this.ref,
     required this.onPrevious,
     required this.onNext,
-    required this.onSearchUsers,
+    required this.isSearchResult,
   });
 
   final PaginatedAdminUsers result;
@@ -356,7 +349,7 @@ class _UsersSection extends StatelessWidget {
   final WidgetRef ref;
   final VoidCallback? onPrevious;
   final VoidCallback? onNext;
-  final VoidCallback? onSearchUsers;
+  final bool isSearchResult;
 
   @override
   Widget build(BuildContext context) {
@@ -364,26 +357,24 @@ class _UsersSection extends StatelessWidget {
       return Card(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(l10n.adminNoUsers),
-              if (onSearchUsers != null) ...[
-                const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  onPressed: onSearchUsers,
-                  icon: const Icon(Icons.person_add_alt_1),
-                  label: Text(l10n.adminMakeAdmin),
-                ),
-              ],
-            ],
-          ),
+          child: Text(l10n.adminNoUsers),
         ),
       );
     }
 
     return Column(
       children: [
+        if (isSearchResult)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                l10n.adminSearchResults(result.total),
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+            ),
+          ),
         Card(
           child: Column(
             children: [
@@ -425,38 +416,53 @@ class _UserTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final canChange = user.canBeDemoted;
     return ListTile(
       leading: CircleAvatar(
         backgroundImage: user.photoUrl != null ? NetworkImage(user.photoUrl!) : null,
         child: user.photoUrl == null ? const Icon(Icons.person_outline) : null,
       ),
       title: Text(user.label),
-      subtitle: Text(user.email ?? l10n.adminNoEmail),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(user.email ?? l10n.adminNoEmail),
+          const SizedBox(height: 2),
+          Text(user.isAdmin ? l10n.adminRole : l10n.adminUserRoleUser),
+        ],
+      ),
+      isThreeLine: true,
       trailing: user.isSuperAdmin
           ? const Icon(Icons.shield_rounded)
-          : canChange
+          : user.isAdmin
               ? PopupMenuButton<String>(
                   onSelected: (role) => _confirmRoleChange(context, role),
                   itemBuilder: (context) => [
                     PopupMenuItem(value: 'USER', child: Text(l10n.adminRemoveAdmin)),
                   ],
                 )
-              : Chip(label: Text(l10n.adminRole)),
+              : FilledButton.icon(
+                  onPressed: () => _confirmRoleChange(context, 'ADMIN'),
+                  icon: const Icon(Icons.person_add_alt_1),
+                  label: Text(l10n.adminMakeAdmin),
+                ),
     );
   }
 
   Future<void> _confirmRoleChange(BuildContext context, String role) async {
-    final description = l10n.adminRemoveAdminConfirmation(user.label);
+    final promoting = role == 'ADMIN';
+    final action = promoting ? l10n.adminMakeAdmin : l10n.adminRemoveAdmin;
+    final description = promoting
+        ? l10n.adminMakeAdminConfirmation(user.label)
+        : l10n.adminRemoveAdminConfirmation(user.label);
 
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.adminRemoveAdmin),
+        title: Text(action),
         content: Text(description),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(l10n.adminRemoveAdmin)),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(action)),
         ],
       ),
     );
@@ -468,7 +474,11 @@ class _UserTile extends StatelessWidget {
       ref.invalidate(adminAuditHistoryProvider);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.adminDemotionSuccess)),
+          SnackBar(
+            content: Text(
+              promoting ? l10n.adminPromotionSuccess : l10n.adminDemotionSuccess,
+            ),
+          ),
         );
       }
     } catch (error) {
