@@ -179,6 +179,11 @@ export class BeneficiariesService {
     });
   }
 
+  async remove(id: string) {
+    await this.findOneForAdmin(id);
+    return this.prisma.beneficiary.delete({ where: { id } });
+  }
+
   async setActive(id: string, isActive: boolean) {
     await this.findOneForAdmin(id);
     return this.prisma.beneficiary.update({ where: { id }, data: { isActive } });

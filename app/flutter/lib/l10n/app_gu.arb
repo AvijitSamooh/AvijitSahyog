@@ -181,5 +181,13 @@
   "@adminOrganisationCreatedPartialFailure": {"placeholders":{"error":{}}},
   "adminOrganisationSaveFailed": "સંસ્થા સાચવી શકાઈ નથી: {error}",
   "@adminOrganisationSaveFailed": {"placeholders":{"error":{}}},
-  "adminOrganisationLoadCausesFailed": "સેવા ક્ષેત્રો લોડ કરી શકાયા નથી."
+  "adminOrganisationLoadCausesFailed": "સેવા ક્ષેત્રો લોડ કરી શકાયા નથી.",
+  "adminDeleteBeneficiary": "લાભાર્થી કાઢી નાખો",
+  "adminDeleteBeneficiaryTitle": "લાભાર્થી કાઢી નાખવો છે?",
+  "adminDeleteBeneficiaryConfirmation": "શું તમે “{beneficiary}”ને કાયમ માટે કાઢી નાખવા માંગો છો? આ પાછું કરી શકાશે નહીં.",
+  "@adminDeleteBeneficiaryConfirmation": {"placeholders":{"beneficiary":{}}},
+  "adminDeleteBeneficiarySuccess": "“{beneficiary}” કાઢી નાખવામાં આવ્યો.",
+  "@adminDeleteBeneficiarySuccess": {"placeholders":{"beneficiary":{}}},
+  "adminDeleteBeneficiaryFailed": "લાભાર્થી કાઢી શકાયો નથી: {error}",
+  "@adminDeleteBeneficiaryFailed": {"placeholders":{"error":{}}}
 }

@@ -56,6 +56,11 @@ export class AdminBeneficiariesController {
     return this.service.removeMedia(id, mediaId);
   }
 
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.service.remove(id);
+  }
+
   @Patch(':id/activate')
   activate(@Param('id') id: string) {
     return this.service.setActive(id, true);

@@ -26,6 +26,8 @@ class AdminBeneficiariesRepository {
     );
   }
 
+  Future<void> remove(String id) => _apiClient.deleteAdminBeneficiary(id);
+
   Future<void> setActive(String id, bool active) =>
       _apiClient.setAdminBeneficiaryActive(id, active);
 }
