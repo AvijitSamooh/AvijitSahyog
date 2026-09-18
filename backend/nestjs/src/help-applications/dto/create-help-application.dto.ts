@@ -10,6 +10,35 @@ export class CreateHelpApplicationDto {
   @IsEnum(HelpApplicationTypeDto)
   type!: HelpApplicationTypeDto;
 
+  @IsString()
+  @MaxLength(250)
+  applicantName!: string;
+
+  @IsString()
+  @MaxLength(20)
+  mobileNumber!: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(320)
+  email?: string;
+
+  @IsString()
+  @MaxLength(5000)
+  address!: string;
+
+  @IsString()
+  @MaxLength(100)
+  city!: string;
+
+  @IsString()
+  @MaxLength(100)
+  state!: string;
+
+  @IsString()
+  @MaxLength(10)
+  pincode!: string;
+
   @IsOptional()
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(1)
