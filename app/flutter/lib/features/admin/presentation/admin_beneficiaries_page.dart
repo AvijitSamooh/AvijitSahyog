@@ -128,22 +128,11 @@ class _BeneficiaryTile extends ConsumerWidget {
                 }
               },
             ),
-            PopupMenuButton<String>(
-              key: ValueKey('admin_beneficiary_actions_${beneficiary.id}'),
-              onSelected: (value) async {
-                if (value == 'delete') {
-                  await _deleteBeneficiary(context, ref);
-                }
-              },
-              itemBuilder: (context) {
-                final l10n = AppLocalizations.of(context)!;
-                return [
-                  PopupMenuItem(
-                    value: 'delete',
-                    child: Text(l10n.adminDeleteBeneficiary),
-                  ),
-                ];
-              },
+            IconButton(
+              key: ValueKey('admin_beneficiary_delete_${beneficiary.id}'),
+              tooltip: AppLocalizations.of(context)!.adminDeleteBeneficiary,
+              icon: const Icon(Icons.delete_outline_rounded),
+              onPressed: () => _deleteBeneficiary(context, ref),
             ),
           ],
         ),
