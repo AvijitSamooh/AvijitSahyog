@@ -129,8 +129,8 @@ describe('CausesService', () => {
             logoUrl: 'https://images.example.com/organisations/org-1.webp',
             state: 'Maharashtra',
             country: 'India',
-            latitude: null,
-            longitude: null,
+            latitude: '18.5204',
+            longitude: '73.8567',
             media: [
               {
                 purpose: 'LOGO',
@@ -170,6 +170,10 @@ describe('CausesService', () => {
     );
 
     process.env.R2_PUBLIC_BASE_URL = originalBase;
+
+    const response = await service.findOne('jeev-daya', 'hi');
+    expect(response.organisations[0].latitude).toBe(18.5204);
+    expect(response.organisations[0].longitude).toBe(73.8567);
 
     expect(prisma.cause.findFirst).toHaveBeenCalledWith(
       expect.objectContaining({
