@@ -138,7 +138,7 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
                       Align(alignment: Alignment.centerLeft, child: Text((item['applicant']?['displayName'] ?? item['applicant']?['email'] ?? '').toString())),
                       if (item['requestedAmount'] != null) Align(alignment: Alignment.centerLeft, child: Text(l10n.requestedAmount + ': ₹' + item['requestedAmount'].toString())),
                       if (item['approvedAmount'] != null) Align(alignment: Alignment.centerLeft, child: Text(l10n.approvedAmount + ': ₹' + item['approvedAmount'].toString())),
-                      Align(alignment: Alignment.centerLeft, child: Text(l10n.voteAverage + ': ' + (item['voteAverage']?.toStringAsFixed?.(1) ?? '—'))),
+                      Align(alignment: Alignment.centerLeft, child: Text(l10n.voteAverage + ': ' + ((item['voteAverage'] as num?)?.toStringAsFixed(1) ?? '—'))),
                       Align(alignment: Alignment.centerLeft, child: Text(votes.length.toString() + ' ' + l10n.vote)),
                       Row(children: [
                         TextButton.icon(onPressed: () => _vote(item), icon: const Icon(Icons.how_to_vote_rounded), label: Text(l10n.vote)),
