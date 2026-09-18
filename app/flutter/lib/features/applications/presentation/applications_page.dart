@@ -32,25 +32,93 @@ class ApplicationsPage extends ConsumerWidget {
     final applications = ref.watch(myHelpApplicationsProvider);
     return AppPageScaffold(
       title: Text(l10n.applicationsTitle),
-      body: applications.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) => Center(child: Text(l10n.applicationLoadError)),
-        data: (items) => ListView(
-          padding: const EdgeInsets.all(20),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          Text(
+            l10n.homeHelpTitle,
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          const SizedBox(height: 6),
+          Text(l10n.homeApplicationsSubtitle),
+          const SizedBox(height: 18),
+          _ActionCard(
+            key: const ValueKey('application_education'),
+            icon: Icons.school_rounded,
+            title: l10n.applyEducationHelp,
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const HelpApplicationFormPage(
+                  type: 'EDUCATION_ASSISTANCE',
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _ActionCard(
+            key: const ValueKey('application_medical'),
+            icon: Icons.medical_services_rounded,
+            title: l10n.applyMedicalHelp,
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const HelpApplicationFormPage(type: 'MEDICAL_HELP'),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _ActionCard(
+            key: const ValueKey('application_pratibha'),
+            icon: Icons.workspace_premium_rounded,
+            title: l10n.applyPratibhaSamman,
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const HelpApplicationFormPage(type: 'PRATIBHA_SAMMAN'),
+              ),
+            ),
+          ),
+          const SizedBox(height: 28),
+          Text(l10n.applicationHistory, style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 12),
+          applications.when(
+            loading: () => const Center(
+              child: Padding(
+                padding: EdgeInsets.all(20),
+                child: CircularProgressIndicator(),
+              ),
+            ),
+            error: (_, _) => _ApplicationHistoryError(
+              onRetry: () => ref.invalidate(myHelpApplicationsProvider),
+            ),
+            data: (items) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (items.isEmpty) Text(l10n.noApplications),
+                ...items.map((item) => _ApplicationCard(application: item)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ApplicationHistoryError extends StatelessWidget {
+  const _ApplicationHistoryError({required this.onRetry});
+
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
           children: [
-            _ActionCard(key: const ValueKey('application_education'), icon: Icons.school_rounded, title: l10n.applyEducationHelp,
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HelpApplicationFormPage(type: 'EDUCATION_ASSISTANCE')))),
-            const SizedBox(height: 12),
-            _ActionCard(key: const ValueKey('application_medical'), icon: Icons.medical_services_rounded, title: l10n.applyMedicalHelp,
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HelpApplicationFormPage(type: 'MEDICAL_HELP')))),
-            const SizedBox(height: 12),
-            _ActionCard(key: const ValueKey('application_pratibha'), icon: Icons.workspace_premium_rounded, title: l10n.applyPratibhaSamman,
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HelpApplicationFormPage(type: 'PRATIBHA_SAMMAN')))),
-            const SizedBox(height: 28),
-            Text(l10n.applicationHistory, style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 12),
-            if (items.isEmpty) Text(l10n.noApplications),
-            ...items.map((item) => _ApplicationCard(application: item)),
+            const Icon(Icons.cloud_off_rounded),
+            const SizedBox(width: 12),
+            Expanded(child: Text(AppLocalizations.of(context)!.applicationLoadError)),
+            TextButton(onPressed: onRetry, child: Text(AppLocalizations.of(context)!.retry)),
           ],
         ),
       ),

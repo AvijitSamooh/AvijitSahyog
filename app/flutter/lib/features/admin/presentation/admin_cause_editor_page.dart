@@ -20,6 +20,7 @@ class _AdminCauseEditorPageState extends ConsumerState<AdminCauseEditorPage> {
 
   late final TextEditingController _slugController;
   late final TextEditingController _orderController;
+  String? _parentId;
   late final Map<String, TextEditingController> _nameControllers;
   late final Map<String, TextEditingController> _descriptionControllers;
   bool _isSaving = false;
@@ -33,6 +34,7 @@ class _AdminCauseEditorPageState extends ConsumerState<AdminCauseEditorPage> {
     _orderController = TextEditingController(
       text: '${widget.cause?.displayOrder ?? 0}',
     );
+    _parentId = widget.cause?.parentId;
 
     final translations = {
       for (final translation in widget.cause?.translations ?? [])
@@ -95,6 +97,7 @@ class _AdminCauseEditorPageState extends ConsumerState<AdminCauseEditorPage> {
     try {
       final payload = {
         'slug': slug,
+        'parentId': _parentId,
         'displayOrder': int.tryParse(_orderController.text) ?? 0,
         'translations': translations,
       };
@@ -146,6 +149,37 @@ class _AdminCauseEditorPageState extends ConsumerState<AdminCauseEditorPage> {
               controller: _orderController,
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(labelText: 'Display order'),
+            ),
+            const SizedBox(height: 20),
+            ref.watch(adminCausesProvider).when(
+              loading: () => const LinearProgressIndicator(),
+              error: (error, stackTrace) => const Text('Unable to load parent causes.'),
+              data: (items) {
+                final parents = items
+                    .where((item) => item.parentId == null && item.id != widget.cause?.id)
+                    .toList(growable: false);
+                return DropdownButtonFormField<String?>(
+                  key: const ValueKey('admin_cause_parent'),
+                  initialValue: parents.any((item) => item.id == _parentId) ? _parentId : null,
+                  decoration: const InputDecoration(
+                    labelText: 'Parent cause',
+                    helperText: 'Leave empty for a top-level cause.',
+                  ),
+                  items: [
+                    const DropdownMenuItem<String?>(
+                      value: null,
+                      child: Text('Top-level cause'),
+                    ),
+                    ...parents.map(
+                      (item) => DropdownMenuItem<String?>(
+                        value: item.id,
+                        child: Text(item.displayName),
+                      ),
+                    ),
+                  ],
+                  onChanged: (value) => setState(() => _parentId = value),
+                );
+              },
             ),
             const SizedBox(height: 28),
             Text(

@@ -472,7 +472,7 @@ void main() {
 
     expect(find.text('Education'), findsWidgets);
     expect(find.text('Support education initiatives.'), findsOneWidget);
-    expect(find.byIcon(Icons.volunteer_activism_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.subdirectory_arrow_right_rounded), findsOneWidget);
   });
 
   testWidgets('cause details show a localized retry state when loading fails', (tester) async {

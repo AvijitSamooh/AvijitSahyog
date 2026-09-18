@@ -123,7 +123,9 @@ class _DonationPageState extends ConsumerState<DonationPage> {
         causesAsync.when(
           loading: () => const Center(child: Padding(padding: EdgeInsets.all(16), child: CircularProgressIndicator())),
           error: (_, _) => Text(l10n.causesLoadError),
-          data: (causes) => Column(children: causes.map((cause) {
+          data: (causes) {
+            final selectableCauses = causes.expand((cause) => cause.leafCauses).toList(growable: false);
+            return Column(children: selectableCauses.map((cause) {
             final selected = _selectedCauseIds.contains(cause.id);
             final percentage = _allocationPercentages[cause.id] ?? 0;
             return Card(child: Column(children: [
@@ -135,7 +137,8 @@ class _DonationPageState extends ConsumerState<DonationPage> {
                 if (_totalAmount > 0) Text('₹ ${(_totalAmount * percentage / 100).toStringAsFixed(2)}'),
               ])),
             ]));
-          }).toList(growable: false)),
+            }).toList(growable: false));
+          },
         ),
         const SizedBox(height: 12),
         Text('${l10n.totalAllocation}: $_allocationTotal%', key: const ValueKey('donation_allocation_total'), style: theme.textTheme.titleMedium?.copyWith(color: _allocationTotal == 100 ? Colors.green.shade700 : Colors.red.shade700)),

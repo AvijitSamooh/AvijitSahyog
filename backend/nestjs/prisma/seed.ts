@@ -29,8 +29,30 @@ const causes = [
     },
   },
   {
-    slug: 'education-assistance',
+    slug: 'education',
     displayOrder: 2,
+    translations: {
+      en: {
+        name: 'Education',
+        description: 'Education-related assistance and recognition opportunities.',
+      },
+      hi: {
+        name: 'शिक्षा',
+        description: 'शिक्षा से जुड़ी सहायता और सम्मान के अवसर।',
+      },
+      mr: {
+        name: 'शिक्षण',
+        description: 'शिक्षणाशी संबंधित सहाय्य आणि सन्मानाच्या संधी.',
+      },
+      gu: {
+        name: 'શિક્ષણ',
+        description: 'શિક્ષણ સંબંધિત સહાય અને સન્માનની તકો.',
+      },
+    },
+  },
+  {
+    slug: 'education-assistance',
+    displayOrder: 1,
     translations: {
       en: {
         name: 'Education Assistance',
@@ -52,7 +74,7 @@ const causes = [
   },
   {
     slug: 'pratibha-samman',
-    displayOrder: 3,
+    displayOrder: 2,
     translations: {
       en: {
         name: 'Pratibha Samman',
@@ -211,6 +233,16 @@ async function main() {
         },
       });
     }
+  }
+
+  for (const [childSlug, parentSlug] of [
+    ['education-assistance', 'education'],
+    ['pratibha-samman', 'education'],
+  ] as const) {
+    await prisma.cause.update({
+      where: { slug: childSlug },
+      data: { parentId: causeIds.get(parentSlug)! },
+    });
   }
 
   for (const organisation of organisations) {
