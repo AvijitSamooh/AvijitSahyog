@@ -238,7 +238,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repository.roleChanges, isEmpty);
-    expect(repository.users['nikita-admin']!.role, 'USER');
+    expect(repository.users['nikita-user']!.role, 'USER');
   });
 
   testWidgets('promotion failure keeps the user as a normal user and shows the error', (tester) async {
@@ -253,14 +253,15 @@ void main() {
     await tester.tap(find.text('Make admin').last);
     await tester.pumpAndSettle();
 
-    expect(repository.users['nikita']!.role, 'USER');
-    expect(repository.roleChanges, [('nikita', 'ADMIN')]);
+    expect(repository.users['nikita-user']!.role, 'USER');
+    expect(repository.roleChanges, [('nikita-user', 'ADMIN')]);
     expect(find.textContaining('role change failed'), findsOneWidget);
   });
 
   testWidgets('cancelling demotion keeps the administrator unchanged', (tester) async {
     final repository = _FakeAdminUsersRepository();
-    repository.users.remove('nikita-user');
+    repository.users['nikita-user'] = _user('nikita-user', 'Nikita Manoriya');
+    repository.users.remove('nikita-admin');
     await tester.pumpWidget(_buildPage(repository));
     await tester.pumpAndSettle();
 
@@ -272,13 +273,14 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repository.roleChanges, isEmpty);
-    expect(repository.users['nikita']!.role, 'ADMIN');
+    expect(repository.users['nikita-user']!.role, 'ADMIN');
     expect(find.text('Nikita Manoriya'), findsOneWidget);
   });
 
   testWidgets('successful demotion removes the administrator from the refreshed list', (tester) async {
     final repository = _FakeAdminUsersRepository();
-    repository.users['nikita'] = _user('nikita', 'Nikita Manoriya');
+    repository.users['nikita-user'] = _user('nikita-user', 'Nikita Manoriya');
+    repository.users.remove('nikita-admin');
     await tester.pumpWidget(_buildPage(repository));
     await tester.pumpAndSettle();
 
@@ -290,13 +292,14 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repository.roleChanges, [('nikita-admin', 'USER')]);
-    expect(repository.users['nikita']!.role, 'USER');
+    expect(repository.users['nikita-user']!.role, 'USER');
     expect(find.text('Nikita Manoriya'), findsNothing);
   });
 
   testWidgets('demotion failure keeps the administrator visible', (tester) async {
     final repository = _FakeAdminUsersRepository(failRoleChange: true);
-    repository.users.remove('nikita-user');
+    repository.users['nikita-user'] = _user('nikita-user', 'Nikita Manoriya');
+    repository.users.remove('nikita-admin');
     await tester.pumpWidget(_buildPage(repository));
     await tester.pumpAndSettle();
 
@@ -307,8 +310,8 @@ void main() {
     await tester.tap(find.text('Remove admin').last);
     await tester.pumpAndSettle();
 
-    expect(repository.users['nikita']!.role, 'ADMIN');
-    expect(repository.roleChanges, [('nikita', 'USER')]);
+    expect(repository.users['nikita-user']!.role, 'ADMIN');
+    expect(repository.roleChanges, [('nikita-user', 'USER')]);
     expect(find.text('Nikita Manoriya'), findsOneWidget);
     expect(find.textContaining('role change failed'), findsOneWidget);
   });
