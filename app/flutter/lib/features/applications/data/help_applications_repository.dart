@@ -14,10 +14,9 @@ class HelpApplicationsRepository {
   }) async {
     return HelpApplication.fromJson(await client.createHelpApplication({
       'type': type,
-      if (requestedAmount != null) 'requestedAmount': requestedAmount,
+      ?'requestedAmount': requestedAmount,
       'mediaIds': mediaIds,
-      if (clarification != null && clarification.trim().isNotEmpty)
-        'clarification': clarification.trim(),
+      ?'clarification': clarification.trim(),
     }));
   }
 
