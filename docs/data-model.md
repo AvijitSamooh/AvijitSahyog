@@ -146,6 +146,15 @@ English remains the mandatory fallback language as defined by `docs/vision.md`.
 8. Existing URL fields remain temporarily to avoid breaking existing clients.
 9. Video is intentionally outside the current media foundation scope.
 
+## Education domain split
+
+Education is represented as two separate causes with distinct purposes:
+
+- **Education Assistance** (`education-assistance`) — need-based support for students who need help continuing their education.
+- **Pratibha Samman** (`pratibha-samman`) — recognition of exceptional achievements in education, profession, sports, arts, culture and community service.
+
+The existing `education` cause is renamed to `education-assistance` by migration so existing donations, allocations, beneficiaries and organisation associations keep their foreign-key relationships. Existing education beneficiaries and organisation associations therefore continue under Education Assistance. Pratibha Samman is a separate category and does not reuse the assistance beneficiary workflow as an implicit award model.
+
 ## Current API additions
 
 The impact domain exposes:

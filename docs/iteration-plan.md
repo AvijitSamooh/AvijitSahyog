@@ -25,6 +25,9 @@ This section is the source of truth when asking **“what is pending?”**. Upda
 
 ## In Progress
 
+- [ ] Split Education into Education Assistance and Pratibha Samman.
+
+
 ## Pending Next
 
 - [ ] Add workflow-level regression coverage to future multi-step admin/content flows as they are changed.
