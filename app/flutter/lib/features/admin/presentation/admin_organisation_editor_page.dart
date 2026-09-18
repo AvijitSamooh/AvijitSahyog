@@ -89,7 +89,7 @@ class _AdminOrganisationEditorPageState
             })
         .toList();
     if (translations.isEmpty) {
-      _error(l10n.addAtLeastOneTranslation);
+      _error(l10n.adminAddAtLeastOneTranslation);
       return;
     }
 
