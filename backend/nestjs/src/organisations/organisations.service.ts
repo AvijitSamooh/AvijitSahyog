@@ -365,9 +365,9 @@ export class OrganisationsService {
   private normalizeMobileNumber(value: string | undefined): string | null {
     if (value === undefined || value.trim() === '') return null;
 
-    const digits = value.replace(/\\D/g, '');
-    const indianMobile = /^[6-9]\\d{9}$/;
-    const indianWithCountryCode = /^91[6-9]\\d{9}$/;
+    const digits = value.replace(/\D/g, '');
+    const indianMobile = /^[6-9]\d{9}$/;
+    const indianWithCountryCode = /^91[6-9]\d{9}$/;
 
     if (indianMobile.test(digits)) return `+91${digits}`;
     if (indianWithCountryCode.test(digits)) return `+${digits}`;
