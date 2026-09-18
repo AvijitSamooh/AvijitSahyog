@@ -158,9 +158,7 @@
   "affiliateCall": "Call affiliate",
   "affiliateWhatsApp": "WhatsApp affiliate",
   "affiliateCallFailed": "Unable to open the phone dialer.",
-  "affiliateWhatsAppFailed": "Unable to open WhatsApp."
-
-,
+  "affiliateWhatsAppFailed": "Unable to open WhatsApp.",
   "adminEditOrganisation": "Edit organisation",
   "adminOrganisationWebsite": "Website",
   "adminOrganisationEmail": "Email",
@@ -193,7 +191,7 @@
   "causeDetailsTitle": "Cause Details",
   "supportThisCause": "Support this Cause",
   "causeReachTitle": "How your contribution reaches people",
-  "causeReachDescription": "Your contribution supports this cause. These affiliated organisations help turn that support into real impact."
+  "causeReachDescription": "Your contribution supports this cause. These affiliated organisations help turn that support into real impact.",
   "applicationsTitle": "My Applications",
   "applyEducationHelp": "Apply for Education Assistance",
   "applyMedicalHelp": "Apply for Medical Help",
@@ -232,7 +230,7 @@
   "pratibhaSamman": "Pratibha Samman",
   "uploadingImage": "Uploading image...",
   "applicationDetails": "Application details",
-  "voteAverage": "Average vote"
+  "voteAverage": "Average vote",
   "statusSubmitted": "Submitted",
   "statusUnderReview": "Under review",
   "statusClarification": "Clarification required",
