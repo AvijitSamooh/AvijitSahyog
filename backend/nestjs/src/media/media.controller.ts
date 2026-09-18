@@ -42,8 +42,16 @@ export class MediaController {
   async uploadImage(@UploadedFile() file: Express.Multer.File) {
     return this.mediaService.uploadImage(file);
   }
-  @Post('user-upload')
-  @UseGuards(FirebaseAuthGuard)
+
+}
+
+
+@Controller('media')
+@UseGuards(FirebaseAuthGuard)
+export class UserMediaController {
+  constructor(private readonly mediaService: MediaService) {}
+
+  @Post('upload')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: memoryStorage(),
@@ -53,5 +61,4 @@ export class MediaController {
   async uploadUserImage(@UploadedFile() file: Express.Multer.File) {
     return this.mediaService.uploadImage(file, 'applications');
   }
-
 }
