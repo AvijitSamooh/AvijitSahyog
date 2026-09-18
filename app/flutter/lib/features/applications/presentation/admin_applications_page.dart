@@ -75,9 +75,10 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
     double? approvedAmount;
     String? reason;
     if (decision == 'APPROVE') {
+      final pageContext = context;
       final controller = TextEditingController();
       approvedAmount = double.tryParse((await showDialog<String>(
-        context: context,
+        context: pageContext,
         builder: (context) => AlertDialog(
           title: Text(l10n.approvedAmount),
           content: TextField(controller: controller, keyboardType: const TextInputType.numberWithOptions(decimal: true)),
@@ -86,6 +87,7 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
       ) ?? ''));
       controller.dispose();
     } else if (decision == 'REJECT' || decision == 'CLARIFICATION_REQUIRED') {
+      final pageContext = context;
       final controller = TextEditingController();
       reason = await showDialog<String>(
         context: context,
@@ -138,10 +140,10 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
                     childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                     children: [
                       Align(alignment: Alignment.centerLeft, child: Text((item['applicant']?['displayName'] ?? item['applicant']?['email'] ?? '').toString())),
-                      if (item['requestedAmount'] != null) Align(alignment: Alignment.centerLeft, child: Text(l10n.requestedAmount + ': ₹' + item['requestedAmount'].toString())),
-                      if (item['approvedAmount'] != null) Align(alignment: Alignment.centerLeft, child: Text(l10n.approvedAmount + ': ₹' + item['approvedAmount'].toString())),
-                      Align(alignment: Alignment.centerLeft, child: Text(l10n.voteAverage + ': ' + ((item['voteAverage'] as num?)?.toStringAsFixed(1) ?? '—'))),
-                      Align(alignment: Alignment.centerLeft, child: Text(votes.length.toString() + ' ' + l10n.vote)),
+                      if (item['requestedAmount'] != null) Align(alignment: Alignment.centerLeft, child: Text('${l10n.requestedAmount}: ₹${item['requestedAmount']}')),
+                      if (item['approvedAmount'] != null) Align(alignment: Alignment.centerLeft, child: Text('${l10n.approvedAmount}: ₹${item['approvedAmount']}')),
+                      Align(alignment: Alignment.centerLeft, child: Text('${l10n.voteAverage}: ${((item['voteAverage'] as num?)?.toStringAsFixed(1) ?? '—')}')),
+                      Align(alignment: Alignment.centerLeft, child: Text('${votes.length} ${l10n.vote}')),
                       Row(children: [
                         TextButton.icon(onPressed: () => _vote(item), icon: const Icon(Icons.how_to_vote_rounded), label: Text(l10n.vote)),
                         const SizedBox(width: 8),
