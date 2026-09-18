@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:avijit_sahyog/features/admin/models/admin_organisation.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_organisation_editor_page.dart';
 import 'package:avijit_sahyog/features/admin/providers/admin_causes_providers.dart';
 import 'package:avijit_sahyog/l10n/app_localizations.dart';
@@ -53,7 +54,16 @@ void main() {
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             locale: item.$1,
-            home: const AdminOrganisationEditorPage(),
+            home: const AdminOrganisationEditorPage(
+              organisation: AdminOrganisation(
+                id: 'org-1',
+                slug: 'org',
+                isActive: true,
+                displayOrder: 0,
+                translations: [],
+                causeIds: [],
+              ),
+            ),
           ),
         ),
       );
