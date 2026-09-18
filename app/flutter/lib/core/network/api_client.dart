@@ -268,7 +268,7 @@ class ApiClient {
   }
 
   Future<void> voteHelpApplication(String id, int score, {String? comment}) async {
-    final response = await _client.post(Uri.parse('$baseUrl/admin/applications/$id/vote'), headers: await _headers(json: true), body: jsonEncode({'score': score, if (comment != null) 'comment': comment}));
+    final response = await _client.post(Uri.parse('$baseUrl/admin/applications/$id/vote'), headers: await _headers(json: true), body: jsonEncode({'score': score, ?'comment': comment}));
     _ensureSuccess(response, 'Saving application vote');
   }
 
