@@ -54,8 +54,13 @@ class Organisation {
       city: json['city'] as String?,
       state: json['state'] as String?,
       country: json['country'] as String?,
-      latitude: (json['latitude'] as num?)?.toDouble(),
-      longitude: (json['longitude'] as num?)?.toDouble(),
+      latitude: _parseCoordinate(json['latitude']),
+      longitude: _parseCoordinate(json['longitude']),
     );
+  }
+
+  static double? _parseCoordinate(dynamic value) {
+    if (value is num) return value.toDouble();
+    return double.tryParse(value?.toString() ?? '');
   }
 }

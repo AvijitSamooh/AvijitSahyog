@@ -18,12 +18,17 @@ class CauseDetailPage extends ConsumerWidget {
     final languageCode = Localizations.localeOf(context).languageCode;
     final causeAsync = ref.watch(causeProvider((slug: slug, languageCode: languageCode)));
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return AppPageScaffold(
-      title: const Text('Cause Details'),
+      title: Text(l10n.causeDetailsTitle),
       body: causeAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) => const _CauseErrorState(),
+        error: (_, _) => _CauseErrorState(
+          message: l10n.causeLoadError,
+          retryLabel: l10n.retry,
+          onRetry: () => ref.invalidate(causeProvider((slug: slug, languageCode: languageCode))),
+        ),
         data: (cause) => ListView(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
           children: [
@@ -68,18 +73,18 @@ class CauseDetailPage extends ConsumerWidget {
                       foregroundColor: const Color(0xFF4C120D),
                     ),
                     icon: const Icon(Icons.favorite_rounded),
-                    label: const Text('Support this Cause'),
+                    label: Text(l10n.supportThisCause),
                   ),
                 ],
               ),
             ),
             if (cause.organisations.isNotEmpty) ...[
               const SizedBox(height: 30),
-              Text('How your contribution reaches people',
+              Text(l10n.causeReachTitle,
                   style: theme.textTheme.titleLarge),
               const SizedBox(height: 6),
               Text(
-                'Your contribution supports this cause. These affiliated organisations help turn that support into real impact.',
+                l10n.causeReachDescription,
                 style: theme.textTheme.bodyMedium,
               ),
               const SizedBox(height: 16),
@@ -234,14 +239,31 @@ bool _hasValidMobileNumber(String? value) {
   }
 }
 class _CauseErrorState extends StatelessWidget {
-  const _CauseErrorState();
+  const _CauseErrorState({
+    required this.message,
+    required this.retryLabel,
+    required this.onRetry,
+  });
+
+  final String message;
+  final String retryLabel;
+  final VoidCallback onRetry;
 
   @override
-  Widget build(BuildContext context) => const Center(
+  Widget build(BuildContext context) => Center(
         child: Padding(
-          padding: EdgeInsets.all(24),
-          child: Text('Unable to load this cause right now.'),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(message, textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              OutlinedButton(
+                onPressed: onRetry,
+                child: Text(retryLabel),
+              ),
+            ],
+          ),
         ),
       );
-
 }
