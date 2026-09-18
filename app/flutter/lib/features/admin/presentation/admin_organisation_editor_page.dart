@@ -78,6 +78,7 @@ class _AdminOrganisationEditorPageState
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context)!;
     final translations = _languages
         .where((language) => _names[language]!.text.trim().isNotEmpty)
         .map((language) => {
