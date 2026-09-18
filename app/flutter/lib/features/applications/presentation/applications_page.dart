@@ -276,27 +276,144 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     final isSamman = widget.type == 'PRATIBHA_SAMMAN';
     return AppPageScaffold(
       title: Text(_typeLabel(l10n, widget.type)),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          if (!isSamman)
-            TextField(controller: _amount, keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: InputDecoration(labelText: l10n.requestedAmount, prefixText: '₹')),
-          if (widget.application?.rejectionReason != null) ...[
-            Text('${l10n.rejectionReason}: ${widget.application!.rejectionReason!}'),
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 110),
+          children: [
+            Text(l10n.applicantDetails, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 12),
+            TextFormField(
+              key: const ValueKey('application_applicant_name'),
+              controller: _name,
+              textCapitalization: TextCapitalization.words,
+              decoration: InputDecoration(labelText: l10n.fullNameRequired, prefixIcon: const Icon(Icons.person_outline)),
+              validator: (v) => _required(v, l10n.fullNameRequired),
+            ),
+            TextFormField(
+              key: const ValueKey('application_mobile'),
+              controller: _mobile,
+              keyboardType: TextInputType.phone,
+              decoration: InputDecoration(labelText: l10n.mobileNumberRequired, prefixIcon: const Icon(Icons.phone_outlined)),
+              validator: _mobileValidator,
+            ),
+            TextFormField(
+              key: const ValueKey('application_email'),
+              controller: _email,
+              keyboardType: TextInputType.emailAddress,
+              decoration: InputDecoration(labelText: l10n.emailOptional, prefixIcon: const Icon(Icons.email_outlined)),
+            ),
+            TextFormField(
+              key: const ValueKey('application_address'),
+              controller: _address,
+              minLines: 2,
+              maxLines: 4,
+              decoration: InputDecoration(labelText: l10n.addressRequired, prefixIcon: const Icon(Icons.home_outlined)),
+              validator: (v) => _required(v, l10n.addressRequired),
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: TextFormField(
+                  key: const ValueKey('application_city'),
+                  controller: _city,
+                  decoration: InputDecoration(labelText: l10n.cityRequired),
+                  validator: (v) => _required(v, l10n.cityRequired),
+                )),
+                const SizedBox(width: 12),
+                Expanded(child: TextFormField(
+                  key: const ValueKey('application_state'),
+                  controller: _state,
+                  decoration: InputDecoration(labelText: l10n.stateRequired),
+                  validator: (v) => _required(v, l10n.stateRequired),
+                )),
+              ],
+            ),
+            TextFormField(
+              key: const ValueKey('application_pincode'),
+              controller: _pincode,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: l10n.pincodeRequired, prefixIcon: const Icon(Icons.location_on_outlined)),
+              validator: _pincodeValidator,
+            ),
+            const SizedBox(height: 20),
+            if (!isSamman)
+              TextFormField(
+                controller: _amount,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: InputDecoration(labelText: l10n.requestedAmount, prefixText: '₹'),
+              ),
+            if (widget.application?.rejectionReason != null) ...[
+              const SizedBox(height: 12),
+              Text('${l10n.rejectionReason}: ${widget.application!.rejectionReason!}'),
+            ],
+            const SizedBox(height: 16),
+            TextFormField(
+              key: const ValueKey('application_explanation'),
+              controller: _clarification,
+              minLines: 4,
+              maxLines: 8,
+              decoration: InputDecoration(
+                labelText: isSamman ? l10n.achievementDetails : l10n.explainNeed,
+                alignLabelWithHint: true,
+                prefixIcon: const Icon(Icons.description_outlined),
+              ),
+              validator: (v) => _required(v, isSamman ? l10n.achievementDetails : l10n.explainNeed),
+            ),
+            const SizedBox(height: 20),
+            Text(l10n.supportingDocuments, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            Text(l10n.supportingDocumentsHint, style: Theme.of(context).textTheme.bodySmall),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(child: OutlinedButton.icon(
+                  key: const ValueKey('application_gallery'),
+                  onPressed: _busy || _mediaIds.length >= 10 ? null : _pickImages,
+                  icon: const Icon(Icons.photo_library_outlined),
+                  label: Text(l10n.gallery),
+                )),
+                const SizedBox(width: 10),
+                Expanded(child: OutlinedButton.icon(
+                  key: const ValueKey('application_camera'),
+                  onPressed: _busy || _mediaIds.length >= 10 ? null : _takePhoto,
+                  icon: const Icon(Icons.camera_alt_outlined),
+                  label: Text(l10n.camera),
+                )),
+              ],
+            ),
+            if (_selectedImages.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: SizedBox(
+                  height: 92,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _selectedImages.length,
+                    separatorBuilder: (_, _) => const SizedBox(width: 8),
+                    itemBuilder: (_, index) => ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.file(File(_selectedImages[index].path), width: 92, height: 92, fit: BoxFit.cover),
+                    ),
+                  ),
+                ),
+              ),
+            if (_mediaIds.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(l10n.uploadedCount(_mediaIds.length)),
+              ),
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              key: const ValueKey('application_submit'),
+              onPressed: _busy ? null : _submit,
+              icon: const Icon(Icons.send_rounded),
+              label: Text(_busy ? l10n.uploadingImage : l10n.submitApplication),
+            ),
           ],
-          const SizedBox(height: 16),
-          TextField(controller: _clarification, minLines: 4, maxLines: 8,
-            decoration: InputDecoration(labelText: l10n.clarification)),
-          const SizedBox(height: 16),
-          OutlinedButton.icon(onPressed: _busy ? null : _pickImages, icon: const Icon(Icons.upload_file_rounded), label: Text(l10n.chooseImages)),
-          if (_mediaIds.isNotEmpty)
-            Padding(padding: const EdgeInsets.only(top: 8), child: Text('${_mediaIds.length} ${l10n.applicationEvidence}')),
-          const SizedBox(height: 24),
-          FilledButton(onPressed: _busy ? null : _submit, child: Text(_busy ? l10n.uploadingImage : l10n.submitApplication)),
-        ],
+        ),
       ),
+
     );
   }
 }
