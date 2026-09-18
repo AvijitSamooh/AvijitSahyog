@@ -29,6 +29,7 @@ model User {
   auditedUserEvents AuditLog[] @relation("AuditTargetUser")
   helpApplications HelpApplication[]
   helpApplicationVotes HelpApplicationVote[]
+  uploadedMedia Media[] @relation("UserUploadedMedia")
 
   @@index([role])
 }
@@ -228,6 +229,7 @@ model Beneficiary {
 
 model Media {
   id         String   @id @default(uuid()) @db.Uuid
+  uploadedById String? @db.Uuid
   storageKey String   @unique @db.VarChar(1000)
   mimeType   String   @db.VarChar(100)
   fileSize   Int
@@ -239,6 +241,9 @@ model Media {
   organisationMedia OrganisationMedia[]
   beneficiaryMedia  BeneficiaryMedia[]
   helpApplicationMedia HelpApplicationMedia[]
+  uploadedBy User? @relation("UserUploadedMedia", fields: [uploadedById], references: [id], onDelete: SetNull)
+
+  @@index([uploadedById])
 }
 
 enum OrganisationMediaPurpose {
