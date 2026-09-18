@@ -17,6 +17,7 @@ void main() {
     expect(organisation.logoUrl, 'https://images.example.com/logo.webp');
     expect(organisation.gallery, hasLength(2));
   });
+  // Prisma Decimal-backed coordinates may arrive as JSON strings in public API responses.
   test('organisation model accepts coordinates serialized as strings', () {
     final organisation = Organisation.fromJson({
       'id': 'org-2',
