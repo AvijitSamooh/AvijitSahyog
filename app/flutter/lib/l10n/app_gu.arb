@@ -243,4 +243,5 @@
   "statusRejected": "નકારેલ",
   "statusConsidered": "સન્માન માટે વિચારાધીન",
   "statusNotSelected": "પસંદ થયેલ નથી"
+  ,"applicantDetails":"અરજદારની વિગતો","fullNameRequired":"પૂરું નામ *","mobileNumberRequired":"મોબાઇલ નંબર *","emailOptional":"ઇમેઇલ (વૈકલ્પિક)","addressRequired":"સરનામું *","cityRequired":"શહેર *","stateRequired":"રાજ્ય *","pincodeRequired":"પિન કોડ *","explainNeed":"તમારી જરૂરિયાત જણાવો *","achievementDetails":"સિદ્ધિની વિગતો *","supportingDocuments":"આધાર દસ્તાવેજો / ચિત્રો *","supportingDocumentsHint":"સંબંધિત બિલ, પ્રિસ્ક્રિપ્શન, ફી રસીદ, પ્રમાણપત્ર અથવા અન્ય દસ્તાવેજો અપલોડ કરો. મહત્તમ 10 ચિત્રો.","gallery":"ગેલેરી","camera":"કેમેરા","uploadedCount":"{count}/10 અપલોડ થયા","@uploadedCount":{"placeholders":{"count":{"type":"int"}}},"imageUploadFailed":"ચિત્ર અપલોડ થયું નથી. કૃપા કરીને બીજું ચિત્ર પસંદ કરીને ફરી પ્રયાસ કરો."
 }
