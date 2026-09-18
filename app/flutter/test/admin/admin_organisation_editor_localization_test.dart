@@ -72,6 +72,12 @@ void main() {
       expect(find.text(item.$2), findsOneWidget);
       expect(find.text(item.$3), findsOneWidget);
       expect(find.text(item.$4), findsOneWidget);
+
+      await tester.scrollUntilVisible(
+        find.text(item.$5),
+        500,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text(item.$5), findsOneWidget);
       expect(find.text(item.$6), findsOneWidget);
     }
