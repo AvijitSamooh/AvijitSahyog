@@ -181,7 +181,7 @@
   "@adminOrganisationCreatedPartialFailure": {"placeholders":{"error":{}}},
   "adminOrganisationSaveFailed": "संस्था जतन करता आली नाही: {error}",
   "@adminOrganisationSaveFailed": {"placeholders":{"error":{}}},
-  "adminOrganisationLoadCausesFailed": "सेवा क्षेत्रे लोड करता आली नाहीत.",,
+  "adminOrganisationLoadCausesFailed": "सेवा क्षेत्रे लोड करता आली नाहीत.",
   "adminDeleteBeneficiary": "लाभार्थी हटवा",
   "adminDeleteBeneficiaryTitle": "लाभार्थी हटवायचा?",
   "adminDeleteBeneficiaryConfirmation": "“{beneficiary}” कायमचा हटवायचा का? ही कृती पूर्ववत करता येणार नाही.",
