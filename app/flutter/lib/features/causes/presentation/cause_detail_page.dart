@@ -204,9 +204,7 @@ class _OrganisationInfoCard extends StatelessWidget {
       ),
     );
   }
-}
-
-  bool _hasValidMobileNumber(String? value) {
+bool _hasValidMobileNumber(String? value) {
     final digits = (value ?? '').replaceAll(RegExp(r'\D'), '');
     return RegExp(r'^(?:91)?[6-9]\d{9}$').hasMatch(digits);
   }
@@ -234,7 +232,7 @@ class _OrganisationInfoCard extends StatelessWidget {
       );
     }
   }
-
+}
 class _CauseErrorState extends StatelessWidget {
   const _CauseErrorState();
 
