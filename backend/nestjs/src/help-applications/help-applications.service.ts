@@ -91,11 +91,17 @@ export class HelpApplicationsService {
 
   async vote(identity: FirebaseIdentity, id: string, dto: VoteHelpApplicationDto) {
     const admin = await this.admin(identity);
-    await this.application(id);
-    return this.prisma.helpApplicationVote.upsert({
-      where: { applicationId_adminId: { applicationId: id, adminId: admin.id } },
-      update: { score: dto.score, comment: dto.comment?.trim() || null },
-      create: { applicationId: id, adminId: admin.id, score: dto.score, comment: dto.comment?.trim() || null },
+    const existing = await this.application(id);
+    return this.prisma.$transaction(async (tx) => {
+      const vote = await tx.helpApplicationVote.upsert({
+        where: { applicationId_adminId: { applicationId: id, adminId: admin.id } },
+        update: { score: dto.score, comment: dto.comment?.trim() || null },
+        create: { applicationId: id, adminId: admin.id, score: dto.score, comment: dto.comment?.trim() || null },
+      });
+      if (existing.status === 'SUBMITTED') {
+        await tx.helpApplication.update({ where: { id }, data: { status: 'UNDER_REVIEW' } });
+      }
+      return vote;
     });
   }
 
