@@ -394,6 +394,21 @@ void main() {
     expect(find.byIcon(Icons.volunteer_activism_rounded), findsOneWidget);
   });
 
+  testWidgets('cause details show a localized retry state when loading fails', (tester) async {
+    await pumpApp(
+      tester,
+      home: const CauseDetailPage(slug: 'education'),
+      overrides: [
+        causeProvider((slug: 'education', languageCode: 'en')).overrideWith(
+          (ref) async => throw Exception('simulated API failure'),
+        ),
+      ],
+    );
+
+    expect(find.text('Unable to load this cause.'), findsOneWidget);
+    expect(find.text('Retry'), findsOneWidget);
+  });
+
   testWidgets('selecting a cause opens cause details', (tester) async {
     await pumpApp(
       tester,
