@@ -261,5 +261,5 @@
   "adminBeneficiaryUnableLoadCauses": "कारणे लोड करता आली नाहीत.",
   "adminBeneficiaryUnableLoadOrganisations": "संस्था लोड करता आल्या नाहीत.",
   "adminBeneficiaryCreatedImageUploadFailed": "लाभार्थी तयार झाला, परंतु छायाचित्र अपलोड करता आले नाही: {error}. पुन्हा उघडून प्रयत्न करा.",
-  "adminBeneficiaryUnableSave": "लाभार्थी जतन करता आला नाही: {error}.",
+  "adminBeneficiaryUnableSave": "लाभार्थी जतन करता आला नाही: {error}."
 }
