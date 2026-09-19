@@ -34,8 +34,11 @@ class ApplicationsPage extends ConsumerWidget {
     final applications = ref.watch(myHelpApplicationsProvider);
     return AppPageScaffold(
       title: Text(l10n.applicationsTitle),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
+      body: RefreshIndicator(
+        onRefresh: () async => ref.invalidate(myHelpApplicationsProvider),
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(20),
         children: [
           Text(
             l10n.homeHelpTitle,
