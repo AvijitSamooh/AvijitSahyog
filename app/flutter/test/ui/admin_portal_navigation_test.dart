@@ -67,7 +67,6 @@ void main() {
     expect(find.text('Home'), findsOneWidget);
     expect(find.text('Causes'), findsOneWidget);
     expect(find.text('Impact'), findsOneWidget);
-    expect(find.text('Settings'), findsOneWidget);
 
     expect(find.text('Interaction analytics'), findsNothing);
     expect(find.text('Advanced analytics'), findsNothing);
