@@ -136,10 +136,10 @@ class _AdminBeneficiaryEditorPageState
             error: (error, stackTrace) => Text(l10n.adminBeneficiaryUnableLoadCauses),
             data: (items) {
               final rootCauses = items.where((item) => item.parentId == null);
-              final seenCauseIds = <String>{};
+              final seenCauseKeys = <String>{};
               final leafCauses = rootCauses
                   .expand((item) => item.children.isEmpty ? [item] : item.children)
-                  .where((item) => seenCauseIds.add(item.id))
+                  .where((item) => seenCauseKeys.add(item.slug))
                   .toList(growable: false);
               return DropdownButtonFormField<String>(
               key: const ValueKey('admin_beneficiary_cause'),
