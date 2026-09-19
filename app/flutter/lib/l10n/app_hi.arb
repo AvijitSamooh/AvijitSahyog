@@ -244,4 +244,22 @@
   "statusConsidered": "सम्मान के लिए विचाराधीन",
   "statusNotSelected": "चयनित नहीं"
   ,"applicantDetails":"आवेदक का विवरण","fullNameRequired":"पूरा नाम *","mobileNumberRequired":"मोबाइल नंबर *","emailOptional":"ईमेल (वैकल्पिक)","addressRequired":"पता *","cityRequired":"शहर *","stateRequired":"राज्य *","pincodeRequired":"पिन कोड *","explainNeed":"अपनी आवश्यकता बताएं *","achievementDetails":"उपलब्धि का विवरण *","supportingDocuments":"सहायक दस्तावेज़ / चित्र *","supportingDocumentsHint":"संबंधित बिल, पर्ची, फीस रसीद, प्रमाणपत्र या अन्य दस्तावेज़ अपलोड करें। अधिकतम 10 चित्र।","gallery":"गैलरी","camera":"कैमरा","uploadedCount":"{count}/10 अपलोड किए गए","@uploadedCount":{"placeholders":{"count":{"type":"int"}}},"imageUploadFailed":"चित्र अपलोड नहीं हुआ। कृपया दूसरा चित्र चुनकर फिर प्रयास करें।"
+,
+  "adminCreateBeneficiary": "लाभार्थी बनाएँ",
+  "adminBeneficiaryName": "नाम",
+  "adminBeneficiaryImpactStory": "प्रभाव की कहानी",
+  "adminBeneficiarySupportedYear": "समर्थित वर्ष",
+  "adminBeneficiaryContributionAmount": "योगदान राशि",
+  "adminBeneficiaryDisplayOrder": "प्रदर्शन क्रम",
+  "adminBeneficiaryCause": "कारण",
+  "adminBeneficiaryImages": "लाभार्थी की तस्वीरें",
+  "adminBeneficiaryOrganisationOptional": "संस्था (वैकल्पिक)",
+  "adminBeneficiaryNoOrganisation": "कोई संस्था नहीं",
+  "adminBeneficiarySaving": "सहेजा जा रहा है...",
+  "adminBeneficiarySaveChanges": "परिवर्तन सहेजें",
+  "adminBeneficiaryInvalidFields": "नाम, मान्य वर्ष, योगदान राशि और कारण आवश्यक हैं।",
+  "adminBeneficiaryUnableLoadCauses": "कारण लोड नहीं हो सके।",
+  "adminBeneficiaryUnableLoadOrganisations": "संस्थाएं लोड नहीं हो सकीं।",
+  "adminBeneficiaryCreatedImageUploadFailed": "लाभार्थी बनाया गया, लेकिन तस्वीर अपलोड नहीं हो सकी: {error}। इसे फिर से खोलकर प्रयास करें।",
+  "adminBeneficiaryUnableSave": "लाभार्थी सहेजा नहीं जा सका: {error}।",
 }
