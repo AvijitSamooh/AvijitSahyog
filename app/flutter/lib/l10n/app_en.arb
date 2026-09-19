@@ -426,5 +426,12 @@
   "adminVersion": "Version",
   "adminDeploymentId": "Deployment ID",
   "adminGitSha": "Git SHA",
-  "adminDeployedAt": "Deployed at"
+  "adminDeployedAt": "Deployed at",
+  "fieldRequired": "{field} is required",
+  "mobileNumberInvalid": "Enter a valid mobile number",
+  "pincodeInvalid": "Enter a valid 6-digit PIN code",
+  "selectImagesFailed": "Unable to select images: {error}",
+  "captureImageFailed": "Unable to capture image: {error}",
+  "adminSlugRequired": "Slug is required.",
+  "adminCauseSaveFailed": "Unable to save cause. Please review the data and retry."
 }
