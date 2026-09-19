@@ -136,7 +136,7 @@ class _BeneficiaryTile extends ConsumerWidget {
                 } catch (error) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(AppLocalizations.of(context)!.adminBeneficiaryStatusUpdateFailed.replaceFirst('{error}', error.toString()))),
+                      SnackBar(content: Text(AppLocalizations.of(context)!.adminBeneficiaryStatusUpdateFailed(error.toString()))),
                     );
                   }
                 }
