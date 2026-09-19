@@ -410,5 +410,12 @@
   "adminVersion": "વર્ઝન",
   "adminDeploymentId": "ડિપ્લોયમેન્ટ ID",
   "adminGitSha": "Git SHA",
-  "adminDeployedAt": "ડિપ્લોય થયેલ"
+  "adminDeployedAt": "ડિપ્લોય થયેલ",
+  "fieldRequired": "{field} જરૂરી છે",
+  "mobileNumberInvalid": "માન્ય મોબાઇલ નંબર દાખલ કરો",
+  "pincodeInvalid": "6 અંકનો માન્ય PIN કોડ દાખલ કરો",
+  "selectImagesFailed": "ચિત્ર પસંદ થઈ શક્યું નથી: {error}",
+  "captureImageFailed": "ચિત્ર લઈ શકાયું નથી: {error}",
+  "adminSlugRequired": "સ્લગ જરૂરી છે.",
+  "adminCauseSaveFailed": "સેવા ક્ષેત્ર સાચવી શકાયું નથી. કૃપા કરીને માહિતી તપાસીને ફરી પ્રયાસ કરો."
 }
