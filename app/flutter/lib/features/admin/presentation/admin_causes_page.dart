@@ -11,7 +11,6 @@ class AdminCausesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final languageCode = Localizations.localeOf(context).languageCode;
     final causes = ref.watch(adminCausesProvider);
 
     return AppPageScaffold(
