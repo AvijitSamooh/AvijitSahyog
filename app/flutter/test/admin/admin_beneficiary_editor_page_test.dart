@@ -98,7 +98,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('admin_beneficiary_cause')));
     await tester.pumpAndSettle();
 
-    expect(find.text('शिक्षा सहायता'), findsOneWidget);
+    expect(find.text('शिक्षा सहायता'), findsNWidgets(2));
     expect(find.text('Education Assistance'), findsNothing);
   });
 }
