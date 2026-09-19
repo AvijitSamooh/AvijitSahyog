@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'features/home/home_page.dart';
 import 'core/analytics/analytics_service.dart';
+import 'core/network/api_client.dart';
 import 'core/navigation/app_shell_scope.dart';
 import 'features/impact/presentation/impact_page.dart';
 
@@ -155,7 +156,39 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
       builder: (context, child) => AppShellScope(
         onLocaleChanged: setLocale,
         navigation: _navigation,
-        child: child!,
+        child: Stack(
+          children: [
+            child!,
+            ValueListenableBuilder<int>(
+              valueListenable: ApiClient.activeRequests,
+              builder: (context, active, _) {
+                final busy = active > 0;
+                return IgnorePointer(
+                  ignoring: !busy,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 180),
+                    opacity: busy ? 1 : 0,
+                    child: ColoredBox(
+                      color: Colors.black12,
+                      child: Center(
+                        child: Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: const SizedBox(
+                              width: 28,
+                              height: 28,
+                              child: CircularProgressIndicator(strokeWidth: 3),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
       home: const HomePage(),
       routes: {
