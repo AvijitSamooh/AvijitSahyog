@@ -417,5 +417,10 @@
   "selectImagesFailed": "चित्र चुन नहीं सके: {error}",
   "captureImageFailed": "चित्र ले नहीं सके: {error}",
   "adminSlugRequired": "स्लग आवश्यक है।",
-  "adminCauseSaveFailed": "सेवा क्षेत्र सहेजा नहीं जा सका। कृपया जानकारी जाँचकर पुनः प्रयास करें।"
+  "adminCauseSaveFailed": "सेवा क्षेत्र सहेजा नहीं जा सका। कृपया जानकारी जाँचकर पुनः प्रयास करें।",
+  "adminApiErrors": "API त्रुटियाँ",
+  "adminAuthFailures": "प्रमाणीकरण विफलताएँ",
+  "adminUploadFailures": "अपलोड विफलताएँ",
+  "adminAppErrors": "ऐप त्रुटियाँ",
+  "adminCrashes": "क्रैश"
 }
