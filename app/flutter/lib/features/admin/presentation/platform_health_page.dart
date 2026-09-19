@@ -79,7 +79,10 @@ class _StatusCard extends StatelessWidget {
   const _StatusCard({required this.summary});
   final PlatformHealthSummary summary;
   @override
-  Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(18), child: Row(children: [Icon(summary.status == 'healthy' ? Icons.check_circle_outline_rounded : Icons.warning_amber_rounded, size: 34), const SizedBox(width: 14), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(summary.status == 'healthy' ? l10n.adminPlatformHealthy : l10n.adminPlatformDegraded, style: Theme.of(context).textTheme.titleLarge), const SizedBox(height: 4), Text(l10n.adminApiDatabaseUptime(summary.api.status, summary.database, _formatUptime(summary.api.uptimeSeconds)))]))])));
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Card(child: Padding(padding: const EdgeInsets.all(18), child: Row(children: [Icon(summary.status == 'healthy' ? Icons.check_circle_outline_rounded : Icons.warning_amber_rounded, size: 34), const SizedBox(width: 14), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(summary.status == 'healthy' ? l10n.adminPlatformHealthy : l10n.adminPlatformDegraded, style: Theme.of(context).textTheme.titleLarge), const SizedBox(height: 4), Text(l10n.adminApiDatabaseUptime(summary.api.status, summary.database, _formatUptime(summary.api.uptimeSeconds)))]))])));
+  }
 }
 
 class _Metric { const _Metric(this.label, this.value, this.icon); final String label; final int value; final IconData icon; }
@@ -90,7 +93,10 @@ class _MetricGrid extends StatelessWidget {
 
 class _DeploymentCard extends StatelessWidget {
   const _DeploymentCard({required this.info}); final PlatformDeploymentInfo info;
-  @override Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(l10n.adminDeployment, style: Theme.of(context).textTheme.titleMedium), const SizedBox(height: 10), _row(l10n.adminEnvironment, info.environment), _row(l10n.adminVersion, info.version), _row(l10n.adminDeploymentId, info.deploymentId), _row(l10n.adminGitSha, info.gitSha), if (info.deployedAt != null) _row(l10n.adminDeployedAt, info.deployedAt!)])));
+  @override Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Card(child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(l10n.adminDeployment, style: Theme.of(context).textTheme.titleMedium), const SizedBox(height: 10), _row(l10n.adminEnvironment, info.environment), _row(l10n.adminVersion, info.version), _row(l10n.adminDeploymentId, info.deploymentId), _row(l10n.adminGitSha, info.gitSha), if (info.deployedAt != null) _row(l10n.adminDeployedAt, info.deployedAt!)])));
+  }
   Widget _row(String label, String value) => Padding(padding: const EdgeInsets.only(bottom: 6), child: Row(children: [SizedBox(width: 110, child: Text(label)), Expanded(child: Text(value, overflow: TextOverflow.ellipsis))]));
 }
 
