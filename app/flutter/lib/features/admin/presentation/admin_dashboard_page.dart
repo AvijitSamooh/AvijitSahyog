@@ -26,15 +26,19 @@ class AdminDashboardPage extends ConsumerWidget {
             child: Text(l10n.retry),
           ),
         ),
-        data: (data) => ListView(
-          padding: const EdgeInsets.all(20),
+        data: (data) => RefreshIndicator(
+          onRefresh: () async => ref.refresh(adminDashboardProvider.future),
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(20),
           children: [
             Text(l10n.adminDashboardOverview, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 16),
             _MetricCard(title: l10n.adminManageCauses, activeLabel: l10n.adminActive, inactiveLabel: l10n.adminInactive, metric: data.causes, icon: Icons.volunteer_activism_rounded, onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AdminCausesPage()))),
             _MetricCard(title: l10n.adminManageOrganisations, activeLabel: l10n.adminActive, inactiveLabel: l10n.adminInactive, metric: data.organisations, icon: Icons.business_rounded, onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AdminOrganisationsPage()))),
             _MetricCard(title: l10n.adminManageBeneficiaries, activeLabel: l10n.adminActive, inactiveLabel: l10n.adminInactive, metric: data.beneficiaries, icon: Icons.auto_awesome_rounded, onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AdminBeneficiariesPage()))),
-          ],
+            ],
+          ),
         ),
       ),
     );
