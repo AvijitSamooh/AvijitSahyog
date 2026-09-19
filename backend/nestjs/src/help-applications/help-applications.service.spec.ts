@@ -11,6 +11,7 @@ describe('HelpApplicationsService', () => {
       findFirst: jest.fn(),
       findUnique: jest.fn(),
       update: jest.fn(),
+      delete: jest.fn(),
     },
     helpApplicationMedia: { deleteMany: jest.fn() },
     helpApplicationVote: { upsert: jest.fn() },
@@ -123,6 +124,37 @@ describe('HelpApplicationsService', () => {
       .rejects.toBeInstanceOf(BadRequestException);
   });
 
+  it('deletes an applicant-owned application and rejects deletion after a final decision', async () => {
+    prisma.helpApplication.findFirst.mockResolvedValueOnce({ id: 'app-1', status: 'SUBMITTED' });
+    prisma.helpApplication.delete.mockResolvedValue({ id: 'app-1' });
+    const service = new HelpApplicationsService(prisma);
+
+    await expect(service.deleteMine(identity, 'app-1')).resolves.toEqual({ id: 'app-1', deleted: true });
+    expect(prisma.helpApplication.delete).toHaveBeenCalledWith({ where: { id: 'app-1' } });
+
+    prisma.helpApplication.findFirst.mockResolvedValueOnce({ id: 'app-2', status: 'APPROVED_FOR_DONATION' });
+    await expect(service.deleteMine(identity, 'app-2')).rejects.toBeInstanceOf(BadRequestException);
+    expect(prisma.helpApplication.delete).toHaveBeenCalledTimes(1);
+  });
+
+  it('persists both Pratibha Samman review decisions', async () => {
+    prisma.helpApplication.findUnique.mockResolvedValue({ id: 'app-1', type: 'PRATIBHA_SAMMAN', requestedAmount: null, media: [] });
+    prisma.helpApplication.update.mockResolvedValue({ id: 'app-1', type: 'PRATIBHA_SAMMAN', status: 'CONSIDERED_FOR_SAMMAN', media: [], votes: [] });
+    const service = new HelpApplicationsService(prisma);
+
+    await service.review('app-1', { decision: 'CONSIDER_FOR_SAMMAN' });
+    expect(prisma.helpApplication.update).toHaveBeenCalledWith(expect.objectContaining({
+      where: { id: 'app-1' },
+      data: expect.objectContaining({ status: 'CONSIDERED_FOR_SAMMAN' }),
+    }));
+
+    prisma.helpApplication.update.mockResolvedValue({ id: 'app-1', type: 'PRATIBHA_SAMMAN', status: 'NOT_SELECTED', media: [], votes: [] });
+    await service.review('app-1', { decision: 'NOT_SELECTED' });
+    expect(prisma.helpApplication.update).toHaveBeenCalledWith(expect.objectContaining({
+      where: { id: 'app-1' },
+      data: expect.objectContaining({ status: 'NOT_SELECTED' }),
+    }));
+  });
   it('upserts one vote per administrator and supports score 1 to 5', async () => {
     prisma.user.upsert.mockResolvedValue({ id: 'admin-1', role: 'ADMIN' });
     prisma.helpApplication.findUnique.mockResolvedValue({

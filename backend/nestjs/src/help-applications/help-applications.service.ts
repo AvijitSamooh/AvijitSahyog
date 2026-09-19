@@ -55,6 +55,20 @@ export class HelpApplicationsService {
     return this.toResponse(item);
   }
 
+  async deleteMine(identity: FirebaseIdentity, id: string) {
+    const user = await this.user(identity);
+    const existing = await this.prisma.helpApplication.findFirst({
+      where: { id, applicantId: user.id },
+      select: { id: true, status: true },
+    });
+    if (!existing) throw new NotFoundException('Application not found.');
+    if (existing.status === 'APPROVED_FOR_DONATION' || existing.status === 'CONSIDERED_FOR_SAMMAN') {
+      throw new BadRequestException('This application can no longer be deleted.');
+    }
+    await this.prisma.helpApplication.delete({ where: { id } });
+    return { id, deleted: true };
+  }
+
   async resubmit(identity: FirebaseIdentity, id: string, dto: ResubmitHelpApplicationDto) {
     const user = await this.user(identity);
     const existing = await this.prisma.helpApplication.findFirst({ where: { id, applicantId: user.id } });

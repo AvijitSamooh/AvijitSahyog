@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { AdminGuard } from '../auth/admin.guard';
@@ -27,6 +27,11 @@ export class HelpApplicationsController {
   @Get('mine/:id')
   findMine(@Req() req: Request & AuthenticatedRequest, @Param('id') id: string) {
     return this.service.findMine(req.user, id);
+  }
+
+  @Delete('mine/:id')
+  deleteMine(@Req() req: Request & AuthenticatedRequest, @Param('id') id: string) {
+    return this.service.deleteMine(req.user, id);
   }
 
   @Patch('mine/:id/resubmit')
