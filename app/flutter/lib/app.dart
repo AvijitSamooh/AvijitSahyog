@@ -164,7 +164,9 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
               builder: (context, active, _) {
                 final busy = active > 0;
                 return IgnorePointer(
-                  ignoring: !busy,
+                  // The overlay is visual feedback; individual mutation controls own
+                  // their disabled state so existing UI flows remain interactive.
+                  ignoring: true,
                   child: AnimatedOpacity(
                     duration: const Duration(milliseconds: 180),
                     opacity: busy ? 1 : 0,
