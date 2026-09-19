@@ -59,8 +59,8 @@ class _MetricCard extends StatelessWidget {
     child: ListTile(
       leading: Icon(icon),
       title: Text(title),
-      subtitle: Text('${activeLabel}: ${metric.active} • ${inactiveLabel}: ${metric.inactive}'),
-      trailing: Text('${metric.total}', style: Theme.of(context).textTheme.headlineSmall),
+      subtitle: Text('activeLabel: metric.active • inactiveLabel: metric.inactive'),
+      trailing: Text('metric.total', style: Theme.of(context).textTheme.headlineSmall),
       onTap: onTap,
     ),
   );
