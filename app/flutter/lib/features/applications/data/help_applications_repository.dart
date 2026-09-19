@@ -49,7 +49,7 @@ class HelpApplicationsRepository {
     return HelpApplication.fromJson(await client.resubmitHelpApplication(id, {
       'clarification': clarification,
       'mediaIds': mediaIds,
-      if (requestedAmount != null) 'requestedAmount': requestedAmount,
+      'requestedAmount': ?requestedAmount,
     }));
   }
 
