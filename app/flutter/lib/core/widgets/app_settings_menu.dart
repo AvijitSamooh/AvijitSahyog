@@ -158,3 +158,22 @@ class AppPageScaffold extends Scaffold {
           bottomNavigationBar: bottomNavigationBar ?? const _SharedBottomNavigationBar(),
         );
 }
+
+class _SharedBottomNavigationBar extends StatelessWidget {
+  const _SharedBottomNavigationBar();
+
+  @override
+  Widget build(BuildContext context) {
+    final shell = AppShellScope.of(context);
+    return AnimatedBuilder(
+      animation: shell.navigation,
+      builder: (context, _) => AppNavigationBar(
+        selectedIndex: shell.navigation.index,
+        onDestinationSelected: (index) {
+          Navigator.of(context).popUntil((route) => route.isFirst);
+          shell.navigation.select(index);
+        },
+      ),
+    );
+  }
+}
