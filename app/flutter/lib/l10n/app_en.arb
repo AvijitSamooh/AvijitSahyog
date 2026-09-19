@@ -433,5 +433,10 @@
   "selectImagesFailed": "Unable to select images: {error}",
   "captureImageFailed": "Unable to capture image: {error}",
   "adminSlugRequired": "Slug is required.",
-  "adminCauseSaveFailed": "Unable to save cause. Please review the data and retry."
+  "adminCauseSaveFailed": "Unable to save cause. Please review the data and retry.",
+  "adminApiErrors": "API errors",
+  "adminAuthFailures": "Auth failures",
+  "adminUploadFailures": "Upload failures",
+  "adminAppErrors": "App errors",
+  "adminCrashes": "Crashes"
 }
