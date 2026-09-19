@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/navigation/app_shell_scope.dart';
-import '../../../core/widgets/app_navigation_bar.dart';
 import '../../../core/widgets/app_settings_menu.dart';
 import '../../../features/auth/providers/auth_providers.dart';
 import '../../../l10n/app_localizations.dart';
@@ -31,12 +30,6 @@ class _AdminPortalPageState extends ConsumerState<AdminPortalPage> {
     Future.microtask(() => ref.read(authProvider.notifier).refreshSession());
   }
 
-  void _selectMainTab(BuildContext context, int index) {
-    final shell = AppShellScope.of(context);
-    Navigator.of(context).popUntil((route) => route.isFirst);
-    shell.navigation.select(index);
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -47,10 +40,6 @@ class _AdminPortalPageState extends ConsumerState<AdminPortalPage> {
       animation: shell.navigation,
       builder: (context, _) => AppPageScaffold(
         title: Text(l10n.adminPortal),
-        bottomNavigationBar: AppNavigationBar(
-          selectedIndex: shell.navigation.index,
-          onDestinationSelected: (index) => _selectMainTab(context, index),
-        ),
         body: RefreshIndicator(
           onRefresh: () => ref.read(authProvider.notifier).refreshSession(),
           child: ListView(

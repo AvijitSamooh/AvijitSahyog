@@ -5,7 +5,6 @@ import '../../core/analytics/analytics_service.dart';
 import '../causes/presentation/causes_page.dart';
 import '../impact/presentation/impact_page.dart';
 import '../applications/presentation/applications_page.dart';
-import '../settings/settings_page.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/navigation/app_shell_scope.dart';
 import '../../core/widgets/app_navigation_bar.dart';
@@ -55,8 +54,6 @@ class _HomePageState extends ConsumerState<HomePage> {
         return AnalyticsScreens.causes;
       case 2:
         return AnalyticsScreens.impact;
-      case 3:
-        return AnalyticsScreens.settings;
       default:
         return AnalyticsScreens.unknown;
     }
@@ -85,7 +82,6 @@ class _HomePageState extends ConsumerState<HomePage> {
       ),
       const CausesPage(),
       const ImpactPage(),
-      SettingsPage(onLocaleChanged: shell.onLocaleChanged, showAppBar: false),
     ];
 
     return AnimatedBuilder(

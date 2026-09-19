@@ -4,7 +4,13 @@
   "checkingBackend": "बॅकएंडची तपासणी सुरू आहे...",
   "backendUnavailable": "बॅकएंड उपलब्ध नाही",
   "backendStatus": "{status} — {service}",
-  "@backendStatus": {"description": "विकास अवस्थेत दाखवला जाणारा सत्यापित बॅकएंड आरोग्य स्थिती संदेश.", "placeholders": {"status": {}, "service": {}}},
+  "@backendStatus": {
+    "description": "विकास अवस्थेत दाखवला जाणारा सत्यापित बॅकएंड आरोग्य स्थिती संदेश.",
+    "placeholders": {
+      "status": {},
+      "service": {}
+    }
+  },
   "welcomeTitle": "अविजित सहयोगमध्ये आपले स्वागत आहे",
   "welcomeSubtitle": "सोपे, पारदर्शक आणि अर्थपूर्ण योगदान.",
   "language": "भाषा",
@@ -56,9 +62,17 @@
   "impactLoadError": "सध्या प्रभावाच्या कथा लोड करता आल्या नाहीत.",
   "tryAgain": "पुन्हा प्रयत्न करा",
   "supportedIn": "{year} मध्ये सहाय्य",
-  "@supportedIn": {"placeholders": {"year": {}}},
+  "@supportedIn": {
+    "placeholders": {
+      "year": {}
+    }
+  },
   "contributionAmount": "₹{amount} योगदान",
-  "@contributionAmount": {"placeholders": {"amount": {}}},
+  "@contributionAmount": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "viewStory": "कथा पहा →",
   "impactStoryTitle": "प्रभावाची कथा",
   "theirStory": "त्यांची कथा",
@@ -119,38 +133,74 @@
   "adminUsersSubtitle": "फक्त विद्यमान प्रशासक दुसऱ्या वापरकर्त्याला प्रशासक बनवू शकतात. भूमिका बदल ऑडिट इतिहासात नोंदवले जातात.",
   "adminMakeAdmin": "प्रशासक बनवा",
   "adminMakeAdminConfirmation": "{user} यांना प्रशासक बनवायचे? ही कृती ऑडिट इतिहासात नोंदवली जाईल.",
-  "@adminMakeAdminConfirmation": {"placeholders": {"user": {}}},
+  "@adminMakeAdminConfirmation": {
+    "placeholders": {
+      "user": {}
+    }
+  },
   "adminPromotionSuccess": "वापरकर्ता आता प्रशासक आहे आणि बदलाची नोंद झाली आहे.",
   "adminRemoveAdmin": "प्रशासक पद काढा",
   "adminRemoveAdminConfirmation": "{user} यांचा प्रशासक प्रवेश काढायचा का? ही कृती ऑडिट इतिहासात नोंदवली जाईल.",
-  "@adminRemoveAdminConfirmation": {"placeholders": {"user": {}}},
+  "@adminRemoveAdminConfirmation": {
+    "placeholders": {
+      "user": {}
+    }
+  },
   "adminDemotionSuccess": "प्रशासक प्रवेश काढला गेला आहे आणि बदलाची नोंद झाली आहे.",
   "adminRole": "प्रशासक",
   "adminUserRoleUser": "वापरकर्ता",
   "adminSearchResults": "{count} जुळणारे वापरकर्ते",
-  "@adminSearchResults": {"placeholders": {"count": {}}},
+  "@adminSearchResults": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "adminNoUsers": "कोणतेही वापरकर्ते सापडले नाहीत.",
   "adminNoEmail": "ईमेल उपलब्ध नाही",
   "adminAuditHistory": "ऑडिट इतिहास",
   "adminNoAuditHistory": "अद्याप कोणतेही भूमिका बदल नोंदवलेले नाहीत.",
   "adminAuditPromotion": "{user} यांना प्रशासक बनवले",
-  "@adminAuditPromotion": {"placeholders": {"user": {}}},
+  "@adminAuditPromotion": {
+    "placeholders": {
+      "user": {}
+    }
+  },
   "adminAuditDemotion": "{user} यांचा प्रशासक प्रवेश काढला",
-  "@adminAuditDemotion": {"placeholders": {"user": {}}},
+  "@adminAuditDemotion": {
+    "placeholders": {
+      "user": {}
+    }
+  },
   "adminAuditActor": "बदल करणारे: {admin}",
-  "@adminAuditActor": {"placeholders": {"admin": {}}},
+  "@adminAuditActor": {
+    "placeholders": {
+      "admin": {}
+    }
+  },
   "adminCreateOrganisation": "संस्था तयार करा",
   "adminRetryLoadingOrganisations": "संस्था लोड करण्यासाठी पुन्हा प्रयत्न करा",
   "adminNoOrganisations": "अद्याप कोणतीही संस्था तयार केलेली नाही.",
   "adminOrganisationCauseCount": "{count} सेवा क्षेत्रे",
-  "@adminOrganisationCauseCount": {"placeholders": {"count": {}}},
+  "@adminOrganisationCauseCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "adminOrganisationActions": "संस्था कृती",
   "adminDeleteOrganisation": "संस्था हटवा",
   "adminDeleteOrganisationTitle": "संस्था हटवायची?",
   "adminDeleteOrganisationConfirmation": "“{organisation}” कायमची हटवायची का? ही कृती पूर्ववत करता येणार नाही. दान वाटप किंवा लाभार्थी नोंदी असल्यास हटवणे रोखले जाईल आणि संस्था निष्क्रिय करावी लागेल.",
-  "@adminDeleteOrganisationConfirmation": {"placeholders": {"organisation": {}}},
+  "@adminDeleteOrganisationConfirmation": {
+    "placeholders": {
+      "organisation": {}
+    }
+  },
   "adminDeleteOrganisationSuccess": "“{organisation}” हटवली.",
-  "@adminDeleteOrganisationSuccess": {"placeholders": {"organisation": {}}},
+  "@adminDeleteOrganisationSuccess": {
+    "placeholders": {
+      "organisation": {}
+    }
+  },
   "cancel": "रद्द करा",
   "adminOrganisationPhone": "फोन",
   "adminOrganisationMobileNumber": "मोबाईल क्रमांक",
@@ -159,7 +209,6 @@
   "affiliateWhatsApp": "संलग्न संस्थेला WhatsApp करा",
   "affiliateCallFailed": "फोन डायलर उघडता आला नाही.",
   "affiliateWhatsAppFailed": "WhatsApp उघडता आले नाही.",
-
   "adminEditOrganisation": "संस्था संपादित करा",
   "adminOrganisationWebsite": "वेबसाइट",
   "adminOrganisationEmail": "ईमेल",
@@ -177,19 +226,39 @@
   "adminSaveChanges": "बदल जतन करा",
   "adminAddAtLeastOneTranslation": "किमान एक भाषांतर जोडा.",
   "adminOrganisationCreatedPartialFailure": "संस्था तयार झाली, पण काही पुढील बदल अयशस्वी झाले: {error}. पुन्हा प्रयत्न करण्यासाठी ती पुन्हा उघडा.",
-  "@adminOrganisationCreatedPartialFailure": {"placeholders":{"error":{}}},
+  "@adminOrganisationCreatedPartialFailure": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "adminOrganisationSaveFailed": "संस्था जतन करता आली नाही: {error}",
-  "@adminOrganisationSaveFailed": {"placeholders":{"error":{}}},
+  "@adminOrganisationSaveFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "adminOrganisationLoadCausesFailed": "सेवा क्षेत्रे लोड करता आली नाहीत.",
   "adminEditBeneficiary": "लाभार्थी संपादित करा",
   "adminDeleteBeneficiary": "लाभार्थी हटवा",
   "adminDeleteBeneficiaryTitle": "लाभार्थी हटवायचा?",
   "adminDeleteBeneficiaryConfirmation": "“{beneficiary}” कायमचा हटवायचा का? ही कृती पूर्ववत करता येणार नाही.",
-  "@adminDeleteBeneficiaryConfirmation": {"placeholders":{"beneficiary":{}}},
+  "@adminDeleteBeneficiaryConfirmation": {
+    "placeholders": {
+      "beneficiary": {}
+    }
+  },
   "adminDeleteBeneficiarySuccess": "“{beneficiary}” हटवला.",
-  "@adminDeleteBeneficiarySuccess": {"placeholders":{"beneficiary":{}}},
+  "@adminDeleteBeneficiarySuccess": {
+    "placeholders": {
+      "beneficiary": {}
+    }
+  },
   "adminDeleteBeneficiaryFailed": "लाभार्थी हटवता आला नाही: {error}",
-  "@adminDeleteBeneficiaryFailed": {"placeholders":{"error":{}}},
+  "@adminDeleteBeneficiaryFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "causeDetailsTitle": "सेवा क्षेत्राचे तपशील",
   "supportThisCause": "या सेवा क्षेत्राला पाठिंबा द्या",
   "causeReachTitle": "तुमचे योगदान लोकांपर्यंत कसे पोहोचते",
@@ -242,9 +311,30 @@
   "statusApproved": "मदतीसाठी मंजूर",
   "statusRejected": "नाकारले",
   "statusConsidered": "सन्मानासाठी विचाराधीन",
-  "statusNotSelected": "निवडलेले नाही"
-  ,"applicantDetails":"अर्जदाराचा तपशील","fullNameRequired":"पूर्ण नाव *","mobileNumberRequired":"मोबाईल क्रमांक *","emailOptional":"ईमेल (ऐच्छिक)","addressRequired":"पत्ता *","cityRequired":"शहर *","stateRequired":"राज्य *","pincodeRequired":"पिन कोड *","explainNeed":"आपली गरज सांगा *","achievementDetails":"उपलब्धीचा तपशील *","supportingDocuments":"समर्थन कागदपत्रे / प्रतिमा *","supportingDocumentsHint":"संबंधित बिले, प्रिस्क्रिप्शन, फी पावत्या, प्रमाणपत्रे किंवा इतर कागदपत्रे अपलोड करा. कमाल 10 प्रतिमा.","gallery":"गॅलरी","camera":"कॅमेरा","uploadedCount":"{count}/10 अपलोड केले","@uploadedCount":{"placeholders":{"count":{"type":"int"}}},"imageUploadFailed":"प्रतिमा अपलोड झाली नाही. कृपया दुसरी प्रतिमा निवडून पुन्हा प्रयत्न करा."
-,
+  "statusNotSelected": "निवडलेले नाही",
+  "applicantDetails": "अर्जदाराचा तपशील",
+  "fullNameRequired": "पूर्ण नाव *",
+  "mobileNumberRequired": "मोबाईल क्रमांक *",
+  "emailOptional": "ईमेल (ऐच्छिक)",
+  "addressRequired": "पत्ता *",
+  "cityRequired": "शहर *",
+  "stateRequired": "राज्य *",
+  "pincodeRequired": "पिन कोड *",
+  "explainNeed": "आपली गरज सांगा *",
+  "achievementDetails": "उपलब्धीचा तपशील *",
+  "supportingDocuments": "समर्थन कागदपत्रे / प्रतिमा *",
+  "supportingDocumentsHint": "संबंधित बिले, प्रिस्क्रिप्शन, फी पावत्या, प्रमाणपत्रे किंवा इतर कागदपत्रे अपलोड करा. कमाल 10 प्रतिमा.",
+  "gallery": "गॅलरी",
+  "camera": "कॅमेरा",
+  "uploadedCount": "{count}/10 अपलोड केले",
+  "@uploadedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "imageUploadFailed": "प्रतिमा अपलोड झाली नाही. कृपया दुसरी प्रतिमा निवडून पुन्हा प्रयत्न करा.",
   "adminCreateBeneficiary": "लाभार्थी तयार करा",
   "adminBeneficiaryName": "नाव",
   "adminBeneficiaryImpactStory": "परिणामाची कथा",
@@ -261,5 +351,76 @@
   "adminBeneficiaryUnableLoadCauses": "कारणे लोड करता आली नाहीत.",
   "adminBeneficiaryUnableLoadOrganisations": "संस्था लोड करता आल्या नाहीत.",
   "adminBeneficiaryCreatedImageUploadFailed": "लाभार्थी तयार झाला, परंतु छायाचित्र अपलोड करता आले नाही: {error}. पुन्हा उघडून प्रयत्न करा.",
-  "adminBeneficiaryUnableSave": "लाभार्थी जतन करता आला नाही: {error}."
+  "adminBeneficiaryUnableSave": "लाभार्थी जतन करता आला नाही: {error}.",
+  "adminCreateCause": "सेवा क्षेत्र तयार करा",
+  "adminNoCauses": "अद्याप कोणतेही सेवा क्षेत्र तयार केलेले नाही.",
+  "adminCauseStatusUpdateFailed": "सेवा क्षेत्राची स्थिती अपडेट करता आली नाही.",
+  "adminCausesLoadFailed": "सेवा क्षेत्रे लोड करता आली नाहीत.",
+  "adminNoBeneficiaries": "अद्याप कोणतेही लाभार्थी तयार केलेले नाहीत.",
+  "adminBeneficiaryStatusUpdateFailed": "लाभार्थ्याची स्थिती अपडेट करता आली नाही: {error}",
+  "adminBeneficiariesLoadFailed": "लाभार्थी लोड करता आले नाहीत.",
+  "adminImageUploadFailed": "प्रतिमा अपलोड करता आली नाही: {error}",
+  "adminParentCausesLoadFailed": "मूळ सेवा क्षेत्रे लोड करता आली नाहीत.",
+  "adminTopLevelCause": "मुख्य सेवा क्षेत्र",
+  "adminInteractionAnalyticsTitle": "इंटरॅक्शन अॅनालिटिक्स",
+  "adminUserEngagement": "वापरकर्ता सहभाग",
+  "adminRollingMetrics": "मागील 30 दिवसांचे मेट्रिक्स आणि 14 दिवसांचा सहभाग कल.",
+  "adminNavigationEvents": "नेव्हिगेशन इव्हेंट्स",
+  "adminIncludedInteractionTotals": "इंटरॅक्शनच्या एकूण संख्येत समाविष्ट.",
+  "adminAnalyticsPrivacy": "अॅनालिटिक्समध्ये अॅपने तयार केलेले अस्पष्ट ओळखकर्ता वापरले जातात आणि वैयक्तिक ओळख माहिती दाखवली जात नाही.",
+  "adminEngagementTrend": "सहभाग कल",
+  "adminDailyActiveLast14": "मागील 14 दिवसांतील दररोजचे सक्रिय वापरकर्ते",
+  "adminNoAnalyticsData": "अद्याप अॅनालिटिक्स डेटा नाही.",
+  "adminAdvancedAnalyticsTitle": "प्रगत अॅनालिटिक्स",
+  "adminRetention": "रिटेन्शन",
+  "adminRetentionSubtitle": "साप्ताहिक गटांमध्ये Day 1, Day 7 आणि Day 30 परतण्याचे दर.",
+  "adminEngagementCohorts": "सहभाग गट",
+  "adminEngagementCohortsSubtitle": "साप्ताहिक सक्रिय गट, सत्रे आणि इंटरॅक्शनची खोली.",
+  "adminFeatureAdoption": "फीचर स्वीकारण्याचा दर",
+  "adminFeatureAdoptionSubtitle": "30 दिवसांत सक्रिय वापरकर्त्यांपैकी प्रत्येक ट्रॅक केलेली स्क्रीन पाहणाऱ्यांचा हिस्सा.",
+  "adminAudienceSegmentation": "प्रेक्षक विभागणी",
+  "adminAudienceSegmentationSubtitle": "शहर, भाषा आणि डिव्हाइस संदर्भानुसार 30 दिवसांतील सक्रिय वापरकर्ते.",
+  "adminCity": "शहर",
+  "adminLanguage": "भाषा",
+  "adminDevice": "डिव्हाइस",
+  "adminBigQueryFoundation": "BigQuery-सज्ज पाया",
+  "adminBigQueryReady": "इव्हेंट-स्तरीय PostgreSQL डेटा भविष्यातील BigQuery निर्यातीसाठी तयार आहे.",
+  "adminWarehouseNotConfigured": "डेटा वेअरहाऊस निर्यात कॉन्फिगर केलेली नाही.",
+  "adminCityPrivacy": "शहर अॅपकडून अॅनालिटिक्स संदर्भ दिल्यासच दाखवले जाते; अॅप अचूक स्थानाचा अंदाज लावत नाही.",
+  "adminCohort": "गट",
+  "adminUsers": "वापरकर्ते",
+  "adminDay1": "D1",
+  "adminDay7": "D7",
+  "adminDay30": "D30",
+  "adminSessions": "सत्रे",
+  "adminInteractions": "इंटरॅक्शन्स",
+  "adminSessionsPerUser": "सत्रे/वापरकर्ता",
+  "adminUserViews": "{users} वापरकर्ते · {events} व्ह्यू",
+  "adminUserEvents": "{users} वापरकर्ते · {events} इव्हेंट्स",
+  "adminPlatformHealthTitle": "प्लॅटफॉर्म आरोग्य",
+  "adminLast24Hours": "मागील 24 तास",
+  "adminRecentEvents": "अलीकडील घटना",
+  "adminNoHealthEvents": "आरोग्याशी संबंधित कोणतीही घटना नोंदलेली नाही.",
+  "adminHealthTelemetryPrivacy": "आरोग्य टेलीमेट्रीमध्ये फक्त रूट आणि त्रुटी मेटाडेटा ठेवला जातो. क्रॅश रिपोर्टमध्ये अॅपने तयार केलेले अस्पष्ट ओळखकर्ता असतात आणि Firebase UID, ईमेल किंवा नाव ठेवले जात नाही.",
+  "adminPlatformHealthy": "प्लॅटफॉर्म निरोगी",
+  "adminPlatformDegraded": "प्लॅटफॉर्ममध्ये समस्या",
+  "adminApiDatabaseUptime": "API: {api} · डेटाबेस: {database} · अपटाइम: {uptime}",
+  "adminDeployment": "डिप्लॉयमेंट",
+  "adminEnvironment": "पर्यावरण",
+  "adminVersion": "आवृत्ती",
+  "adminDeploymentId": "डिप्लॉयमेंट ID",
+  "adminGitSha": "Git SHA",
+  "adminDeployedAt": "डिप्लॉय केले",
+  "fieldRequired": "{field} आवश्यक आहे",
+  "mobileNumberInvalid": "वैध मोबाइल क्रमांक प्रविष्ट करा",
+  "pincodeInvalid": "6 अंकी वैध PIN कोड प्रविष्ट करा",
+  "selectImagesFailed": "प्रतिमा निवडता आली नाही: {error}",
+  "captureImageFailed": "प्रतिमा घेता आली नाही: {error}",
+  "adminSlugRequired": "स्लग आवश्यक आहे.",
+  "adminCauseSaveFailed": "सेवा क्षेत्र जतन करता आले नाही. कृपया माहिती तपासून पुन्हा प्रयत्न करा.",
+  "adminApiErrors": "API त्रुटी",
+  "adminAuthFailures": "प्रमाणीकरण अपयश",
+  "adminUploadFailures": "अपलोड अपयश",
+  "adminAppErrors": "अॅप त्रुटी",
+  "adminCrashes": "क्रॅश"
 }

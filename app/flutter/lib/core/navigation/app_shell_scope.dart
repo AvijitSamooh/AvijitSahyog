@@ -15,8 +15,11 @@ class AppShellScope extends InheritedWidget {
   final ValueChanged<Locale> onLocaleChanged;
   final AppNavigationController navigation;
 
+  static AppShellScope? maybeOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<AppShellScope>();
+
   static AppShellScope of(BuildContext context) {
-    final scope = context.dependOnInheritedWidgetOfExactType<AppShellScope>();
+    final scope = maybeOf(context);
     assert(scope != null, 'AppShellScope is required above this widget.');
     return scope!;
   }

@@ -3,11 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../features/auth/presentation/login_page.dart';
 import '../../features/auth/presentation/profile_page.dart';
+import '../../features/admin/presentation/admin_portal_page.dart';
 import '../../features/auth/providers/auth_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../navigation/app_shell_scope.dart';
+import 'app_navigation_bar.dart';
 
-enum _SettingsAction { language, account, logout }
+enum _SettingsAction { language, account, adminPortal, logout }
 
 /// Standard page actions used by every application AppBar.
 ///
@@ -38,6 +40,10 @@ class AppSettingsMenu extends ConsumerWidget {
               builder: (_) => authenticated ? const ProfilePage() : const LoginPage(),
             ));
             return;
+          case _SettingsAction.adminPortal:
+            if (!context.mounted) return;
+            Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AdminPortalPage()));
+            return;
           case _SettingsAction.logout:
             await ref.read(authProvider.notifier).signOut();
             if (!context.mounted) return;
@@ -63,6 +69,16 @@ class AppSettingsMenu extends ConsumerWidget {
             title: Text(authenticated ? l10n.profile : l10n.login),
           ),
         ),
+        if (authenticated && ref.watch(authProvider).user?.isAdmin == true)
+          PopupMenuItem(
+            key: const ValueKey('app_settings_admin_portal'),
+            value: _SettingsAction.adminPortal,
+            child: ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.admin_panel_settings_rounded),
+              title: Text(l10n.adminPortal),
+            ),
+          ),
         if (authenticated)
           PopupMenuItem(
             value: _SettingsAction.logout,
@@ -125,13 +141,13 @@ class AppPageScaffold extends Scaffold {
     super.body,
     super.floatingActionButton,
     super.floatingActionButtonLocation,
-    super.bottomNavigationBar,
     super.bottomSheet,
     bool automaticallyImplyLeading = true,
     PreferredSizeWidget? appBarBottom,
     double? appBarElevation,
     double? appBarScrolledUnderElevation,
   }) : super(
+          bottomNavigationBar: const _SharedBottomNavigationBar(),
           appBar: AppPageAppBar(
             title: title,
             automaticallyImplyLeading: automaticallyImplyLeading,
@@ -139,6 +155,25 @@ class AppPageScaffold extends Scaffold {
             elevation: appBarElevation,
             scrolledUnderElevation: appBarScrolledUnderElevation,
           ),
-
         );
+}
+
+class _SharedBottomNavigationBar extends StatelessWidget {
+  const _SharedBottomNavigationBar();
+
+  @override
+  Widget build(BuildContext context) {
+    final shell = AppShellScope.maybeOf(context);
+    if (shell == null) return const SizedBox.shrink();
+    return AnimatedBuilder(
+      animation: shell.navigation,
+      builder: (context, _) => AppNavigationBar(
+        selectedIndex: shell.navigation.index,
+        onDestinationSelected: (index) {
+          Navigator.of(context).popUntil((route) => route.isFirst);
+          shell.navigation.select(index);
+        },
+      ),
+    );
+  }
 }

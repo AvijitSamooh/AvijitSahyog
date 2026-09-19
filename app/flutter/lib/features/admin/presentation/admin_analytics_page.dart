@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../l10n/app_localizations.dart';
 
 import '../../../core/widgets/app_settings_menu.dart';
 import '../models/admin_analytics_summary.dart';
@@ -11,14 +12,15 @@ class AdminAnalyticsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final analytics = ref.watch(adminAnalyticsProvider);
+    final l10n = AppLocalizations.of(context)!;
     return AppPageScaffold(
-      title: const Text('Interaction analytics'),
+      title: Text(l10n.adminInteractionAnalyticsTitle),
       body: analytics.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, _) => Center(
           child: FilledButton(
             onPressed: () => ref.invalidate(adminAnalyticsProvider),
-            child: const Text('Retry'),
+            child: Text(l10n.retry),
           ),
         ),
         data: (data) => RefreshIndicator(
@@ -26,9 +28,9 @@ class AdminAnalyticsPage extends ConsumerWidget {
           child: ListView(
             padding: const EdgeInsets.all(20),
             children: [
-              Text('User engagement', style: Theme.of(context).textTheme.headlineSmall),
+              Text(l10n.adminUserEngagement, style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: 6),
-              const Text('Rolling 30-day metrics with a 14-day engagement trend.'),
+              Text(l10n.adminRollingMetrics),
               const SizedBox(height: 18),
               _MetricGrid(metrics: [
                 _Metric('DAU', data.dau, Icons.today_rounded),
@@ -46,14 +48,13 @@ class AdminAnalyticsPage extends ConsumerWidget {
               Card(
                 child: ListTile(
                   leading: const Icon(Icons.navigation_rounded),
-                  title: const Text('Navigation events'),
-                  subtitle: const Text('Included in interaction totals.'),
+                  title: Text(l10n.adminNavigationEvents),
+                  subtitle: Text(l10n.adminIncludedInteractionTotals),
                   trailing: Text('${data.navigationEvents}', style: Theme.of(context).textTheme.titleLarge),
                 ),
               ),
               const SizedBox(height: 12),
-              const Text(
-                'Analytics use opaque app-generated identifiers and do not display personal identifiers.',
+              Text(l10n.adminAnalyticsPrivacy,
                 style: TextStyle(fontSize: 12),
               ),
             ],
@@ -112,6 +113,7 @@ class _TrendCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final values = points.map((point) => point.activeUsers).toList();
     return Card(
       child: Padding(
@@ -119,14 +121,14 @@ class _TrendCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Engagement trend', style: Theme.of(context).textTheme.titleMedium),
+            Text(l10n.adminEngagementTrend, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 4),
-            const Text('Daily active users · last 14 days'),
+            Text(l10n.adminDailyActiveLast14),
             const SizedBox(height: 16),
             SizedBox(
               height: 170,
               child: values.isEmpty
-                  ? const Center(child: Text('No analytics data yet.'))
+                  ? Center(child: Text(l10n.adminNoAnalyticsData))
                   : CustomPaint(
                       painter: _TrendPainter(values),
                       child: const SizedBox.expand(),

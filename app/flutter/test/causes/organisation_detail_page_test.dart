@@ -55,8 +55,10 @@ void main() {
     final galleryImage = find.descendant(
       of: find.byType(GridView),
       matching: find.byType(InkWell),
-    );
-    await tester.tap(galleryImage.first);
+    ).first;
+    await tester.ensureVisible(galleryImage);
+    await tester.pump();
+    await tester.tap(galleryImage);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
 

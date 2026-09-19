@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../l10n/app_localizations.dart';
 
 import '../../../core/widgets/app_settings_menu.dart';
 import '../models/advanced_analytics_summary.dart';
@@ -11,14 +12,15 @@ class AdvancedAnalyticsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final analytics = ref.watch(advancedAnalyticsProvider);
+    final l10n = AppLocalizations.of(context)!;
     return AppPageScaffold(
-      title: const Text('Advanced analytics'),
+      title: Text(l10n.adminAdvancedAnalyticsTitle),
       body: analytics.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, _) => Center(
           child: FilledButton(
             onPressed: () => ref.invalidate(advancedAnalyticsProvider),
-            child: const Text('Retry'),
+            child: Text(l10n.retry),
           ),
         ),
         data: (data) => RefreshIndicator(
@@ -26,48 +28,33 @@ class AdvancedAnalyticsPage extends ConsumerWidget {
           child: ListView(
             padding: const EdgeInsets.all(20),
             children: [
-              const _Section(
-                title: 'Retention',
-                subtitle: 'Weekly cohorts with Day 1, Day 7 and Day 30 return rates.',
-              ),
+              _Section(title: l10n.adminRetention, subtitle: l10n.adminRetentionSubtitle),
               _RetentionTable(data.retention),
               const SizedBox(height: 20),
-              const _Section(
-                title: 'Engagement cohorts',
-                subtitle: 'Weekly active cohorts, sessions and interaction depth.',
-              ),
+              _Section(title: l10n.adminEngagementCohorts, subtitle: l10n.adminEngagementCohortsSubtitle),
               _EngagementTable(data.engagementCohorts),
               const SizedBox(height: 20),
-              const _Section(
-                title: 'Feature adoption',
-                subtitle: 'Share of 30-day active users who viewed each tracked screen.',
-              ),
+              _Section(title: l10n.adminFeatureAdoption, subtitle: l10n.adminFeatureAdoptionSubtitle),
               _FeatureList(data.featureAdoption),
               const SizedBox(height: 20),
-              const _Section(
-                title: 'Audience segmentation',
-                subtitle: 'Thirty-day active users by available city, language and device context.',
-              ),
-              _SegmentCard(title: 'City', segments: data.segmentation.city),
-              _SegmentCard(title: 'Language', segments: data.segmentation.language),
-              _SegmentCard(title: 'Device', segments: data.segmentation.device),
+              _Section(title: l10n.adminAudienceSegmentation, subtitle: l10n.adminAudienceSegmentationSubtitle),
+              _SegmentCard(title: l10n.adminCity, segments: data.segmentation.city),
+              _SegmentCard(title: l10n.adminLanguage, segments: data.segmentation.language),
+              _SegmentCard(title: l10n.adminDevice, segments: data.segmentation.device),
               const SizedBox(height: 12),
               Card(
                 child: ListTile(
                   leading: const Icon(Icons.storage_rounded),
-                  title: const Text('BigQuery-ready foundation'),
+                  title: Text(l10n.adminBigQueryFoundation),
                   subtitle: Text(
                     data.bigQueryReady
-                        ? 'Event-level PostgreSQL data is shaped for a future BigQuery export.'
-                        : 'Warehouse export is not configured.',
+                        ? l10n.adminBigQueryReady
+                        : l10n.adminWarehouseNotConfigured,
                   ),
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'City is shown when the client supplies an analytics city context; the app does not infer precise location.',
-                style: TextStyle(fontSize: 12),
-              ),
+              Text(l10n.adminCityPrivacy, style: const TextStyle(fontSize: 12)),
             ],
           ),
         ),
@@ -102,16 +89,18 @@ class _RetentionTable extends StatelessWidget {
   final List<RetentionCohort> rows;
 
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Card(
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: DataTable(
-            columns: const [
-              DataColumn(label: Text('Cohort')),
-              DataColumn(label: Text('Users')),
-              DataColumn(label: Text('D1')),
-              DataColumn(label: Text('D7')),
-              DataColumn(label: Text('D30')),
+            columns: [
+              DataColumn(label: Text(l10n.adminCohort)),
+              DataColumn(label: Text(l10n.adminUsers)),
+              DataColumn(label: Text(l10n.adminDay1)),
+              DataColumn(label: Text(l10n.adminDay7)),
+              DataColumn(label: Text(l10n.adminDay30)),
             ],
             rows: rows
                 .map(
@@ -129,6 +118,7 @@ class _RetentionTable extends StatelessWidget {
           ),
         ),
       );
+  }
 }
 
 class _EngagementTable extends StatelessWidget {
@@ -137,16 +127,18 @@ class _EngagementTable extends StatelessWidget {
   final List<EngagementCohort> rows;
 
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Card(
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: DataTable(
-            columns: const [
-              DataColumn(label: Text('Cohort')),
-              DataColumn(label: Text('Users')),
-              DataColumn(label: Text('Sessions')),
-              DataColumn(label: Text('Interactions')),
-              DataColumn(label: Text('Sessions/user')),
+            columns: [
+              DataColumn(label: Text(l10n.adminCohort)),
+              DataColumn(label: Text(l10n.adminUsers)),
+              DataColumn(label: Text(l10n.adminSessions)),
+              DataColumn(label: Text(l10n.adminInteractions)),
+              DataColumn(label: Text(l10n.adminSessionsPerUser)),
             ],
             rows: rows
                 .map(
@@ -164,6 +156,7 @@ class _EngagementTable extends StatelessWidget {
           ),
         ),
       );
+  }
 }
 
 class _FeatureList extends StatelessWidget {
@@ -179,7 +172,7 @@ class _FeatureList extends StatelessWidget {
               .map(
                 (row) => ListTile(
                   title: Text(row.feature),
-                  subtitle: Text('${row.users} users · ${row.events} views'),
+                  subtitle: Text(AppLocalizations.of(context)!.adminUserViews(row.users, row.events)),
                   trailing: Text('${row.adoptionPercent}%'),
                 ),
               )
@@ -204,7 +197,7 @@ class _SegmentCard extends StatelessWidget {
               .map(
                 (row) => ListTile(
                   title: Text(row.segment),
-                  subtitle: Text('${row.users} users · ${row.events} events'),
+                  subtitle: Text(AppLocalizations.of(context)!.adminUserEvents(row.users, row.events)),
                   trailing: Text('${row.sharePercent}%'),
                 ),
               )

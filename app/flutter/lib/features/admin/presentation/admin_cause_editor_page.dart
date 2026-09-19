@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/widgets/app_settings_menu.dart';
+import '../../../l10n/app_localizations.dart';
 
 import '../models/admin_cause.dart';
 import '../providers/admin_causes_providers.dart';
@@ -71,7 +72,7 @@ class _AdminCauseEditorPageState extends ConsumerState<AdminCauseEditorPage> {
   Future<void> _save() async {
     final slug = _slugController.text.trim();
     if (slug.isEmpty) {
-      _showError('Slug is required.');
+      _showError(AppLocalizations.of(context)!.adminSlugRequired);
       return;
     }
 
@@ -115,7 +116,7 @@ class _AdminCauseEditorPageState extends ConsumerState<AdminCauseEditorPage> {
       }
     } catch (_) {
       if (mounted) {
-        _showError('Unable to save cause. Please review the data and retry.');
+        _showError(AppLocalizations.of(context)!.adminCauseSaveFailed);
       }
     } finally {
       if (mounted) {
@@ -154,7 +155,7 @@ class _AdminCauseEditorPageState extends ConsumerState<AdminCauseEditorPage> {
             const SizedBox(height: 20),
             ref.watch(adminCausesProvider).when(
               loading: () => const LinearProgressIndicator(),
-              error: (error, stackTrace) => const Text('Unable to load parent causes.'),
+              error: (error, stackTrace) => Text(AppLocalizations.of(context)!.adminParentCausesLoadFailed),
               data: (items) {
                 final parents = items
                     .where((item) => item.parentId == null && item.id != widget.cause?.id)
@@ -162,14 +163,14 @@ class _AdminCauseEditorPageState extends ConsumerState<AdminCauseEditorPage> {
                 return DropdownButtonFormField<String?>(
                   key: const ValueKey('admin_cause_parent'),
                   initialValue: parents.any((item) => item.id == _parentId) ? _parentId : null,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Parent cause',
                     helperText: 'Leave empty for a top-level cause.',
                   ),
                   items: [
-                    const DropdownMenuItem<String?>(
+                    DropdownMenuItem<String?>(
                       value: null,
-                      child: Text('Top-level cause'),
+                      child: Text(AppLocalizations.of(context)!.adminTopLevelCause),
                     ),
                     ...parents.map(
                       (item) => DropdownMenuItem<String?>(
@@ -211,7 +212,7 @@ class _AdminCauseEditorPageState extends ConsumerState<AdminCauseEditorPage> {
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : Text(_isEditing ? 'Save changes' : 'Create cause'),
+                  : Text(_isEditing ? AppLocalizations.of(context)!.adminSaveChanges : AppLocalizations.of(context)!.adminCreateCause),
             ),
           ),
         ),

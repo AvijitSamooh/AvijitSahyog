@@ -104,9 +104,8 @@ void main() {
     expect(find.text('Retention'), findsOneWidget);
     expect(find.text('Engagement cohorts'), findsOneWidget);
     expect(find.text('Feature adoption'), findsOneWidget);
-    expect(find.text('Audience segmentation'), findsOneWidget);
-
     await scrollToEnd(tester);
+    expect(find.text('Audience segmentation'), findsOneWidget);
     expect(find.text('BigQuery-ready foundation'), findsOneWidget);
     expect(find.text('Warehouse export is not configured.'), findsOneWidget);
   });

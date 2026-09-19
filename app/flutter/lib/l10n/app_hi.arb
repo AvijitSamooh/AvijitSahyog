@@ -4,7 +4,13 @@
   "checkingBackend": "बैकएंड की जाँच हो रही है...",
   "backendUnavailable": "बैकएंड उपलब्ध नहीं है",
   "backendStatus": "{status} — {service}",
-  "@backendStatus": {"description": "विकास अवस्था में दिखाया जाने वाला सत्यापित बैकएंड स्वास्थ्य स्टेटस।", "placeholders": {"status": {}, "service": {}}},
+  "@backendStatus": {
+    "description": "विकास अवस्था में दिखाया जाने वाला सत्यापित बैकएंड स्वास्थ्य स्टेटस।",
+    "placeholders": {
+      "status": {},
+      "service": {}
+    }
+  },
   "welcomeTitle": "अविजित सहयोग में आपका स्वागत है",
   "welcomeSubtitle": "सरल, पारदर्शी और सार्थक सहयोग।",
   "language": "भाषा",
@@ -56,9 +62,17 @@
   "impactLoadError": "अभी प्रभाव की कहानियाँ लोड नहीं हो सकीं।",
   "tryAgain": "पुनः प्रयास करें",
   "supportedIn": "{year} में सहयोग मिला",
-  "@supportedIn": {"placeholders": {"year": {}}},
+  "@supportedIn": {
+    "placeholders": {
+      "year": {}
+    }
+  },
   "contributionAmount": "₹{amount} योगदान",
-  "@contributionAmount": {"placeholders": {"amount": {}}},
+  "@contributionAmount": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "viewStory": "कहानी देखें →",
   "impactStoryTitle": "प्रभाव की कहानी",
   "theirStory": "उनकी कहानी",
@@ -119,38 +133,74 @@
   "adminUsersSubtitle": "केवल मौजूदा एडमिन किसी अन्य उपयोगकर्ता को एडमिन बना सकते हैं। भूमिका परिवर्तन ऑडिट इतिहास में दर्ज होते हैं।",
   "adminMakeAdmin": "एडमिन बनाएं",
   "adminMakeAdminConfirmation": "{user} को एडमिन बनाएं? यह कार्रवाई ऑडिट इतिहास में दर्ज की जाएगी।",
-  "@adminMakeAdminConfirmation": {"placeholders": {"user": {}}},
+  "@adminMakeAdminConfirmation": {
+    "placeholders": {
+      "user": {}
+    }
+  },
   "adminPromotionSuccess": "उपयोगकर्ता अब एडमिन है और परिवर्तन दर्ज कर लिया गया है।",
   "adminRemoveAdmin": "एडमिन हटाएँ",
   "adminRemoveAdminConfirmation": "क्या आप {user} की एडमिन पहुँच हटाना चाहते हैं? यह कार्रवाई ऑडिट इतिहास में दर्ज की जाएगी।",
-  "@adminRemoveAdminConfirmation": {"placeholders": {"user": {}}},
+  "@adminRemoveAdminConfirmation": {
+    "placeholders": {
+      "user": {}
+    }
+  },
   "adminDemotionSuccess": "एडमिन की पहुँच हटा दी गई है और परिवर्तन दर्ज कर लिया गया है।",
   "adminRole": "एडमिन",
   "adminUserRoleUser": "उपयोगकर्ता",
   "adminSearchResults": "{count} मिलते-जुलते उपयोगकर्ता",
-  "@adminSearchResults": {"placeholders": {"count": {}}},
+  "@adminSearchResults": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "adminNoUsers": "कोई उपयोगकर्ता नहीं मिला।",
   "adminNoEmail": "कोई ईमेल उपलब्ध नहीं है",
   "adminAuditHistory": "ऑडिट इतिहास",
   "adminNoAuditHistory": "अभी तक कोई भूमिका परिवर्तन दर्ज नहीं किया गया है।",
   "adminAuditPromotion": "{user} को एडमिन बनाया गया",
-  "@adminAuditPromotion": {"placeholders": {"user": {}}},
+  "@adminAuditPromotion": {
+    "placeholders": {
+      "user": {}
+    }
+  },
   "adminAuditDemotion": "{user} की एडमिन पहुँच हटा दी गई",
-  "@adminAuditDemotion": {"placeholders": {"user": {}}},
+  "@adminAuditDemotion": {
+    "placeholders": {
+      "user": {}
+    }
+  },
   "adminAuditActor": "परिवर्तन करने वाले: {admin}",
-  "@adminAuditActor": {"placeholders": {"admin": {}}},
+  "@adminAuditActor": {
+    "placeholders": {
+      "admin": {}
+    }
+  },
   "adminCreateOrganisation": "संस्था बनाएँ",
   "adminRetryLoadingOrganisations": "संस्थाओं को लोड करने के लिए पुनः प्रयास करें",
   "adminNoOrganisations": "अभी तक कोई संस्था नहीं बनाई गई है।",
   "adminOrganisationCauseCount": "{count} सेवा क्षेत्र",
-  "@adminOrganisationCauseCount": {"placeholders": {"count": {}}},
+  "@adminOrganisationCauseCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "adminOrganisationActions": "संस्था के विकल्प",
   "adminDeleteOrganisation": "संस्था हटाएँ",
   "adminDeleteOrganisationTitle": "संस्था हटाएँ?",
   "adminDeleteOrganisationConfirmation": "क्या आप “{organisation}” को स्थायी रूप से हटाना चाहते हैं? इसे वापस नहीं किया जा सकता। यदि इसमें दान आवंटन या लाभार्थी रिकॉर्ड हैं, तो हटाना रोका जाएगा और संस्था को निष्क्रिय करना होगा।",
-  "@adminDeleteOrganisationConfirmation": {"placeholders": {"organisation": {}}},
+  "@adminDeleteOrganisationConfirmation": {
+    "placeholders": {
+      "organisation": {}
+    }
+  },
   "adminDeleteOrganisationSuccess": "“{organisation}” हटा दी गई।",
-  "@adminDeleteOrganisationSuccess": {"placeholders": {"organisation": {}}},
+  "@adminDeleteOrganisationSuccess": {
+    "placeholders": {
+      "organisation": {}
+    }
+  },
   "cancel": "रद्द करें",
   "adminOrganisationPhone": "फ़ोन",
   "adminOrganisationMobileNumber": "मोबाइल नंबर",
@@ -159,7 +209,6 @@
   "affiliateWhatsApp": "संबद्ध संस्था को WhatsApp करें",
   "affiliateCallFailed": "फ़ोन डायलर नहीं खोला जा सका।",
   "affiliateWhatsAppFailed": "WhatsApp नहीं खोला जा सका।",
-
   "adminEditOrganisation": "संस्था संपादित करें",
   "adminOrganisationWebsite": "वेबसाइट",
   "adminOrganisationEmail": "ईमेल",
@@ -177,19 +226,39 @@
   "adminSaveChanges": "परिवर्तन सहेजें",
   "adminAddAtLeastOneTranslation": "कम से कम एक अनुवाद जोड़ें।",
   "adminOrganisationCreatedPartialFailure": "संस्था बनाई गई, लेकिन कुछ आगे के बदलाव विफल रहे: {error}। पुनः प्रयास करने के लिए इसे फिर खोलें।",
-  "@adminOrganisationCreatedPartialFailure": {"placeholders":{"error":{}}},
+  "@adminOrganisationCreatedPartialFailure": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "adminOrganisationSaveFailed": "संस्था सहेजी नहीं जा सकी: {error}",
-  "@adminOrganisationSaveFailed": {"placeholders":{"error":{}}},
+  "@adminOrganisationSaveFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "adminOrganisationLoadCausesFailed": "सेवा क्षेत्र लोड नहीं किए जा सके।",
   "adminEditBeneficiary": "लाभार्थी संपादित करें",
   "adminDeleteBeneficiary": "लाभार्थी हटाएँ",
   "adminDeleteBeneficiaryTitle": "लाभार्थी हटाएँ?",
   "adminDeleteBeneficiaryConfirmation": "क्या आप “{beneficiary}” को स्थायी रूप से हटाना चाहते हैं? इसे वापस नहीं किया जा सकता।",
-  "@adminDeleteBeneficiaryConfirmation": {"placeholders":{"beneficiary":{}}},
+  "@adminDeleteBeneficiaryConfirmation": {
+    "placeholders": {
+      "beneficiary": {}
+    }
+  },
   "adminDeleteBeneficiarySuccess": "“{beneficiary}” हटा दिया गया।",
-  "@adminDeleteBeneficiarySuccess": {"placeholders":{"beneficiary":{}}},
+  "@adminDeleteBeneficiarySuccess": {
+    "placeholders": {
+      "beneficiary": {}
+    }
+  },
   "adminDeleteBeneficiaryFailed": "लाभार्थी हटाया नहीं जा सका: {error}",
-  "@adminDeleteBeneficiaryFailed": {"placeholders":{"error":{}}},
+  "@adminDeleteBeneficiaryFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "causeDetailsTitle": "सेवा क्षेत्र विवरण",
   "supportThisCause": "इस सेवा क्षेत्र का समर्थन करें",
   "causeReachTitle": "आपका योगदान लोगों तक कैसे पहुँचता है",
@@ -242,9 +311,30 @@
   "statusApproved": "सहायता के लिए स्वीकृत",
   "statusRejected": "अस्वीकृत",
   "statusConsidered": "सम्मान के लिए विचाराधीन",
-  "statusNotSelected": "चयनित नहीं"
-  ,"applicantDetails":"आवेदक का विवरण","fullNameRequired":"पूरा नाम *","mobileNumberRequired":"मोबाइल नंबर *","emailOptional":"ईमेल (वैकल्पिक)","addressRequired":"पता *","cityRequired":"शहर *","stateRequired":"राज्य *","pincodeRequired":"पिन कोड *","explainNeed":"अपनी आवश्यकता बताएं *","achievementDetails":"उपलब्धि का विवरण *","supportingDocuments":"सहायक दस्तावेज़ / चित्र *","supportingDocumentsHint":"संबंधित बिल, पर्ची, फीस रसीद, प्रमाणपत्र या अन्य दस्तावेज़ अपलोड करें। अधिकतम 10 चित्र।","gallery":"गैलरी","camera":"कैमरा","uploadedCount":"{count}/10 अपलोड किए गए","@uploadedCount":{"placeholders":{"count":{"type":"int"}}},"imageUploadFailed":"चित्र अपलोड नहीं हुआ। कृपया दूसरा चित्र चुनकर फिर प्रयास करें।"
-,
+  "statusNotSelected": "चयनित नहीं",
+  "applicantDetails": "आवेदक का विवरण",
+  "fullNameRequired": "पूरा नाम *",
+  "mobileNumberRequired": "मोबाइल नंबर *",
+  "emailOptional": "ईमेल (वैकल्पिक)",
+  "addressRequired": "पता *",
+  "cityRequired": "शहर *",
+  "stateRequired": "राज्य *",
+  "pincodeRequired": "पिन कोड *",
+  "explainNeed": "अपनी आवश्यकता बताएं *",
+  "achievementDetails": "उपलब्धि का विवरण *",
+  "supportingDocuments": "सहायक दस्तावेज़ / चित्र *",
+  "supportingDocumentsHint": "संबंधित बिल, पर्ची, फीस रसीद, प्रमाणपत्र या अन्य दस्तावेज़ अपलोड करें। अधिकतम 10 चित्र।",
+  "gallery": "गैलरी",
+  "camera": "कैमरा",
+  "uploadedCount": "{count}/10 अपलोड किए गए",
+  "@uploadedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "imageUploadFailed": "चित्र अपलोड नहीं हुआ। कृपया दूसरा चित्र चुनकर फिर प्रयास करें।",
   "adminCreateBeneficiary": "लाभार्थी बनाएँ",
   "adminBeneficiaryName": "नाम",
   "adminBeneficiaryImpactStory": "प्रभाव की कहानी",
@@ -261,5 +351,76 @@
   "adminBeneficiaryUnableLoadCauses": "कारण लोड नहीं हो सके।",
   "adminBeneficiaryUnableLoadOrganisations": "संस्थाएं लोड नहीं हो सकीं।",
   "adminBeneficiaryCreatedImageUploadFailed": "लाभार्थी बनाया गया, लेकिन तस्वीर अपलोड नहीं हो सकी: {error}। इसे फिर से खोलकर प्रयास करें।",
-  "adminBeneficiaryUnableSave": "लाभार्थी सहेजा नहीं जा सका: {error}।"
+  "adminBeneficiaryUnableSave": "लाभार्थी सहेजा नहीं जा सका: {error}।",
+  "adminCreateCause": "सेवा क्षेत्र बनाएँ",
+  "adminNoCauses": "अभी कोई सेवा क्षेत्र नहीं बनाया गया है।",
+  "adminCauseStatusUpdateFailed": "सेवा क्षेत्र की स्थिति अपडेट नहीं हो सकी।",
+  "adminCausesLoadFailed": "सेवा क्षेत्रों को लोड नहीं किया जा सका।",
+  "adminNoBeneficiaries": "अभी कोई लाभार्थी नहीं बनाया गया है।",
+  "adminBeneficiaryStatusUpdateFailed": "लाभार्थी की स्थिति अपडेट नहीं हो सकी: {error}",
+  "adminBeneficiariesLoadFailed": "लाभार्थियों को लोड नहीं किया जा सका।",
+  "adminImageUploadFailed": "चित्र अपलोड नहीं हो सका: {error}",
+  "adminParentCausesLoadFailed": "मूल सेवा क्षेत्रों को लोड नहीं किया जा सका।",
+  "adminTopLevelCause": "मुख्य सेवा क्षेत्र",
+  "adminInteractionAnalyticsTitle": "इंटरैक्शन एनालिटिक्स",
+  "adminUserEngagement": "उपयोगकर्ता सहभागिता",
+  "adminRollingMetrics": "पिछले 30 दिनों के मेट्रिक्स और 14 दिनों की सहभागिता प्रवृत्ति।",
+  "adminNavigationEvents": "नेविगेशन इवेंट",
+  "adminIncludedInteractionTotals": "इंटरैक्शन कुल में शामिल।",
+  "adminAnalyticsPrivacy": "एनालिटिक्स में ऐप द्वारा बनाए गए अस्पष्ट पहचानकर्ता उपयोग होते हैं और व्यक्तिगत पहचान की जानकारी प्रदर्शित नहीं होती।",
+  "adminEngagementTrend": "सहभागिता प्रवृत्ति",
+  "adminDailyActiveLast14": "पिछले 14 दिनों के दैनिक सक्रिय उपयोगकर्ता",
+  "adminNoAnalyticsData": "अभी कोई एनालिटिक्स डेटा नहीं है।",
+  "adminAdvancedAnalyticsTitle": "उन्नत एनालिटिक्स",
+  "adminRetention": "रिटेंशन",
+  "adminRetentionSubtitle": "साप्ताहिक समूहों में Day 1, Day 7 और Day 30 वापसी दर।",
+  "adminEngagementCohorts": "सहभागिता समूह",
+  "adminEngagementCohortsSubtitle": "साप्ताहिक सक्रिय समूह, सत्र और इंटरैक्शन की गहराई।",
+  "adminFeatureAdoption": "फीचर अपनाने की दर",
+  "adminFeatureAdoptionSubtitle": "30 दिनों में सक्रिय उपयोगकर्ताओं में से प्रत्येक ट्रैक की गई स्क्रीन देखने वालों का हिस्सा।",
+  "adminAudienceSegmentation": "दर्शक वर्गीकरण",
+  "adminAudienceSegmentationSubtitle": "शहर, भाषा और डिवाइस संदर्भ के अनुसार 30 दिनों के सक्रिय उपयोगकर्ता।",
+  "adminCity": "शहर",
+  "adminLanguage": "भाषा",
+  "adminDevice": "डिवाइस",
+  "adminBigQueryFoundation": "BigQuery के लिए तैयार आधार",
+  "adminBigQueryReady": "इवेंट-स्तरीय PostgreSQL डेटा भविष्य के BigQuery निर्यात के लिए तैयार है।",
+  "adminWarehouseNotConfigured": "डेटा वेयरहाउस निर्यात कॉन्फ़िगर नहीं है।",
+  "adminCityPrivacy": "शहर तभी दिखाया जाता है जब ऐप एनालिटिक्स संदर्भ देता है; ऐप सटीक स्थान का अनुमान नहीं लगाता।",
+  "adminCohort": "समूह",
+  "adminUsers": "उपयोगकर्ता",
+  "adminDay1": "D1",
+  "adminDay7": "D7",
+  "adminDay30": "D30",
+  "adminSessions": "सत्र",
+  "adminInteractions": "इंटरैक्शन",
+  "adminSessionsPerUser": "सत्र/उपयोगकर्ता",
+  "adminUserViews": "{users} उपयोगकर्ता · {events} व्यू",
+  "adminUserEvents": "{users} उपयोगकर्ता · {events} इवेंट",
+  "adminPlatformHealthTitle": "प्लेटफ़ॉर्म स्वास्थ्य",
+  "adminLast24Hours": "पिछले 24 घंटे",
+  "adminRecentEvents": "हाल की घटनाएँ",
+  "adminNoHealthEvents": "स्वास्थ्य की कोई घटना दर्ज नहीं है।",
+  "adminHealthTelemetryPrivacy": "स्वास्थ्य टेलीमेट्री में केवल रूट और त्रुटि मेटाडेटा रखा जाता है। क्रैश रिपोर्ट में ऐप द्वारा बनाए गए अस्पष्ट पहचानकर्ता होते हैं और Firebase UID, ईमेल या नाम नहीं रखा जाता।",
+  "adminPlatformHealthy": "प्लेटफ़ॉर्म स्वस्थ",
+  "adminPlatformDegraded": "प्लेटफ़ॉर्म में समस्या",
+  "adminApiDatabaseUptime": "API: {api} · डेटाबेस: {database} · अपटाइम: {uptime}",
+  "adminDeployment": "डिप्लॉयमेंट",
+  "adminEnvironment": "पर्यावरण",
+  "adminVersion": "संस्करण",
+  "adminDeploymentId": "डिप्लॉयमेंट ID",
+  "adminGitSha": "Git SHA",
+  "adminDeployedAt": "डिप्लॉय किया गया",
+  "fieldRequired": "{field} आवश्यक है",
+  "mobileNumberInvalid": "मान्य मोबाइल नंबर दर्ज करें",
+  "pincodeInvalid": "6 अंकों का मान्य PIN कोड दर्ज करें",
+  "selectImagesFailed": "चित्र चुन नहीं सके: {error}",
+  "captureImageFailed": "चित्र ले नहीं सके: {error}",
+  "adminSlugRequired": "स्लग आवश्यक है।",
+  "adminCauseSaveFailed": "सेवा क्षेत्र सहेजा नहीं जा सका। कृपया जानकारी जाँचकर पुनः प्रयास करें।",
+  "adminApiErrors": "API त्रुटियाँ",
+  "adminAuthFailures": "प्रमाणीकरण विफलताएँ",
+  "adminUploadFailures": "अपलोड विफलताएँ",
+  "adminAppErrors": "ऐप त्रुटियाँ",
+  "adminCrashes": "क्रैश"
 }
