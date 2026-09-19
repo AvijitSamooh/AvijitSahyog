@@ -12,6 +12,7 @@ class AdminOrganisationsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final languageCode = Localizations.localeOf(context).languageCode;
     final l10n = AppLocalizations.of(context)!;
     final organisations = ref.watch(adminOrganisationsProvider);
     return AppPageScaffold(
@@ -66,7 +67,7 @@ class _OrganisationTile extends ConsumerWidget {
     return Card(
       child: ListTile(
         key: ValueKey('admin_organisation_${organisation.id}'),
-        title: Text(organisation.displayName),
+        title: Text(organisation.displayName(languageCode)),
         subtitle: Text(
           '${organisation.slug} • ${l10n.adminOrganisationCauseCount(organisation.causeIds.length)}',
         ),
@@ -120,13 +121,15 @@ class _OrganisationTile extends ConsumerWidget {
   }
 
   Future<void> _deleteOrganisation(BuildContext context, WidgetRef ref) async {
+    final languageCode = Localizations.localeOf(context).languageCode;
     final l10n = AppLocalizations.of(context)!;
+    final organisationName = organisation.displayName(languageCode);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.adminDeleteOrganisationTitle),
         content: Text(
-          l10n.adminDeleteOrganisationConfirmation(organisation.displayName),
+          l10n.adminDeleteOrganisationConfirmation(organisationName),
         ),
         actions: [
           TextButton(
@@ -151,7 +154,7 @@ class _OrganisationTile extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              l10n.adminDeleteOrganisationSuccess(organisation.displayName),
+              l10n.adminDeleteOrganisationSuccess(organisationName),
             ),
           ),
         );
