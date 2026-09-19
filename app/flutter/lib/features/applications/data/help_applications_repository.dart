@@ -24,14 +24,14 @@ class HelpApplicationsRepository {
       'type': type,
       'applicantName': applicantName.trim(),
       'mobileNumber': mobileNumber.trim(),
-      if (email?.trim().isNotEmpty == true) 'email': email!.trim(),
+      'email': ?(email?.trim().isNotEmpty == true ? email!.trim() : null),
       'address': address.trim(),
       'city': city.trim(),
       'state': state.trim(),
       'pincode': pincode.trim(),
-      if (requestedAmount != null) 'requestedAmount': requestedAmount,
+      'requestedAmount': ?requestedAmount,
       'mediaIds': mediaIds,
-      if (trimmedClarification?.isNotEmpty == true) 'clarification': trimmedClarification,
+      'clarification': ?(trimmedClarification?.isNotEmpty == true ? trimmedClarification : null),
     }));
   }
 
