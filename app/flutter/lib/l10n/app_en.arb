@@ -262,5 +262,5 @@
   "adminBeneficiaryCreatedImageUploadFailed": "Beneficiary was created, but image upload failed: {error}. Open it again to retry.",
   "@adminBeneficiaryCreatedImageUploadFailed": {"description": "Error detail returned by the save workflow.", "placeholders": {"error": {"type": "String"}}},
   "adminBeneficiaryUnableSave": "Unable to save beneficiary: {error}.",
-  "@adminBeneficiaryUnableSave": {"description": "Error detail returned by the save workflow.", "placeholders": {"error": {"type": "String"}}},
+  "@adminBeneficiaryUnableSave": {"description": "Error detail returned by the save workflow.", "placeholders": {"error": {"type": "String"}}}
 }
