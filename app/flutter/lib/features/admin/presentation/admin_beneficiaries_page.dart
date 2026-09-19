@@ -14,11 +14,11 @@ class AdminBeneficiariesPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final beneficiaries = ref.watch(adminBeneficiariesProvider);
     return AppPageScaffold(
-      title: const Text('Manage beneficiaries'),
+      title: Text(AppLocalizations.of(context)!.adminManageBeneficiaries),
       floatingActionButton: FloatingActionButton.extended(
         key: const ValueKey('admin_create_beneficiary'),
         icon: const Icon(Icons.add),
-        label: const Text('Create beneficiary'),
+        label: Text(AppLocalizations.of(context)!.adminCreateBeneficiary),
         onPressed: () async {
           await Navigator.of(context).push(
             MaterialPageRoute(builder: (_) => const AdminBeneficiaryEditorPage()),

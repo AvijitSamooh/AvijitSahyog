@@ -244,4 +244,22 @@
   "statusConsidered": "सन्मानासाठी विचाराधीन",
   "statusNotSelected": "निवडलेले नाही"
   ,"applicantDetails":"अर्जदाराचा तपशील","fullNameRequired":"पूर्ण नाव *","mobileNumberRequired":"मोबाईल क्रमांक *","emailOptional":"ईमेल (ऐच्छिक)","addressRequired":"पत्ता *","cityRequired":"शहर *","stateRequired":"राज्य *","pincodeRequired":"पिन कोड *","explainNeed":"आपली गरज सांगा *","achievementDetails":"उपलब्धीचा तपशील *","supportingDocuments":"समर्थन कागदपत्रे / प्रतिमा *","supportingDocumentsHint":"संबंधित बिले, प्रिस्क्रिप्शन, फी पावत्या, प्रमाणपत्रे किंवा इतर कागदपत्रे अपलोड करा. कमाल 10 प्रतिमा.","gallery":"गॅलरी","camera":"कॅमेरा","uploadedCount":"{count}/10 अपलोड केले","@uploadedCount":{"placeholders":{"count":{"type":"int"}}},"imageUploadFailed":"प्रतिमा अपलोड झाली नाही. कृपया दुसरी प्रतिमा निवडून पुन्हा प्रयत्न करा."
+,
+  "adminCreateBeneficiary": "लाभार्थी तयार करा",
+  "adminBeneficiaryName": "नाव",
+  "adminBeneficiaryImpactStory": "परिणामाची कथा",
+  "adminBeneficiarySupportedYear": "समर्थित वर्ष",
+  "adminBeneficiaryContributionAmount": "योगदान रक्कम",
+  "adminBeneficiaryDisplayOrder": "प्रदर्शन क्रम",
+  "adminBeneficiaryCause": "कारण",
+  "adminBeneficiaryImages": "लाभार्थीची छायाचित्रे",
+  "adminBeneficiaryOrganisationOptional": "संस्था (ऐच्छिक)",
+  "adminBeneficiaryNoOrganisation": "कोणतीही संस्था नाही",
+  "adminBeneficiarySaving": "जतन करत आहे...",
+  "adminBeneficiarySaveChanges": "बदल जतन करा",
+  "adminBeneficiaryInvalidFields": "नाव, वैध वर्ष, योगदान रक्कम आणि कारण आवश्यक आहे.",
+  "adminBeneficiaryUnableLoadCauses": "कारणे लोड करता आली नाहीत.",
+  "adminBeneficiaryUnableLoadOrganisations": "संस्था लोड करता आल्या नाहीत.",
+  "adminBeneficiaryCreatedImageUploadFailed": "लाभार्थी तयार झाला, परंतु छायाचित्र अपलोड करता आले नाही: {error}. पुन्हा उघडून प्रयत्न करा.",
+  "adminBeneficiaryUnableSave": "लाभार्थी जतन करता आला नाही: {error}."
 }

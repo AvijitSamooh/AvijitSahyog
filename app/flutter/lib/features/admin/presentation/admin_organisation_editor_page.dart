@@ -165,6 +165,7 @@ class _AdminOrganisationEditorPageState
   @override
   Widget build(BuildContext context) {
     final causes = ref.watch(adminCausesProvider);
+    final languageCode = Localizations.localeOf(context).languageCode;
     final l10n = AppLocalizations.of(context)!;
     return AppPageScaffold(
       title: Text(_editing ? l10n.adminEditOrganisation : l10n.adminCreateOrganisation),
@@ -193,7 +194,7 @@ class _AdminOrganisationEditorPageState
               return Column(
                 children: leafCauses.map((cause) => CheckboxListTile(
                   value: _causeIds.contains(cause.id),
-                  title: Text(cause.displayName),
+                  title: Text(cause.displayName(languageCode)),
                   onChanged: (selected) => setState(() {
                     if (selected ?? false) {
                       _causeIds.add(cause.id);

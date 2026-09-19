@@ -69,6 +69,7 @@ class _CauseTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final languageCode = Localizations.localeOf(context).languageCode;
     return Card(
       child: ListTile(
         key: ValueKey('admin_cause_${cause.id}'),
@@ -79,7 +80,7 @@ class _CauseTile extends ConsumerWidget {
               const Icon(Icons.subdirectory_arrow_right_rounded, size: 18),
               const SizedBox(width: 8),
             ],
-            Expanded(child: Text(cause.displayName)),
+            Expanded(child: Text(cause.displayName(languageCode))),
           ],
         ),
         subtitle: Text(

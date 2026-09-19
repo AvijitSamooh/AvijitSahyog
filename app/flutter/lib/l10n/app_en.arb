@@ -243,4 +243,24 @@
   "statusConsidered": "Considered for Samman",
   "statusNotSelected": "Not selected"
   ,"applicantDetails":"Applicant details","fullNameRequired":"Full name *","mobileNumberRequired":"Mobile number *","emailOptional":"Email (optional)","addressRequired":"Address *","cityRequired":"City *","stateRequired":"State *","pincodeRequired":"PIN code *","explainNeed":"Explain your need *","achievementDetails":"Achievement details *","supportingDocuments":"Supporting documents / images *","supportingDocumentsHint":"Upload relevant bills, prescriptions, fee receipts, certificates or other supporting documents. Up to 10 images.","gallery":"Gallery","camera":"Camera","uploadedCount":"{count}/10 uploaded","@uploadedCount":{"placeholders":{"count":{"type":"int"}}},"imageUploadFailed":"Image upload failed. Please retry with another image."
+,
+  "adminCreateBeneficiary": "Create beneficiary",
+  "adminBeneficiaryName": "Name",
+  "adminBeneficiaryImpactStory": "Impact story",
+  "adminBeneficiarySupportedYear": "Supported year",
+  "adminBeneficiaryContributionAmount": "Contribution amount",
+  "adminBeneficiaryDisplayOrder": "Display order",
+  "adminBeneficiaryCause": "Cause",
+  "adminBeneficiaryImages": "Beneficiary images",
+  "adminBeneficiaryOrganisationOptional": "Organisation (optional)",
+  "adminBeneficiaryNoOrganisation": "No organisation",
+  "adminBeneficiarySaving": "Saving...",
+  "adminBeneficiarySaveChanges": "Save changes",
+  "adminBeneficiaryInvalidFields": "Name, valid year, contribution amount and cause are required.",
+  "adminBeneficiaryUnableLoadCauses": "Unable to load causes.",
+  "adminBeneficiaryUnableLoadOrganisations": "Unable to load organisations.",
+  "adminBeneficiaryCreatedImageUploadFailed": "Beneficiary was created, but image upload failed: {error}. Open it again to retry.",
+  "@adminBeneficiaryCreatedImageUploadFailed": {"description": "Error detail returned by the save workflow.", "placeholders": {"error": {"type": "String"}}},
+  "adminBeneficiaryUnableSave": "Unable to save beneficiary: {error}.",
+  "@adminBeneficiaryUnableSave": {"description": "Error detail returned by the save workflow.", "placeholders": {"error": {"type": "String"}}}
 }

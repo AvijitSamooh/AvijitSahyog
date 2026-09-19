@@ -63,7 +63,8 @@ class AdminCause {
     );
   }
 
-  String get displayName =>
+  String displayName(String languageCode) =>
+      translations.where((item) => item.languageCode == languageCode).firstOrNull?.name ??
       translations.where((item) => item.languageCode == 'en').firstOrNull?.name ??
       (translations.isEmpty ? slug : translations.first.name);
 }
