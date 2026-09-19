@@ -1,13 +1,29 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
 import 'package:http/http.dart' as http;
 
 class ApiClient {
+  /// Number of in-flight HTTP requests. The app shell observes this to give
+  /// immediate feedback for every backend action without duplicating loading
+  /// state in individual screens.
+  static final ValueNotifier<int> activeRequests = ValueNotifier<int>(0);
+
+  static Future<T> track<T>(Future<T> future) async {
+    activeRequests.value++;
+    try {
+      return await future;
+    } finally {
+      activeRequests.value = activeRequests.value > 0 ? activeRequests.value - 1 : 0;
+    }
+  }
+
   ApiClient({
     http.Client? client,
     String? baseUrl,
     this._authTokenProvider,
-  })  : _client = client ?? http.Client(),
+  })  : _client = _ActivityHttpClient(client ?? http.Client()),
         baseUrl = _normalizeBaseUrl(
           baseUrl ?? const String.fromEnvironment(
             'API_BASE_URL',
@@ -76,7 +92,7 @@ class ApiClient {
     final request = http.MultipartRequest('POST', Uri.parse('$baseUrl/admin/media/upload'))
       ..headers.addAll(await _headers())
       ..files.add(await http.MultipartFile.fromPath('file', path));
-    final response = await http.Response.fromStream(await request.send());
+    final response = await http.Response.fromStream(await track(request.send()));
     _ensureSuccess(response, 'Uploading image');
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
@@ -299,5 +315,22 @@ class ApiClient {
 
   void dispose() {
     _client.close();
+  }
+}
+
+class _ActivityHttpClient extends http.BaseClient {
+  _ActivityHttpClient(this._inner);
+
+  final http.Client _inner;
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) {
+    return ApiClient.track(_inner.send(request));
+  }
+
+  @override
+  void close() {
+    _inner.close();
+    super.close();
   }
 }
