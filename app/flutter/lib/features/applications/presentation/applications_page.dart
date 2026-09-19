@@ -448,30 +448,12 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(l10n.uploadedCount(_mediaIds.length)),
               ),
-            if (_busy && _uploadTotal > 0) ...[
-              const SizedBox(height: 12),
-              Row(
-                key: const ValueKey('application_upload_progress'),
-                children: [
-                  const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      '${l10n.uploadingImage} $_uploadCompleted/$_uploadTotal',
-                    ),
-                  ),
-                ],
+            if (_busy && _uploadTotal > 0)
+              ApplicationUploadProgress(
+                label: l10n.uploadingImage,
+                completed: _uploadCompleted,
+                total: _uploadTotal,
               ),
-              const SizedBox(height: 8),
-              LinearProgressIndicator(
-                value: _uploadCompleted / _uploadTotal,
-                minHeight: 5,
-              ),
-            ],
             const SizedBox(height: 24),
             FilledButton.icon(
               key: const ValueKey('application_submit'),
@@ -491,6 +473,46 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
         ),
       ),
 
+    );
+  }
+}
+
+class ApplicationUploadProgress extends StatelessWidget {
+  const ApplicationUploadProgress({
+    super.key,
+    required this.label,
+    required this.completed,
+    required this.total,
+  });
+
+  final String label;
+  final int completed;
+  final int total;
+
+  @override
+  Widget build(BuildContext context) {
+    final progress = total <= 0 ? 0.0 : completed / total;
+    return Padding(
+      key: const ValueKey('application_upload_progress'),
+      padding: const EdgeInsets.only(top: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+              const SizedBox(width: 10),
+              Expanded(child: Text('$label $completed/$total')),
+            ],
+          ),
+          const SizedBox(height: 8),
+          LinearProgressIndicator(value: progress, minHeight: 5),
+        ],
+      ),
     );
   }
 }
