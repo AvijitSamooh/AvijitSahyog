@@ -468,7 +468,7 @@ void main() {
   testWidgets('Impact sort options use the active locale instead of English-only labels', (tester) async {
     await pumpApp(
       tester,
-      home: const ImpactPage(),
+      home: const HomePage(),
       overrides: [
         beneficiariesProvider((search: '', sort: null))
             .overrideWith((ref) async => const <Beneficiary>[]),
@@ -476,7 +476,7 @@ void main() {
     );
 
     final navigation = AppShellScope.of(
-      tester.element(find.byType(ImpactPage)),
+      tester.element(find.byType(HomePage)),
     ).navigation;
     navigation.select(2);
     await tester.pumpAndSettle();
