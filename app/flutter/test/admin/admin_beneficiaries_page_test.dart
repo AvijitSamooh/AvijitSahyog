@@ -67,11 +67,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repository.removeCalled, isTrue);
-  });
-}
-
-
-  testWidgets('pull-to-refresh reloads beneficiaries from the backend', (tester) async {
+  });  testWidgets('pull-to-refresh reloads beneficiaries from the backend', (tester) async {
     final repository = _FakeRepository();
 
     await tester.pumpWidget(
@@ -119,3 +115,5 @@ void main() {
 
     expect(find.textContaining('delete failed'), findsOneWidget);
   });
+
+}
