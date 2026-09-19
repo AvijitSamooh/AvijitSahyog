@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -35,6 +37,20 @@ void main() {
     );
 
     await api.getMyHelpApplications();
+    api.dispose();
+  });
+  test('tracks every in-flight backend request and clears after completion', () async {
+    final completer = Completer<http.Response>();
+    final client = MockClient((request) => completer.future);
+    final api = ApiClient(client: client, baseUrl: 'https://api.example.com');
+
+    final future = api.createDonation({'amount': 100});
+    await Future<void>.delayed(Duration.zero);
+    expect(ApiClient.activeRequests.value, 1);
+
+    completer.complete(http.Response('{"id":"donation-1"}', 200));
+    await future;
+    expect(ApiClient.activeRequests.value, 0);
     api.dispose();
   });
 }

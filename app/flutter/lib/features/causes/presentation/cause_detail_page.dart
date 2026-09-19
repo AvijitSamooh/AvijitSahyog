@@ -29,8 +29,13 @@ class CauseDetailPage extends ConsumerWidget {
           retryLabel: l10n.retry,
           onRetry: () => ref.invalidate(causeProvider((slug: slug, languageCode: languageCode))),
         ),
-        data: (cause) => ListView(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+        data: (cause) => RefreshIndicator(
+          onRefresh: () async => ref.refresh(
+            causeProvider((slug: slug, languageCode: languageCode)).future,
+          ),
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
           children: [
             Container(
               padding: const EdgeInsets.all(24),
@@ -95,7 +100,8 @@ class CauseDetailPage extends ConsumerWidget {
                 ),
               ),
             ],
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -51,8 +51,11 @@ class _AdminPortalPageState extends ConsumerState<AdminPortalPage> {
           selectedIndex: shell.navigation.index,
           onDestinationSelected: (index) => _selectMainTab(context, index),
         ),
-        body: ListView(
-          padding: const EdgeInsets.all(20),
+        body: RefreshIndicator(
+          onRefresh: () => ref.read(authProvider.notifier).refreshSession(),
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(20),
           children: [
             Text(l10n.adminPortalWelcome, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 8),
@@ -141,7 +144,8 @@ class _AdminPortalPageState extends ConsumerState<AdminPortalPage> {
                 MaterialPageRoute(builder: (_) => const AdminBeneficiariesPage()),
               ),
             ),
-          ],
+            ],
+          ),
         ),
       ),
     );

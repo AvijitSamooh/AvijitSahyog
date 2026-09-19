@@ -58,8 +58,13 @@ class _ImpactPageState extends ConsumerState<ImpactPage> {
 
     // Keep the Impact explorer transparent so the shared app scaffold's warm
     // cream background is visible, matching Causes/Home/Settings.
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+    return RefreshIndicator(
+      onRefresh: () async => ref.refresh(
+        beneficiariesProvider((search: _search.text.trim(), sort: _apiSort)).future,
+      ),
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
       children: [
         Text(l10n.impactSubtitle, style: theme.textTheme.bodyLarge),
         const SizedBox(height: 20),
@@ -128,7 +133,8 @@ class _ImpactPageState extends ConsumerState<ImpactPage> {
                       .toList(),
                 ),
         ),
-      ],
+        ],
+      ),
     );
   }
 }

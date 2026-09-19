@@ -13,6 +13,8 @@ describe('BeneficiariesService', () => {
     },
     cause: { findUnique: jest.fn() },
     organisation: { findUnique: jest.fn() },
+    beneficiaryMedia: { deleteMany: jest.fn() },
+    $transaction: jest.fn(async (callback: (tx: any) => unknown) => callback(prisma)),
   } as any;
 
   const service = new BeneficiariesService(prisma);
@@ -174,6 +176,9 @@ describe('BeneficiariesService', () => {
       id: 'beneficiary-1',
     });
 
+    expect(prisma.beneficiaryMedia.deleteMany).toHaveBeenCalledWith({
+      where: { beneficiaryId: 'beneficiary-1' },
+    });
     expect(prisma.beneficiary.delete).toHaveBeenCalledWith({
       where: { id: 'beneficiary-1' },
     });

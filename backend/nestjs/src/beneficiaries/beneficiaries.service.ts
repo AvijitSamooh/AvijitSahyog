@@ -181,7 +181,14 @@ export class BeneficiariesService {
 
   async remove(id: string) {
     await this.findOneForAdmin(id);
-    return this.prisma.beneficiary.delete({ where: { id } });
+
+    // Delete the join rows explicitly before the beneficiary. This keeps the
+    // operation reliable even when an environment has an older database
+    // constraint that has not yet picked up the cascade from the migration.
+    return this.prisma.$transaction(async (tx: any) => {
+      await tx.beneficiaryMedia.deleteMany({ where: { beneficiaryId: id } });
+      return tx.beneficiary.delete({ where: { id } });
+    });
   }
 
   async setActive(id: string, isActive: boolean) {
