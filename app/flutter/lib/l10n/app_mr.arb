@@ -417,5 +417,10 @@
   "selectImagesFailed": "प्रतिमा निवडता आली नाही: {error}",
   "captureImageFailed": "प्रतिमा घेता आली नाही: {error}",
   "adminSlugRequired": "स्लग आवश्यक आहे.",
-  "adminCauseSaveFailed": "सेवा क्षेत्र जतन करता आले नाही. कृपया माहिती तपासून पुन्हा प्रयत्न करा."
+  "adminCauseSaveFailed": "सेवा क्षेत्र जतन करता आले नाही. कृपया माहिती तपासून पुन्हा प्रयत्न करा.",
+  "adminApiErrors": "API त्रुटी",
+  "adminAuthFailures": "प्रमाणीकरण अपयश",
+  "adminUploadFailures": "अपलोड अपयश",
+  "adminAppErrors": "अॅप त्रुटी",
+  "adminCrashes": "क्रॅश"
 }
