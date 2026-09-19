@@ -16,9 +16,7 @@ class AppNavigationBar extends StatelessWidget {
         return AnalyticsScreens.causes;
       case 2:
         return AnalyticsScreens.impact;
-      case 3:
-        return AnalyticsScreens.settings;
-      default:
+            default:
         return AnalyticsScreens.unknown;
     }
   }
@@ -42,7 +40,6 @@ class AppNavigationBar extends StatelessWidget {
         NavigationDestination(icon: const Icon(Icons.home_outlined), selectedIcon: const Icon(Icons.home_rounded), label: l10n.navHome),
         NavigationDestination(icon: const Icon(Icons.volunteer_activism_outlined), selectedIcon: const Icon(Icons.volunteer_activism_rounded), label: l10n.navCauses),
         NavigationDestination(icon: const Icon(Icons.auto_awesome_outlined), selectedIcon: const Icon(Icons.auto_awesome_rounded), label: l10n.navImpact),
-        NavigationDestination(icon: const Icon(Icons.settings_outlined), selectedIcon: const Icon(Icons.settings_rounded), label: l10n.navSettings),
       ],
     );
   }
