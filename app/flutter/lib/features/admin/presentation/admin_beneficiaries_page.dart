@@ -33,7 +33,7 @@ class AdminBeneficiariesPage extends ConsumerWidget {
           onRetry: () => ref.invalidate(adminBeneficiariesProvider),
         ),
         data: (items) => items.isEmpty
-            ? const Center(child: Text('No beneficiaries created yet.'))
+            ? Center(child: Text(AppLocalizations.of(context)!.adminNoBeneficiaries))
             : RefreshIndicator(
                 onRefresh: () async =>
                     ref.refresh(adminBeneficiariesProvider.future),
@@ -136,7 +136,7 @@ class _BeneficiaryTile extends ConsumerWidget {
                 } catch (error) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Unable to update beneficiary status: $error')),
+                      SnackBar(content: Text(AppLocalizations.of(context)!.adminBeneficiaryStatusUpdateFailed.replaceFirst('{error}', error.toString()))),
                     );
                   }
                 }
@@ -171,11 +171,11 @@ class _ErrorState extends StatelessWidget {
           children: [
             const Icon(Icons.error_outline_rounded, size: 48),
             const SizedBox(height: 12),
-            const Text('Unable to load beneficiaries.'),
+            Text(AppLocalizations.of(context)!.adminBeneficiariesLoadFailed),
             const SizedBox(height: 8),
             Text(error.toString(), textAlign: TextAlign.center),
             const SizedBox(height: 16),
-            FilledButton(onPressed: onRetry, child: const Text('Retry')),
+            FilledButton(onPressed: onRetry, child: Text(AppLocalizations.of(context)!.retry)),
           ],
         ),
       ),
