@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/widgets/app_settings_menu.dart';
+import '../../../l10n/app_localizations.dart';
 
 import '../models/admin_beneficiary.dart';
 import '../models/admin_cause.dart';
@@ -55,11 +56,12 @@ class _AdminBeneficiaryEditorPageState
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context)!;
     final name = _name.text.trim();
     final year = int.tryParse(_year.text);
     final amount = num.tryParse(_amount.text);
     if (name.isEmpty || year == null || amount == null || amount <= 0 || _causeId == null) {
-      _error('Name, valid year, contribution amount and cause are required.');
+      _error(l10n.adminBeneficiaryInvalidFields);
       return;
     }
     setState(() => _saving = true);
@@ -83,7 +85,7 @@ class _AdminBeneficiaryEditorPageState
           await _attachPendingMedia(created.id);
         } catch (error) {
           if (mounted) {
-            _error('Beneficiary was created, but image upload failed: $error. Open it again to retry.');
+            _error(l10n.adminBeneficiaryCreatedImageUploadFailed(error.toString()));
             Navigator.of(context).pop();
           }
           return;
@@ -91,7 +93,7 @@ class _AdminBeneficiaryEditorPageState
         if (mounted) Navigator.of(context).pop();
       }
     } catch (error) {
-      if (mounted) _error('Unable to save beneficiary: $error');
+      if (mounted) _error(l10n.adminBeneficiaryUnableSave(error.toString()));
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -111,32 +113,44 @@ class _AdminBeneficiaryEditorPageState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final languageCode = Localizations.localeOf(context).languageCode;
     final causes = ref.watch(adminCausesProvider);
     final organisations = ref.watch(adminOrganisationsProvider);
     return AppPageScaffold(
-      title: Text(_editing ? 'Edit beneficiary' : 'Create beneficiary'),
+      title: Text(_editing ? l10n.adminEditBeneficiary : l10n.adminCreateBeneficiary),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
         children: [
-          TextField(key: const ValueKey('admin_beneficiary_name'), controller: _name, decoration: const InputDecoration(labelText: 'Name')),
-          TextField(controller: _story, minLines: 3, maxLines: 6, decoration: const InputDecoration(labelText: 'Impact story')),
+          TextField(key: const ValueKey('admin_beneficiary_name'), controller: _name, decoration: InputDecoration(labelText: l10n.adminBeneficiaryName)),
+          TextField(controller: _story, minLines: 3, maxLines: 6, decoration: InputDecoration(labelText: l10n.adminBeneficiaryImpactStory)),
           Row(children: [
-            Expanded(child: TextField(controller: _year, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Supported year'))),
+            Expanded(child: TextField(controller: _year, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: l10n.adminBeneficiarySupportedYear))),
             const SizedBox(width: 12),
-            Expanded(child: TextField(controller: _amount, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: const InputDecoration(labelText: 'Contribution amount'))),
+            Expanded(child: TextField(controller: _amount, keyboardType: const TextInputType.numberWithOptions(decimal: true), decoration: InputDecoration(labelText: l10n.adminBeneficiaryContributionAmount))),
           ]),
-          TextField(controller: _displayOrder, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Display order')),
+          TextField(controller: _displayOrder, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: l10n.adminBeneficiaryDisplayOrder)),
           const SizedBox(height: 16),
           causes.when(
             loading: () => const LinearProgressIndicator(),
-            error: (error, stackTrace) => const Text('Unable to load causes.'),
+            error: (error, stackTrace) => Text(l10n.adminBeneficiaryUnableLoadCauses),
             data: (items) {
-              final leafCauses = items.expand((item) => item.children.isEmpty ? [item] : item.children).toList(growable: false);
+              final rootCauses = items.where((item) => item.parentId == null);
+              final seenCauseIds = <String>{};
+              final leafCauses = rootCauses
+                  .expand((item) => item.children.isEmpty ? [item] : item.children)
+                  .where((item) => seenCauseIds.add(item.id))
+                  .toList(growable: false);
               return DropdownButtonFormField<String>(
               key: const ValueKey('admin_beneficiary_cause'),
-              initialValue: items.any((item) => item.id == _causeId) ? _causeId : null,
-              decoration: const InputDecoration(labelText: 'Cause'),
-              items: leafCauses.map((AdminCause item) => DropdownMenuItem(value: item.id, child: Text(item.displayName))).toList(),
+              initialValue: leafCauses.any((item) => item.id == _causeId) ? _causeId : null,
+              decoration: InputDecoration(labelText: l10n.adminBeneficiaryCause),
+              items: leafCauses
+                  .map((AdminCause item) => DropdownMenuItem(
+                        value: item.id,
+                        child: Text(item.displayName(languageCode)),
+                      ))
+                  .toList(),
               onChanged: (value) => setState(() => _causeId = value),
             );
             },
@@ -147,19 +161,19 @@ class _AdminBeneficiaryEditorPageState
             entity: _editing ? 'beneficiaries' : null,
             entityId: _editing ? widget.beneficiary!.id : null,
             primaryPurpose: 'PROFILE',
-            title: 'Beneficiary images',
+            title: l10n.adminBeneficiaryImages,
             onPendingChanged: (items) => _pendingMedia = items,
           ),
           const SizedBox(height: 12),
           organisations.when(
             loading: () => const LinearProgressIndicator(),
-            error: (error, stackTrace) => const Text('Unable to load organisations.'),
+            error: (error, stackTrace) => Text(l10n.adminBeneficiaryUnableLoadOrganisations),
             data: (items) => DropdownButtonFormField<String>(
               initialValue: items.any((item) => item.id == _organisationId) ? _organisationId : null,
-              decoration: const InputDecoration(labelText: 'Organisation (optional)'),
+              decoration: InputDecoration(labelText: l10n.adminBeneficiaryOrganisationOptional),
               items: [
-                const DropdownMenuItem<String>(value: null, child: Text('No organisation')),
-                ...items.map((AdminOrganisation item) => DropdownMenuItem(value: item.id, child: Text(item.displayName))),
+                DropdownMenuItem<String>(value: null, child: Text(l10n.adminBeneficiaryNoOrganisation)),
+                ...items.map((AdminOrganisation item) => DropdownMenuItem(value: item.id, child: Text(item.displayName(languageCode)))),
               ],
               onChanged: (value) => setState(() => _organisationId = value),
             ),
@@ -174,7 +188,7 @@ class _AdminBeneficiaryEditorPageState
             child: FilledButton(
               key: const ValueKey('admin_save_beneficiary'),
               onPressed: _saving ? null : _save,
-              child: Text(_saving ? 'Saving...' : (_editing ? 'Save changes' : 'Create beneficiary')),
+              child: Text(_saving ? l10n.adminBeneficiarySaving : (_editing ? l10n.adminBeneficiarySaveChanges : l10n.adminCreateBeneficiary)),
             ),
           ),
         ),
