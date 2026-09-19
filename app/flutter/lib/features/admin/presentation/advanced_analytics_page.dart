@@ -156,6 +156,7 @@ class _EngagementTable extends StatelessWidget {
           ),
         ),
       );
+  }
 }
 
 class _FeatureList extends StatelessWidget {
