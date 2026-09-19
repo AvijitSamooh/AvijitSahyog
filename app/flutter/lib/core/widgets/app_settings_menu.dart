@@ -148,6 +148,7 @@ class AppPageScaffold extends Scaffold {
     double? appBarElevation,
     double? appBarScrolledUnderElevation,
   }) : super(
+          bottomNavigationBar: const _SharedBottomNavigationBar(),
           appBar: AppPageAppBar(
             title: title,
             automaticallyImplyLeading: automaticallyImplyLeading,
@@ -155,7 +156,6 @@ class AppPageScaffold extends Scaffold {
             elevation: appBarElevation,
             scrolledUnderElevation: appBarScrolledUnderElevation,
           ),
-          bottomNavigationBar: bottomNavigationBar ?? const _SharedBottomNavigationBar(),
         );
 }
 
