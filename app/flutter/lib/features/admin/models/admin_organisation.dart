@@ -80,7 +80,10 @@ class AdminOrganisation {
     );
   }
 
-  String get displayName {
+  String displayName(String languageCode) {
+    for (final translation in translations) {
+      if (translation.languageCode == languageCode) return translation.name;
+    }
     for (final translation in translations) {
       if (translation.languageCode == 'en') return translation.name;
     }
