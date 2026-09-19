@@ -82,7 +82,7 @@ class _AdminMediaSectionState extends State<AdminMediaSection> {
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.adminImageUploadFailed.replaceFirst('{error}', error.toString()))),
+          SnackBar(content: Text(AppLocalizations.of(context)!.adminImageUploadFailed(error.toString()))),
         );
       }
     } finally {
