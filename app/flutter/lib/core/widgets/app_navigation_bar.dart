@@ -26,6 +26,8 @@ class AppNavigationBar extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return NavigationBar(
+      height: 72,
+      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       selectedIndex: selectedIndex,
       onDestinationSelected: (index) {
         final destination = _screenForIndex(index);
