@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/widgets/app_settings_menu.dart';
+import '../../../l10n/app_localizations.dart';
 
 import '../models/admin_cause.dart';
 import '../providers/admin_causes_providers.dart';
@@ -14,7 +15,7 @@ class AdminCausesPage extends ConsumerWidget {
     final causes = ref.watch(adminCausesProvider);
 
     return AppPageScaffold(
-      title: const Text('Manage causes'),
+      title: Text(AppLocalizations.of(context)!.adminManageCauses),
       floatingActionButton: FloatingActionButton.extended(
         key: const ValueKey('admin_create_cause'),
         onPressed: () async {
@@ -24,7 +25,7 @@ class AdminCausesPage extends ConsumerWidget {
           ref.invalidate(adminCausesProvider);
         },
         icon: const Icon(Icons.add),
-        label: const Text('Create cause'),
+        label: Text(AppLocalizations.of(context)!.adminCreateCause),
       ),
       body: causes.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -34,7 +35,7 @@ class AdminCausesPage extends ConsumerWidget {
         ),
         data: (items) {
           if (items.isEmpty) {
-            return const Center(child: Text('No causes created yet.'));
+            return Center(child: Text(AppLocalizations.of(context)!.adminNoCauses));
           }
 
           final roots = items.where((item) => item.parentId == null).toList(growable: false);
@@ -106,7 +107,7 @@ class _CauseTile extends ConsumerWidget {
             } catch (_) {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Unable to update cause status.')),
+                  SnackBar(content: Text(AppLocalizations.of(context)!.adminCauseStatusUpdateFailed)),
                 );
               }
             }
@@ -141,11 +142,11 @@ class _ErrorState extends StatelessWidget {
           children: [
             const Icon(Icons.error_outline_rounded, size: 48),
             const SizedBox(height: 12),
-            const Text('Unable to load causes.'),
+            Text(AppLocalizations.of(context)!.adminCausesLoadFailed),
             const SizedBox(height: 8),
             Text(error.toString(), textAlign: TextAlign.center),
             const SizedBox(height: 16),
-            FilledButton(onPressed: onRetry, child: const Text('Retry')),
+            FilledButton(onPressed: onRetry, child: Text(AppLocalizations.of(context)!.retry)),
           ],
         ),
       ),
