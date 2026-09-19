@@ -62,7 +62,6 @@ class _OrganisationTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final languageCode = Localizations.localeOf(context).languageCode;
     final l10n = AppLocalizations.of(context)!;
     return Card(
       child: ListTile(
