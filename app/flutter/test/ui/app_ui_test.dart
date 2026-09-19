@@ -192,6 +192,22 @@ void main() {
     expect(find.byKey(const ValueKey('application_pratibha')), findsOneWidget);
   });
 
+  testWidgets('authenticated user sees an empty state when application history has no data', (tester) async {
+    await pumpApp(
+      tester,
+      home: const ApplicationsPage(),
+      overrides: [
+        authProvider.overrideWith((ref) => _AuthenticatedAdminController()),
+        myHelpApplicationsProvider.overrideWith((ref) async => const []),
+      ],
+    );
+
+    expect(find.byKey(const ValueKey('application_history_empty')), findsOneWidget);
+    expect(find.text('You have not submitted any applications yet.'), findsOneWidget);
+    expect(find.text('Unable to load applications.'), findsNothing);
+    expect(find.text('Retry'), findsNothing);
+  });
+
   testWidgets('home clearly exposes the help and recognition entry point', (tester) async {
     await pumpApp(tester);
 

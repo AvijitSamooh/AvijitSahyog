@@ -91,15 +91,41 @@ class ApplicationsPage extends ConsumerWidget {
             error: (_, _) => _ApplicationHistoryError(
               onRetry: () => ref.invalidate(myHelpApplicationsProvider),
             ),
-            data: (items) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (items.isEmpty) Text(l10n.noApplications),
-                ...items.map((item) => _ApplicationCard(application: item)),
-              ],
-            ),
+            data: (items) => items.isEmpty
+                ? const _ApplicationHistoryEmpty()
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: items
+                        .map((item) => _ApplicationCard(application: item))
+                        .toList(growable: false),
+                  ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ApplicationHistoryEmpty extends StatelessWidget {
+  const _ApplicationHistoryEmpty();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          key: const ValueKey('application_history_empty'),
+          children: [
+            const Icon(Icons.inbox_outlined, size: 36),
+            const SizedBox(height: 10),
+            Text(
+              l10n.noApplications,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
