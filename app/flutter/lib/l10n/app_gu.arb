@@ -261,5 +261,5 @@
   "adminBeneficiaryUnableLoadCauses": "કારણો લોડ થઈ શક્યા નથી.",
   "adminBeneficiaryUnableLoadOrganisations": "સંસ્થાઓ લોડ થઈ શકી નથી.",
   "adminBeneficiaryCreatedImageUploadFailed": "લાભાર્થી બનાવવામાં આવ્યો, પરંતુ ચિત્ર અપલોડ થઈ શક્યું નથી: {error}. તેને ફરી ખોલીને પ્રયાસ કરો.",
-  "adminBeneficiaryUnableSave": "લાભાર્થી સાચવી શકાયો નથી: {error}.",
+  "adminBeneficiaryUnableSave": "લાભાર્થી સાચવી શકાયો નથી: {error}."
 }
