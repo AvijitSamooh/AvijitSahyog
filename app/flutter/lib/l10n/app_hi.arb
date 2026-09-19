@@ -261,5 +261,5 @@
   "adminBeneficiaryUnableLoadCauses": "कारण लोड नहीं हो सके।",
   "adminBeneficiaryUnableLoadOrganisations": "संस्थाएं लोड नहीं हो सकीं।",
   "adminBeneficiaryCreatedImageUploadFailed": "लाभार्थी बनाया गया, लेकिन तस्वीर अपलोड नहीं हो सकी: {error}। इसे फिर से खोलकर प्रयास करें।",
-  "adminBeneficiaryUnableSave": "लाभार्थी सहेजा नहीं जा सका: {error}।",
+  "adminBeneficiaryUnableSave": "लाभार्थी सहेजा नहीं जा सका: {error}।"
 }
