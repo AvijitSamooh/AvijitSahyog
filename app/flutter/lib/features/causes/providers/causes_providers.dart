@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_client.dart';
@@ -5,7 +6,12 @@ import '../data/causes_repository.dart';
 import '../models/cause.dart';
 
 final apiClientProvider = Provider<ApiClient>((ref) {
-  final client = ApiClient();
+  final client = ApiClient(
+    authTokenProvider: () async {
+      final user = FirebaseAuth.instance.currentUser;
+      return user == null ? null : await user.getIdToken();
+    },
+  );
   ref.onDispose(client.dispose);
   return client;
 });

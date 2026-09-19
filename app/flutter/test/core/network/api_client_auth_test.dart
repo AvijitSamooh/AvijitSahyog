@@ -20,4 +20,21 @@ void main() {
     await api.getAdminCauses();
     api.dispose();
   });
+
+  test('protected application history requests include the Firebase bearer token', () async {
+    final client = MockClient((request) async {
+      expect(request.url.path, '/applications/mine');
+      expect(request.headers['authorization'], 'Bearer firebase-token');
+      return http.Response('[]', 200);
+    });
+
+    final api = ApiClient(
+      client: client,
+      baseUrl: 'https://api.example.com',
+      authTokenProvider: () async => 'firebase-token',
+    );
+
+    await api.getMyHelpApplications();
+    api.dispose();
+  });
 }
