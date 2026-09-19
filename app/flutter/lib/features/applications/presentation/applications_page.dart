@@ -104,6 +104,7 @@ class ApplicationsPage extends ConsumerWidget {
                   ),
           ),
         ],
+        ),
       ),
     );
   }
