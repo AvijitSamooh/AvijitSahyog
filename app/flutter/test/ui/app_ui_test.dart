@@ -203,9 +203,9 @@ void main() {
     );
 
     expect(find.byKey(const ValueKey('application_history_empty')), findsOneWidget);
-    expect(find.text(l10n(tester).noApplications), findsOneWidget);
-    expect(find.text(l10n(tester).applicationLoadError), findsNothing);
-    expect(find.text(l10n(tester).retry), findsNothing);
+    expect(find.text('You have not submitted any applications yet.'), findsOneWidget);
+    expect(find.text('Unable to load applications.'), findsNothing);
+    expect(find.text('Retry'), findsNothing);
   });
 
   testWidgets('home clearly exposes the help and recognition entry point', (tester) async {
