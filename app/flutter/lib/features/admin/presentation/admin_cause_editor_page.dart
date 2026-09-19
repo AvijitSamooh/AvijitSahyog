@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/widgets/app_settings_menu.dart';
+import '../../../l10n/app_localizations.dart';
 
 import '../models/admin_cause.dart';
 import '../providers/admin_causes_providers.dart';
@@ -162,12 +163,12 @@ class _AdminCauseEditorPageState extends ConsumerState<AdminCauseEditorPage> {
                 return DropdownButtonFormField<String?>(
                   key: const ValueKey('admin_cause_parent'),
                   initialValue: parents.any((item) => item.id == _parentId) ? _parentId : null,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Parent cause',
                     helperText: 'Leave empty for a top-level cause.',
                   ),
                   items: [
-                    const DropdownMenuItem<String?>(
+                    DropdownMenuItem<String?>(
                       value: null,
                       child: Text(AppLocalizations.of(context)!.adminTopLevelCause),
                     ),
