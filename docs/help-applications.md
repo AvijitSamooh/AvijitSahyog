@@ -31,6 +31,10 @@ Pratibha Samman is deliberately a separate workflow from need-based assistance.
       ↓
     Application history + current status
       ↓
+    Success confirmation after submit / localized error on failure
+      ↓
+    Applicant can delete their own non-final application
+      ↓
     If rejected or clarification requested
       ↓
     Resubmit with clarification and updated evidence
@@ -79,6 +83,7 @@ Authenticated user endpoints:
 - POST /applications
 - GET /applications/mine
 - GET /applications/mine/:id
+- DELETE /applications/mine/:id
 - PATCH /applications/mine/:id/resubmit
 
 Administrator endpoints:
@@ -120,3 +125,12 @@ Every new help or recognition application collects a contact snapshot from the a
 The applicant details are stored with the application so administrators can review the request even if the user's profile later changes.
 
 Supporting images are uploaded through the authenticated user media endpoint before the application is submitted. The UI supports gallery selection and camera capture, shows uploaded previews/count, limits an application to 10 images, and surfaces upload errors so the user can retry.
+
+
+## Submission and deletion behaviour
+
+The submit action disables itself while the backend call is in flight. On success, the applicant receives an explicit localized confirmation dialog before returning to application history; on failure, the form remains open and shows a localized error so the applicant can retry without unknowingly creating duplicate submissions.
+
+Applicants can delete their own applications while they are not in a final approval/recognition state. Finalised applications are retained for review and audit continuity.
+
+Administrator review actions surface localized success/failure feedback. Pratibha Samman decisions explicitly support both **Considered for Samman** and **Not Selected**.
