@@ -273,6 +273,11 @@ class ApiClient {
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
+  Future<void> deleteMyHelpApplication(String id) async {
+    final response = await _client.delete(Uri.parse('$baseUrl/applications/mine/$id'), headers: await _headers());
+    _ensureSuccess(response, 'Deleting application');
+  }
+
   Future<List<Map<String, dynamic>>> getAdminHelpApplications({String? type, String? status}) async {
     final uri = Uri.parse('$baseUrl/admin/applications').replace(queryParameters: {
       if (type != null && type.isNotEmpty) 'type': type,
@@ -284,7 +289,7 @@ class ApiClient {
   }
 
   Future<void> voteHelpApplication(String id, int score, {String? comment}) async {
-    final response = await _client.post(Uri.parse('$baseUrl/admin/applications/$id/vote'), headers: await _headers(json: true), body: jsonEncode({'score': score, 'comment': ?comment}));
+    final response = await _client.post(Uri.parse('$baseUrl/admin/applications/$id/vote'), headers: await _headers(json: true), body: jsonEncode({'score': score, if (comment != null && comment.trim().isNotEmpty) 'comment': comment.trim()}));
     _ensureSuccess(response, 'Saving application vote');
   }
 

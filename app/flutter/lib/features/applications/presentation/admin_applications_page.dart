@@ -47,8 +47,7 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
       ),
     );
     if (score == null || !mounted) return;
-    await ref.read(helpApplicationsRepositoryProvider).vote(item['id'] as String, score);
-    await _load();
+    try { await ref.read(helpApplicationsRepositoryProvider).vote(item['id'] as String, score); await _load(); } catch (_) { if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.applicationActionFailed))); }
   }
 
   Future<void> _review(Map<String, dynamic> item) async {
@@ -101,12 +100,8 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
 
     final trimmedReason = reason?.trim();
     final payloadReason = trimmedReason?.isNotEmpty == true ? trimmedReason : null;
-    final payload = <String, dynamic>{'decision': decision, 'approvedAmount': ?approvedAmount, 'reason': ?payloadReason};
-    await ref.read(helpApplicationsRepositoryProvider).review(item['id'] as String, payload);
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.reviewSaved)));
-      await _load();
-    }
+    final payload = <String, dynamic>{'decision': decision, if (approvedAmount != null) 'approvedAmount': approvedAmount, if (payloadReason != null) 'reason': payloadReason};
+    try { await ref.read(helpApplicationsRepositoryProvider).review(item['id'] as String, payload); if (mounted) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.reviewSaved))); await _load(); } } catch (_) { if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.applicationActionFailed))); }
   }
 
   @override

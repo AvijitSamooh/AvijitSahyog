@@ -24,14 +24,14 @@ class HelpApplicationsRepository {
       'type': type,
       'applicantName': applicantName.trim(),
       'mobileNumber': mobileNumber.trim(),
-      'email': ?(email?.trim().isNotEmpty == true ? email!.trim() : null),
+      if (email?.trim().isNotEmpty == true) 'email': email!.trim(),
       'address': address.trim(),
       'city': city.trim(),
       'state': state.trim(),
       'pincode': pincode.trim(),
-      'requestedAmount': ?requestedAmount,
+      if (requestedAmount != null) 'requestedAmount': requestedAmount,
       'mediaIds': mediaIds,
-      'clarification': ?(trimmedClarification?.isNotEmpty == true ? trimmedClarification : null),
+      if (trimmedClarification?.isNotEmpty == true) 'clarification': trimmedClarification,
     }));
   }
 
@@ -49,9 +49,11 @@ class HelpApplicationsRepository {
     return HelpApplication.fromJson(await client.resubmitHelpApplication(id, {
       'clarification': clarification,
       'mediaIds': mediaIds,
-      'requestedAmount': ?requestedAmount,
+      if (requestedAmount != null) 'requestedAmount': requestedAmount,
     }));
   }
+
+  Future<void> delete(String id) => client.deleteMyHelpApplication(id);
 
   Future<String> uploadImage(String path) async {
     final json = await client.uploadApplicationImage(path);
