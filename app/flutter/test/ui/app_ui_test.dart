@@ -465,6 +465,31 @@ void main() {
     );
   });
 
+  testWidgets('Impact sort options use the active locale instead of English-only labels', (tester) async {
+    await pumpApp(
+      tester,
+      home: const ImpactPage(),
+      overrides: [
+        beneficiariesProvider((search: '', sort: null))
+            .overrideWith((ref) async => const <Beneficiary>[]),
+      ],
+    );
+
+    final navigation = AppShellScope.of(
+      tester.element(find.byType(ImpactPage)),
+    ).navigation;
+    navigation.select(2);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const ValueKey('beneficiary_sort')));
+    await tester.pumpAndSettle();
+
+    expect(find.text(l10n(tester).impactSortNewest), findsOneWidget);
+    expect(find.text(l10n(tester).impactSortName), findsOneWidget);
+    expect(find.text(l10n(tester).impactSortHighest), findsOneWidget);
+    expect(find.text(l10n(tester).impactSortLowest), findsOneWidget);
+  });
+
   testWidgets('language selector opens and shows all supported languages', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
     await tester.pump();
