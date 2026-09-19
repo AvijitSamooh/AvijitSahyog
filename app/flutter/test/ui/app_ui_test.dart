@@ -241,6 +241,41 @@ void main() {
     );
   });
 
+  testWidgets('authenticated admin sees admin portal directly in the top settings menu', (tester) async {
+    await pumpApp(
+      tester,
+      home: const HomePage(),
+      overrides: [
+        authProvider.overrideWith((ref) => _AuthenticatedAdminController()),
+      ],
+    );
+
+    await tester.tap(find.byKey(const ValueKey('app_settings_menu')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const ValueKey('app_settings_admin_portal')), findsOneWidget);
+    expect(find.text(l10n(tester).adminPortal), findsOneWidget);
+    expect(find.text(l10n(tester).profile), findsOneWidget);
+  });
+
+  testWidgets('shared page scaffold keeps the three-tab navigation on detail pages', (tester) async {
+    await pumpApp(
+      tester,
+      home: const CauseDetailPage(slug: 'education'),
+      overrides: [
+        causeProvider((slug: 'education', languageCode: 'en')).overrideWith(
+          (ref) async => _cause,
+        ),
+      ],
+    );
+
+    expect(find.byType(AppNavigationBar), findsOneWidget);
+    expect(find.text('Home'), findsOneWidget);
+    expect(find.text('Causes'), findsOneWidget);
+    expect(find.text('Impact'), findsOneWidget);
+    expect(find.text('Settings'), findsNothing);
+  });
+
   testWidgets('authenticated admin can see the admin portal entry', (tester) async {
     await pumpApp(
       tester,
