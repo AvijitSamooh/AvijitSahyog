@@ -123,7 +123,7 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
       dropdownMenuTheme: DropdownMenuThemeData(
         textStyle: const TextStyle(fontSize: 15, height: 1.35, color: _text),
         menuStyle: MenuStyle(
-          shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14)))),
+          shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14)))),
         ),
       ),
       textTheme: const TextTheme(
