@@ -70,6 +70,7 @@ class _CauseTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final languageCode = Localizations.localeOf(context).languageCode;
     return Card(
       child: ListTile(
         key: ValueKey('admin_cause_${cause.id}'),
