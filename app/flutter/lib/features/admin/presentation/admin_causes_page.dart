@@ -86,7 +86,7 @@ class _CauseTile extends ConsumerWidget {
           ],
         ),
         subtitle: Text(
-          child ? cause.slug : '${cause.slug} • Order ${cause.displayOrder}',
+          child ? cause.slug : '${cause.slug} • ${AppLocalizations.of(context)!.adminOrganisationDisplayOrder} ${cause.displayOrder}',
         ),
         leading: Icon(
           child
