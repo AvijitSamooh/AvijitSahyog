@@ -7,6 +7,7 @@ import '../../features/admin/presentation/admin_portal_page.dart';
 import '../../features/auth/providers/auth_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../navigation/app_shell_scope.dart';
+import 'app_navigation_bar.dart';
 
 enum _SettingsAction { language, account, adminPortal, logout }
 
@@ -154,6 +155,6 @@ class AppPageScaffold extends Scaffold {
             elevation: appBarElevation,
             scrolledUnderElevation: appBarScrolledUnderElevation,
           ),
-
+          bottomNavigationBar: bottomNavigationBar ?? const _SharedBottomNavigationBar(),
         );
 }
