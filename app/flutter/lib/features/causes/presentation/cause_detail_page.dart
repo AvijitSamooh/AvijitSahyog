@@ -116,6 +116,7 @@ class _OrganisationInfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
+    final contactNumber = organisation.mobileNumber?.trim().isNotEmpty == true ? organisation.mobileNumber : organisation.phone;
     final location = [
       if (organisation.city?.isNotEmpty == true) organisation.city!,
       if (organisation.state?.isNotEmpty == true) organisation.state!,
@@ -175,7 +176,7 @@ class _OrganisationInfoCard extends StatelessWidget {
                         style: theme.textTheme.bodyMedium,
                       ),
                     ],
-                    if (_hasValidMobileNumber(organisation.mobileNumber)) ...[
+                    if (_hasValidMobileNumber(contactNumber)) ...[
                       const SizedBox(height: 10),
                       Row(
                         mainAxisSize: MainAxisSize.min,
@@ -185,14 +186,14 @@ class _OrganisationInfoCard extends StatelessWidget {
                             tooltip: l10n.affiliateCall,
                             visualDensity: VisualDensity.compact,
                             icon: const Icon(Icons.phone_rounded),
-                            onPressed: () => _callAffiliate(context, organisation.mobileNumber!),
+                            onPressed: () => _callAffiliate(context, contactNumber!),
                           ),
                           IconButton(
                             key: ValueKey('affiliate_whatsapp_${organisation.id}'),
                             tooltip: l10n.affiliateWhatsApp,
                             visualDensity: VisualDensity.compact,
                             icon: const Icon(Icons.chat_rounded),
-                            onPressed: () => _openWhatsApp(context, organisation.mobileNumber!),
+                            onPressed: () => _openWhatsApp(context, contactNumber!),
                           ),
                         ],
                       ),

@@ -53,6 +53,8 @@ class HelpApplicationsRepository {
     }));
   }
 
+  Future<void> delete(String id) => client.deleteMyHelpApplication(id);
+
   Future<String> uploadImage(String path) async {
     final json = await client.uploadApplicationImage(path);
     return json['id'] as String;

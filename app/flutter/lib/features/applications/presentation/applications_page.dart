@@ -99,7 +99,7 @@ class ApplicationsPage extends ConsumerWidget {
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: items
-                        .map((item) => _ApplicationCard(application: item))
+                        .map((item) => _ApplicationCard(application: item, onDelete: () => _deleteApplication(context, ref, item.id)))
                         .toList(growable: false),
                   ),
           ),
@@ -109,6 +109,19 @@ class ApplicationsPage extends ConsumerWidget {
     );
   }
 }
+
+  Future<void> _deleteApplication(BuildContext context, WidgetRef ref, String id) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(context: context, builder: (dialogContext) => AlertDialog(title: Text(l10n.deleteApplicationTitle), content: Text(l10n.deleteApplicationConfirmation), actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(l10n.cancel)), FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(l10n.deleteApplication))]));
+    if (confirmed != true || !context.mounted) return;
+    try {
+      await ref.read(helpApplicationsRepositoryProvider).delete(id);
+      ref.invalidate(myHelpApplicationsProvider);
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.applicationDeleted)));
+    } catch (_) {
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.deleteApplicationFailed)));
+    }
+  }
 
 class _ApplicationHistoryEmpty extends StatelessWidget {
   const _ApplicationHistoryEmpty();
@@ -311,9 +324,11 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
       }
       ref.invalidate(myHelpApplicationsProvider);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.applicationSubmitted)));
-        Navigator.of(context).pop();
+        await showDialog<void>(context: context, barrierDismissible: false, builder: (dialogContext) => AlertDialog(title: Text(l10n.applicationSubmissionSuccessTitle), content: Text(l10n.applicationSubmitted), actions: [FilledButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.close))]));
+        if (mounted) Navigator.of(context).pop();
       }
+    } catch (_) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.applicationSubmissionFailed)));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -522,13 +537,15 @@ class ApplicationUploadProgress extends StatelessWidget {
 }
 
 class _ApplicationCard extends StatelessWidget {
-  const _ApplicationCard({required this.application});
+  const _ApplicationCard({required this.application, required this.onDelete});
   final HelpApplication application;
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final canResubmit = application.status == 'REJECTED' || application.status == 'CLARIFICATION_REQUIRED';
+    final canDelete = application.status != 'APPROVED_FOR_DONATION' && application.status != 'CONSIDERED_FOR_SAMMAN';
     return Card(
       child: ListTile(
         title: Text(_typeLabel(l10n, application.type)),
@@ -540,12 +557,10 @@ class _ApplicationCard extends StatelessWidget {
           if (application.clarification != null) Text('${l10n.clarification}: ${application.clarification!}'),
         ]),
         isThreeLine: true,
-        trailing: canResubmit ? IconButton(
-          tooltip: l10n.resubmitApplication,
-          icon: const Icon(Icons.refresh_rounded),
-          onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => HelpApplicationFormPage(type: application.type, application: application))),
-        ) : null,
+        trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+          if (canResubmit) IconButton(tooltip: l10n.resubmitApplication, icon: const Icon(Icons.refresh_rounded), onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => HelpApplicationFormPage(type: application.type, application: application)))),
+          if (canDelete) IconButton(key: ValueKey('application_delete_${application.id}'), tooltip: l10n.deleteApplication, icon: const Icon(Icons.delete_outline_rounded), onPressed: onDelete),
+        ]),
       ),
     );
   }
