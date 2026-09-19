@@ -533,7 +533,7 @@ class _ApplicationCard extends StatelessWidget {
       child: ListTile(
         title: Text(_typeLabel(l10n, application.type)),
         subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('${l10n.applicationStatus}: ${_statusLabel(l10n, application.status)}'),
+          Text('${l10n.applicationStatus}: ${application.status}'),
           if (application.requestedAmount != null) Text('${l10n.requestedAmount}: ₹${application.requestedAmount}'),
           if (application.approvedAmount != null) Text('${l10n.approvedAmount}: ₹${application.approvedAmount}'),
           if (application.rejectionReason != null) Text('${l10n.rejectionReason}: ${application.rejectionReason!}'),
@@ -1433,17 +1433,5 @@ String _typeLabel(AppLocalizations l10n, String type) {
     case 'MEDICAL_HELP': return l10n.medicalHelp;
     case 'PRATIBHA_SAMMAN': return l10n.pratibhaSamman;
     default: return l10n.educationHelp;
-  }
-}
-
-String _statusLabel(AppLocalizations l10n, String status) {
-  switch (status) {
-    case 'SUBMITTED': return l10n.statusSubmitted;
-    case 'UNDER_REVIEW': return l10n.statusUnderReview;
-    case 'CLARIFICATION_REQUIRED': return l10n.statusClarification;
-    case 'APPROVED_FOR_DONATION': return l10n.statusApproved;
-    case 'REJECTED': return l10n.statusRejected;
-    case 'CONSIDERED_FOR_SAMMAN': return l10n.statusConsidered;
-    default: return l10n.statusNotSelected;
   }
 }
