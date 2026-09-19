@@ -43,6 +43,7 @@ class AdminOrganisationsPage extends ConsumerWidget {
                 onRefresh: () async =>
                     ref.refresh(adminOrganisationsProvider.future),
                 child: ListView.separated(
+              physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(16),
                   itemCount: items.length,
                   separatorBuilder: (context, index) =>
