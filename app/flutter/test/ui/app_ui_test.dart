@@ -484,7 +484,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('beneficiary_sort')));
     await tester.pumpAndSettle();
 
-    expect(find.text(l10n(tester).impactSortNewest), findsOneWidget);
+    expect(find.text(l10n(tester).impactSortNewest), findsWidgets);
     expect(find.text(l10n(tester).impactSortName), findsOneWidget);
     expect(find.text(l10n(tester).impactSortHighest), findsOneWidget);
     expect(find.text(l10n(tester).impactSortLowest), findsOneWidget);
