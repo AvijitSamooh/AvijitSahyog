@@ -178,6 +178,8 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
   final List<String> _mediaIds = [];
   final List<XFile> _selectedImages = [];
   bool _busy = false;
+  int _uploadTotal = 0;
+  int _uploadCompleted = 0;
 
   @override
   void initState() {
@@ -226,7 +228,12 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
   }
 
   Future<void> _uploadImages(List<XFile> images) async {
-    setState(() => _busy = true);
+    if (images.isEmpty || _busy) return;
+    setState(() {
+      _busy = true;
+      _uploadTotal = images.length;
+      _uploadCompleted = 0;
+    });
     try {
       final repo = ref.read(helpApplicationsRepositoryProvider);
       for (final image in images) {
@@ -234,14 +241,26 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
           final id = await repo.uploadImage(image.path);
           _mediaIds.add(id);
           _selectedImages.add(image);
+          if (mounted) {
+            setState(() => _uploadCompleted++);
+          }
         } catch (error) {
-          if (mounted) _showError('${AppLocalizations.of(context)!.imageUploadFailed} ${error.toString()}');
+          if (mounted) {
+            _showError(
+              '${AppLocalizations.of(context)!.imageUploadFailed} ${error.toString()}',
+            );
+          }
           break;
         }
       }
-      if (mounted) setState(() {});
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _uploadTotal = 0;
+          _uploadCompleted = 0;
+        });
+      }
     }
   }
 
@@ -429,17 +448,71 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(l10n.uploadedCount(_mediaIds.length)),
               ),
+            if (_busy && _uploadTotal > 0)
+              ApplicationUploadProgress(
+                label: l10n.uploadingImage,
+                completed: _uploadCompleted,
+                total: _uploadTotal,
+              ),
             const SizedBox(height: 24),
             FilledButton.icon(
               key: const ValueKey('application_submit'),
               onPressed: _busy ? null : _submit,
-              icon: const Icon(Icons.send_rounded),
-              label: Text(_busy ? l10n.uploadingImage : l10n.submitApplication),
+              icon: _busy
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.send_rounded),
+              label: Text(
+                _busy ? l10n.uploadingImage : l10n.submitApplication,
+              ),
             ),
           ],
         ),
       ),
 
+    );
+  }
+}
+
+class ApplicationUploadProgress extends StatelessWidget {
+  const ApplicationUploadProgress({
+    super.key,
+    required this.label,
+    required this.completed,
+    required this.total,
+  });
+
+  final String label;
+  final int completed;
+  final int total;
+
+  @override
+  Widget build(BuildContext context) {
+    final progress = total <= 0 ? 0.0 : completed / total;
+    return Padding(
+      key: const ValueKey('application_upload_progress'),
+      padding: const EdgeInsets.only(top: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+              const SizedBox(width: 10),
+              Expanded(child: Text('$label $completed/$total')),
+            ],
+          ),
+          const SizedBox(height: 8),
+          LinearProgressIndicator(value: progress, minHeight: 5),
+        ],
+      ),
     );
   }
 }
