@@ -4,7 +4,13 @@
   "checkingBackend": "Checking backend...",
   "backendUnavailable": "Backend unavailable",
   "backendStatus": "{status} — {service}",
-  "@backendStatus": {"description": "Verified backend health status shown in the development shell.", "placeholders": {"status": {}, "service": {}}},
+  "@backendStatus": {
+    "description": "Verified backend health status shown in the development shell.",
+    "placeholders": {
+      "status": {},
+      "service": {}
+    }
+  },
   "welcomeTitle": "Welcome to Avijit Sahyog",
   "welcomeSubtitle": "Simple, transparent and meaningful giving.",
   "language": "Language",
@@ -56,9 +62,17 @@
   "impactLoadError": "Unable to load impact stories right now.",
   "tryAgain": "Try again",
   "supportedIn": "Supported in {year}",
-  "@supportedIn": {"placeholders": {"year": {}}},
+  "@supportedIn": {
+    "placeholders": {
+      "year": {}
+    }
+  },
   "contributionAmount": "₹{amount} Contribution",
-  "@contributionAmount": {"placeholders": {"amount": {}}},
+  "@contributionAmount": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "viewStory": "View Story →",
   "impactStoryTitle": "Impact Story",
   "theirStory": "Their Story",
@@ -119,38 +133,74 @@
   "adminUsersSubtitle": "Only existing administrators can promote another user. Role changes are recorded in the audit history.",
   "adminMakeAdmin": "Make admin",
   "adminMakeAdminConfirmation": "Make {user} an administrator? This action will be recorded in audit history.",
-  "@adminMakeAdminConfirmation": {"placeholders": {"user": {}}},
+  "@adminMakeAdminConfirmation": {
+    "placeholders": {
+      "user": {}
+    }
+  },
   "adminPromotionSuccess": "User is now an administrator and the change was recorded.",
   "adminRemoveAdmin": "Remove admin",
   "adminRemoveAdminConfirmation": "Remove administrator access from {user}? This action will be recorded in audit history.",
-  "@adminRemoveAdminConfirmation": {"placeholders": {"user": {}}},
+  "@adminRemoveAdminConfirmation": {
+    "placeholders": {
+      "user": {}
+    }
+  },
   "adminDemotionSuccess": "Administrator access removed and the change was recorded.",
   "adminRole": "Admin",
   "adminUserRoleUser": "User",
   "adminSearchResults": "{count} matching users",
-  "@adminSearchResults": {"placeholders": {"count": {}}},
+  "@adminSearchResults": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "adminNoUsers": "No users found.",
   "adminNoEmail": "No email available",
   "adminAuditHistory": "Audit history",
   "adminNoAuditHistory": "No role changes have been recorded yet.",
   "adminAuditPromotion": "{user} was promoted to administrator",
-  "@adminAuditPromotion": {"placeholders": {"user": {}}},
+  "@adminAuditPromotion": {
+    "placeholders": {
+      "user": {}
+    }
+  },
   "adminAuditDemotion": "Administrator access removed from {user}",
-  "@adminAuditDemotion": {"placeholders": {"user": {}}},
+  "@adminAuditDemotion": {
+    "placeholders": {
+      "user": {}
+    }
+  },
   "adminAuditActor": "Changed by {admin}",
-  "@adminAuditActor": {"placeholders": {"admin": {}}},
+  "@adminAuditActor": {
+    "placeholders": {
+      "admin": {}
+    }
+  },
   "adminCreateOrganisation": "Create organisation",
   "adminRetryLoadingOrganisations": "Retry loading organisations",
   "adminNoOrganisations": "No organisations created yet.",
   "adminOrganisationCauseCount": "{count} causes",
-  "@adminOrganisationCauseCount": {"placeholders": {"count": {}}},
+  "@adminOrganisationCauseCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "adminOrganisationActions": "Organisation actions",
   "adminDeleteOrganisation": "Delete organisation",
   "adminDeleteOrganisationTitle": "Delete organisation?",
   "adminDeleteOrganisationConfirmation": "Delete “{organisation}” permanently? This cannot be undone. If it has donation allocations or beneficiary records, deletion will be blocked and the organisation must be deactivated instead.",
-  "@adminDeleteOrganisationConfirmation": {"placeholders": {"organisation": {}}},
+  "@adminDeleteOrganisationConfirmation": {
+    "placeholders": {
+      "organisation": {}
+    }
+  },
   "adminDeleteOrganisationSuccess": "“{organisation}” was deleted.",
-  "@adminDeleteOrganisationSuccess": {"placeholders": {"organisation": {}}},
+  "@adminDeleteOrganisationSuccess": {
+    "placeholders": {
+      "organisation": {}
+    }
+  },
   "cancel": "Cancel",
   "adminOrganisationPhone": "Phone",
   "adminOrganisationMobileNumber": "Mobile number",
@@ -176,19 +226,39 @@
   "adminSaveChanges": "Save changes",
   "adminAddAtLeastOneTranslation": "Add at least one translation.",
   "adminOrganisationCreatedPartialFailure": "Organisation was created, but some follow-up changes failed: {error}. Open it again to retry.",
-  "@adminOrganisationCreatedPartialFailure": {"placeholders":{"error":{}}},
+  "@adminOrganisationCreatedPartialFailure": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "adminOrganisationSaveFailed": "Unable to save organisation: {error}",
-  "@adminOrganisationSaveFailed": {"placeholders":{"error":{}}},
+  "@adminOrganisationSaveFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "adminOrganisationLoadCausesFailed": "Unable to load causes.",
   "adminEditBeneficiary": "Edit beneficiary",
   "adminDeleteBeneficiary": "Delete beneficiary",
   "adminDeleteBeneficiaryTitle": "Delete beneficiary?",
   "adminDeleteBeneficiaryConfirmation": "Delete “{beneficiary}” permanently? This cannot be undone.",
-  "@adminDeleteBeneficiaryConfirmation": {"placeholders":{"beneficiary":{}}},
+  "@adminDeleteBeneficiaryConfirmation": {
+    "placeholders": {
+      "beneficiary": {}
+    }
+  },
   "adminDeleteBeneficiarySuccess": "“{beneficiary}” was deleted.",
-  "@adminDeleteBeneficiarySuccess": {"placeholders":{"beneficiary":{}}},
+  "@adminDeleteBeneficiarySuccess": {
+    "placeholders": {
+      "beneficiary": {}
+    }
+  },
   "adminDeleteBeneficiaryFailed": "Unable to delete beneficiary: {error}",
-  "@adminDeleteBeneficiaryFailed": {"placeholders":{"error":{}}},
+  "@adminDeleteBeneficiaryFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "causeDetailsTitle": "Cause Details",
   "supportThisCause": "Support this Cause",
   "causeReachTitle": "How your contribution reaches people",
@@ -241,9 +311,30 @@
   "statusApproved": "Approved for donation",
   "statusRejected": "Rejected",
   "statusConsidered": "Considered for Samman",
-  "statusNotSelected": "Not selected"
-  ,"applicantDetails":"Applicant details","fullNameRequired":"Full name *","mobileNumberRequired":"Mobile number *","emailOptional":"Email (optional)","addressRequired":"Address *","cityRequired":"City *","stateRequired":"State *","pincodeRequired":"PIN code *","explainNeed":"Explain your need *","achievementDetails":"Achievement details *","supportingDocuments":"Supporting documents / images *","supportingDocumentsHint":"Upload relevant bills, prescriptions, fee receipts, certificates or other supporting documents. Up to 10 images.","gallery":"Gallery","camera":"Camera","uploadedCount":"{count}/10 uploaded","@uploadedCount":{"placeholders":{"count":{"type":"int"}}},"imageUploadFailed":"Image upload failed. Please retry with another image."
-,
+  "statusNotSelected": "Not selected",
+  "applicantDetails": "Applicant details",
+  "fullNameRequired": "Full name *",
+  "mobileNumberRequired": "Mobile number *",
+  "emailOptional": "Email (optional)",
+  "addressRequired": "Address *",
+  "cityRequired": "City *",
+  "stateRequired": "State *",
+  "pincodeRequired": "PIN code *",
+  "explainNeed": "Explain your need *",
+  "achievementDetails": "Achievement details *",
+  "supportingDocuments": "Supporting documents / images *",
+  "supportingDocumentsHint": "Upload relevant bills, prescriptions, fee receipts, certificates or other supporting documents. Up to 10 images.",
+  "gallery": "Gallery",
+  "camera": "Camera",
+  "uploadedCount": "{count}/10 uploaded",
+  "@uploadedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "imageUploadFailed": "Image upload failed. Please retry with another image.",
   "adminCreateBeneficiary": "Create beneficiary",
   "adminBeneficiaryName": "Name",
   "adminBeneficiaryImpactStory": "Impact story",
@@ -260,7 +351,80 @@
   "adminBeneficiaryUnableLoadCauses": "Unable to load causes.",
   "adminBeneficiaryUnableLoadOrganisations": "Unable to load organisations.",
   "adminBeneficiaryCreatedImageUploadFailed": "Beneficiary was created, but image upload failed: {error}. Open it again to retry.",
-  "@adminBeneficiaryCreatedImageUploadFailed": {"description": "Error detail returned by the save workflow.", "placeholders": {"error": {"type": "String"}}},
+  "@adminBeneficiaryCreatedImageUploadFailed": {
+    "description": "Error detail returned by the save workflow.",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "adminBeneficiaryUnableSave": "Unable to save beneficiary: {error}.",
-  "@adminBeneficiaryUnableSave": {"description": "Error detail returned by the save workflow.", "placeholders": {"error": {"type": "String"}}}
+  "@adminBeneficiaryUnableSave": {
+    "description": "Error detail returned by the save workflow.",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "adminCreateCause": "Create cause",
+  "adminNoCauses": "No causes created yet.",
+  "adminCauseStatusUpdateFailed": "Unable to update cause status.",
+  "adminCausesLoadFailed": "Unable to load causes.",
+  "adminNoBeneficiaries": "No beneficiaries created yet.",
+  "adminBeneficiaryStatusUpdateFailed": "Unable to update beneficiary status: {error}",
+  "adminBeneficiariesLoadFailed": "Unable to load beneficiaries.",
+  "adminImageUploadFailed": "Image upload failed: {error}",
+  "adminParentCausesLoadFailed": "Unable to load parent causes.",
+  "adminTopLevelCause": "Top-level cause",
+  "adminInteractionAnalyticsTitle": "Interaction analytics",
+  "adminUserEngagement": "User engagement",
+  "adminRollingMetrics": "Rolling 30-day metrics with a 14-day engagement trend.",
+  "adminNavigationEvents": "Navigation events",
+  "adminIncludedInteractionTotals": "Included in interaction totals.",
+  "adminAnalyticsPrivacy": "Analytics use opaque app-generated identifiers and do not display personal identifiers.",
+  "adminEngagementTrend": "Engagement trend",
+  "adminDailyActiveLast14": "Daily active users · last 14 days",
+  "adminNoAnalyticsData": "No analytics data yet.",
+  "adminAdvancedAnalyticsTitle": "Advanced analytics",
+  "adminRetention": "Retention",
+  "adminRetentionSubtitle": "Weekly cohorts with Day 1, Day 7 and Day 30 return rates.",
+  "adminEngagementCohorts": "Engagement cohorts",
+  "adminEngagementCohortsSubtitle": "Weekly active cohorts, sessions and interaction depth.",
+  "adminFeatureAdoption": "Feature adoption",
+  "adminFeatureAdoptionSubtitle": "Share of 30-day active users who viewed each tracked screen.",
+  "adminAudienceSegmentation": "Audience segmentation",
+  "adminAudienceSegmentationSubtitle": "Thirty-day active users by available city, language and device context.",
+  "adminCity": "City",
+  "adminLanguage": "Language",
+  "adminDevice": "Device",
+  "adminBigQueryFoundation": "BigQuery-ready foundation",
+  "adminBigQueryReady": "Event-level PostgreSQL data is shaped for a future BigQuery export.",
+  "adminWarehouseNotConfigured": "Warehouse export is not configured.",
+  "adminCityPrivacy": "City is shown when the client supplies an analytics city context; the app does not infer precise location.",
+  "adminCohort": "Cohort",
+  "adminUsers": "Users",
+  "adminDay1": "D1",
+  "adminDay7": "D7",
+  "adminDay30": "D30",
+  "adminSessions": "Sessions",
+  "adminInteractions": "Interactions",
+  "adminSessionsPerUser": "Sessions/user",
+  "adminUserViews": "{users} users · {events} views",
+  "adminUserEvents": "{users} users · {events} events",
+  "adminPlatformHealthTitle": "Platform health",
+  "adminLast24Hours": "Last 24 hours",
+  "adminRecentEvents": "Recent events",
+  "adminNoHealthEvents": "No health events recorded.",
+  "adminHealthTelemetryPrivacy": "Health telemetry stores route and error metadata only. Client crash reports use opaque app-generated identifiers and do not store Firebase UID, email, or name.",
+  "adminPlatformHealthy": "Platform healthy",
+  "adminPlatformDegraded": "Platform degraded",
+  "adminApiDatabaseUptime": "API: {api} · Database: {database} · Uptime: {uptime}",
+  "adminDeployment": "Deployment",
+  "adminEnvironment": "Environment",
+  "adminVersion": "Version",
+  "adminDeploymentId": "Deployment ID",
+  "adminGitSha": "Git SHA",
+  "adminDeployedAt": "Deployed at"
 }
