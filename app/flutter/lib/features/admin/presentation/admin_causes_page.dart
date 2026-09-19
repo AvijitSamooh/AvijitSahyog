@@ -42,7 +42,6 @@ class AdminCausesPage extends ConsumerWidget {
             onRefresh: () async => ref.refresh(adminCausesProvider.future),
             child: ListView(
               physics: const AlwaysScrollableScrollPhysics(),
-              physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.all(16),
               children: [
                 for (final cause in roots) ...[
