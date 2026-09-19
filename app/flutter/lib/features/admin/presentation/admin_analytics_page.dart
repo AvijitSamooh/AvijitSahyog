@@ -113,6 +113,7 @@ class _TrendCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final values = points.map((point) => point.activeUsers).toList();
     return Card(
       child: Padding(
