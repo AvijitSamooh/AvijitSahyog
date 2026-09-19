@@ -12,7 +12,6 @@ class AdminOrganisationsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final languageCode = Localizations.localeOf(context).languageCode;
     final l10n = AppLocalizations.of(context)!;
     final organisations = ref.watch(adminOrganisationsProvider);
     return AppPageScaffold(
