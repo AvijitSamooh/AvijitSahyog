@@ -80,7 +80,10 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
       useMaterial3: true,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: _cream,
-      fontFamily: 'Poppins',
+      // Use Flutter/platform typography so Devanagari, Gujarati and Marathi use their native fallback fonts.
+      // The previous Poppins declaration was not bundled and caused inconsistent fallback rendering.
+      fontFamilyFallback: const ['Noto Sans Devanagari', 'Noto Sans Gujarati', 'Noto Sans', 'Roboto'],
+
       appBarTheme: const AppBarTheme(
         backgroundColor: _cream,
         foregroundColor: _maroon,
@@ -117,6 +120,12 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
       ),
       dividerTheme: const DividerThemeData(color: _line, space: 1),
       progressIndicatorTheme: const ProgressIndicatorThemeData(color: _maroon),
+      dropdownMenuTheme: DropdownMenuThemeData(
+        textStyle: const TextStyle(fontSize: 15, height: 1.35, color: _text),
+        menuStyle: MenuStyle(
+          shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14)))),
+        ),
+      ),
       textTheme: const TextTheme(
         headlineSmall: TextStyle(
           color: _maroon,
