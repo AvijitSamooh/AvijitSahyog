@@ -164,27 +164,29 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
               builder: (context, active, _) {
                 final busy = active > 0;
                 return IgnorePointer(
-                  // The overlay is visual feedback; individual mutation controls own
-                  // their disabled state so existing UI flows remain interactive.
                   ignoring: true,
-                  child: AnimatedOpacity(
+                  child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 180),
-                    opacity: busy ? 1 : 0,
-                    child: ColoredBox(
-                      color: Colors.black12,
-                      child: Center(
-                        child: Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: const SizedBox(
-                              width: 28,
-                              height: 28,
-                              child: CircularProgressIndicator(strokeWidth: 3),
+                    child: busy
+                        ? ColoredBox(
+                            key: const ValueKey('backend_busy'),
+                            color: Colors.black12,
+                            child: Center(
+                              child: Card(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(20),
+                                  child: const SizedBox(
+                                    width: 28,
+                                    height: 28,
+                                    child: CircularProgressIndicator(strokeWidth: 3),
+                                  ),
+                                ),
+                              ),
                             ),
+                          )
+                        : const SizedBox.shrink(
+                            key: ValueKey('backend_idle'),
                           ),
-                        ),
-                      ),
-                    ),
                   ),
                 );
               },
