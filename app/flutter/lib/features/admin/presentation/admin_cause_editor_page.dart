@@ -154,7 +154,7 @@ class _AdminCauseEditorPageState extends ConsumerState<AdminCauseEditorPage> {
             const SizedBox(height: 20),
             ref.watch(adminCausesProvider).when(
               loading: () => const LinearProgressIndicator(),
-              error: (error, stackTrace) => const Text('Unable to load parent causes.'),
+              error: (error, stackTrace) => Text(AppLocalizations.of(context)!.adminParentCausesLoadFailed),
               data: (items) {
                 final parents = items
                     .where((item) => item.parentId == null && item.id != widget.cause?.id)
@@ -169,7 +169,7 @@ class _AdminCauseEditorPageState extends ConsumerState<AdminCauseEditorPage> {
                   items: [
                     const DropdownMenuItem<String?>(
                       value: null,
-                      child: Text('Top-level cause'),
+                      child: Text(AppLocalizations.of(context)!.adminTopLevelCause),
                     ),
                     ...parents.map(
                       (item) => DropdownMenuItem<String?>(
