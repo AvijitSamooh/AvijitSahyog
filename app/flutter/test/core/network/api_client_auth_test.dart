@@ -44,11 +44,11 @@ void main() {
     final client = MockClient((request) => completer.future);
     final api = ApiClient(client: client, baseUrl: 'https://api.example.com');
 
-    final future = api.getAdminCauses();
+    final future = api.createDonation({'amount': 100});
     await Future<void>.delayed(Duration.zero);
     expect(ApiClient.activeRequests.value, 1);
 
-    completer.complete(http.Response('[]', 200));
+    completer.complete(http.Response('{"id":"donation-1"}', 200));
     await future;
     expect(ApiClient.activeRequests.value, 0);
     api.dispose();
