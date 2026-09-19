@@ -90,9 +90,12 @@ class _ImpactPageState extends ConsumerState<ImpactPage> {
             fillColor: theme.colorScheme.surface,
             border: const OutlineInputBorder(),
           ),
-          items: const ['Newest', 'Name A–Z', 'Highest amount', 'Lowest amount']
-              .map((x) => DropdownMenuItem(value: x, child: Text(x)))
-              .toList(),
+          items: [
+            DropdownMenuItem(value: 'Newest', child: Text(l10n.impactSortNewest)),
+            DropdownMenuItem(value: 'Name A–Z', child: Text(l10n.impactSortName)),
+            DropdownMenuItem(value: 'Highest amount', child: Text(l10n.impactSortHighest)),
+            DropdownMenuItem(value: 'Lowest amount', child: Text(l10n.impactSortLowest)),
+          ],
           onChanged: (value) => setState(() => _sort = value ?? 'Newest'),
         ),
         const SizedBox(height: 24),
