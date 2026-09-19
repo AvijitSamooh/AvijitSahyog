@@ -417,5 +417,10 @@
   "selectImagesFailed": "ચિત્ર પસંદ થઈ શક્યું નથી: {error}",
   "captureImageFailed": "ચિત્ર લઈ શકાયું નથી: {error}",
   "adminSlugRequired": "સ્લગ જરૂરી છે.",
-  "adminCauseSaveFailed": "સેવા ક્ષેત્ર સાચવી શકાયું નથી. કૃપા કરીને માહિતી તપાસીને ફરી પ્રયાસ કરો."
+  "adminCauseSaveFailed": "સેવા ક્ષેત્ર સાચવી શકાયું નથી. કૃપા કરીને માહિતી તપાસીને ફરી પ્રયાસ કરો.",
+  "adminApiErrors": "API ભૂલો",
+  "adminAuthFailures": "પ્રમાણીકરણ નિષ્ફળતાઓ",
+  "adminUploadFailures": "અપલોડ નિષ્ફળતાઓ",
+  "adminAppErrors": "એપ ભૂલો",
+  "adminCrashes": "ક્રેશ"
 }
