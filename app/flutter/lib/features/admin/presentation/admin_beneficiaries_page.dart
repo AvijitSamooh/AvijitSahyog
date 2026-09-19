@@ -38,6 +38,7 @@ class AdminBeneficiariesPage extends ConsumerWidget {
                 onRefresh: () async =>
                     ref.refresh(adminBeneficiariesProvider.future),
                 child: ListView.separated(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(16),
                   itemCount: items.length,
                   separatorBuilder: (context, index) => const SizedBox(height: 8),
