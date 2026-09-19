@@ -130,6 +130,7 @@ class _AdminCauseEditorPageState extends ConsumerState<AdminCauseEditorPage> {
 
   @override
   Widget build(BuildContext context) {
+    final languageCode = Localizations.localeOf(context).languageCode;
     return AppPageScaffold(
       title: Text(_isEditing ? 'Edit cause' : 'Create cause'),
       body: SafeArea(
@@ -173,7 +174,7 @@ class _AdminCauseEditorPageState extends ConsumerState<AdminCauseEditorPage> {
                     ...parents.map(
                       (item) => DropdownMenuItem<String?>(
                         value: item.id,
-                        child: Text(item.displayName),
+                        child: Text(item.displayName(languageCode)),
                       ),
                     ),
                   ],
