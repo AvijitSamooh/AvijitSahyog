@@ -129,8 +129,8 @@ class _EngagementTable extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           child: DataTable(
             columns: const [
-              DataColumn(label: Text('Cohort')),
-              DataColumn(label: Text('Users')),
+              DataColumn(label: Text(AppLocalizations.of(context)!.adminCohort)),
+              DataColumn(label: Text(AppLocalizations.of(context)!.adminUsers)),
               DataColumn(label: Text(l10n.adminSessions)),
               DataColumn(label: Text(l10n.adminInteractions)),
               DataColumn(label: Text(l10n.adminSessionsPerUser)),
@@ -166,7 +166,7 @@ class _FeatureList extends StatelessWidget {
               .map(
                 (row) => ListTile(
                   title: Text(row.feature),
-                  subtitle: Text('${row.users} users · ${row.events} views'),
+                  subtitle: Text(AppLocalizations.of(context)!.adminUserViews(row.users, row.events)),
                   trailing: Text('${row.adoptionPercent}%'),
                 ),
               )
@@ -191,7 +191,7 @@ class _SegmentCard extends StatelessWidget {
               .map(
                 (row) => ListTile(
                   title: Text(row.segment),
-                  subtitle: Text('${row.users} users · ${row.events} events'),
+                  subtitle: Text(AppLocalizations.of(context)!.adminUserEvents(row.users, row.events)),
                   trailing: Text('${row.sharePercent}%'),
                 ),
               )
