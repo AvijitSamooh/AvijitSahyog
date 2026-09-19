@@ -89,11 +89,13 @@ class _RetentionTable extends StatelessWidget {
   final List<RetentionCohort> rows;
 
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Card(
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: DataTable(
-            columns: const [
+            columns: [
               DataColumn(label: Text(l10n.adminCohort)),
               DataColumn(label: Text(l10n.adminUsers)),
               DataColumn(label: Text(l10n.adminDay1)),
@@ -116,6 +118,7 @@ class _RetentionTable extends StatelessWidget {
           ),
         ),
       );
+  }
 }
 
 class _EngagementTable extends StatelessWidget {
@@ -124,13 +127,15 @@ class _EngagementTable extends StatelessWidget {
   final List<EngagementCohort> rows;
 
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Card(
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: DataTable(
-            columns: const [
-              DataColumn(label: Text(AppLocalizations.of(context)!.adminCohort)),
-              DataColumn(label: Text(AppLocalizations.of(context)!.adminUsers)),
+            columns: [
+              DataColumn(label: Text(l10n.adminCohort)),
+              DataColumn(label: Text(l10n.adminUsers)),
               DataColumn(label: Text(l10n.adminSessions)),
               DataColumn(label: Text(l10n.adminInteractions)),
               DataColumn(label: Text(l10n.adminSessionsPerUser)),
