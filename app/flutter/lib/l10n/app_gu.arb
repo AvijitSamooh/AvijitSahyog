@@ -4,7 +4,13 @@
   "checkingBackend": "બેકએન્ડ તપાસી રહ્યા છીએ...",
   "backendUnavailable": "બેકએન્ડ ઉપલબ્ધ નથી",
   "backendStatus": "{status} — {service}",
-  "@backendStatus": {"description": "વિકાસ સ્થિતિમાં દર્શાવાતી ચકાસાયેલ બેકએન્ડ આરોગ્ય સ્થિતિ.", "placeholders": {"status": {}, "service": {}}},
+  "@backendStatus": {
+    "description": "વિકાસ સ્થિતિમાં દર્શાવાતી ચકાસાયેલ બેકએન્ડ આરોગ્ય સ્થિતિ.",
+    "placeholders": {
+      "status": {},
+      "service": {}
+    }
+  },
   "welcomeTitle": "અવિજિત સહયોગમાં આપનું સ્વાગત છે",
   "welcomeSubtitle": "સરળ, પારદર્શક અને અર્થપૂર્ણ સહયોગ.",
   "language": "ભાષા",
@@ -56,9 +62,17 @@
   "impactLoadError": "હાલમાં અસરની વાર્તાઓ લોડ કરી શકાઈ નથી.",
   "tryAgain": "ફરી પ્રયાસ કરો",
   "supportedIn": "{year} માં સહાય",
-  "@supportedIn": {"placeholders": {"year": {}}},
+  "@supportedIn": {
+    "placeholders": {
+      "year": {}
+    }
+  },
   "contributionAmount": "₹{amount} યોગદાન",
-  "@contributionAmount": {"placeholders": {"amount": {}}},
+  "@contributionAmount": {
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "viewStory": "વાર્તા જુઓ →",
   "impactStoryTitle": "અસરની વાર્તા",
   "theirStory": "તેમની વાર્તા",
@@ -119,38 +133,74 @@
   "adminUsersSubtitle": "માત્ર હાલના એડમિન જ બીજા વપરાશકર્તાને એડમિન બનાવી શકે છે. ભૂમિકા ફેરફારો ઓડિટ ઇતિહાસમાં નોંધાય છે.",
   "adminMakeAdmin": "એડમિન બનાવો",
   "adminMakeAdminConfirmation": "{user} ને એડમિન બનાવવા છે? આ કાર્યવાહી ઓડિટ ઇતિહાસમાં નોંધાશે.",
-  "@adminMakeAdminConfirmation": {"placeholders": {"user": {}}},
+  "@adminMakeAdminConfirmation": {
+    "placeholders": {
+      "user": {}
+    }
+  },
   "adminPromotionSuccess": "વપરાશકર્તા હવે એડમિન છે અને ફેરફાર નોંધાઈ ગયો છે.",
   "adminRemoveAdmin": "એડમિન દૂર કરો",
   "adminRemoveAdminConfirmation": "શું તમે {user}નો એડમિન પ્રવેશ દૂર કરવા માંગો છો? આ કાર્યવાહી ઓડિટ ઇતિહાસમાં નોંધાશે.",
-  "@adminRemoveAdminConfirmation": {"placeholders": {"user": {}}},
+  "@adminRemoveAdminConfirmation": {
+    "placeholders": {
+      "user": {}
+    }
+  },
   "adminDemotionSuccess": "એડમિન પ્રવેશ દૂર કરવામાં આવ્યો છે અને ફેરફાર નોંધાઈ ગયો છે.",
   "adminRole": "એડમિન",
   "adminUserRoleUser": "વપરાશકર્તા",
   "adminSearchResults": "{count} મેળ ખાતા વપરાશકર્તાઓ",
-  "@adminSearchResults": {"placeholders": {"count": {}}},
+  "@adminSearchResults": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "adminNoUsers": "કોઈ વપરાશકર્તા મળ્યો નથી.",
   "adminNoEmail": "કોઈ ઈમેલ ઉપલબ્ધ નથી",
   "adminAuditHistory": "ઓડિટ ઇતિહાસ",
   "adminNoAuditHistory": "હજુ સુધી કોઈ ભૂમિકા ફેરફાર નોંધાયો નથી.",
   "adminAuditPromotion": "{user} ને એડમિન બનાવવામાં આવ્યા",
-  "@adminAuditPromotion": {"placeholders": {"user": {}}},
+  "@adminAuditPromotion": {
+    "placeholders": {
+      "user": {}
+    }
+  },
   "adminAuditDemotion": "{user}નો એડમિન પ્રવેશ દૂર કરવામાં આવ્યો",
-  "@adminAuditDemotion": {"placeholders": {"user": {}}},
+  "@adminAuditDemotion": {
+    "placeholders": {
+      "user": {}
+    }
+  },
   "adminAuditActor": "ફેરફાર કરનાર: {admin}",
-  "@adminAuditActor": {"placeholders": {"admin": {}}},
+  "@adminAuditActor": {
+    "placeholders": {
+      "admin": {}
+    }
+  },
   "adminCreateOrganisation": "સંસ્થા બનાવો",
   "adminRetryLoadingOrganisations": "સંસ્થાઓ લોડ કરવા માટે ફરી પ્રયાસ કરો",
   "adminNoOrganisations": "હજુ સુધી કોઈ સંસ્થા બનાવવામાં આવી નથી.",
   "adminOrganisationCauseCount": "{count} સેવા ક્ષેત્રો",
-  "@adminOrganisationCauseCount": {"placeholders": {"count": {}}},
+  "@adminOrganisationCauseCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "adminOrganisationActions": "સંસ્થાની ક્રિયાઓ",
   "adminDeleteOrganisation": "સંસ્થા કાઢી નાખો",
   "adminDeleteOrganisationTitle": "સંસ્થા કાઢી નાખવી છે?",
   "adminDeleteOrganisationConfirmation": "શું તમે “{organisation}”ને કાયમ માટે કાઢી નાખવા માંગો છો? આ પાછું કરી શકાશે નહીં. જો તેમાં દાન ફાળવણી અથવા લાભાર્થી રેકોર્ડ હોય, તો કાઢી નાખવાનું અટકાવવામાં આવશે અને સંસ્થાને નિષ્ક્રિય કરવી પડશે.",
-  "@adminDeleteOrganisationConfirmation": {"placeholders": {"organisation": {}}},
+  "@adminDeleteOrganisationConfirmation": {
+    "placeholders": {
+      "organisation": {}
+    }
+  },
   "adminDeleteOrganisationSuccess": "“{organisation}” કાઢી નાખવામાં આવી.",
-  "@adminDeleteOrganisationSuccess": {"placeholders": {"organisation": {}}},
+  "@adminDeleteOrganisationSuccess": {
+    "placeholders": {
+      "organisation": {}
+    }
+  },
   "cancel": "રદ કરો",
   "adminOrganisationPhone": "ફોન",
   "adminOrganisationMobileNumber": "મોબાઇલ નંબર",
@@ -159,7 +209,6 @@
   "affiliateWhatsApp": "સંલગ્ન સંસ્થાને WhatsApp કરો",
   "affiliateCallFailed": "ફોન ડાયલર ખોલી શકાયું નથી.",
   "affiliateWhatsAppFailed": "WhatsApp ખોલી શકાયું નથી.",
-
   "adminEditOrganisation": "સંસ્થા સંપાદિત કરો",
   "adminOrganisationWebsite": "વેબસાઇટ",
   "adminOrganisationEmail": "ઈમેલ",
@@ -177,19 +226,39 @@
   "adminSaveChanges": "ફેરફારો સાચવો",
   "adminAddAtLeastOneTranslation": "ઓછામાં ઓછો એક અનુવાદ ઉમેરો.",
   "adminOrganisationCreatedPartialFailure": "સંસ્થા બનાવવામાં આવી, પરંતુ કેટલાક અનુગામી ફેરફારો નિષ્ફળ રહ્યા: {error}. ફરી પ્રયાસ કરવા માટે તેને ફરીથી ખોલો.",
-  "@adminOrganisationCreatedPartialFailure": {"placeholders":{"error":{}}},
+  "@adminOrganisationCreatedPartialFailure": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "adminOrganisationSaveFailed": "સંસ્થા સાચવી શકાઈ નથી: {error}",
-  "@adminOrganisationSaveFailed": {"placeholders":{"error":{}}},
+  "@adminOrganisationSaveFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "adminOrganisationLoadCausesFailed": "સેવા ક્ષેત્રો લોડ કરી શકાયા નથી.",
   "adminEditBeneficiary": "લાભાર્થી સંપાદિત કરો",
   "adminDeleteBeneficiary": "લાભાર્થી કાઢી નાખો",
   "adminDeleteBeneficiaryTitle": "લાભાર્થી કાઢી નાખવો છે?",
   "adminDeleteBeneficiaryConfirmation": "શું તમે “{beneficiary}”ને કાયમ માટે કાઢી નાખવા માંગો છો? આ પાછું કરી શકાશે નહીં.",
-  "@adminDeleteBeneficiaryConfirmation": {"placeholders":{"beneficiary":{}}},
+  "@adminDeleteBeneficiaryConfirmation": {
+    "placeholders": {
+      "beneficiary": {}
+    }
+  },
   "adminDeleteBeneficiarySuccess": "“{beneficiary}” કાઢી નાખવામાં આવ્યો.",
-  "@adminDeleteBeneficiarySuccess": {"placeholders":{"beneficiary":{}}},
+  "@adminDeleteBeneficiarySuccess": {
+    "placeholders": {
+      "beneficiary": {}
+    }
+  },
   "adminDeleteBeneficiaryFailed": "લાભાર્થી કાઢી શકાયો નથી: {error}",
-  "@adminDeleteBeneficiaryFailed": {"placeholders":{"error":{}}},
+  "@adminDeleteBeneficiaryFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  },
   "causeDetailsTitle": "સેવા ક્ષેત્રની વિગતો",
   "supportThisCause": "આ સેવા ક્ષેત્રને ટેકો આપો",
   "causeReachTitle": "તમારું યોગદાન લોકો સુધી કેવી રીતે પહોંચે છે",
@@ -242,9 +311,30 @@
   "statusApproved": "સહાય માટે મંજૂર",
   "statusRejected": "નકારેલ",
   "statusConsidered": "સન્માન માટે વિચારાધીન",
-  "statusNotSelected": "પસંદ થયેલ નથી"
-  ,"applicantDetails":"અરજદારની વિગતો","fullNameRequired":"પૂરું નામ *","mobileNumberRequired":"મોબાઇલ નંબર *","emailOptional":"ઇમેઇલ (વૈકલ્પિક)","addressRequired":"સરનામું *","cityRequired":"શહેર *","stateRequired":"રાજ્ય *","pincodeRequired":"પિન કોડ *","explainNeed":"તમારી જરૂરિયાત જણાવો *","achievementDetails":"સિદ્ધિની વિગતો *","supportingDocuments":"આધાર દસ્તાવેજો / ચિત્રો *","supportingDocumentsHint":"સંબંધિત બિલ, પ્રિસ્ક્રિપ્શન, ફી રસીદ, પ્રમાણપત્ર અથવા અન્ય દસ્તાવેજો અપલોડ કરો. મહત્તમ 10 ચિત્રો.","gallery":"ગેલેરી","camera":"કેમેરા","uploadedCount":"{count}/10 અપલોડ થયા","@uploadedCount":{"placeholders":{"count":{"type":"int"}}},"imageUploadFailed":"ચિત્ર અપલોડ થયું નથી. કૃપા કરીને બીજું ચિત્ર પસંદ કરીને ફરી પ્રયાસ કરો."
-,
+  "statusNotSelected": "પસંદ થયેલ નથી",
+  "applicantDetails": "અરજદારની વિગતો",
+  "fullNameRequired": "પૂરું નામ *",
+  "mobileNumberRequired": "મોબાઇલ નંબર *",
+  "emailOptional": "ઇમેઇલ (વૈકલ્પિક)",
+  "addressRequired": "સરનામું *",
+  "cityRequired": "શહેર *",
+  "stateRequired": "રાજ્ય *",
+  "pincodeRequired": "પિન કોડ *",
+  "explainNeed": "તમારી જરૂરિયાત જણાવો *",
+  "achievementDetails": "સિદ્ધિની વિગતો *",
+  "supportingDocuments": "આધાર દસ્તાવેજો / ચિત્રો *",
+  "supportingDocumentsHint": "સંબંધિત બિલ, પ્રિસ્ક્રિપ્શન, ફી રસીદ, પ્રમાણપત્ર અથવા અન્ય દસ્તાવેજો અપલોડ કરો. મહત્તમ 10 ચિત્રો.",
+  "gallery": "ગેલેરી",
+  "camera": "કેમેરા",
+  "uploadedCount": "{count}/10 અપલોડ થયા",
+  "@uploadedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "imageUploadFailed": "ચિત્ર અપલોડ થયું નથી. કૃપા કરીને બીજું ચિત્ર પસંદ કરીને ફરી પ્રયાસ કરો.",
   "adminCreateBeneficiary": "લાભાર્થી બનાવો",
   "adminBeneficiaryName": "નામ",
   "adminBeneficiaryImpactStory": "અસરની વાર્તા",
@@ -261,5 +351,64 @@
   "adminBeneficiaryUnableLoadCauses": "કારણો લોડ થઈ શક્યા નથી.",
   "adminBeneficiaryUnableLoadOrganisations": "સંસ્થાઓ લોડ થઈ શકી નથી.",
   "adminBeneficiaryCreatedImageUploadFailed": "લાભાર્થી બનાવવામાં આવ્યો, પરંતુ ચિત્ર અપલોડ થઈ શક્યું નથી: {error}. તેને ફરી ખોલીને પ્રયાસ કરો.",
-  "adminBeneficiaryUnableSave": "લાભાર્થી સાચવી શકાયો નથી: {error}."
+  "adminBeneficiaryUnableSave": "લાભાર્થી સાચવી શકાયો નથી: {error}.",
+  "adminCreateCause": "સેવા ક્ષેત્ર બનાવો",
+  "adminNoCauses": "હજુ સુધી કોઈ સેવા ક્ષેત્ર બનાવવામાં આવ્યું નથી.",
+  "adminCauseStatusUpdateFailed": "સેવા ક્ષેત્રની સ્થિતિ અપડેટ થઈ શકી નથી.",
+  "adminCausesLoadFailed": "સેવા ક્ષેત્રો લોડ થઈ શક્યા નથી.",
+  "adminNoBeneficiaries": "હજુ સુધી કોઈ લાભાર્થી બનાવવામાં આવ્યો નથી.",
+  "adminBeneficiaryStatusUpdateFailed": "લાભાર્થીની સ્થિતિ અપડેટ થઈ શકી નથી: {error}",
+  "adminBeneficiariesLoadFailed": "લાભાર્થીઓ લોડ થઈ શક્યા નથી.",
+  "adminImageUploadFailed": "ચિત્ર અપલોડ થઈ શક્યું નથી: {error}",
+  "adminParentCausesLoadFailed": "મુખ્ય સેવા ક્ષેત્રો લોડ થઈ શક્યા નથી.",
+  "adminTopLevelCause": "મુખ્ય સેવા ક્ષેત્ર",
+  "adminInteractionAnalyticsTitle": "ઇન્ટરૅક્શન એનાલિટિક્સ",
+  "adminUserEngagement": "વપરાશકર્તા જોડાણ",
+  "adminRollingMetrics": "છેલ્લા 30 દિવસના મેટ્રિક્સ અને 14 દિવસનો જોડાણ ટ્રેન્ડ.",
+  "adminNavigationEvents": "નેવિગેશન ઇવેન્ટ્સ",
+  "adminIncludedInteractionTotals": "ઇન્ટરૅક્શનના કુલમાં સામેલ.",
+  "adminAnalyticsPrivacy": "એનાલિટિક્સમાં એપ દ્વારા બનાવેલા અસ્પષ્ટ ઓળખકર્તાઓનો ઉપયોગ થાય છે અને વ્યક્તિગત ઓળખ માહિતી બતાવવામાં આવતી નથી.",
+  "adminEngagementTrend": "જોડાણ ટ્રેન્ડ",
+  "adminDailyActiveLast14": "છેલ્લા 14 દિવસના દૈનિક સક્રિય વપરાશકર્તાઓ",
+  "adminNoAnalyticsData": "હજુ સુધી કોઈ એનાલિટિક્સ ડેટા નથી.",
+  "adminAdvancedAnalyticsTitle": "અદ્યતન એનાલિટિક્સ",
+  "adminRetention": "રિટેન્શન",
+  "adminRetentionSubtitle": "સાપ્તાહિક જૂથોમાં Day 1, Day 7 અને Day 30 પરત ફરવાના દર.",
+  "adminEngagementCohorts": "જોડાણ જૂથો",
+  "adminEngagementCohortsSubtitle": "સાપ્તાહિક સક્રિય જૂથો, સેશન અને ઇન્ટરૅક્શનની ઊંડાઈ.",
+  "adminFeatureAdoption": "ફીચર અપનાવવું",
+  "adminFeatureAdoptionSubtitle": "30 દિવસના સક્રિય વપરાશકર્તાઓમાં દરેક ટ્રૅક કરેલી સ્ક્રીન જોનારાઓનો હિસ્સો.",
+  "adminAudienceSegmentation": "ઓડિયન્સ સેગમેન્ટેશન",
+  "adminAudienceSegmentationSubtitle": "શહેર, ભાષા અને ડિવાઇસ સંદર્ભ મુજબ 30 દિવસના સક્રિય વપરાશકર્તાઓ.",
+  "adminCity": "શહેર",
+  "adminLanguage": "ભાષા",
+  "adminDevice": "ડિવાઇસ",
+  "adminBigQueryFoundation": "BigQuery માટે તૈયાર આધાર",
+  "adminBigQueryReady": "ઇવેન્ટ-સ્તરનું PostgreSQL ડેટા ભવિષ્યના BigQuery નિકાસ માટે તૈયાર છે.",
+  "adminWarehouseNotConfigured": "ડેટા વેરહાઉસ નિકાસ ગોઠવાયેલ નથી.",
+  "adminCityPrivacy": "શહેર ત્યારે જ બતાવવામાં આવે છે જ્યારે એપ એનાલિટિક્સ સંદર્ભ આપે; એપ ચોક્કસ સ્થાનનો અંદાજ લગાવતી નથી.",
+  "adminCohort": "જૂથ",
+  "adminUsers": "વપરાશકર્તાઓ",
+  "adminDay1": "D1",
+  "adminDay7": "D7",
+  "adminDay30": "D30",
+  "adminSessions": "સેશન",
+  "adminInteractions": "ઇન્ટરૅક્શન",
+  "adminSessionsPerUser": "સેશન/વપરાશકર્તા",
+  "adminUserViews": "{users} વપરાશકર્તાઓ · {events} વ્યૂ",
+  "adminUserEvents": "{users} વપરાશકર્તાઓ · {events} ઇવેન્ટ્સ",
+  "adminPlatformHealthTitle": "પ્લેટફોર્મ હેલ્થ",
+  "adminLast24Hours": "છેલ્લા 24 કલાક",
+  "adminRecentEvents": "તાજેતરની ઘટનાઓ",
+  "adminNoHealthEvents": "હેલ્થની કોઈ ઘટના નોંધાઈ નથી.",
+  "adminHealthTelemetryPrivacy": "હેલ્થ ટેલિમેટ્રીમાં માત્ર રૂટ અને ભૂલ મેટાડેટા રાખવામાં આવે છે. ક્રેશ રિપોર્ટમાં એપ દ્વારા બનાવેલા અસ્પષ્ટ ઓળખકર્તાઓ હોય છે અને Firebase UID, ઈમેલ અથવા નામ રાખવામાં આવતું નથી.",
+  "adminPlatformHealthy": "પ્લેટફોર્મ સ્વસ્થ",
+  "adminPlatformDegraded": "પ્લેટફોર્મમાં સમસ્યા",
+  "adminApiDatabaseUptime": "API: {api} · ડેટાબેસ: {database} · અપટાઇમ: {uptime}",
+  "adminDeployment": "ડિપ્લોયમેન્ટ",
+  "adminEnvironment": "પર્યાવરણ",
+  "adminVersion": "વર્ઝન",
+  "adminDeploymentId": "ડિપ્લોયમેન્ટ ID",
+  "adminGitSha": "Git SHA",
+  "adminDeployedAt": "ડિપ્લોય થયેલ"
 }
