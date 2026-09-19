@@ -106,7 +106,7 @@ class _BeneficiaryTile extends ConsumerWidget {
         ),
         title: Text(beneficiary.name),
         subtitle: Text(
-          '${beneficiary.supportedYear} • ₹${beneficiary.contributionAmount} • ${beneficiary.isActive ? 'Active' : 'Inactive'}',
+          '${beneficiary.supportedYear} • ₹${beneficiary.contributionAmount} • ${beneficiary.isActive ? AppLocalizations.of(context)!.adminActive : AppLocalizations.of(context)!.adminInactive}',
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
