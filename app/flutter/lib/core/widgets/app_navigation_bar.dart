@@ -4,6 +4,7 @@ import '../analytics/analytics_events.dart';
 import '../analytics/analytics_service.dart';
 
 class AppNavigationBar extends StatelessWidget {
+  static const int destinationCount = 3;
   const AppNavigationBar({super.key, required this.selectedIndex, required this.onDestinationSelected});
   final int selectedIndex;
   final ValueChanged<int> onDestinationSelected;
