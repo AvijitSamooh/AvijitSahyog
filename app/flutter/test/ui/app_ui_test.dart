@@ -192,6 +192,22 @@ void main() {
     expect(find.byKey(const ValueKey('application_pratibha')), findsOneWidget);
   });
 
+  testWidgets('authenticated user sees an empty state when application history has no data', (tester) async {
+    await pumpApp(
+      tester,
+      home: const ApplicationsPage(),
+      overrides: [
+        authProvider.overrideWith((ref) => _AuthenticatedAdminController()),
+        myHelpApplicationsProvider.overrideWith((ref) async => const []),
+      ],
+    );
+
+    expect(find.byKey(const ValueKey('application_history_empty')), findsOneWidget);
+    expect(find.text(l10n(tester).noApplications), findsOneWidget);
+    expect(find.text(l10n(tester).applicationLoadError), findsNothing);
+    expect(find.text(l10n(tester).retry), findsNothing);
+  });
+
   testWidgets('home clearly exposes the help and recognition entry point', (tester) async {
     await pumpApp(tester);
 
