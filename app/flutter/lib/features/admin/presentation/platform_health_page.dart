@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../core/widgets/app_settings_menu.dart';
 import '../data/platform_health_repository.dart';
 import '../providers/platform_health_providers.dart';
@@ -10,15 +11,16 @@ class PlatformHealthPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final health = ref.watch(platformHealthProvider);
+    final l10n = AppLocalizations.of(context)!;
     return AppPageScaffold(
-      title: const Text('Platform health'),
+      title: Text(l10n.adminPlatformHealthTitle),
       body: health.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, _) => Center(
           child: FilledButton.icon(
             onPressed: () => ref.invalidate(platformHealthProvider),
             icon: const Icon(Icons.refresh_rounded),
-            label: const Text('Retry'),
+            label: Text(l10n.retry),
           ),
         ),
         data: (data) => RefreshIndicator(
@@ -28,7 +30,7 @@ class PlatformHealthPage extends ConsumerWidget {
             children: [
               _StatusCard(summary: data),
               const SizedBox(height: 16),
-              Text('Last 24 hours', style: Theme.of(context).textTheme.titleLarge),
+              Text(l10n.adminLast24Hours, style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 10),
               _MetricGrid(metrics: [
                 _Metric('API errors', data.errors24h, Icons.error_outline_rounded),
@@ -40,10 +42,10 @@ class PlatformHealthPage extends ConsumerWidget {
               const SizedBox(height: 20),
               _DeploymentCard(info: data.deployment),
               const SizedBox(height: 20),
-              Text('Recent events', style: Theme.of(context).textTheme.titleLarge),
+              Text(l10n.adminRecentEvents, style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 8),
               if (data.recentEvents.isEmpty)
-                const Card(child: ListTile(title: Text('No health events recorded.')))
+                Card(child: ListTile(title: Text(l10n.adminNoHealthEvents)))
               else
                 ...data.recentEvents.map((event) => Card(
                   child: ListTile(
@@ -54,7 +56,7 @@ class PlatformHealthPage extends ConsumerWidget {
                   ),
                 )),
               const SizedBox(height: 12),
-              const Text('Health telemetry stores route and error metadata only. Client crash reports use opaque app-generated identifiers and do not store Firebase UID, email, or name.', style: TextStyle(fontSize: 12)),
+              Text(l10n.adminHealthTelemetryPrivacy, style: TextStyle(fontSize: 12)),
             ],
           ),
         ),
@@ -77,7 +79,7 @@ class _StatusCard extends StatelessWidget {
   const _StatusCard({required this.summary});
   final PlatformHealthSummary summary;
   @override
-  Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(18), child: Row(children: [Icon(summary.status == 'healthy' ? Icons.check_circle_outline_rounded : Icons.warning_amber_rounded, size: 34), const SizedBox(width: 14), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(summary.status == 'healthy' ? 'Platform healthy' : 'Platform degraded', style: Theme.of(context).textTheme.titleLarge), const SizedBox(height: 4), Text('API: ${summary.api.status} · Database: ${summary.database} · Uptime: ${_formatUptime(summary.api.uptimeSeconds)}')]))])));
+  Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(18), child: Row(children: [Icon(summary.status == 'healthy' ? Icons.check_circle_outline_rounded : Icons.warning_amber_rounded, size: 34), const SizedBox(width: 14), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(summary.status == 'healthy' ? l10n.adminPlatformHealthy : l10n.adminPlatformDegraded, style: Theme.of(context).textTheme.titleLarge), const SizedBox(height: 4), Text(l10n.adminApiDatabaseUptime(summary.api.status, summary.database, _formatUptime(summary.api.uptimeSeconds)))]))])));
 }
 
 class _Metric { const _Metric(this.label, this.value, this.icon); final String label; final int value; final IconData icon; }
@@ -88,7 +90,7 @@ class _MetricGrid extends StatelessWidget {
 
 class _DeploymentCard extends StatelessWidget {
   const _DeploymentCard({required this.info}); final PlatformDeploymentInfo info;
-  @override Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Deployment', style: Theme.of(context).textTheme.titleMedium), const SizedBox(height: 10), _row('Environment', info.environment), _row('Version', info.version), _row('Deployment ID', info.deploymentId), _row('Git SHA', info.gitSha), if (info.deployedAt != null) _row('Deployed at', info.deployedAt!)])));
+  @override Widget build(BuildContext context) => Card(child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(l10n.adminDeployment, style: Theme.of(context).textTheme.titleMedium), const SizedBox(height: 10), _row(l10n.adminEnvironment, info.environment), _row(l10n.adminVersion, info.version), _row(l10n.adminDeploymentId, info.deploymentId), _row(l10n.adminGitSha, info.gitSha), if (info.deployedAt != null) _row(l10n.adminDeployedAt, info.deployedAt!)])));
   Widget _row(String label, String value) => Padding(padding: const EdgeInsets.only(bottom: 6), child: Row(children: [SizedBox(width: 110, child: Text(label)), Expanded(child: Text(value, overflow: TextOverflow.ellipsis))]));
 }
 
