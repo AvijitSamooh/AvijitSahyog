@@ -163,7 +163,8 @@ class _SharedBottomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final shell = AppShellScope.of(context);
+    final shell = AppShellScope.maybeOf(context);
+    if (shell == null) return const SizedBox.shrink();
     return AnimatedBuilder(
       animation: shell.navigation,
       builder: (context, _) => AppNavigationBar(
