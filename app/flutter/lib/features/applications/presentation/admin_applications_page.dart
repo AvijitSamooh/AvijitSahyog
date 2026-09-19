@@ -127,8 +127,11 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
           ),
           Expanded(child: _loading ? const Center(child: CircularProgressIndicator()) : _error != null
             ? Center(child: Text(_error!))
-            : ListView.builder(
-              padding: const EdgeInsets.all(12),
+            : RefreshIndicator(
+              onRefresh: _load,
+              child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(12),
               itemCount: _items.length,
               itemBuilder: (context, index) {
                 final item = _items[index];
@@ -152,7 +155,8 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
                     ],
                   ),
                 );
-              },
+                },
+              ),
             )),
         ],
       ),
