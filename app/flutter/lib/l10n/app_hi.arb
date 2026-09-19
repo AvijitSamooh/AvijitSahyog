@@ -410,5 +410,12 @@
   "adminVersion": "संस्करण",
   "adminDeploymentId": "डिप्लॉयमेंट ID",
   "adminGitSha": "Git SHA",
-  "adminDeployedAt": "डिप्लॉय किया गया"
+  "adminDeployedAt": "डिप्लॉय किया गया",
+  "fieldRequired": "{field} आवश्यक है",
+  "mobileNumberInvalid": "मान्य मोबाइल नंबर दर्ज करें",
+  "pincodeInvalid": "6 अंकों का मान्य PIN कोड दर्ज करें",
+  "selectImagesFailed": "चित्र चुन नहीं सके: {error}",
+  "captureImageFailed": "चित्र ले नहीं सके: {error}",
+  "adminSlugRequired": "स्लग आवश्यक है।",
+  "adminCauseSaveFailed": "सेवा क्षेत्र सहेजा नहीं जा सका। कृपया जानकारी जाँचकर पुनः प्रयास करें।"
 }
