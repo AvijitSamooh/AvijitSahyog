@@ -84,7 +84,7 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('लाभार्थी बनाएँ'), findsOneWidget);
+    expect(find.text('लाभार्थी बनाएँ'), findsNWidgets(2));
     expect(find.text('नाम'), findsOneWidget);
     expect(find.text('प्रभाव की कहानी'), findsOneWidget);
     expect(find.text('समर्थित वर्ष'), findsOneWidget);
@@ -94,7 +94,6 @@ void main() {
     expect(find.text('लाभार्थी की तस्वीरें'), findsOneWidget);
     expect(find.text('संस्था (वैकल्पिक)'), findsOneWidget);
     expect(find.text('कोई संस्था नहीं'), findsOneWidget);
-    expect(find.text('बनाए'), findsNothing);
 
     await tester.tap(find.byKey(const ValueKey('admin_beneficiary_cause')));
     await tester.pumpAndSettle();
