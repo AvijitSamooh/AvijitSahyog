@@ -71,7 +71,7 @@ class _AdminCauseEditorPageState extends ConsumerState<AdminCauseEditorPage> {
   Future<void> _save() async {
     final slug = _slugController.text.trim();
     if (slug.isEmpty) {
-      _showError('Slug is required.');
+      _showError(AppLocalizations.of(context)!.adminSlugRequired);
       return;
     }
 
@@ -115,7 +115,7 @@ class _AdminCauseEditorPageState extends ConsumerState<AdminCauseEditorPage> {
       }
     } catch (_) {
       if (mounted) {
-        _showError('Unable to save cause. Please review the data and retry.');
+        _showError(AppLocalizations.of(context)!.adminCauseSaveFailed);
       }
     } finally {
       if (mounted) {
@@ -211,7 +211,7 @@ class _AdminCauseEditorPageState extends ConsumerState<AdminCauseEditorPage> {
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : Text(_isEditing ? 'Save changes' : 'Create cause'),
+                  : Text(_isEditing ? AppLocalizations.of(context)!.adminSaveChanges : AppLocalizations.of(context)!.adminCreateCause),
             ),
           ),
         ),
