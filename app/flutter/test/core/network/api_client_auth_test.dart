@@ -39,6 +39,24 @@ void main() {
     await api.getMyHelpApplications();
     api.dispose();
   });
+  test('protected application deletion requests include the Firebase bearer token', () async {
+    final client = MockClient((request) async {
+      expect(request.method, 'DELETE');
+      expect(request.url.path, '/applications/mine/app-1');
+      expect(request.headers['authorization'], 'Bearer firebase-token');
+      return http.Response('', 204);
+    });
+
+    final api = ApiClient(
+      client: client,
+      baseUrl: 'https://api.example.com',
+      authTokenProvider: () async => 'firebase-token',
+    );
+
+    await api.deleteMyHelpApplication('app-1');
+    api.dispose();
+  });
+
   test('tracks every in-flight backend request and clears after completion', () async {
     final completer = Completer<http.Response>();
     final client = MockClient((request) => completer.future);
