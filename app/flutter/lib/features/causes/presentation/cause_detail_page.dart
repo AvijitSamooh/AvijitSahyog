@@ -5,6 +5,7 @@ import '../../../core/widgets/app_settings_menu.dart';
 import '../../../l10n/app_localizations.dart';
 
 import '../../donations/presentation/donation_page.dart';
+import '../../applications/presentation/applications_page.dart';
 import '../models/organisation.dart';
 import '../providers/causes_providers.dart';
 import 'organisation_detail_page.dart';
@@ -19,6 +20,16 @@ class CauseDetailPage extends ConsumerWidget {
     final causeAsync = ref.watch(causeProvider((slug: slug, languageCode: languageCode)));
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
+    final applicationType = switch (slug) {
+      'education' || 'education-assistance' => 'EDUCATION_ASSISTANCE',
+      'healthcare' || 'medical' => 'MEDICAL_HELP',
+      _ => null,
+    };
+    final applicationLabel = applicationType == 'MEDICAL_HELP'
+        ? l10n.applyMedicalHelp
+        : applicationType == 'EDUCATION_ASSISTANCE'
+            ? l10n.applyEducationHelp
+            : null;
 
     return AppPageScaffold(
       title: Text(l10n.causeDetailsTitle),
@@ -80,6 +91,21 @@ class CauseDetailPage extends ConsumerWidget {
                     icon: const Icon(Icons.favorite_rounded),
                     label: Text(l10n.supportThisCause),
                   ),
+                  if (applicationType != null) ...[
+                    const SizedBox(height: 10),
+                    OutlinedButton.icon(
+                      key: ValueKey('cause_apply_$applicationType'),
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => HelpApplicationFormPage(
+                            type: applicationType,
+                          ),
+                        ),
+                      ),
+                      icon: const Icon(Icons.assignment_rounded),
+                      label: Text(applicationLabel!),
+                    ),
+                  ],
                 ],
               ),
             ),
