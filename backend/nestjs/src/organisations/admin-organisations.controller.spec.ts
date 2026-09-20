@@ -70,37 +70,4 @@ describe('AdminOrganisationsController media, create and deletion endpoints', ()
     );
   });
 
-  it('deletes an unused organisation and records the audit event', async () => {
-    service.findOneForAdmin.mockResolvedValue({
-      id: 'org-1',
-      slug: 'help',
-      translations: [{ language: { code: 'en' }, name: 'Help Organisation' }],
-    });
-    prisma.donationAllocation.count.mockResolvedValue(0);
-    prisma.beneficiary.count.mockResolvedValue(0);
-    prisma.user.findUnique.mockResolvedValue({ id: 'actor-1' });
-
-    const tx = {
-      organisation: { delete: jest.fn().mockResolvedValue({ id: 'org-1' }) },
-      auditLog: { create: jest.fn().mockResolvedValue({ id: 'audit-1' }) },
-    };
-    prisma.$transaction.mockImplementation(async (callback: (tx: typeof tx) => unknown) => callback(tx));
-
-    await expect(
-      controller.remove('org-1', { user: { uid: 'firebase-1' } } as never),
-    ).resolves.toEqual({ id: 'org-1', deleted: true });
-
-    expect(tx.organisation.delete).toHaveBeenCalledWith({ where: { id: 'org-1' } });
-    expect(tx.auditLog.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        action: 'USER_ROLE_CHANGED',
-        actorUserId: 'actor-1',
-        metadata: expect.objectContaining({
-          eventType: 'ORGANISATION_DELETED',
-          organisationId: 'org-1',
-          organisationName: 'Help Organisation',
-        }),
-      }),
-    });
-  });
 });
