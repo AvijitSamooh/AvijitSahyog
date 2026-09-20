@@ -189,13 +189,14 @@
   "adminOrganisationActions": "સંસ્થાની ક્રિયાઓ",
   "adminDeleteOrganisation": "સંસ્થા કાઢી નાખો",
   "adminDeleteOrganisationTitle": "સંસ્થા કાઢી નાખવી છે?",
-  "adminDeleteOrganisationConfirmation": "શું તમે “{organisation}”ને કાયમ માટે કાઢી નાખવા માંગો છો? આ પાછું કરી શકાશે નહીં. જો તેમાં દાન ફાળવણી અથવા લાભાર્થી રેકોર્ડ હોય, તો કાઢી નાખવાનું અટકાવવામાં આવશે અને સંસ્થાને નિષ્ક્રિય કરવી પડશે.",
+  "adminDeleteOrganisationConfirmation": "શું તમે “{organisation}”ને કાયમ માટે કાઢી નાખવા માંગો છો? જો તેમાં દાન ફાળવણી અથવા લાભાર્થી રેકોર્ડ હોય, તો ઐતિહાસિક રેકોર્ડ સુરક્ષિત રાખવા માટે સંસ્થાને નિષ્ક્રિય કરવામાં આવશે.",
   "@adminDeleteOrganisationConfirmation": {
     "placeholders": {
       "organisation": {}
     }
   },
   "adminDeleteOrganisationSuccess": "“{organisation}” કાઢી નાખવામાં આવી.",
+  "adminDeactivateOrganisationSuccess": "ઐતિહાસિક રેકોર્ડ હોવાથી “{organisation}”ને નિષ્ક્રિય કરવામાં આવી.",
   "@adminDeleteOrganisationSuccess": {
     "placeholders": {
       "organisation": {}
