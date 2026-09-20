@@ -13,6 +13,14 @@ class HelpApplicationMedia {
       );
 }
 
+/// Prisma Decimal values are serialized by the NestJS API as JSON strings.
+/// Keep the model tolerant of both the string representation and numeric
+/// values used by mocks/other API implementations.
+num? _parseAmount(dynamic value) {
+  if (value == null || value is num) return value as num?;
+  return num.tryParse(value.toString());
+}
+
 class HelpApplication {
   const HelpApplication({
     required this.id,
@@ -66,8 +74,8 @@ class HelpApplication {
         city: json['city'] as String?,
         state: json['state'] as String?,
         pincode: json['pincode'] as String?,
-        requestedAmount: (json['requestedAmount'] as num?),
-        approvedAmount: (json['approvedAmount'] as num?),
+        requestedAmount: _parseAmount(json['requestedAmount']),
+        approvedAmount: _parseAmount(json['approvedAmount']),
         rejectionReason: json['rejectionReason'] as String?,
         clarification: json['clarification'] as String?,
         adminNote: json['adminNote'] as String?,
