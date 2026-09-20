@@ -147,7 +147,7 @@ class _OrganisationTile extends ConsumerWidget {
     if (confirmed != true || !context.mounted) return;
 
     try {
-      await ref
+      final result = await ref
           .read(adminOrganisationsRepositoryProvider)
           .delete(organisation.id);
       ref.invalidate(adminOrganisationsProvider);
@@ -155,7 +155,9 @@ class _OrganisationTile extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              l10n.adminDeleteOrganisationSuccess(organisationName),
+              result.deactivated
+                  ? l10n.adminDeactivateOrganisationSuccess(organisationName)
+                  : l10n.adminDeleteOrganisationSuccess(organisationName),
             ),
           ),
         );
