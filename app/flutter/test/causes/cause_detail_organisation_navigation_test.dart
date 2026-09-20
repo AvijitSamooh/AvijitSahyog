@@ -68,7 +68,13 @@ void main() {
   testWidgets('opens an affiliated organisation without gallery', (tester) async {
     await pumpSubject(tester);
 
-    await tester.tap(find.text('Seva Trust'));
+    final organisationName = find.text('Seva Trust');
+    await tester.scrollUntilVisible(
+      organisationName,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(organisationName);
     await tester.pumpAndSettle();
 
     expect(find.byType(OrganisationDetailPage), findsOneWidget);
