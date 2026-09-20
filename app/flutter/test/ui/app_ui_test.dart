@@ -582,7 +582,13 @@ void main() {
 
     expect(find.byType(CauseDetailPage), findsOneWidget);
     expect(find.text('Support education initiatives.'), findsWidgets);
-    expect(find.text('Seva Trust'), findsOneWidget);
+    final organisation = find.text('Seva Trust');
+    await tester.scrollUntilVisible(
+      organisation,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(organisation, findsOneWidget);
   });
 
   testWidgets('cause details display organisation and location', (tester) async {
@@ -595,7 +601,13 @@ void main() {
       ],
     );
 
-    expect(find.text('Seva Trust'), findsOneWidget);
+    final organisation = find.text('Seva Trust');
+    await tester.scrollUntilVisible(
+      organisation,
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(organisation, findsOneWidget);
     expect(find.text('Pune, Maharashtra'), findsOneWidget);
     expect(find.text('Support this Cause'), findsOneWidget);
   });
