@@ -189,13 +189,14 @@
   "adminOrganisationActions": "संस्था कृती",
   "adminDeleteOrganisation": "संस्था हटवा",
   "adminDeleteOrganisationTitle": "संस्था हटवायची?",
-  "adminDeleteOrganisationConfirmation": "“{organisation}” कायमची हटवायची का? ही कृती पूर्ववत करता येणार नाही. दान वाटप किंवा लाभार्थी नोंदी असल्यास हटवणे रोखले जाईल आणि संस्था निष्क्रिय करावी लागेल.",
+  "adminDeleteOrganisationConfirmation": "“{organisation}” कायमची हटवायची का? दान वाटप किंवा लाभार्थी नोंदी असल्यास ऐतिहासिक नोंदी सुरक्षित ठेवण्यासाठी संस्था निष्क्रिय केली जाईल.",
   "@adminDeleteOrganisationConfirmation": {
     "placeholders": {
       "organisation": {}
     }
   },
   "adminDeleteOrganisationSuccess": "“{organisation}” हटवली.",
+  "adminDeactivateOrganisationSuccess": "ऐतिहासिक नोंदी असल्यामुळे “{organisation}” निष्क्रिय केली.",
   "@adminDeleteOrganisationSuccess": {
     "placeholders": {
       "organisation": {}
