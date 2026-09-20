@@ -189,13 +189,14 @@
   "adminOrganisationActions": "Organisation actions",
   "adminDeleteOrganisation": "Delete organisation",
   "adminDeleteOrganisationTitle": "Delete organisation?",
-  "adminDeleteOrganisationConfirmation": "Delete “{organisation}” permanently? This cannot be undone. If it has donation allocations or beneficiary records, deletion will be blocked and the organisation must be deactivated instead.",
+  "adminDeleteOrganisationConfirmation": "Permanently delete “{organisation}”? If it has donation allocations or beneficiary records, it will be deactivated instead so historical records remain safe.",
   "@adminDeleteOrganisationConfirmation": {
     "placeholders": {
       "organisation": {}
     }
   },
   "adminDeleteOrganisationSuccess": "“{organisation}” was deleted.",
+  "adminDeactivateOrganisationSuccess": "“{organisation}” was deactivated because it has historical records.",
   "@adminDeleteOrganisationSuccess": {
     "placeholders": {
       "organisation": {}

@@ -30,6 +30,8 @@ This section is the source of truth when asking **“what is pending?”**. Upda
 ## Recently Completed
 
 - [x] Help & Recognition Applications — Education Assistance, Medical Help and Pratibha Samman applicant/reviewer workflows, including user entry point, submission/history, evidence upload and admin review actions.
+- [x] Direct assistance entry points — Education and Healthcare cause details now link directly to the relevant need/application flow.
+- [x] Safe organisation removal — organisations with historical donation allocations or beneficiary records are deactivated instead of returning a deletion conflict.
 
 
 ## Pending Next

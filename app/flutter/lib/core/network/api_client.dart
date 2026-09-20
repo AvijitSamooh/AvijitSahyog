@@ -209,6 +209,15 @@ class ApiClient {
     _ensureSuccess(response, 'Updating organisation status');
   }
 
+  Future<Map<String, dynamic>> deleteAdminOrganisation(String id) async {
+    final response = await _client.delete(
+      Uri.parse('$baseUrl/admin/organisations/$id'),
+      headers: await _headers(),
+    );
+    _ensureSuccess(response, 'Deleting organisation');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
   Future<void> updateAdminOrganisationCauses(String id, List<String> causeIds) async {
     final response = await _client.patch(Uri.parse('$baseUrl/admin/organisations/$id/causes'), headers: await _headers(json: true), body: jsonEncode({'causeIds': causeIds}));
     _ensureSuccess(response, 'Updating organisation causes');

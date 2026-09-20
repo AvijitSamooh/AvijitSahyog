@@ -8,6 +8,7 @@ Avijit Sahyog supports authenticated applications for two assistance programs an
 
 - **Education Assistance** — a user can request help for education-related need.
 - **Medical Help** — a user can request medical assistance.
+- **Cause detail entry points** — the Education and Healthcare cause detail pages also expose the relevant assistance application directly, so users do not have to navigate through the separate applications page.
 
 Applicants provide a requested amount and supporting images. Administrators review the application, record individual votes, and can approve an amount for donation, request clarification, or reject with a reason.
 

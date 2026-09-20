@@ -38,19 +38,19 @@ const causes = [
     translations: {
       en: {
         name: 'Education',
-        description: 'Education-related assistance and recognition opportunities.',
+        description: 'We support students from financially underserved backgrounds so they can continue their education, and celebrate talented individuals whose achievements inspire others through Pratibha Samman.',
       },
       hi: {
         name: 'शिक्षा',
-        description: 'शिक्षा से जुड़ी सहायता और सम्मान के अवसर।',
+        description: 'हम आर्थिक रूप से जरूरतमंद विद्यार्थियों को शिक्षा जारी रखने में सहयोग देते हैं और अपनी प्रतिभा व उपलब्धियों से प्रेरणा देने वाले विद्यार्थियों का प्रतिभा सम्मान के माध्यम से अभिनंदन करते हैं।',
       },
       mr: {
         name: 'शिक्षण',
-        description: 'शिक्षणाशी संबंधित सहाय्य आणि सन्मानाच्या संधी.',
+        description: 'आर्थिकदृष्ट्या गरजू विद्यार्थ्यांना शिक्षण सुरू ठेवण्यासाठी सहकार्य करणे आणि आपल्या गुणवत्तेने व उल्लेखनीय कामगिरीने प्रेरणा देणाऱ्या विद्यार्थ्यांचा प्रतिभा सन्मानाद्वारे गौरव करणे.',
       },
       gu: {
         name: 'શિક્ષણ',
-        description: 'શિક્ષણ સંબંધિત સહાય અને સન્માનની તકો.',
+        description: 'આર્થિક રીતે જરૂરિયાતમંદ વિદ્યાર્થીઓને શિક્ષણ ચાલુ રાખવામાં સહાય કરવી અને પોતાની પ્રતિભા તથા સિદ્ધિઓથી પ્રેરણા આપનાર વિદ્યાર્થીઓનું પ્રતિભા સન્માન દ્વારા સન્માન કરવું.',
       },
     },
   },
