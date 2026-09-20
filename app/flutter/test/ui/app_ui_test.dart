@@ -600,6 +600,56 @@ void main() {
     expect(find.text('Support this Cause'), findsOneWidget);
   });
 
+  testWidgets('education cause detail describes assistance and recognition and offers education assistance application', (tester) async {
+    const education = Cause(
+      id: 'education',
+      slug: 'education',
+      name: 'Education',
+      description: 'We support students from financially underserved backgrounds so they can continue their education, and celebrate talented individuals whose achievements inspire others through Pratibha Samman.',
+    );
+    await pumpApp(
+      tester,
+      home: const CauseDetailPage(slug: 'education'),
+      overrides: [
+        causeProvider((slug: 'education', languageCode: 'en'))
+            .overrideWith((ref) async => education),
+      ],
+    );
+
+    expect(find.textContaining('financially underserved backgrounds'), findsOneWidget);
+    expect(find.textContaining('Pratibha Samman'), findsOneWidget);
+    expect(find.byKey(const ValueKey('cause_apply_EDUCATION_ASSISTANCE')), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('cause_apply_EDUCATION_ASSISTANCE')));
+    await tester.pumpAndSettle();
+    expect(find.byType(HelpApplicationFormPage), findsOneWidget);
+  });
+
+  testWidgets('healthcare cause detail offers medical help application', (tester) async {
+    const healthcare = Cause(
+      id: 'healthcare',
+      slug: 'healthcare',
+      name: 'Healthcare',
+      description: 'Support for healthcare and medical assistance.',
+    );
+    await pumpApp(
+      tester,
+      home: const CauseDetailPage(slug: 'healthcare'),
+      overrides: [
+        causeProvider((slug: 'healthcare', languageCode: 'en'))
+            .overrideWith((ref) async => healthcare),
+      ],
+    );
+
+    final applyButton = find.byKey(const ValueKey('cause_apply_MEDICAL_HELP'));
+    expect(applyButton, findsOneWidget);
+    expect(find.text('Apply for Medical Help'), findsOneWidget);
+
+    await tester.tap(applyButton);
+    await tester.pumpAndSettle();
+    expect(find.byType(HelpApplicationFormPage), findsOneWidget);
+  });
+
   testWidgets('support cause button opens donation page', (tester) async {
     await pumpApp(
       tester,
