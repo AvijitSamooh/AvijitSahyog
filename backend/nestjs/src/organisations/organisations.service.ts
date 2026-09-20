@@ -354,6 +354,72 @@ export class OrganisationsService {
     });
   }
 
+  async removeOrDeactivate(id: string, firebaseUid: string) {
+    const organisation = await this.findOneForAdmin(id);
+
+    const [allocationCount, beneficiaryCount] = await Promise.all([
+      this.prisma.donationAllocation.count({ where: { organisationId: id } }),
+      this.prisma.beneficiary.count({ where: { organisationId: id } }),
+    ]);
+
+    const actor = await this.prisma.user.findUnique({
+      where: { firebaseUid },
+      select: { id: true },
+    });
+    if (!actor) {
+      throw new ConflictException('Administrator account was not found.');
+    }
+
+    const displayName =
+      organisation.translations.find((item: any) => item.language?.code === 'en')?.name ??
+      organisation.translations[0]?.name ??
+      organisation.slug;
+
+    return this.prisma.$transaction(async (tx: any) => {
+      if (allocationCount > 0 || beneficiaryCount > 0) {
+        await tx.organisation.update({
+          where: { id },
+          data: { isActive: false },
+        });
+
+        await tx.auditLog.create({
+          data: {
+            action: 'USER_ROLE_CHANGED',
+            actorUserId: actor.id,
+            metadata: {
+              eventType: 'ORGANISATION_DEACTIVATED',
+              organisationId: id,
+              organisationSlug: organisation.slug,
+              organisationName: displayName,
+              reason: 'DEPENDENCY_PROTECTION',
+              donationAllocationCount: allocationCount,
+              beneficiaryCount,
+            },
+          },
+        });
+
+        return { id, deleted: false, deactivated: true };
+      }
+
+      await tx.organisation.delete({ where: { id } });
+
+      await tx.auditLog.create({
+        data: {
+          action: 'USER_ROLE_CHANGED',
+          actorUserId: actor.id,
+          metadata: {
+            eventType: 'ORGANISATION_DELETED',
+            organisationId: id,
+            organisationSlug: organisation.slug,
+            organisationName: displayName,
+          },
+        },
+      });
+
+      return { id, deleted: true, deactivated: false };
+    });
+  }
+
   async setActive(id: string, isActive: boolean) {
     await this.findOneForAdmin(id);
     return this.prisma.organisation.update({
