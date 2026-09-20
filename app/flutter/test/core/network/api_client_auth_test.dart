@@ -57,6 +57,28 @@ void main() {
     api.dispose();
   });
 
+  test('protected organisation deletion requests include the Firebase bearer token and return the deactivation result', () async {
+    final client = MockClient((request) async {
+      expect(request.method, 'DELETE');
+      expect(request.url.path, '/admin/organisations/org-1');
+      expect(request.headers['authorization'], 'Bearer firebase-token');
+      return http.Response(
+        '{"id":"org-1","deleted":false,"deactivated":true}',
+        200,
+      );
+    });
+
+    final api = ApiClient(
+      client: client,
+      baseUrl: 'https://api.example.com',
+      authTokenProvider: () async => 'firebase-token',
+    );
+
+    final result = await api.deleteAdminOrganisation('org-1');
+    expect(result['deactivated'], true);
+    api.dispose();
+  });
+
   test('tracks every in-flight backend request and clears after completion', () async {
     final completer = Completer<http.Response>();
     final client = MockClient((request) => completer.future);
