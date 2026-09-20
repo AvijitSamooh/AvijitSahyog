@@ -189,13 +189,14 @@
   "adminOrganisationActions": "संस्था के विकल्प",
   "adminDeleteOrganisation": "संस्था हटाएँ",
   "adminDeleteOrganisationTitle": "संस्था हटाएँ?",
-  "adminDeleteOrganisationConfirmation": "क्या आप “{organisation}” को स्थायी रूप से हटाना चाहते हैं? इसे वापस नहीं किया जा सकता। यदि इसमें दान आवंटन या लाभार्थी रिकॉर्ड हैं, तो हटाना रोका जाएगा और संस्था को निष्क्रिय करना होगा।",
+  "adminDeleteOrganisationConfirmation": "क्या आप “{organisation}” को स्थायी रूप से हटाना चाहते हैं? यदि इसमें दान आवंटन या लाभार्थी रिकॉर्ड हैं, तो ऐतिहासिक रिकॉर्ड सुरक्षित रखने के लिए संस्था को निष्क्रिय कर दिया जाएगा।",
   "@adminDeleteOrganisationConfirmation": {
     "placeholders": {
       "organisation": {}
     }
   },
   "adminDeleteOrganisationSuccess": "“{organisation}” हटा दी गई।",
+  "adminDeactivateOrganisationSuccess": "ऐतिहासिक रिकॉर्ड होने के कारण “{organisation}” को निष्क्रिय कर दिया गया।",
   "@adminDeleteOrganisationSuccess": {
     "placeholders": {
       "organisation": {}
