@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../core/service_window.dart';
 import '../models/app_user.dart';
 
 abstract class AuthRepository {
@@ -84,6 +85,7 @@ class FirebaseAuthRepository implements AuthRepository {
   }
 
   Future<AppUser> _resolveBackendUser(User firebaseUser) async {
+    BackendServiceAvailability.ensureAvailable();
     final token = await firebaseUser.getIdToken();
     if (token == null || token.isEmpty) {
       throw StateError('Firebase returned an empty ID token.');
