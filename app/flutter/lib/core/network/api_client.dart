@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 
 import 'package:http/http.dart' as http;
 
+import '../service_window.dart';
+
 class ApiClient {
   /// Number of in-flight HTTP requests. The app shell observes this to give
   /// immediate feedback for every backend action without duplicating loading
@@ -339,6 +341,7 @@ class _ActivityHttpClient extends http.BaseClient {
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) {
+    BackendServiceAvailability.ensureAvailable();
     final future = _inner.send(request);
     // Pull-to-refresh and initial data loads should not block the UI. The
     // global activity indicator is intended for user-triggered mutations.
