@@ -30,6 +30,9 @@ concurrency:
 
 env:
   RELEASE_VALIDATION: ${{ github.event.inputs.validation || 'full' }}
+  BACKEND_SERVICE_WINDOW_ENABLED: ${{ vars.BACKEND_SERVICE_WINDOW_ENABLED || 'true' }}
+  BACKEND_SERVICE_WINDOW_START: ${{ vars.BACKEND_SERVICE_WINDOW_START || '21:00' }}
+  BACKEND_SERVICE_WINDOW_END: ${{ vars.BACKEND_SERVICE_WINDOW_END || '08:00' }}
 
 jobs:
   build-android:
@@ -129,7 +132,10 @@ jobs:
           flutter build appbundle --release \
             --build-name="$RELEASE_VERSION" \
             --build-number="$PLAY_VERSION_CODE" \
-            --dart-define=API_BASE_URL=${{ vars.API_BASE_URL }}
+            --dart-define=API_BASE_URL=${{ vars.API_BASE_URL }} \
+            --dart-define=BACKEND_SERVICE_WINDOW_ENABLED="$BACKEND_SERVICE_WINDOW_ENABLED" \
+            --dart-define=BACKEND_SERVICE_WINDOW_START="$BACKEND_SERVICE_WINDOW_START" \
+            --dart-define=BACKEND_SERVICE_WINDOW_END="$BACKEND_SERVICE_WINDOW_END"
 
       - name: Assert release manifest excludes Advertising ID
         run: |
