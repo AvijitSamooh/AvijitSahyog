@@ -24,14 +24,13 @@ describe('AppController', () => {
     appController = app.get<AppController>(AppController);
   });
 
-  describe('health', () => {
-    it('should return a healthy status when the database check succeeds', async () => {
+  describe('liveness health', () => {
+    it('returns healthy status without querying the database', async () => {
       const health = await appController.getHealth();
 
       expect(health).toEqual({
         status: 'ok',
         service: 'avijit-sahyog-api',
-        database: 'ok',
         uptimeSeconds: expect.any(Number),
         deployment: {
           environment: 'test',
@@ -42,15 +41,30 @@ describe('AppController', () => {
         },
       });
       expect(health.uptimeSeconds).toBeGreaterThanOrEqual(0);
+      expect(queryRaw).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('database readiness', () => {
+    it('returns healthy status when the database check succeeds', async () => {
+      await expect(appController.getReadiness()).resolves.toEqual({
+        status: 'ok',
+        service: 'avijit-sahyog-api',
+        database: 'ok',
+      });
+      expect(queryRaw).toHaveBeenCalledTimes(1);
     });
 
-    it('should return an error status when the database check fails', async () => {
+    it('returns service unavailable when the database check fails', async () => {
       queryRaw.mockRejectedValue(new Error('database unavailable'));
 
-      await expect(appController.getHealth()).resolves.toEqual({
-        status: 'error',
-        service: 'avijit-sahyog-api',
-        database: 'error',
+      await expect(appController.getReadiness()).rejects.toMatchObject({
+        response: {
+          status: 'error',
+          service: 'avijit-sahyog-api',
+          database: 'error',
+        },
+        status: 503,
       });
     });
   });

@@ -46,3 +46,12 @@ The window is evaluated using the device's local time. The same build therefore 
 This feature can reduce Neon Postgres compute usage when application traffic is a significant source of database activity. Neon automatically suspends idle computes and resumes them when new connections arrive. The client-side gate makes the overnight period explicitly quiet from the Flutter application's perspective.
 
 It is not a guarantee that the database will consume zero compute during the window. Background jobs, external requests, connection activity or other infrastructure can still wake the database. Neon recommends checking compute activity and connection patterns when a compute remains active unexpectedly.
+## Infrastructure health checks
+
+The API exposes two health endpoints:
+
+- `GET /health` is the liveness endpoint. It deliberately does **not** query Postgres and is the endpoint to use for Render/infrastructure health checks.
+- `GET /health/ready` verifies Postgres connectivity and should only be used when database readiness is explicitly required.
+
+Keeping infrastructure probes on `/health` avoids unnecessary database queries that could wake a scale-to-zero Neon compute during the nightly service window.
+
