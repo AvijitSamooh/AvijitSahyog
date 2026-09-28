@@ -4,7 +4,7 @@ import 'package:avijit_sahyog/core/service_window.dart';
 
 void main() {
   group('ServiceWindow', () {
-    final overnight = serviceWindowForTest();
+    final overnight = ServiceWindow(enabled: true, startMinutes: 21 * 60, endMinutes: 8 * 60, startLabel: '9:00 PM', endLabel: '8:00 AM');
 
     test('blocks during the overnight window', () {
       expect(overnight.isDowntime(DateTime(2026, 9, 28, 21, 0)), isTrue);
@@ -19,12 +19,12 @@ void main() {
     });
 
     test('can be disabled without changing the configured times', () {
-      final disabled = serviceWindowForTest(enabled: false);
+      final disabled = ServiceWindow(enabled: false, startMinutes: 21 * 60, endMinutes: 8 * 60, startLabel: '9:00 PM', endLabel: '8:00 AM');
       expect(disabled.isDowntime(DateTime(2026, 9, 28, 23, 0)), isFalse);
     });
 
     test('supports a daytime window as well', () {
-      final daytime = serviceWindowForTest(start: '13:00', end: '14:00');
+      final daytime = ServiceWindow(enabled: true, startMinutes: 13 * 60, endMinutes: 14 * 60, startLabel: '1:00 PM', endLabel: '2:00 PM');
       expect(daytime.isDowntime(DateTime(2026, 9, 28, 12, 59)), isFalse);
       expect(daytime.isDowntime(DateTime(2026, 9, 28, 13, 30)), isTrue);
       expect(daytime.isDowntime(DateTime(2026, 9, 28, 14, 0)), isFalse);
