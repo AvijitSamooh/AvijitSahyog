@@ -33,6 +33,7 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
   Locale? _locale;
   Timer? _serviceWindowTimer;
   bool _serviceWindowActive = BackendServiceAvailability.isDowntime;
+  bool _serviceWindowMessageVisible = false;
   final _navigation = AppNavigationController();
 
   @override
@@ -161,35 +162,21 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
     );
   }
 
-  Future<void> _showServiceUnavailableMessage(BuildContext context) async {
-    final localizations = AppLocalizations.of(context)!;
-    await showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(localizations.serviceUnavailableTitle),
-        content: Text(
-          localizations.serviceUnavailableMessage(
-            BackendServiceAvailability.startLabel,
-            BackendServiceAvailability.endLabel,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(localizations.serviceUnavailableDismiss),
-          ),
-        ],
-      ),
-    );
+  void _showServiceUnavailableMessage() {
+    if (!_serviceWindowMessageVisible) {
+      setState(() => _serviceWindowMessageVisible = true);
+    }
   }
 
   Widget _buildServiceWindowOverlay(BuildContext context) {
     if (!_serviceWindowActive) return const SizedBox.shrink();
 
+    final localizations = AppLocalizations.of(context)!;
+
     return Positioned.fill(
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: () => _showServiceUnavailableMessage(context),
+        onTap: _showServiceUnavailableMessage,
         child: Stack(
           children: [
             Positioned(
@@ -226,6 +213,51 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
                 ),
               ),
             ),
+            if (_serviceWindowMessageVisible)
+              Positioned.fill(
+                child: ColoredBox(
+                  color: Colors.black26,
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 420),
+                      child: Card(
+                        margin: const EdgeInsets.all(24),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                localizations.serviceUnavailableTitle,
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                localizations.serviceUnavailableMessage(
+                                  BackendServiceAvailability.startLabel,
+                                  BackendServiceAvailability.endLabel,
+                                ),
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                              const SizedBox(height: 12),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  onPressed: () => setState(
+                                    () => _serviceWindowMessageVisible = false,
+                                  ),
+                                  child: Text(localizations.serviceUnavailableDismiss),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
