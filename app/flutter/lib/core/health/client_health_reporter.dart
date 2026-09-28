@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../service_window.dart';
+
 class ClientHealthReporter {
   ClientHealthReporter({http.Client? client}) : _client = client ?? http.Client();
   final http.Client _client;
@@ -11,6 +13,7 @@ class ClientHealthReporter {
 
   Future<void> report({required String type, required Object error, StackTrace? stack}) async {
     try {
+      if (BackendServiceAvailability.isDowntime) return;
       final preferences = await SharedPreferences.getInstance();
       var clientId = preferences.getString(_clientIdKey);
       if (clientId == null || clientId.isEmpty) {

@@ -8,6 +8,8 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../service_window.dart';
+
 import 'analytics_events.dart';
 
 class AnalyticsService {
@@ -105,6 +107,7 @@ class AnalyticsService {
     String? target,
   }) async {
     try {
+      if (BackendServiceAvailability.isDowntime) return;
       final preferences = await SharedPreferences.getInstance();
       var clientId = preferences.getString(_clientIdKey);
       if (clientId == null || clientId.isEmpty) {

@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'features/home/home_page.dart';
 import 'core/analytics/analytics_service.dart';
 import 'core/network/api_client.dart';
+import 'core/service_window.dart';
 import 'core/navigation/app_shell_scope.dart';
 import 'features/impact/presentation/impact_page.dart';
 
@@ -28,16 +31,26 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
   static const _line = Color(0xFFE8DCC8);
 
   Locale? _locale;
+  Timer? _serviceWindowTimer;
+  bool _serviceWindowActive = BackendServiceAvailability.isDowntime;
+  bool _serviceWindowMessageVisible = false;
   final _navigation = AppNavigationController();
 
   @override
   void initState() {
     super.initState();
     _loadLocale();
+    _serviceWindowTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      final active = BackendServiceAvailability.isDowntime;
+      if (mounted && active != _serviceWindowActive) {
+        setState(() => _serviceWindowActive = active);
+      }
+    });
   }
 
   @override
   void dispose() {
+    _serviceWindowTimer?.cancel();
     _navigation.dispose();
     super.dispose();
   }
@@ -149,6 +162,108 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
     );
   }
 
+  void _showServiceUnavailableMessage() {
+    if (!_serviceWindowMessageVisible) {
+      setState(() => _serviceWindowMessageVisible = true);
+    }
+  }
+
+  Widget _buildServiceWindowOverlay(BuildContext context) {
+    if (!_serviceWindowActive) return const SizedBox.shrink();
+
+    final localizations = AppLocalizations.of(context)!;
+
+    return Positioned.fill(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: _showServiceUnavailableMessage,
+        child: Stack(
+          children: [
+            Positioned(
+              top: MediaQuery.paddingOf(context).top + 8,
+              left: 12,
+              right: 12,
+              child: IgnorePointer(
+                child: Material(
+                  elevation: 4,
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(14),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.nightlight_round,
+                          size: 20,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            localizations.serviceUnavailableBanner(
+                              BackendServiceAvailability.startLabel,
+                              BackendServiceAvailability.endLabel,
+                            ),
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            if (_serviceWindowMessageVisible)
+              Positioned.fill(
+                child: ColoredBox(
+                  color: Colors.black26,
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 420),
+                      child: Card(
+                        margin: const EdgeInsets.all(24),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                localizations.serviceUnavailableTitle,
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                localizations.serviceUnavailableMessage(
+                                  BackendServiceAvailability.startLabel,
+                                  BackendServiceAvailability.endLabel,
+                                ),
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                              const SizedBox(height: 12),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  onPressed: () => setState(
+                                    () => _serviceWindowMessageVisible = false,
+                                  ),
+                                  child: Text(localizations.serviceUnavailableDismiss),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final analyticsObserver = AnalyticsService.instance.observer;
@@ -168,6 +283,7 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
         child: Stack(
           children: [
             child!,
+            _buildServiceWindowOverlay(context),
             ValueListenableBuilder<int>(
               valueListenable: ApiClient.activeRequests,
               builder: (context, active, _) {
