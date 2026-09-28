@@ -121,7 +121,7 @@ The build-time variables are:
 - `BACKEND_SERVICE_WINDOW_START` — `HH:mm`; defaults to `21:00`
 - `BACKEND_SERVICE_WINDOW_END` — `HH:mm`; defaults to `08:00`
 
-The Android release workflow reads these from GitHub Actions repository configuration variables. GitHub configuration variables are intended for non-secret build configuration and are exposed through the `vars` context. urlGitHub Actions variables documentationhttps://docs.github.com/en/actions/reference/workflows-and-actions/variables
+The Android release workflow reads these from GitHub Actions repository configuration variables. GitHub configuration variables are intended for non-secret build configuration and are exposed through the `vars` context.
 
 To disable the nightly restriction for an environment, set:
 
