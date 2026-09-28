@@ -103,6 +103,36 @@ flutter build web --dart-define=API_BASE_URL=https://YOUR_RENDER_API_URL
 
 The production API URL will be configured in Vercel and the Android release pipeline; it is intentionally not hard-coded in source.
 
+### Configurable backend service window
+
+The Flutter client supports an environment-configured nightly backend service window. The default is **9:00 PM to 8:00 AM local device time**.
+
+During the window:
+
+- already available/static content remains visible;
+- taps are intercepted with a localized service-unavailable message;
+- NestJS API requests are blocked before an HTTP request is sent;
+- authentication backend resolution, analytics mirroring and client health telemetry are also suppressed;
+- the window can be disabled without changing application code.
+
+The build-time variables are:
+
+- `BACKEND_SERVICE_WINDOW_ENABLED` — `true` or `false`; defaults to `true`
+- `BACKEND_SERVICE_WINDOW_START` — `HH:mm`; defaults to `21:00`
+- `BACKEND_SERVICE_WINDOW_END` — `HH:mm`; defaults to `08:00`
+
+The Android release workflow reads these from GitHub Actions repository configuration variables. GitHub configuration variables are intended for non-secret build configuration and are exposed through the `vars` context. urlGitHub Actions variables documentationhttps://docs.github.com/en/actions/reference/workflows-and-actions/variables
+
+To disable the nightly restriction for an environment, set:
+
+```text
+BACKEND_SERVICE_WINDOW_ENABLED=false
+```
+
+Changing these values affects the next build/deployment; an already-installed compiled Flutter app keeps the values that were embedded into that build.
+
+For a web deployment, pass the same values as `--dart-define` arguments in the Vercel Flutter build command.
+
 ### Android Firebase and Google Sign-In
 
 Android release builds use the `GOOGLE_SERVICES_JSON` GitHub Actions variable as the single source of truth for native Firebase and Google OAuth configuration. The release workflow validates that the configuration targets project `avijitsahyog-firebase` and package `com.avijitsamooh.avijitsahyog`, then derives the Web OAuth client ID (`client_type: 3`) directly from that same file and passes it as the `GOOGLE_SIGN_IN_SERVER_CLIENT_ID` Dart define to the Android build. This prevents Firebase and Google Sign-In credentials from drifting between independently configured CI variables.
