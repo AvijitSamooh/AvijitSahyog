@@ -24,10 +24,12 @@ The backend itself is not shut down by this feature. It is a client-side traffic
 The values are embedded into Flutter builds using Dart defines:
 
 - \`BACKEND_SERVICE_WINDOW_ENABLED\` — defaults to \`true\`
-- \`BACKEND_SERVICE_WINDOW_START\` — \`HH:mm\`, defaults to \`21:00\`
-- \`BACKEND_SERVICE_WINDOW_END\` — \`HH:mm\`, defaults to \`08:00\`
+- `BACKEND_SERVICE_OFFLINE_START` — `HH:mm`, defaults to `21:00`
+- `BACKEND_SERVICE_OFFLINE_END` — `HH:mm`, defaults to `08:00`
 
-The Android release workflow reads these from GitHub repository configuration variables.
+The Android release workflow maps these explicitly to the Flutter `BACKEND_SERVICE_WINDOW_START/END` defines. The variable names deliberately describe the **offline** interval so the configuration cannot be mistaken for the service's available hours.
+
+The expected nightly configuration is `21:00` → `08:00`. The daytime interval `08:00` → `21:00` must not be used for this offline setting.
 
 To disable the restriction for a build:
 
