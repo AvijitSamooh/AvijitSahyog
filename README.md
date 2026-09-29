@@ -118,10 +118,12 @@ During the window:
 The build-time variables are:
 
 - `BACKEND_SERVICE_WINDOW_ENABLED` — `true` or `false`; defaults to `true`
-- `BACKEND_SERVICE_WINDOW_START` — `HH:mm`; defaults to `21:00`
-- `BACKEND_SERVICE_WINDOW_END` — `HH:mm`; defaults to `08:00`
+- `BACKEND_SERVICE_OFFLINE_START` — `HH:mm`; defaults to `21:00`
+- `BACKEND_SERVICE_OFFLINE_END` — `HH:mm`; defaults to `08:00`
 
-The Android release workflow reads these from GitHub Actions repository configuration variables. GitHub configuration variables are intended for non-secret build configuration and are exposed through the `vars` context.
+The Android release workflow maps these explicitly to the Flutter `BACKEND_SERVICE_WINDOW_START/END` defines. The `OFFLINE_*` names make it clear that the configured interval is the **unavailable** window, not the available window. If these repository variables are absent, the build defaults to 9:00 PM–8:00 AM.
+
+For clarity, do not configure the offline window as `08:00` → `21:00`; that would intentionally describe the daytime interval. The expected nightly values are `21:00` → `08:00`. GitHub configuration variables are intended for non-secret build configuration and are exposed through the `vars` context.
 
 To disable the nightly restriction for an environment, set:
 
