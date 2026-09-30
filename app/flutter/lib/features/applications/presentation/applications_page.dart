@@ -137,10 +137,9 @@ Future<void> _showWindowMessage(
 }
 
 class _ApplicationWindowClosedView extends StatelessWidget {
-  const _ApplicationWindowClosedView({required this.window, required this.type});
+  const _ApplicationWindowClosedView({required this.window});
 
   final ApplicationWindow? window;
-  final String type;
 
   @override
   Widget build(BuildContext context) {
@@ -411,7 +410,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     if (window?.isOpen != true) {
       return AppPageScaffold(
         title: Text(_typeLabel(l10n, widget.type)),
-        body: _ApplicationWindowClosedView(window: window, type: widget.type),
+        body: _ApplicationWindowClosedView(window: window),
       );
     }
     return AppPageScaffold(
