@@ -129,6 +129,22 @@ jobs:
       - name: Build signed app bundle
         id: build_aab
         run: |
+          # The production configuration is an overnight OFFLINE window.
+          # Protect the release from accidentally reversed repository variables
+          # (for example 08:00 -> 21:00, which would disable the app during the day).
+          if [ "$BACKEND_SERVICE_WINDOW_ENABLED" = "true" ]; then
+            START_MINUTES=$((10#${BACKEND_SERVICE_WINDOW_START%%:*} * 60 + 10#${BACKEND_SERVICE_WINDOW_START##*:}))
+            END_MINUTES=$((10#${BACKEND_SERVICE_WINDOW_END%%:*} * 60 + 10#${BACKEND_SERVICE_WINDOW_END##*:}))
+            if [ "$START_MINUTES" -lt "$END_MINUTES" ]; then
+              echo "::warning::Offline window was configured in the wrong direction ($BACKEND_SERVICE_WINDOW_START -> $BACKEND_SERVICE_WINDOW_END). Reversing it for production."
+              ORIGINAL_START="$BACKEND_SERVICE_WINDOW_START"
+              BACKEND_SERVICE_WINDOW_START="$BACKEND_SERVICE_WINDOW_END"
+              BACKEND_SERVICE_WINDOW_END="$ORIGINAL_START"
+            fi
+          fi
+
+          echo "Effective backend offline window: $BACKEND_SERVICE_WINDOW_START -> $BACKEND_SERVICE_WINDOW_END"
+
           flutter build appbundle --release \
             --build-name="$RELEASE_VERSION" \
             --build-number="$PLAY_VERSION_CODE" \
