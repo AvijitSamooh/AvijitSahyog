@@ -272,6 +272,11 @@
   "applyMedicalHelp": "તબીબી સહાય માટે અરજી કરો",
   "applyPratibhaSamman": "પ્રતિભા સન્માન માટે અરજી કરો",
   "applicationAcceptingStartsAt": "અરજીઓ {start} થી શરૂ થશે.",
+  "@applicationAcceptingStartsAt": {
+    "placeholders": {
+      "start": {}
+    }
+  },
   "applicationAcceptingNow": "હાલ અરજીઓ સ્વીકારવામાં આવી રહી છે.",
   "applicationAcceptingClosed": "હવે અરજીઓ સ્વીકારવામાં આવતી નથી.",
   "applicationAvailabilityLoadError": "અરજી ઉપલબ્ધતા લોડ કરી શકાઈ નથી.",
