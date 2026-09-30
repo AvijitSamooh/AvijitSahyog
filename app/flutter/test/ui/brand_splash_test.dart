@@ -10,14 +10,13 @@ void main() {
       locale: Locale('en'),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: BrandSplashPage(duration: Duration.zero),
+      home: BrandSplashPage(duration: Duration(seconds: 5),),
     );
   }
 
   testWidgets('shows Avijit branding and guru names', (tester) async {
     await tester.pumpWidget(buildSubject());
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 1));
 
     expect(find.text('Avijit Samuh'), findsOneWidget);
     expect(find.text('Avijit Sahyog'), findsOneWidget);
