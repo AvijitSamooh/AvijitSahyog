@@ -427,23 +427,12 @@ class _ReferenceMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 4, 20, 22),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+    return const Padding(
+      padding: EdgeInsets.fromLTRB(20, 4, 20, 22),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          ListTile(
-            leading: const Icon(Icons.language_rounded),
-            title: Text(l10n.language),
-            onTap: () => Navigator.pop(context),
-          ),
-          ListTile(
-            leading: const Icon(Icons.person_outline_rounded),
-            title: Text(l10n.profile),
-            onTap: () => Navigator.pop(context),
-          ),
-          const AppSettingsMenu(),
+          AppSettingsMenu(),
         ],
       ),
     );
