@@ -87,7 +87,7 @@ void main() {
             supportedLocales: AppLocalizations.supportedLocales,
             locale: const Locale('en'),
             theme: ThemeData(useMaterial3: true),
-            home: home ?? const AvijitSahyogApp(),
+            home: home ?? const AvijitSahyogApp(splashDuration: Duration.zero),
           ),
         ),
       ),
@@ -139,7 +139,7 @@ void main() {
   }
 
   testWidgets('home page renders the cause-centric entry point', (tester) async {
-    await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
+    await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp(splashDuration: Duration.zero)));
     await tester.pump();
 
     expect(find.byType(AvijitSahyogApp), findsOneWidget);
