@@ -10,6 +10,7 @@ import '../../auth/presentation/login_page.dart';
 import '../../auth/providers/auth_providers.dart';
 import '../models/help_application.dart';
 import '../models/application_window.dart';
+import '../models/application_rule.dart';
 import '../providers/help_applications_providers.dart';
 
 class ApplicationsPage extends ConsumerWidget {
@@ -244,6 +245,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
   bool _busy = false;
   int _uploadTotal = 0;
   int _uploadCompleted = 0;
+  final Set<String> _acceptedRuleIds = <String>{};
 
   @override
   void initState() {
@@ -356,6 +358,11 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     }
 
     final l10n = AppLocalizations.of(context)!;
+    final rules = ref.read(applicationRulesProvider((type: widget.type, language: Localizations.localeOf(context).languageCode))).valueOrNull ?? const <ApplicationRule>[];
+    if (_acceptedRuleIds.length != rules.length || rules.any((rule) => !_acceptedRuleIds.contains(rule.id))) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.applicationRulesRequired)));
+      return;
+    }
     if (!_formKey.currentState!.validate()) return;
     if (_mediaIds.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.imagesRequired)));
@@ -373,9 +380,9 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     try {
       final repo = ref.read(helpApplicationsRepositoryProvider);
       if (widget.application == null) {
-        await repo.create(type: widget.type, requestedAmount: amount, applicantName: _name.text, mobileNumber: _mobile.text, email: _email.text, address: _address.text, city: _city.text, state: _state.text, pincode: _pincode.text, mediaIds: _mediaIds, clarification: _clarification.text);
+        await repo.create(type: widget.type, requestedAmount: amount, applicantName: _name.text, mobileNumber: _mobile.text, email: _email.text, address: _address.text, city: _city.text, state: _state.text, pincode: _pincode.text, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false), clarification: _clarification.text);
       } else {
-        await repo.resubmit(id: widget.application!.id, clarification: _clarification.text, mediaIds: _mediaIds, requestedAmount: amount);
+        await repo.resubmit(id: widget.application!.id, clarification: _clarification.text, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false), requestedAmount: amount);
       }
       ref.invalidate(myHelpApplicationsProvider);
       if (mounted) {
@@ -394,6 +401,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     final l10n = AppLocalizations.of(context)!;
     final isSamman = widget.type == 'PRATIBHA_SAMMAN';
     final windows = ref.watch(applicationWindowsProvider);
+    final rules = ref.watch(applicationRulesProvider((type: widget.type, language: Localizations.localeOf(context).languageCode)));
     if (windows.isLoading) {
       return AppPageScaffold(
         title: Text(_typeLabel(l10n, widget.type)),
@@ -413,6 +421,19 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
         body: _ApplicationWindowClosedView(window: window),
       );
     }
+    if (rules.isLoading) {
+      return AppPageScaffold(
+        title: Text(_typeLabel(l10n, widget.type)),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+    if (rules.hasError) {
+      return AppPageScaffold(
+        title: Text(_typeLabel(l10n, widget.type)),
+        body: Center(child: Text(l10n.applicationRulesLoadError)),
+      );
+    }
+    final applicationRules = rules.valueOrNull ?? const <ApplicationRule>[];
     return AppPageScaffold(
       title: Text(_typeLabel(l10n, widget.type)),
       body: Form(
@@ -420,6 +441,38 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 110),
           children: [
+            if (applicationRules.isNotEmpty) ...[
+              Text(l10n.applicationRulesTitle, style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 6),
+              Text(l10n.applicationRulesSubtitle),
+              const SizedBox(height: 8),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    children: applicationRules.asMap().entries.map((entry) {
+                      final rule = entry.value;
+                      return CheckboxListTile(
+                        value: _acceptedRuleIds.contains(rule.id),
+                        controlAffinity: ListTileControlAffinity.leading,
+                        contentPadding: EdgeInsets.zero,
+                        title: Text('\${entry.key + 1}. \${rule.text}'),
+                        onChanged: _busy ? null : (checked) {
+                          setState(() {
+                            if (checked == true) {
+                              _acceptedRuleIds.add(rule.id);
+                            } else {
+                              _acceptedRuleIds.remove(rule.id);
+                            }
+                          });
+                        },
+                      );
+                    }).toList(growable: false),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
             Text(l10n.applicantDetails, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 12),
             TextFormField(
