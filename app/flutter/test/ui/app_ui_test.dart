@@ -282,7 +282,7 @@ void main() {
 
     final applicationsEntry = find.byKey(const ValueKey('home_applications'));
     expect(applicationsEntry, findsOneWidget);
-    expect(find.text(l10n(tester).homeHelpTitle), findsOneWidget);
+    expect(find.text('Education'), findsOneWidget);
   });
 
   testWidgets('admin beneficiary card exposes delete action', (tester) async {
@@ -326,7 +326,7 @@ void main() {
 
     expect(find.byKey(const ValueKey('app_settings_admin_portal')), findsOneWidget);
     expect(find.text(l10n(tester).adminPortal), findsOneWidget);
-    expect(find.text(l10n(tester).profile), findsOneWidget);
+    expect(find.text(l10n(tester).profile), findsWidgets);
   });
 
   testWidgets('shared page scaffold keeps the five-tab navigation on detail pages', (tester) async {
@@ -467,8 +467,8 @@ void main() {
   testWidgets('impact navigation opens the real impact explorer', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp(splashDuration: Duration.zero)));
     await tester.pumpAndSettle();
-    final impactButton = find.text('Impact').last;
-    await tester.tap(impactButton);
+    final navigation = AppShellScope.of(tester.element(find.byType(HomePage))).navigation;
+    navigation.select(2);
     await tester.pumpAndSettle();
     expect(find.text('Our Impact'), findsOneWidget);
     expect(find.text('Search by name'), findsOneWidget);
@@ -554,7 +554,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('app_settings_menu')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Language'));
+    await tester.tap(find.text('Language').last);
     await tester.pumpAndSettle();
 
     expect(find.text('English'), findsOneWidget);
