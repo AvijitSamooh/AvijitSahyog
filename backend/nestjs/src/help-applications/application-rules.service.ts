@@ -12,11 +12,11 @@ export class ApplicationRulesService {
     const rules = await this.prisma.applicationRule.findMany({
       where: { type, isActive: true },
       orderBy: { displayOrder: 'asc' },
-      include: { translations: true },
+      include: { translations: { include: { language: true } } },
     });
     return rules.map((rule) => {
-      const translation = rule.translations.find((item) => item.languageId === requested) ??
-        rule.translations.find((item) => item.languageId === 'en');
+      const translation = rule.translations.find((item) => item.language.code === requested) ??
+        rule.translations.find((item) => item.language.code === 'en');
       return { id: rule.id, type: rule.type, displayOrder: rule.displayOrder, text: translation?.text ?? '' };
     });
   }
@@ -32,7 +32,7 @@ export class ApplicationRulesService {
       type: rule.type,
       displayOrder: rule.displayOrder,
       isActive: rule.isActive,
-      translations: rule.translations.map((translation) => ({ language: translation.code ?? translation.language.code, text: translation.text })),
+      translations: rule.translations.map((translation) => ({ language: translation.language.code, text: translation.text })),
     }));
   }
 
