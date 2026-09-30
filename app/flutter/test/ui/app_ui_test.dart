@@ -198,7 +198,7 @@ void main() {
     expect(find.textContaining('Applications will start from'), findsOneWidget);
     expect(find.text('Applications are no longer being accepted.'), findsOneWidget);
 
-    await tester.tap(find.byKey(const ValueKey('application_pratibha')));
+    await tester.tap(find.byKey(const ValueKey('application_education')));
     await tester.pumpAndSettle();
     expect(find.textContaining('Applications will start from'), findsWidgets);
   });
