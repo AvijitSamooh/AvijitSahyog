@@ -260,6 +260,36 @@ class ApiClient {
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
+  Future<List<Map<String, dynamic>>> getApplicationRules(String type, String languageCode) async {
+    final uri = Uri.parse('$baseUrl/application-rules/$type').replace(queryParameters: {'language': languageCode});
+    final response = await _client.get(uri, headers: await _headers());
+    _ensureSuccess(response, 'Loading application rules');
+    return (jsonDecode(response.body) as List<dynamic>).cast<Map<String, dynamic>>();
+  }
+
+  Future<List<Map<String, dynamic>>> getAdminApplicationRules(String type) async {
+    final response = await _client.get(Uri.parse('$baseUrl/admin/application-rules/$type'), headers: await _headers());
+    _ensureSuccess(response, 'Loading application rules');
+    return (jsonDecode(response.body) as List<dynamic>).cast<Map<String, dynamic>>();
+  }
+
+  Future<Map<String, dynamic>> createAdminApplicationRule(Map<String, dynamic> payload) async {
+    final response = await _client.post(Uri.parse('$baseUrl/admin/application-rules'), headers: await _headers(json: true), body: jsonEncode(payload));
+    _ensureSuccess(response, 'Creating application rule');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> updateAdminApplicationRule(String id, Map<String, dynamic> payload) async {
+    final response = await _client.patch(Uri.parse('$baseUrl/admin/application-rules/$id'), headers: await _headers(json: true), body: jsonEncode(payload));
+    _ensureSuccess(response, 'Updating application rule');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<void> deleteAdminApplicationRule(String id) async {
+    final response = await _client.delete(Uri.parse('$baseUrl/admin/application-rules/$id'), headers: await _headers());
+    _ensureSuccess(response, 'Deleting application rule');
+  }
+
   Future<Map<String, dynamic>> getApplicationWindows() async {
     final response = await _client.get(Uri.parse('$baseUrl/application-windows'), headers: await _headers());
     _ensureSuccess(response, 'Loading application availability');
