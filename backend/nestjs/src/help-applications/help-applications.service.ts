@@ -86,7 +86,7 @@ export class HelpApplicationsService {
     }
     this.validateSubmission(existing.type, dto.requestedAmount ?? Number(existing.requestedAmount ?? 0), dto.mediaIds);
     const media = await this.validateMedia(dto.mediaIds, user.id);
-    const acceptedRules = await this.validateAcceptedRules(existing.type, dto.acceptedRuleIds);
+    const acceptedRules = await this.validateAcceptedRules(existing.type as HelpApplicationTypeDto, dto.acceptedRuleIds);
     return this.prisma.$transaction(async (tx) => {
       await tx.helpApplicationMedia.deleteMany({ where: { applicationId: id } });
       await tx.helpApplicationRuleAcceptance.deleteMany({ where: { applicationId: id } });
