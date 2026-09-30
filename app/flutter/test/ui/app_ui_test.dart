@@ -182,7 +182,7 @@ void main() {
       tester,
       home: const ApplicationsPage(),
       overrides: [
-        authProvider.overrideWith(() => _AuthenticatedAdminController()),
+        authProvider.overrideWith((ref) => _AuthenticatedAdminController()),
         applicationWindowsProvider.overrideWith((ref) async => [scheduled, closed]),
         myHelpApplicationsProvider.overrideWith((ref) async => const []),
       ],
