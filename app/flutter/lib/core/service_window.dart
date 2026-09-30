@@ -27,6 +27,18 @@ class ServiceWindow {
       defaultValue: '08:00',
     );
 
+    return ServiceWindow.fromLabels(
+      enabled: enabled,
+      startLabel: startLabel,
+      endLabel: endLabel,
+    );
+  }
+
+  factory ServiceWindow.fromLabels({
+    required bool enabled,
+    required String startLabel,
+    required String endLabel,
+  }) {
     var startMinutes = _parseMinutes(startLabel, fallback: 21 * 60);
     var endMinutes = _parseMinutes(endLabel, fallback: 8 * 60);
 
