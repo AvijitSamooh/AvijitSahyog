@@ -71,6 +71,13 @@ jobs:
           flutter analyze
           flutter test --dart-define=BACKEND_SERVICE_WINDOW_ENABLED=false
 
+      - name: Verify service window configuration
+        if: ${{ env.RELEASE_VALIDATION == 'full' }}
+        run: |
+          flutter test test/core/service_window_test.dart \
+            --dart-define=BACKEND_SERVICE_WINDOW_ENABLED="$BACKEND_SERVICE_WINDOW_ENABLED" \
+            --dart-define=BACKEND_SERVICE_OFFLINE_START="$BACKEND_SERVICE_WINDOW_START" \
+            --dart-define=BACKEND_SERVICE_OFFLINE_END="$BACKEND_SERVICE_WINDOW_END"
       - name: Decode Android upload keystore
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
