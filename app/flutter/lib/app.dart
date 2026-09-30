@@ -228,7 +228,7 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
           ],
         ),
       ),
-      home: BrandSplashPage(duration: splashDuration),
+      home: BrandSplashPage(duration: widget.splashDuration),
       routes: {
         '/impact': (_) => const ImpactPage(),
       },
