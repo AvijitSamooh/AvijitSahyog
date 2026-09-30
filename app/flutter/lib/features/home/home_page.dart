@@ -88,9 +88,9 @@ class _HomePageState extends ConsumerState<HomePage> {
           index: _selectedIndex,
           children: [
             _HomeContent(
-              onService: () => _selectNavigation(1),
+              onService: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CausesPage())),
               onEducation: () => _selectNavigation(1),
-              onCooperation: () => _selectNavigation(0),
+              onCooperation: () => _selectNavigation(2),
               onRecognition: () => _selectNavigation(1),
             ),
             const ApplicationsPage(),
