@@ -221,7 +221,7 @@ export class HelpApplicationsService {
   private async validateAcceptedRules(type: HelpApplicationTypeDto, acceptedRuleIds: string[]) {
     const rules = await this.prisma.applicationRule.findMany({
       where: { type, isActive: true },
-      select: { id: true, translations: { where: { languageId: 'en' }, select: { text: true }, take: 1 } },
+      select: { id: true, translations: { where: { language: { code: 'en' } }, select: { text: true }, take: 1 } },
     });
     const expected = new Set(rules.map((rule) => rule.id));
     const accepted = new Set(acceptedRuleIds ?? []);
