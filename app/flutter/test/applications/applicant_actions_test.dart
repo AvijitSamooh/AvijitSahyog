@@ -8,6 +8,8 @@ import 'package:avijit_sahyog/core/network/api_client.dart';
 import 'package:avijit_sahyog/features/applications/data/help_applications_repository.dart';
 import 'package:avijit_sahyog/features/applications/models/help_application.dart';
 import 'package:avijit_sahyog/features/applications/presentation/applications_page.dart';
+import 'package:avijit_sahyog/features/applications/models/application_window.dart';
+import 'package:avijit_sahyog/features/applications/providers/help_applications_providers.dart';
 import 'package:avijit_sahyog/features/applications/providers/help_applications_providers.dart';
 import 'package:avijit_sahyog/features/auth/data/auth_repository.dart';
 import 'package:avijit_sahyog/features/auth/models/app_user.dart';
@@ -83,6 +85,15 @@ void main() {
     ]);
     await _pump(tester, home: const ApplicationsPage(), overrides: [
       authProvider.overrideWith((ref) => _AuthenticatedController()),
+      applicationWindowsProvider.overrideWith((ref) async => [
+        ApplicationWindow.fromJson({
+          'type': 'MEDICAL_HELP',
+          'startsAt': '2026-09-01T10:00:00.000Z',
+          'closedAt': null,
+          'status': 'OPEN',
+          'canApply': true,
+        }),
+      ]),
       helpApplicationsRepositoryProvider.overrideWithValue(repository),
       myHelpApplicationsProvider.overrideWith((ref) async => repository.items),
     ]);
