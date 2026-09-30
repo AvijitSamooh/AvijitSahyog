@@ -8,6 +8,8 @@ import { StartApplicationWindowDto } from './dto/application-window.dto';
 import { ResubmitHelpApplicationDto } from './dto/resubmit-help-application.dto';
 import { ReviewHelpApplicationDto } from './dto/review-help-application.dto';
 import { VoteHelpApplicationDto } from './dto/vote-help-application.dto';
+import { CreateApplicationRuleDto, PublicApplicationRulesQueryDto, UpdateApplicationRuleDto } from './dto/application-rule.dto';
+import { ApplicationRulesService } from './application-rules.service';
 import { ApplicationWindowsService } from './application-windows.service';
 import { HelpApplicationsService } from './help-applications.service';
 
@@ -94,4 +96,33 @@ export class AdminHelpApplicationsController {
   review(@Param('id') id: string, @Body() dto: ReviewHelpApplicationDto) {
     return this.service.review(id, dto);
   }
+}
+
+
+@Controller('application-rules')
+export class ApplicationRulesController {
+  constructor(private readonly service: ApplicationRulesService) {}
+
+  @Get(':type')
+  list(@Param('type') type: HelpApplicationTypeDto, @Query() query: PublicApplicationRulesQueryDto) {
+    return this.service.list(type, query.language);
+  }
+}
+
+@Controller('admin/application-rules')
+@UseGuards(AdminGuard)
+export class AdminApplicationRulesController {
+  constructor(private readonly service: ApplicationRulesService) {}
+
+  @Get(':type')
+  list(@Param('type') type: HelpApplicationTypeDto) { return this.service.listAdmin(type); }
+
+  @Post()
+  create(@Body() dto: CreateApplicationRuleDto) { return this.service.create(dto); }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() dto: UpdateApplicationRuleDto) { return this.service.update(id, dto); }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) { return this.service.remove(id); }
 }
