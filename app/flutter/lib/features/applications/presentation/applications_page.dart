@@ -641,6 +641,19 @@ class _ApplicationCard extends StatelessWidget {
   }
 }
 
+String _applicationActionKey(String type) {
+  switch (type) {
+    case 'EDUCATION_ASSISTANCE':
+      return 'application_education';
+    case 'MEDICAL_HELP':
+      return 'application_medical';
+    case 'PRATIBHA_SAMMAN':
+      return 'application_pratibha';
+    default:
+      return 'application_$type';
+  }
+}
+
 ApplicationWindow? _findWindow(
   AsyncValue<List<ApplicationWindow>> windows,
   String type,
@@ -687,7 +700,7 @@ class _ApplicationActionCard extends ConsumerWidget {
     };
 
     return _ActionCard(
-      key: ValueKey('application_$type'),
+      key: ValueKey(_applicationActionKey(type)),
       icon: icon,
       title: title,
       subtitle: subtitle,
