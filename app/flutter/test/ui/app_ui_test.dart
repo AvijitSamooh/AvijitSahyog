@@ -218,6 +218,29 @@ void main() {
       home: const ApplicationsPage(),
       overrides: [
         authProvider.overrideWith((ref) => _AuthenticatedAdminController()),
+        applicationWindowsProvider.overrideWith((ref) async => [
+          ApplicationWindow.fromJson({
+            'type': 'EDUCATION_ASSISTANCE',
+            'startsAt': '2026-09-01T10:00:00.000Z',
+            'closedAt': null,
+            'status': 'OPEN',
+            'canApply': true,
+          }),
+          ApplicationWindow.fromJson({
+            'type': 'MEDICAL_HELP',
+            'startsAt': '2026-09-01T10:00:00.000Z',
+            'closedAt': null,
+            'status': 'OPEN',
+            'canApply': true,
+          }),
+          ApplicationWindow.fromJson({
+            'type': 'PRATIBHA_SAMMAN',
+            'startsAt': '2026-09-01T10:00:00.000Z',
+            'closedAt': null,
+            'status': 'OPEN',
+            'canApply': true,
+          }),
+        ]),
         myHelpApplicationsProvider.overrideWith((ref) async => const []),
       ],
     );
