@@ -164,7 +164,7 @@ void main() {
 
   testWidgets('application page explains a scheduled and closed application window', (tester) async {
     final scheduled = ApplicationWindow.fromJson({
-      'type': 'PRATIBHA_SAMMAN',
+      'type': 'EDUCATION_ASSISTANCE',
       'startsAt': '2026-10-05T10:00:00.000Z',
       'closedAt': null,
       'status': 'SCHEDULED',
@@ -177,13 +177,20 @@ void main() {
       'status': 'CLOSED',
       'canApply': false,
     });
+    final open = ApplicationWindow.fromJson({
+      'type': 'PRATIBHA_SAMMAN',
+      'startsAt': '2026-09-01T10:00:00.000Z',
+      'closedAt': null,
+      'status': 'OPEN',
+      'canApply': true,
+    });
 
     await pumpApp(
       tester,
       home: const ApplicationsPage(),
       overrides: [
         authProvider.overrideWith((ref) => _AuthenticatedAdminController()),
-        applicationWindowsProvider.overrideWith((ref) async => [scheduled, closed]),
+        applicationWindowsProvider.overrideWith((ref) async => [scheduled, closed, open]),
         myHelpApplicationsProvider.overrideWith((ref) async => const []),
       ],
     );
