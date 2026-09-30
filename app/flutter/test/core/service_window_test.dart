@@ -23,6 +23,21 @@ void main() {
       expect(disabled.isDowntime(DateTime(2026, 9, 28, 23, 0)), isFalse);
     });
 
+
+    test('normalizes a reversed configured overnight window', () {
+      final normalized = ServiceWindow.fromLabels(
+        enabled: true,
+        startLabel: '08:00',
+        endLabel: '21:00',
+      );
+
+      expect(normalized.startLabel, '9:00 PM');
+      expect(normalized.endLabel, '8:00 AM');
+      expect(normalized.isDowntime(DateTime(2026, 9, 30, 23, 0)), isTrue);
+      expect(normalized.isDowntime(DateTime(2026, 10, 1, 7, 59)), isTrue);
+      expect(normalized.isDowntime(DateTime(2026, 10, 1, 12, 0)), isFalse);
+    });
+
     test('supports a daytime window as well', () {
       final daytime = ServiceWindow(enabled: true, startMinutes: 13 * 60, endMinutes: 14 * 60, startLabel: '1:00 PM', endLabel: '2:00 PM');
       expect(daytime.isDowntime(DateTime(2026, 9, 28, 12, 59)), isFalse);
