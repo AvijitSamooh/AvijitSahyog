@@ -135,3 +135,8 @@ The submit action disables itself while the backend call is in flight. On succes
 Applicants can delete their own applications while they are not in a final approval/recognition state. Finalised applications are retained for review and audit continuity.
 
 Administrator review actions surface localized success/failure feedback. Pratibha Samman decisions explicitly support both **Considered for Samman** and **Not Selected**.
+
+
+### Application rules
+
+Administrators can configure ordered acceptance rules for each application type. Rules require English, Hindi, Marathi and Gujarati text. Applicants see the active rules in their selected language and must acknowledge every current rule before submission; the backend validates the full active rule set and stores a text snapshot of the acknowledged rules with the application.
