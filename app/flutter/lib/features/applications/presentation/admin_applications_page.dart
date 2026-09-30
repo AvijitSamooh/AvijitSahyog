@@ -193,7 +193,7 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
           const _ApplicationRulesAdminPanel(),
           _ApplicationWindowAdminPanel(
             windows: windows,
-            typeLabel: (type) => _ruleTypeLabel(l10n, type),
+            typeLabel: (type) => _typeLabel(l10n, type),
             formatDateTime: (value) => _windowDateTime(context, value),
             onStart: _startWindow,
             onClose: _closeWindow,
@@ -297,7 +297,7 @@ class _ApplicationRulesAdminPanelState extends ConsumerState<_ApplicationRulesAd
       ])),
       actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(l10n.cancel)), FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(l10n.saveRule))],
     )));
-    if (save != true || !mounted) { for (final x in [en, hi, mr, gu, order]) x.dispose(); return; }
+    if (save != true || !mounted) { for (final x in [en, hi, mr, gu, order]) { x.dispose(); } return; }
     final values = {'en': en.text.trim(), 'hi': hi.text.trim(), 'mr': mr.text.trim(), 'gu': gu.text.trim()};
     if (values.values.any((value) => value.isEmpty)) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.allRuleTranslationsRequired))); for (final x in [en, hi, mr, gu, order]) x.dispose(); return; }
     final payload = {'type': _type, 'displayOrder': int.tryParse(order.text.trim()) ?? (_rules.length + 1), 'isActive': active, 'translations': values.entries.map((entry) => {'language': entry.key, 'text': entry.value}).toList(growable: false)};
@@ -322,7 +322,7 @@ class _ApplicationRulesAdminPanelState extends ConsumerState<_ApplicationRulesAd
     return Card(margin: const EdgeInsets.fromLTRB(12, 12, 12, 4), child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(l10n.adminApplicationRules, style: Theme.of(context).textTheme.titleLarge),
       const SizedBox(height: 4), Text(l10n.adminApplicationRulesSubtitle), const SizedBox(height: 12),
-      DropdownButtonFormField<String>(value: _type, decoration: InputDecoration(labelText: l10n.applicationType), items: ['EDUCATION_ASSISTANCE','MEDICAL_HELP','PRATIBHA_SAMMAN'].map((type) => DropdownMenuItem(value: type, child: Text(_ruleTypeLabel(l10n, type)))).toList(growable: false), onChanged: (value) { if (value == null) return; setState(() => _type = value); _load(); }),
+      DropdownButtonFormField<String>(initialValue: _type, decoration: InputDecoration(labelText: l10n.applicationType), items: ['EDUCATION_ASSISTANCE','MEDICAL_HELP','PRATIBHA_SAMMAN'].map((type) => DropdownMenuItem(value: type, child: Text(_ruleTypeLabel(l10n, type)))).toList(growable: false), onChanged: (value) { if (value == null) return; setState(() => _type = value); _load(); }),
       const SizedBox(height: 10), Align(alignment: Alignment.centerRight, child: FilledButton.icon(onPressed: () => _editRule(), icon: const Icon(Icons.add), label: Text(l10n.addApplicationRule))), const SizedBox(height: 6),
       if (_loading) const LinearProgressIndicator(),
       if (!_loading && _rules.isEmpty) Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text(l10n.noApplicationRules)),
