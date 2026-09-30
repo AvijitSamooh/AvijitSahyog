@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'features/home/home_page.dart';
+import 'features/home/presentation/brand_splash_page.dart';
 import 'core/analytics/analytics_service.dart';
 import 'core/network/api_client.dart';
 import 'core/service_window.dart';
+import 'core/theme/app_theme.dart';
 import 'core/navigation/app_shell_scope.dart';
 import 'features/impact/presentation/impact_page.dart';
 
@@ -75,93 +77,7 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
     await preferences.setString(_localeKey, locale.languageCode);
   }
 
-  ThemeData _buildTheme() {
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: _maroon,
-      brightness: Brightness.light,
-    ).copyWith(
-      primary: _maroon,
-      onPrimary: Colors.white,
-      secondary: _saffron,
-      onSecondary: _maroonDark,
-      surface: Colors.white,
-      onSurface: _text,
-      outline: _line,
-    );
-
-    return ThemeData(
-      useMaterial3: true,
-      colorScheme: colorScheme,
-      scaffoldBackgroundColor: _cream,
-      // Use Flutter/platform typography so Devanagari, Gujarati and Marathi use their native fallback fonts.
-      // The previous Poppins declaration was not bundled and caused inconsistent fallback rendering.
-      fontFamilyFallback: const ['Noto Sans Devanagari', 'Noto Sans Gujarati', 'Noto Sans', 'Roboto'],
-
-      appBarTheme: const AppBarTheme(
-        backgroundColor: _cream,
-        foregroundColor: _maroon,
-        elevation: 0,
-        centerTitle: false,
-        titleTextStyle: TextStyle(
-          color: _maroon,
-          fontSize: 20,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-      cardTheme: CardThemeData(
-        color: Colors.white,
-        elevation: 0,
-        margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-          side: const BorderSide(color: _line),
-        ),
-      ),
-      filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          backgroundColor: _maroon,
-          foregroundColor: Colors.white,
-          minimumSize: const Size(0, 50),
-          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-        ),
-      ),
-      textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(foregroundColor: _maroon),
-      ),
-      dividerTheme: const DividerThemeData(color: _line, space: 1),
-      progressIndicatorTheme: const ProgressIndicatorThemeData(color: _maroon),
-      dropdownMenuTheme: DropdownMenuThemeData(
-        textStyle: const TextStyle(fontSize: 15, height: 1.35, color: _text),
-        menuStyle: MenuStyle(
-          shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14)))),
-        ),
-      ),
-      textTheme: const TextTheme(
-        headlineSmall: TextStyle(
-          color: _maroon,
-          fontSize: 28,
-          fontWeight: FontWeight.w700,
-          height: 1.2,
-        ),
-        titleLarge: TextStyle(
-          color: _maroon,
-          fontSize: 20,
-          fontWeight: FontWeight.w700,
-        ),
-        titleMedium: TextStyle(
-          color: _text,
-          fontSize: 17,
-          fontWeight: FontWeight.w600,
-        ),
-        bodyLarge: TextStyle(color: _text, fontSize: 16, height: 1.6),
-        bodyMedium: TextStyle(color: _textSoft, fontSize: 14, height: 1.55),
-      ),
-    );
-  }
-
+  ThemeData _buildTheme() => AppTheme.light();
   void _showServiceUnavailableMessage() {
     if (!_serviceWindowMessageVisible) {
       setState(() => _serviceWindowMessageVisible = true);
@@ -319,7 +235,7 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
           ],
         ),
       ),
-      home: const HomePage(),
+      home: const BrandSplashPage(),
       routes: {
         '/impact': (_) => const ImpactPage(),
       },
