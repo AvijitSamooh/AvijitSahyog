@@ -3,6 +3,7 @@ import '../../causes/providers/causes_providers.dart';
 import '../data/help_applications_repository.dart';
 import '../models/help_application.dart';
 import '../models/application_window.dart';
+import '../models/application_rule.dart';
 
 final helpApplicationsRepositoryProvider = Provider<HelpApplicationsRepository>((ref) =>
     HelpApplicationsRepository(ref.watch(apiClientProvider)));
@@ -14,3 +15,7 @@ final myHelpApplicationsProvider =
 final applicationWindowsProvider =
     FutureProvider.autoDispose<List<ApplicationWindow>>((ref) =>
         ref.watch(helpApplicationsRepositoryProvider).applicationWindows());
+
+
+final applicationRulesProvider = FutureProvider.autoDispose.family<List<ApplicationRule>, ({String type, String language})>((ref, key) =>
+    ref.watch(helpApplicationsRepositoryProvider).applicationRules(key.type, key.language));
