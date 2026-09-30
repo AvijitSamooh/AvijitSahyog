@@ -150,8 +150,8 @@ jobs:
             --build-number="$PLAY_VERSION_CODE" \
             --dart-define=API_BASE_URL=${{ vars.API_BASE_URL }} \
             --dart-define=BACKEND_SERVICE_WINDOW_ENABLED="$BACKEND_SERVICE_WINDOW_ENABLED" \
-            --dart-define=BACKEND_SERVICE_WINDOW_START="$BACKEND_SERVICE_WINDOW_START" \
-            --dart-define=BACKEND_SERVICE_WINDOW_END="$BACKEND_SERVICE_WINDOW_END"
+            --dart-define=BACKEND_SERVICE_OFFLINE_START="$BACKEND_SERVICE_WINDOW_START" \
+            --dart-define=BACKEND_SERVICE_OFFLINE_END="$BACKEND_SERVICE_WINDOW_END"
 
       - name: Assert release manifest excludes Advertising ID
         run: |
