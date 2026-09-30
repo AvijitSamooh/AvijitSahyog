@@ -311,7 +311,13 @@ class _ApplicationWindowAdminPanel extends StatelessWidget {
                 ];
                 return Column(
                   children: knownTypes.map((type) {
-                    final window = items.where((item) => item.type == type).firstOrNull;
+                    ApplicationWindow? window;
+                    for (final item in items) {
+                      if (item.type == type) {
+                        window = item;
+                        break;
+                      }
+                    }
                     final status = window?.status ?? ApplicationWindowStatus.closed;
                     final statusText = switch (status) {
                       ApplicationWindowStatus.scheduled =>
