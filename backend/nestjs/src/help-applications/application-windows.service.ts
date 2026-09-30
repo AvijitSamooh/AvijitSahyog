@@ -66,7 +66,7 @@ export class ApplicationWindowsService {
     return this.toResponse(item, now);
   }
 
-  async ensureAccepting(type: HelpApplicationTypeDto) {
+  async ensureAccepting(type: string) {
     this.validateType(type);
     const now = new Date();
     const window = await this.prisma.applicationWindow.findUnique({ where: { type } });
