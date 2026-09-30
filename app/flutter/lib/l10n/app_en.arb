@@ -272,6 +272,11 @@
   "applyMedicalHelp": "Apply for Medical Help",
   "applyPratibhaSamman": "Apply for Pratibha Samman",
   "applicationAcceptingStartsAt": "Applications will start from {start}.",
+  "@applicationAcceptingStartsAt": {
+    "placeholders": {
+      "start": {}
+    }
+  },
   "applicationAcceptingNow": "Applications are open now.",
   "applicationAcceptingClosed": "Applications are no longer being accepted.",
   "applicationAvailabilityLoadError": "Unable to load application availability.",
