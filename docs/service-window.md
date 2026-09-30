@@ -27,7 +27,9 @@ The values are embedded into Flutter builds using Dart defines:
 - `BACKEND_SERVICE_OFFLINE_START` — `HH:mm`, defaults to `21:00`
 - `BACKEND_SERVICE_OFFLINE_END` — `HH:mm`, defaults to `08:00`
 
-The Android release workflow maps these explicitly to the Flutter `BACKEND_SERVICE_WINDOW_START/END` defines. The variable names deliberately describe the **offline** interval so the configuration cannot be mistaken for the service's available hours.
+The Android release workflow maps these explicitly to the Flutter `BACKEND_SERVICE_WINDOW_START/END` defines.
+
+For production Android releases, the workflow treats these values as an **overnight offline window**. If repository variables are accidentally supplied in the reverse daytime order (for example `08:00` → `21:00`), the release workflow reverses them before building so the production app remains unavailable only from 9:00 PM to 8:00 AM. The variable names deliberately describe the **offline** interval so the configuration cannot be mistaken for the service's available hours.
 
 The expected nightly configuration is `21:00` → `08:00`. The daytime interval `08:00` → `21:00` must not be used for this offline setting.
 
