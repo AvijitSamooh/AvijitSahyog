@@ -111,6 +111,66 @@ class ApplicationsPage extends ConsumerWidget {
     }
   }
 
+Future<void> _showWindowMessage(
+  BuildContext context,
+  String type,
+  ApplicationWindow? window,
+) async {
+  final l10n = AppLocalizations.of(context)!;
+  final title = _typeLabel(l10n, type);
+  final message = window?.status == ApplicationWindowStatus.scheduled
+      ? l10n.applicationAcceptingStartsAt(_windowDateTime(context, window!.startsAt))
+      : l10n.applicationAcceptingClosed;
+  await showDialog<void>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: Text(title),
+      content: Text(message),
+      actions: [
+        FilledButton(
+          onPressed: () => Navigator.pop(dialogContext),
+          child: Text(l10n.close),
+        ),
+      ],
+    ),
+  );
+}
+
+class _ApplicationWindowClosedView extends StatelessWidget {
+  const _ApplicationWindowClosedView({required this.window, required this.type});
+
+  final ApplicationWindow? window;
+  final String type;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final message = window?.status == ApplicationWindowStatus.scheduled
+        ? l10n.applicationAcceptingStartsAt(_windowDateTime(context, window!.startsAt))
+        : l10n.applicationAcceptingClosed;
+    return Center(
+      child: Card(
+        margin: const EdgeInsets.all(20),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.event_busy_rounded, size: 48),
+              const SizedBox(height: 16),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _ApplicationHistoryEmpty extends StatelessWidget {
   const _ApplicationHistoryEmpty();
 
@@ -288,6 +348,14 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
   }
 
   Future<void> _submit() async {
+    final currentWindow = _findWindow(ref.read(applicationWindowsProvider), widget.type);
+    if (currentWindow?.isOpen != true) {
+      if (mounted) {
+        await _showWindowMessage(context, widget.type, currentWindow);
+      }
+      return;
+    }
+
     final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
     if (_mediaIds.isEmpty) {
@@ -326,6 +394,26 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isSamman = widget.type == 'PRATIBHA_SAMMAN';
+    final windows = ref.watch(applicationWindowsProvider);
+    if (windows.isLoading) {
+      return AppPageScaffold(
+        title: Text(_typeLabel(l10n, widget.type)),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+    if (windows.hasError) {
+      return AppPageScaffold(
+        title: Text(_typeLabel(l10n, widget.type)),
+        body: Center(child: Text(l10n.applicationAvailabilityLoadError)),
+      );
+    }
+    final window = _findWindow(windows, widget.type);
+    if (window?.isOpen != true) {
+      return AppPageScaffold(
+        title: Text(_typeLabel(l10n, widget.type)),
+        body: _ApplicationWindowClosedView(window: window, type: widget.type),
+      );
+    }
     return AppPageScaffold(
       title: Text(_typeLabel(l10n, widget.type)),
       body: Form(
