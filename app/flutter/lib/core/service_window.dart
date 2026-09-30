@@ -27,8 +27,17 @@ class ServiceWindow {
       defaultValue: '08:00',
     );
 
-    final startMinutes = _parseMinutes(startLabel, fallback: 21 * 60);
-    final endMinutes = _parseMinutes(endLabel, fallback: 8 * 60);
+    var startMinutes = _parseMinutes(startLabel, fallback: 21 * 60);
+    var endMinutes = _parseMinutes(endLabel, fallback: 8 * 60);
+
+    // The configured production window is an overnight offline window.
+    // Normalize an accidentally reversed daytime configuration so an old or
+    // misconfigured build cannot disable the backend during the daytime.
+    if (startMinutes < endMinutes) {
+      final normalizedStart = startMinutes;
+      startMinutes = endMinutes;
+      endMinutes = normalizedStart;
+    }
 
     return ServiceWindow(
       enabled: enabled,
