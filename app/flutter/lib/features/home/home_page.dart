@@ -58,9 +58,9 @@ class _HomePageState extends ConsumerState<HomePage> {
         return const ProfilePage();
       default:
         return _HomeContent(
-          onService: () => _selectNavigation(1),
+          onService: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CausesPage())),
           onEducation: () => _selectNavigation(1),
-          onCooperation: () => AppShellScope.of(context).navigation.select(0),
+          onCooperation: () => _selectNavigation(2),
           onRecognition: () => _selectNavigation(1),
         );
     }
@@ -193,6 +193,7 @@ class _HomeContent extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: _ServiceCard(
+                  key: const ValueKey('home_applications'),
                   icon: Icons.menu_book_rounded,
                   iconColor: const Color(0xFF1686C7),
                   background: const Color(0xFFEAF5FD),
@@ -370,6 +371,7 @@ class _GuruBanner extends StatelessWidget {
 
 class _ServiceCard extends StatelessWidget {
   const _ServiceCard({
+    super.key,
     required this.icon,
     required this.iconColor,
     required this.background,
