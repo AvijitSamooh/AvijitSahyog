@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'features/home/home_page.dart';
 import 'features/home/presentation/brand_splash_page.dart';
 import 'core/analytics/analytics_service.dart';
 import 'core/network/api_client.dart';
@@ -23,14 +22,6 @@ class AvijitSahyogApp extends StatefulWidget {
 
 class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
   static const _localeKey = 'selected_locale';
-
-  static const _maroon = Color(0xFF6E1A14);
-  static const _maroonDark = Color(0xFF4C120D);
-  static const _saffron = Color(0xFFF5A623);
-  static const _cream = Color(0xFFFFF8ED);
-  static const _text = Color(0xFF39271C);
-  static const _textSoft = Color(0xFF6B4F36);
-  static const _line = Color(0xFFE8DCC8);
 
   Locale? _locale;
   Timer? _serviceWindowTimer;
