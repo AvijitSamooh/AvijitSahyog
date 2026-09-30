@@ -557,7 +557,7 @@ void main() {
 
   testWidgets('language selector opens and shows all supported languages', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp(splashDuration: Duration.zero)));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const ValueKey('app_settings_menu')));
     await tester.pumpAndSettle();
@@ -572,7 +572,7 @@ void main() {
 
   testWidgets('language selector changes the app locale', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp(splashDuration: Duration.zero)));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const ValueKey('app_settings_menu')));
     await tester.pumpAndSettle();
