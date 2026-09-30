@@ -10,7 +10,6 @@ import 'package:avijit_sahyog/features/applications/models/help_application.dart
 import 'package:avijit_sahyog/features/applications/presentation/applications_page.dart';
 import 'package:avijit_sahyog/features/applications/models/application_window.dart';
 import 'package:avijit_sahyog/features/applications/providers/help_applications_providers.dart';
-import 'package:avijit_sahyog/features/applications/providers/help_applications_providers.dart';
 import 'package:avijit_sahyog/features/auth/data/auth_repository.dart';
 import 'package:avijit_sahyog/features/auth/models/app_user.dart';
 import 'package:avijit_sahyog/features/auth/models/auth_state.dart';
