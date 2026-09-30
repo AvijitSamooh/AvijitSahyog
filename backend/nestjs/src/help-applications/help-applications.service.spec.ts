@@ -204,8 +204,6 @@ describe('HelpApplicationsService', () => {
       }),
     );
   });
-});
-
 
   it('rejects submission when not every active rule is acknowledged', async () => {
     prisma.applicationRule.findMany.mockResolvedValue([
@@ -271,3 +269,4 @@ describe('HelpApplicationsService', () => {
       }),
     }));
   });
+});
