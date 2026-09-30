@@ -19,11 +19,11 @@ class ServiceWindow {
       defaultValue: true,
     );
     const startLabel = String.fromEnvironment(
-      'BACKEND_SERVICE_WINDOW_START',
+      'BACKEND_SERVICE_OFFLINE_START',
       defaultValue: '21:00',
     );
     const endLabel = String.fromEnvironment(
-      'BACKEND_SERVICE_WINDOW_END',
+      'BACKEND_SERVICE_OFFLINE_END',
       defaultValue: '08:00',
     );
 
