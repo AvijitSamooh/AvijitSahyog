@@ -14,7 +14,9 @@ import 'features/impact/presentation/impact_page.dart';
 import 'l10n/app_localizations.dart';
 
 class AvijitSahyogApp extends StatefulWidget {
-  const AvijitSahyogApp({super.key});
+  const AvijitSahyogApp({super.key, this.splashDuration = const Duration(seconds: 5)});
+
+  final Duration splashDuration;
 
   @override
   State<AvijitSahyogApp> createState() => _AvijitSahyogAppState();
@@ -226,7 +228,7 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
           ],
         ),
       ),
-      home: const BrandSplashPage(),
+      home: BrandSplashPage(duration: splashDuration),
       routes: {
         '/impact': (_) => const ImpactPage(),
       },
