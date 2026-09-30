@@ -272,6 +272,11 @@
   "applyMedicalHelp": "चिकित्सा सहायता के लिए आवेदन करें",
   "applyPratibhaSamman": "प्रतिभा सम्मान के लिए आवेदन करें",
   "applicationAcceptingStartsAt": "आवेदन {start} से शुरू होंगे।",
+  "@applicationAcceptingStartsAt": {
+    "placeholders": {
+      "start": {}
+    }
+  },
   "applicationAcceptingNow": "अभी आवेदन स्वीकार किए जा रहे हैं।",
   "applicationAcceptingClosed": "अब आवेदन स्वीकार नहीं किए जा रहे हैं।",
   "applicationAvailabilityLoadError": "आवेदन उपलब्धता लोड नहीं हो सकी।",
