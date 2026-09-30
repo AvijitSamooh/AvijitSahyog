@@ -24,12 +24,6 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
     _load();
   }
 
-  String _ruleTypeLabel(AppLocalizations l10n, String type) => switch (type) {
-    'MEDICAL_HELP' => l10n.medicalHelp,
-    'PRATIBHA_SAMMAN' => l10n.pratibhaSamman,
-    _ => l10n.educationHelp,
-  };
-
   Future<void> _load() async {
     setState(() { _loading = true; _error = null; });
     try {
@@ -258,6 +252,12 @@ class _ApplicationRulesAdminPanel extends ConsumerStatefulWidget {
 }
 
 class _ApplicationRulesAdminPanelState extends ConsumerState<_ApplicationRulesAdminPanel> {
+  String _ruleTypeLabel(AppLocalizations l10n, String type) => switch (type) {
+    'MEDICAL_HELP' => l10n.medicalHelp,
+    'PRATIBHA_SAMMAN' => l10n.pratibhaSamman,
+    _ => l10n.educationHelp,
+  };
+
   String _type = 'PRATIBHA_SAMMAN';
   bool _loading = true;
   List<Map<String, dynamic>> _rules = const [];
@@ -322,7 +322,7 @@ class _ApplicationRulesAdminPanelState extends ConsumerState<_ApplicationRulesAd
     return Card(margin: const EdgeInsets.fromLTRB(12, 12, 12, 4), child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(l10n.adminApplicationRules, style: Theme.of(context).textTheme.titleLarge),
       const SizedBox(height: 4), Text(l10n.adminApplicationRulesSubtitle), const SizedBox(height: 12),
-      DropdownButtonFormField<String>(value: _type, decoration: InputDecoration(labelText: l10n.applicationType), items: ['EDUCATION_ASSISTANCE','MEDICAL_HELP','PRATIBHA_SAMMAN'].map((type) => DropdownMenuItem(value: type, child: Text(_typeLabel(l10n, type)))).toList(growable: false), onChanged: (value) { if (value == null) return; setState(() => _type = value); _load(); }),
+      DropdownButtonFormField<String>(value: _type, decoration: InputDecoration(labelText: l10n.applicationType), items: ['EDUCATION_ASSISTANCE','MEDICAL_HELP','PRATIBHA_SAMMAN'].map((type) => DropdownMenuItem(value: type, child: Text(_ruleTypeLabel(l10n, type)))).toList(growable: false), onChanged: (value) { if (value == null) return; setState(() => _type = value); _load(); }),
       const SizedBox(height: 10), Align(alignment: Alignment.centerRight, child: FilledButton.icon(onPressed: () => _editRule(), icon: const Icon(Icons.add), label: Text(l10n.addApplicationRule))), const SizedBox(height: 6),
       if (_loading) const LinearProgressIndicator(),
       if (!_loading && _rules.isEmpty) Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text(l10n.noApplicationRules)),
