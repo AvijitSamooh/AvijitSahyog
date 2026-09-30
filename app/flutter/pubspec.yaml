@@ -36,3 +36,5 @@ flutter:
   generate: true
   assets:
     - assets/images/AjitSagarJi.png
+    - assets/images/AvijitSamuhLogo.png
+    - assets/images/VidyasagarJi.png
