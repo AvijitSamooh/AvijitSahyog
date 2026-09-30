@@ -457,5 +457,9 @@
   "serviceUnavailableTitle": "सेवा तात्पुरती उपलब्ध नाही",
   "serviceUnavailableMessage": "सेवा {start} ते {end} या वेळेत ऑफलाइन असते. तुम्ही उपलब्ध सामग्री पाहू शकता, परंतु बॅकएंड आवश्यक असलेली कामे सध्या उपलब्ध नाहीत.",
   "serviceUnavailableBanner": "बॅकएंड सेवा {start} ते {end} या वेळेत ऑफलाइन आहे.",
-  "serviceUnavailableDismiss": "ठीक आहे"
+  "serviceUnavailableDismiss": "ठीक आहे",
+  "brandParentName": "अविजित समूह",
+  "brandTagline": "|| शिक्षण  सेवा  सहकार्य  सन्मान ||",
+  "brandVidyasagarJi": "आचार्यश्री विद्यासागर जी महाराज",
+  "brandAjitSagarJi": "मुनिश्री अजितसागर जी महाराज"
 }
