@@ -6,6 +6,8 @@ describe('HelpApplicationsService', () => {
   const prisma: any = {
     user: { upsert: jest.fn() },
     media: { findMany: jest.fn() },
+    applicationRule: { findMany: jest.fn() },
+    helpApplicationRuleAcceptance: { deleteMany: jest.fn() },
     helpApplication: {
       create: jest.fn(),
       findMany: jest.fn(),
@@ -24,6 +26,7 @@ describe('HelpApplicationsService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     prisma.user.upsert.mockResolvedValue({ id: 'user-1', role: 'USER' });
+    prisma.applicationRule.findMany.mockResolvedValue([]);
     (applicationWindows.ensureAccepting as jest.Mock).mockResolvedValue({ type: 'EDUCATION_ASSISTANCE' });
   });
 
@@ -202,3 +205,69 @@ describe('HelpApplicationsService', () => {
     );
   });
 });
+
+
+  it('rejects submission when not every active rule is acknowledged', async () => {
+    prisma.applicationRule.findMany.mockResolvedValue([
+      { id: 'rule-1', translations: [{ text: 'Pune only' }] },
+      { id: 'rule-2', translations: [{ text: '80 percent minimum' }] },
+    ]);
+    const service = new HelpApplicationsService(prisma, applicationWindows);
+
+    await expect(service.create(identity, {
+      type: 'PRATIBHA_SAMMAN',
+      applicantName: 'Test User',
+      mobileNumber: '9876543210',
+      address: '123 Test Street',
+      city: 'Pune',
+      state: 'Maharashtra',
+      pincode: '411001',
+      mediaIds: ['media-1'],
+      acceptedRuleIds: ['rule-1'],
+    })).rejects.toThrow('Please acknowledge every current application rule before submitting.');
+    expect(prisma.helpApplication.create).not.toHaveBeenCalled();
+  });
+
+  it('stores the acknowledged rule text snapshot on successful submission', async () => {
+    prisma.media.findMany.mockResolvedValue([{ id: 'media-1' }]);
+    prisma.applicationRule.findMany.mockResolvedValue([
+      { id: 'rule-1', translations: [{ text: 'Pune only' }] },
+    ]);
+    prisma.helpApplication.create.mockResolvedValue({
+      id: 'app-1',
+      type: 'PRATIBHA_SAMMAN',
+      status: 'SUBMITTED',
+      requestedAmount: null,
+      approvedAmount: null,
+      rejectionReason: null,
+      clarification: null,
+      adminNote: null,
+      applicantName: 'Test User',
+      mobileNumber: '9876543210',
+      email: null,
+      address: '123 Test Street',
+      city: 'Pune',
+      state: 'Maharashtra',
+      pincode: '411001',
+      media: [],
+    });
+    const service = new HelpApplicationsService(prisma, applicationWindows);
+
+    await service.create(identity, {
+      type: 'PRATIBHA_SAMMAN',
+      applicantName: 'Test User',
+      mobileNumber: '9876543210',
+      address: '123 Test Street',
+      city: 'Pune',
+      state: 'Maharashtra',
+      pincode: '411001',
+      mediaIds: ['media-1'],
+      acceptedRuleIds: ['rule-1'],
+    });
+
+    expect(prisma.helpApplication.create).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({
+        ruleAcceptances: { create: [{ ruleId: 'rule-1', ruleText: 'Pune only' }] },
+      }),
+    }));
+  });
