@@ -68,6 +68,7 @@ model Language {
 
   causeTranslations        CauseTranslation[]
   organisationTranslations OrganisationTranslation[]
+  applicationRuleTranslations ApplicationRuleTranslation[]
 
   @@index([isActive])
 }
@@ -310,6 +311,35 @@ enum HelpApplicationStatus {
   NOT_SELECTED
 }
 
+model ApplicationRule {
+  id           String              @id @default(uuid()) @db.Uuid
+  type         HelpApplicationType
+  displayOrder Int                 @default(0)
+  isActive     Boolean             @default(true)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  translations ApplicationRuleTranslation[]
+  acceptances  HelpApplicationRuleAcceptance[]
+
+  @@index([type, isActive, displayOrder])
+}
+
+model ApplicationRuleTranslation {
+  id         String   @id @default(uuid()) @db.Uuid
+  ruleId     String   @db.Uuid
+  languageId String   @db.Uuid
+  text       String   @db.Text
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  rule     ApplicationRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  language Language        @relation(fields: [languageId], references: [id], onDelete: Restrict)
+
+  @@unique([ruleId, languageId])
+  @@index([languageId])
+}
+
 model HelpApplication {
   id              String                @id @default(uuid()) @db.Uuid
   applicantId     String                @db.Uuid
@@ -334,7 +364,8 @@ model HelpApplication {
 
   applicant User @relation(fields: [applicantId], references: [id], onDelete: Restrict)
   media     HelpApplicationMedia[]
-  votes     HelpApplicationVote[]
+  votes          HelpApplicationVote[]
+  ruleAcceptances HelpApplicationRuleAcceptance[]
 
   @@index([applicantId, createdAt])
   @@index([type, status, createdAt])
@@ -363,6 +394,20 @@ model HelpApplicationMedia {
 
   @@unique([applicationId, mediaId])
   @@index([mediaId])
+}
+
+model HelpApplicationRuleAcceptance {
+  id            String   @id @default(uuid()) @db.Uuid
+  applicationId String   @db.Uuid
+  ruleId        String   @db.Uuid
+  ruleText      String   @db.Text
+  acceptedAt    DateTime @default(now())
+
+  application HelpApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  rule        ApplicationRule @relation(fields: [ruleId], references: [id], onDelete: Restrict)
+
+  @@unique([applicationId, ruleId])
+  @@index([applicationId])
 }
 
 model HelpApplicationVote {
