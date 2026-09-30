@@ -43,29 +43,6 @@ class _HomePageState extends ConsumerState<HomePage> {
     }
   }
 
-  Widget _pageForIndex() {
-    switch (_selectedIndex) {
-      case 1:
-        return const ApplicationsPage();
-      case 2:
-        return const ImpactPage();
-      case 3:
-        return SettingsPage(
-          onLocaleChanged: AppShellScope.of(context).onLocaleChanged,
-          showAppBar: false,
-        );
-      case 4:
-        return const ProfilePage();
-      default:
-        return _HomeContent(
-          onService: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CausesPage())),
-          onEducation: () => _selectNavigation(1),
-          onCooperation: () => _selectNavigation(2),
-          onRecognition: () => _selectNavigation(1),
-        );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
