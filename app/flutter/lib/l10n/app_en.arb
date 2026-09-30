@@ -473,5 +473,9 @@
   "serviceUnavailableTitle": "Service temporarily unavailable",
   "serviceUnavailableMessage": "The service is offline from {start} to {end}. You can still view available content, but actions that need the backend are temporarily unavailable.",
   "serviceUnavailableBanner": "Backend service is offline from {start} to {end}.",
-  "serviceUnavailableDismiss": "OK"
+  "serviceUnavailableDismiss": "OK",
+  "brandParentName": "Avijit Samuh",
+  "brandTagline": "|| Education  Service  Cooperation  Recognition ||",
+  "brandVidyasagarJi": "Acharya Shri Vidyasagar Ji Maharaj",
+  "brandAjitSagarJi": "Muni Shri Ajitsagar Ji Maharaj"
 }

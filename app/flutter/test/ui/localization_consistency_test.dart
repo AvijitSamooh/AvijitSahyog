@@ -8,6 +8,10 @@ void main() {
       expect(localizations.navHome, isNotEmpty);
       expect(localizations.navCauses, isNotEmpty);
       expect(localizations.navImpact, isNotEmpty);
+      expect(localizations.brandParentName, isNotEmpty);
+      expect(localizations.brandTagline, isNotEmpty);
+      expect(localizations.brandVidyasagarJi, isNotEmpty);
+      expect(localizations.brandAjitSagarJi, isNotEmpty);
       expect(localizations.language, isNotEmpty);
       expect(localizations.adminPortal, isNotEmpty);
       expect(localizations.adminCreateCause, isNotEmpty);
