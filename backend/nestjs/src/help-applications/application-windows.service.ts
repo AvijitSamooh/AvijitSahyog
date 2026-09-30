@@ -22,8 +22,11 @@ export class ApplicationWindowsService {
   }
 
   async start(identity: FirebaseIdentity, type: HelpApplicationTypeDto, dto: StartApplicationWindowDto) {
-    await this.requireAdmin(identity);
+    const admin = await this.requireAdmin(identity);
     this.validateType(type);
+    if (dto.type !== type) {
+      throw new BadRequestException('Application type in the path and request body must match.');
+    }
     const startsAt = dto.startsAt ? new Date(dto.startsAt) : new Date();
     if (Number.isNaN(startsAt.getTime())) {
       throw new BadRequestException('Application start date is invalid.');
@@ -36,12 +39,12 @@ export class ApplicationWindowsService {
         type,
         startsAt,
         closedAt: null,
-        updatedById: (await this.user(identity)).id,
+        updatedById: admin.id,
       },
       update: {
         startsAt,
         closedAt: null,
-        updatedById: (await this.user(identity)).id,
+        updatedById: admin.id,
       },
     });
     return this.toResponse(item, now);
