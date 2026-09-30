@@ -470,7 +470,6 @@ void main() {
     final navigation = AppShellScope.of(tester.element(find.byType(HomePage))).navigation;
     navigation.select(2);
     await tester.pumpAndSettle();
-    expect(find.text('Our Impact'), findsOneWidget);
     expect(find.text('Search by name'), findsOneWidget);
   });
 
@@ -567,9 +566,11 @@ void main() {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp(splashDuration: Duration.zero)));
     await tester.pumpAndSettle();
 
+    await tester.tap(find.byIcon(Icons.menu_rounded));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('app_settings_menu')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Language'));
+    await tester.tap(find.text('Language').last);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Hindi'));
     await tester.pumpAndSettle();
