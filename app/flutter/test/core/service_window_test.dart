@@ -24,6 +24,14 @@ void main() {
     });
 
 
+
+    test('reads the explicit offline environment window', () {
+      final configured = ServiceWindow.fromEnvironment();
+
+      expect(configured.startLabel, '9:00 PM');
+      expect(configured.endLabel, '8:00 AM');
+    });
+
     test('normalizes a reversed configured overnight window', () {
       final normalized = ServiceWindow.fromLabels(
         enabled: true,
