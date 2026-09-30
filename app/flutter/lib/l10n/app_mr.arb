@@ -272,6 +272,11 @@
   "applyMedicalHelp": "वैद्यकीय मदतीसाठी अर्ज करा",
   "applyPratibhaSamman": "प्रतिभा सन्मानासाठी अर्ज करा",
   "applicationAcceptingStartsAt": "अर्ज {start} पासून सुरू होतील.",
+  "@applicationAcceptingStartsAt": {
+    "placeholders": {
+      "start": {}
+    }
+  },
   "applicationAcceptingNow": "सध्या अर्ज स्वीकारले जात आहेत.",
   "applicationAcceptingClosed": "आता अर्ज स्वीकारले जात नाहीत.",
   "applicationAvailabilityLoadError": "अर्ज उपलब्धता लोड करता आली नाही.",
