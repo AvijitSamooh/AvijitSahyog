@@ -138,15 +138,20 @@ void main() {
     await tester.pump();
   }
 
-  testWidgets('home page renders the cause-centric entry point', (tester) async {
+  testWidgets('home page matches the approved Avijit Samuh reference'), (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp(splashDuration: Duration.zero)));
     await tester.pumpAndSettle();
 
     expect(find.byType(AvijitSahyogApp), findsOneWidget);
-    expect(find.byKey(const ValueKey('app_settings_menu')), findsOneWidget);
-    expect(find.text('Welcome to Avijit Sahyog'), findsOneWidget);
-    expect(find.text('Explore Causes'), findsWidgets);
-    expect(find.text('See Our Impact'), findsOneWidget);
+    expect(find.byType(Image), findsWidgets);
+    expect(find.text('Avijit Sahyog'), findsOneWidget);
+    expect(find.text('Service'), findsOneWidget);
+    expect(find.text('Education'), findsOneWidget);
+    expect(find.text('Cooperation'), findsOneWidget);
+    expect(find.text('Recognition'), findsOneWidget);
+    expect(find.text('Applications'), findsOneWidget);
+    expect(find.text('Information'), findsOneWidget);
+    expect(find.text('Profile'), findsOneWidget);
   });
 
   testWidgets('home exposes the assistance applications workflow', (tester) async {
@@ -207,9 +212,8 @@ void main() {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp(splashDuration: Duration.zero)));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const ValueKey('app_settings_menu')), findsOneWidget);
-    expect(find.text('Explore Causes'), findsWidgets);
-
+    await tester.tap(find.byIcon(Icons.menu_rounded));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('app_settings_menu')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Login'));
@@ -306,7 +310,7 @@ void main() {
     );
   });
 
-  testWidgets('authenticated admin sees admin portal directly in the top settings menu', (tester) async {
+  testWidgets('authenticated admin can access admin portal from the reference menu', (tester) async {
     await pumpApp(
       tester,
       home: const HomePage(),
@@ -315,6 +319,8 @@ void main() {
       ],
     );
 
+    await tester.tap(find.byIcon(Icons.menu_rounded));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('app_settings_menu')));
     await tester.pumpAndSettle();
 
@@ -323,7 +329,7 @@ void main() {
     expect(find.text(l10n(tester).profile), findsOneWidget);
   });
 
-  testWidgets('shared page scaffold keeps the three-tab navigation on detail pages', (tester) async {
+  testWidgets('shared page scaffold keeps the five-tab navigation on detail pages', (tester) async {
     await pumpApp(
       tester,
       home: const CauseDetailPage(slug: 'education'),
@@ -336,9 +342,11 @@ void main() {
 
     expect(find.byType(AppNavigationBar), findsOneWidget);
     expect(find.text('Home'), findsOneWidget);
-    expect(find.text('Causes'), findsOneWidget);
+    expect(find.text('Applications'), findsOneWidget);
     expect(find.text('Impact'), findsOneWidget);
-    expect(find.text('Settings'), findsNothing);
+    expect(find.text('Information'), findsOneWidget);
+    expect(find.text('Profile'), findsOneWidget);
+    
   });
 
   testWidgets('authenticated admin can see the admin portal entry', (tester) async {
@@ -459,8 +467,7 @@ void main() {
   testWidgets('impact navigation opens the real impact explorer', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp(splashDuration: Duration.zero)));
     await tester.pumpAndSettle();
-    final impactButton = find.text('See Our Impact');
-    await tester.ensureVisible(impactButton);
+    final impactButton = find.text('Impact').last;
     await tester.tap(impactButton);
     await tester.pumpAndSettle();
     expect(find.text('Our Impact'), findsOneWidget);
@@ -559,6 +566,8 @@ void main() {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp(splashDuration: Duration.zero)));
     await tester.pumpAndSettle();
 
+    await tester.tap(find.byIcon(Icons.menu_rounded));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('app_settings_menu')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Language'));
