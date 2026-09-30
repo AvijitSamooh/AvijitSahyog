@@ -140,7 +140,7 @@ void main() {
 
   testWidgets('home page renders the cause-centric entry point', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp(splashDuration: Duration.zero)));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.byType(AvijitSahyogApp), findsOneWidget);
     expect(find.byKey(const ValueKey('app_settings_menu')), findsOneWidget);
@@ -205,7 +205,7 @@ void main() {
 
   testWidgets('public home exposes login from the shared settings menu', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp(splashDuration: Duration.zero)));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.byKey(const ValueKey('app_settings_menu')), findsOneWidget);
     expect(find.text('Explore Causes'), findsWidgets);
