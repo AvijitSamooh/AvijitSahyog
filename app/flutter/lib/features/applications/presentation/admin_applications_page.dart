@@ -299,7 +299,7 @@ class _ApplicationRulesAdminPanelState extends ConsumerState<_ApplicationRulesAd
     )));
     if (save != true || !mounted) { for (final x in [en, hi, mr, gu, order]) { x.dispose(); } return; }
     final values = {'en': en.text.trim(), 'hi': hi.text.trim(), 'mr': mr.text.trim(), 'gu': gu.text.trim()};
-    if (values.values.any((value) => value.isEmpty)) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.allRuleTranslationsRequired))); for (final x in [en, hi, mr, gu, order]) x.dispose(); return; }
+    if (values.values.any((value) => value.isEmpty)) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.allRuleTranslationsRequired))); for (final x in [en, hi, mr, gu, order]) { x.dispose(); } return; }
     final payload = {'type': _type, 'displayOrder': int.tryParse(order.text.trim()) ?? (_rules.length + 1), 'isActive': active, 'translations': values.entries.map((entry) => {'language': entry.key, 'text': entry.value}).toList(growable: false)};
     try {
       final repo = ref.read(helpApplicationsRepositoryProvider);
