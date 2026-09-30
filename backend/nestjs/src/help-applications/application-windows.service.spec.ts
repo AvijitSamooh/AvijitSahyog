@@ -22,7 +22,7 @@ describe('ApplicationWindowsService', () => {
 
   it('reports scheduled, open and closed windows from the server clock', async () => {
     const now = new Date('2026-09-30T10:00:00.000Z');
-    jest.spyOn(global, 'Date').mockImplementation(() => now as any);
+    jest.useFakeTimers().setSystemTime(now);
     prisma.applicationWindow.findMany.mockResolvedValue([
       { type: 'EDUCATION_ASSISTANCE', startsAt: new Date('2026-10-01T10:00:00.000Z'), closedAt: null },
       { type: 'MEDICAL_HELP', startsAt: new Date('2026-09-30T09:00:00.000Z'), closedAt: null },
@@ -37,7 +37,7 @@ describe('ApplicationWindowsService', () => {
       expect.objectContaining({ type: 'MEDICAL_HELP', status: 'OPEN', canApply: true }),
       expect.objectContaining({ type: 'PRATIBHA_SAMMAN', status: 'CLOSED', canApply: false }),
     ]));
-    jest.restoreAllMocks();
+    jest.useRealTimers();
   });
 
   it('rejects invalid start timestamps before persistence', async () => {
