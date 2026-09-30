@@ -502,5 +502,14 @@
   "deleteApplicationRuleConfirmation": "This rule will stop appearing to new applicants. Existing application acknowledgements are retained.",
   "deleteRule": "Deactivate rule",
   "noApplicationRules": "No rules configured for this application type.",
-  "applicationType": "Application type"
+  "applicationType": "Application type",
+  "navApplications": "Applications",
+  "navInformation": "Information",
+  "navProfile": "Profile",
+  "homeService": "Service",
+  "homeEducation": "Education",
+  "homeCooperation": "Cooperation",
+  "homeRecognition": "Recognition",
+  "homePurposeTitle": "Our Purpose",
+  "homePurposeText": "Serving society, expanding education, building cooperation and recognising excellence — together with compassion and transparency."
 }
