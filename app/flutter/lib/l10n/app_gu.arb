@@ -457,5 +457,9 @@
   "serviceUnavailableTitle": "સેવા અસ્થાયી રીતે ઉપલબ્ધ નથી",
   "serviceUnavailableMessage": "સેવા {start} થી {end} સુધી ઑફલાઇન રહે છે. તમે ઉપલબ્ધ સામગ્રી જોઈ શકો છો, પરંતુ બૅકએન્ડ જરૂરી હોય તેવી ક્રિયાઓ હાલમાં ઉપલબ્ધ નથી.",
   "serviceUnavailableBanner": "બૅકએન્ડ સેવા {start} થી {end} સુધી ઑફલાઇન છે.",
-  "serviceUnavailableDismiss": "બરાબર"
+  "serviceUnavailableDismiss": "બરાબર",
+  "brandParentName": "અવિજિત સમૂહ",
+  "brandTagline": "|| શિક્ષણ  સેવા  સહયોગ  સન્માન ||",
+  "brandVidyasagarJi": "આચાર્યશ્રી વિદ્યાસાગર જી મહારાજ",
+  "brandAjitSagarJi": "મુનિશ્રી અજિતસાગર જી મહારાજ"
 }
