@@ -486,5 +486,14 @@
   "deleteApplicationRuleConfirmation": "हा नियम नवीन अर्जदारांना दिसणार नाही. आधीच्या अर्जांच्या स्वीकृती जतन राहतील.",
   "deleteRule": "नियम निष्क्रिय करा",
   "noApplicationRules": "या अर्ज प्रकारासाठी कोणतेही नियम नाहीत.",
-  "applicationType": "अर्जाचा प्रकार"
+  "applicationType": "अर्जाचा प्रकार",
+  "navApplications": "अर्ज",
+  "navInformation": "माहिती",
+  "navProfile": "प्रोफाइल",
+  "homeService": "सेवा",
+  "homeEducation": "शिक्षण",
+  "homeCooperation": "सहकार्य",
+  "homeRecognition": "सन्मान",
+  "homePurposeTitle": "आमचा उद्देश",
+  "homePurposeText": "समाजसेवा, शिक्षणाचा प्रसार, सहकार्याची भावना आणि गुणवंतांचा सन्मान — हेच अविजित सहयोगचे ध्येय आहे."
 }

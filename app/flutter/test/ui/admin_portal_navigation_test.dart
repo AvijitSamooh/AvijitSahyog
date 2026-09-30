@@ -65,7 +65,7 @@ void main() {
 
     expect(find.byType(NavigationBar), findsOneWidget);
     expect(find.text('Home'), findsOneWidget);
-    expect(find.text('Causes'), findsOneWidget);
+    expect(find.text('Applications'), findsOneWidget);
     expect(find.text('Impact'), findsOneWidget);
 
     expect(find.text('Interaction analytics'), findsNothing);

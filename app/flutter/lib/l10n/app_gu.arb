@@ -486,5 +486,14 @@
   "deleteApplicationRuleConfirmation": "આ નિયમ નવા અરજદારોને દેખાશે નહીં. જૂની અરજીઓની સ્વીકૃતિઓ જળવાઈ રહેશે.",
   "deleteRule": "નિયમ નિષ્ક્રિય કરો",
   "noApplicationRules": "આ અરજી પ્રકાર માટે કોઈ નિયમો ગોઠવેલા નથી.",
-  "applicationType": "અરજીનો પ્રકાર"
+  "applicationType": "અરજીનો પ્રકાર",
+  "navApplications": "અરજીઓ",
+  "navInformation": "માહિતી",
+  "navProfile": "પ્રોફાઇલ",
+  "homeService": "સેવા",
+  "homeEducation": "શિક્ષણ",
+  "homeCooperation": "સહયોગ",
+  "homeRecognition": "સન્માન",
+  "homePurposeTitle": "અમારો ઉદ્દેશ",
+  "homePurposeText": "સમાજની સેવા, શિક્ષણનો પ્રસાર, સહયોગની ભાવના અને પ્રતિભાઓનું સન્માન — એ જ અવિજિત સહયોગનો ઉદ્દેશ છે."
 }
