@@ -96,7 +96,9 @@ void main() {
       helpApplicationsRepositoryProvider.overrideWithValue(repository),
       myHelpApplicationsProvider.overrideWith((ref) async => repository.items),
     ]);
-    await tester.tap(find.byKey(const ValueKey('application_delete_app-1')));
+    final deleteButton = find.byKey(const ValueKey('application_delete_app-1'));
+    await tester.ensureVisible(deleteButton);
+    await tester.tap(deleteButton);
     await tester.pumpAndSettle();
     expect(find.text('Are you sure you want to delete this application? This cannot be undone.'), findsOneWidget);
     await tester.tap(find.text('Delete application'));
