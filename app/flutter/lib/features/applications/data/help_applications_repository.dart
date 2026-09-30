@@ -1,5 +1,6 @@
 import '../../../core/network/api_client.dart';
 import '../models/help_application.dart';
+import '../models/application_window.dart';
 
 class HelpApplicationsRepository {
   HelpApplicationsRepository(this.client);
@@ -33,6 +34,32 @@ class HelpApplicationsRepository {
       'mediaIds': mediaIds,
       'clarification': ?(trimmedClarification?.isNotEmpty == true ? trimmedClarification : null),
     }));
+  }
+
+  Future<List<ApplicationWindow>> applicationWindows() async {
+    final result = await client.getApplicationWindows();
+    final windows = (result['windows'] as List<dynamic>? ?? const []);
+    return windows
+        .map((item) => ApplicationWindow.fromJson(item as Map<String, dynamic>))
+        .toList(growable: false);
+  }
+
+  Future<ApplicationWindow> startApplicationWindow({
+    required String type,
+    DateTime? startsAt,
+  }) async {
+    return ApplicationWindow.fromJson(
+      await client.startApplicationWindow(
+        type,
+        startsAt: startsAt,
+      ),
+    );
+  }
+
+  Future<ApplicationWindow> closeApplicationWindow(String type) async {
+    return ApplicationWindow.fromJson(
+      await client.closeApplicationWindow(type),
+    );
   }
 
   Future<List<HelpApplication>> mine() async {
