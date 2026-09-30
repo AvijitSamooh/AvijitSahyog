@@ -474,32 +474,16 @@ void main() {
     expect(find.text('Search by name'), findsOneWidget);
   });
 
-  testWidgets('Causes tab keeps a single shell header and no nested app bar', (tester) async {
-    await pumpApp(
-      tester,
-      home: const HomePage(),
-      overrides: [
-        causesProvider('en').overrideWith((ref) async => const [_cause]),
-        beneficiariesProvider((search: '', sort: null))
-            .overrideWith((ref) async => const []),
-      ],
-    );
-
-    final navigation = AppShellScope.of(
-      tester.element(find.byType(HomePage)),
-    ).navigation;
-    navigation.select(1);
-    await tester.pumpAndSettle();
+  testWidgets('reference home shell keeps a single app bar and five-tab navigation', (tester) async {
+    await pumpApp(tester, home: const HomePage());
 
     expect(find.byType(AppBar), findsOneWidget);
-    expect(
-      find.descendant(
-        of: find.byType(CausesPage),
-        matching: find.byType(AppBar),
-      ),
-      findsNothing,
-      reason: 'CausesPage must remain body-only; HomePage owns the single app bar.',
-    );
+    expect(find.byType(AppNavigationBar), findsOneWidget);
+    expect(find.text('Home'), findsOneWidget);
+    expect(find.text('Applications'), findsOneWidget);
+    expect(find.text('Impact'), findsOneWidget);
+    expect(find.text('Information'), findsOneWidget);
+    expect(find.text('Profile'), findsOneWidget);
   });
 
   testWidgets('Impact tab keeps a single shell header and no nested app bar', (tester) async {
