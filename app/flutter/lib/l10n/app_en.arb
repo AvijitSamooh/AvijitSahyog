@@ -271,6 +271,27 @@
   "applyEducationHelp": "Apply for Education Assistance",
   "applyMedicalHelp": "Apply for Medical Help",
   "applyPratibhaSamman": "Apply for Pratibha Samman",
+  "applicationAcceptingStartsAt": "Applications will start from {start}.",
+  "@applicationAcceptingStartsAt": {
+    "placeholders": {
+      "start": {}
+    }
+  },
+  "applicationAcceptingNow": "Applications are open now.",
+  "applicationAcceptingClosed": "Applications are no longer being accepted.",
+  "applicationAvailabilityLoadError": "Unable to load application availability.",
+  "applicationStartDate": "Application start date",
+  "applicationStartTime": "Application start time",
+  "applicationWindowSaved": "Application acceptance window updated.",
+  "applicationWindowSaveFailed": "Unable to update the application acceptance window. Please try again.",
+  "applicationWindowCloseTitle": "Close application window?",
+  "applicationWindowCloseConfirmation": "People will no longer be able to submit applications after this window is closed.",
+  "closeApplications": "Stop accepting applications",
+  "applicationWindowClosed": "Applications are now closed.",
+  "applicationWindowManagement": "Application acceptance windows",
+  "applicationWindowManagementSubtitle": "Schedule when each application type starts accepting applications and stop accepting them when the event closes.",
+  "applicationWindowChangeStart": "Change start",
+  "startAcceptingApplications": "Start accepting applications",
   "applicationHistory": "Application History",
   "requestedAmount": "Requested amount",
   "approvedAmount": "Approved amount",

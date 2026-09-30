@@ -3,11 +3,46 @@ import { Request } from 'express';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { AdminGuard } from '../auth/admin.guard';
 import { AuthenticatedRequest } from '../auth/auth.types';
-import { CreateHelpApplicationDto } from './dto/create-help-application.dto';
+import { CreateHelpApplicationDto, HelpApplicationTypeDto } from './dto/create-help-application.dto';
+import { StartApplicationWindowDto } from './dto/application-window.dto';
 import { ResubmitHelpApplicationDto } from './dto/resubmit-help-application.dto';
 import { ReviewHelpApplicationDto } from './dto/review-help-application.dto';
 import { VoteHelpApplicationDto } from './dto/vote-help-application.dto';
+import { ApplicationWindowsService } from './application-windows.service';
 import { HelpApplicationsService } from './help-applications.service';
+
+@Controller('application-windows')
+export class ApplicationWindowsController {
+  constructor(private readonly service: ApplicationWindowsService) {}
+
+  @Get()
+  list() {
+    return this.service.list();
+  }
+}
+
+@Controller('admin/application-windows')
+@UseGuards(AdminGuard)
+export class AdminApplicationWindowsController {
+  constructor(private readonly service: ApplicationWindowsService) {}
+
+  @Post(':type/start')
+  start(
+    @Req() req: Request & AuthenticatedRequest,
+    @Param('type') type: HelpApplicationTypeDto,
+    @Body() dto: StartApplicationWindowDto,
+  ) {
+    return this.service.start(req.user, type, dto);
+  }
+
+  @Post(':type/close')
+  close(
+    @Req() req: Request & AuthenticatedRequest,
+    @Param('type') type: HelpApplicationTypeDto,
+  ) {
+    return this.service.close(req.user, type);
+  }
+}
 
 @Controller('applications')
 @UseGuards(FirebaseAuthGuard)

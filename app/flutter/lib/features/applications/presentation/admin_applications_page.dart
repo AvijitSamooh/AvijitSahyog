@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/widgets/app_settings_menu.dart';
 import '../../../l10n/app_localizations.dart';
+import '../models/application_window.dart';
 import '../providers/help_applications_providers.dart';
 
 class AdminApplicationsPage extends ConsumerStatefulWidget {
@@ -31,6 +32,83 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
       _error = e.toString();
     } finally {
       if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _startWindow(String type) async {
+    final l10n = AppLocalizations.of(context)!;
+    final now = DateTime.now();
+    final date = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: DateTime(now.year, now.month, now.day),
+      lastDate: DateTime(now.year + 2, 12, 31),
+      helpText: l10n.applicationStartDate,
+    );
+    if (date == null || !mounted) return;
+    final time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(now),
+      helpText: l10n.applicationStartTime,
+    );
+    if (time == null || !mounted) return;
+
+    final startsAt = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+    try {
+      await ref.read(helpApplicationsRepositoryProvider).startApplicationWindow(
+        type: type,
+        startsAt: startsAt,
+      );
+      ref.invalidate(applicationWindowsProvider);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.applicationWindowSaved)),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.applicationWindowSaveFailed)),
+        );
+      }
+    }
+  }
+
+  Future<void> _closeWindow(String type) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.applicationWindowCloseTitle),
+        content: Text(l10n.applicationWindowCloseConfirmation),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(l10n.closeApplications),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    try {
+      await ref.read(helpApplicationsRepositoryProvider).closeApplicationWindow(type);
+      ref.invalidate(applicationWindowsProvider);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.applicationWindowClosed)),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.applicationWindowSaveFailed)),
+        );
+      }
     }
   }
 
@@ -107,10 +185,18 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final windows = ref.watch(applicationWindowsProvider);
     return AppPageScaffold(
       title: Text(l10n.adminApplications),
       body: Column(
         children: [
+          _ApplicationWindowAdminPanel(
+            windows: windows,
+            typeLabel: (type) => _typeLabel(l10n, type),
+            formatDateTime: (value) => _windowDateTime(context, value),
+            onStart: _startWindow,
+            onClose: _closeWindow,
+          ),
           Padding(
             padding: const EdgeInsets.all(12),
             child: Wrap(spacing: 8, children: [
@@ -176,5 +262,109 @@ String _statusLabel(AppLocalizations l10n, String status) {
     case 'REJECTED': return l10n.statusRejected;
     case 'CONSIDERED_FOR_SAMMAN': return l10n.statusConsidered;
     default: return l10n.statusNotSelected;
+  }
+}
+
+String _windowDateTime(BuildContext context, DateTime value) {
+  final local = value.toLocal();
+  final material = MaterialLocalizations.of(context);
+  return '${material.formatMediumDate(local)} ${material.formatTimeOfDay(TimeOfDay.fromDateTime(local))}';
+}
+
+class _ApplicationWindowAdminPanel extends StatelessWidget {
+  const _ApplicationWindowAdminPanel({
+    required this.windows,
+    required this.typeLabel,
+    required this.formatDateTime,
+    required this.onStart,
+    required this.onClose,
+  });
+
+  final AsyncValue<List<ApplicationWindow>> windows;
+  final String Function(String type) typeLabel;
+  final String Function(DateTime value) formatDateTime;
+  final Future<void> Function(String type) onStart;
+  final Future<void> Function(String type) onClose;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Card(
+      margin: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.applicationWindowManagement, style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 4),
+            Text(l10n.applicationWindowManagementSubtitle),
+            const SizedBox(height: 12),
+            windows.when(
+              loading: () => const LinearProgressIndicator(),
+              error: (_, _) => Text(l10n.applicationAvailabilityLoadError),
+              data: (items) {
+                final knownTypes = const [
+                  'EDUCATION_ASSISTANCE',
+                  'MEDICAL_HELP',
+                  'PRATIBHA_SAMMAN',
+                ];
+                return Column(
+                  children: knownTypes.map((type) {
+                    ApplicationWindow? window;
+                    for (final item in items) {
+                      if (item.type == type) {
+                        window = item;
+                        break;
+                      }
+                    }
+                    final status = window?.status ?? ApplicationWindowStatus.closed;
+                    final statusText = switch (status) {
+                      ApplicationWindowStatus.scheduled =>
+                        l10n.applicationAcceptingStartsAt(formatDateTime(window!.startsAt)),
+                      ApplicationWindowStatus.open => l10n.applicationAcceptingNow,
+                      ApplicationWindowStatus.closed => l10n.applicationAcceptingClosed,
+                    };
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(typeLabel(type), style: Theme.of(context).textTheme.titleMedium),
+                          const SizedBox(height: 3),
+                          Text(statusText),
+                          const SizedBox(height: 6),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              OutlinedButton.icon(
+                                onPressed: () => onStart(type),
+                                icon: const Icon(Icons.schedule_rounded),
+                                label: Text(
+                                  status == ApplicationWindowStatus.open
+                                      ? l10n.applicationWindowChangeStart
+                                      : l10n.startAcceptingApplications,
+                                ),
+                              ),
+                              if (window != null && status != ApplicationWindowStatus.closed)
+                                TextButton.icon(
+                                  onPressed: () => onClose(type),
+                                  icon: const Icon(Icons.stop_circle_outlined),
+                                  label: Text(l10n.closeApplications),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(growable: false),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

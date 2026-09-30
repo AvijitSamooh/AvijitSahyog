@@ -340,6 +340,18 @@ model HelpApplication {
   @@index([type, status, createdAt])
 }
 
+model ApplicationWindow {
+  id          String              @id @default(uuid()) @db.Uuid
+  type        HelpApplicationType @unique
+  startsAt    DateTime
+  closedAt    DateTime?
+  updatedById String?             @db.Uuid
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  @@index([startsAt, closedAt])
+}
+
 model HelpApplicationMedia {
   id            String          @id @default(uuid()) @db.Uuid
   applicationId String          @db.Uuid

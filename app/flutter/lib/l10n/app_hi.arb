@@ -271,6 +271,27 @@
   "applyEducationHelp": "शिक्षा सहायता के लिए आवेदन करें",
   "applyMedicalHelp": "चिकित्सा सहायता के लिए आवेदन करें",
   "applyPratibhaSamman": "प्रतिभा सम्मान के लिए आवेदन करें",
+  "applicationAcceptingStartsAt": "आवेदन {start} से शुरू होंगे।",
+  "@applicationAcceptingStartsAt": {
+    "placeholders": {
+      "start": {}
+    }
+  },
+  "applicationAcceptingNow": "अभी आवेदन स्वीकार किए जा रहे हैं।",
+  "applicationAcceptingClosed": "अब आवेदन स्वीकार नहीं किए जा रहे हैं।",
+  "applicationAvailabilityLoadError": "आवेदन उपलब्धता लोड नहीं हो सकी।",
+  "applicationStartDate": "आवेदन शुरू होने की तारीख",
+  "applicationStartTime": "आवेदन शुरू होने का समय",
+  "applicationWindowSaved": "आवेदन स्वीकार करने की अवधि अपडेट हो गई है।",
+  "applicationWindowSaveFailed": "आवेदन स्वीकार करने की अवधि अपडेट नहीं हो सकी। कृपया फिर प्रयास करें।",
+  "applicationWindowCloseTitle": "आवेदन स्वीकार करना बंद करें?",
+  "applicationWindowCloseConfirmation": "यह विंडो बंद होने के बाद लोग आवेदन जमा नहीं कर सकेंगे।",
+  "closeApplications": "आवेदन स्वीकार करना बंद करें",
+  "applicationWindowClosed": "अब आवेदन बंद हैं।",
+  "applicationWindowManagement": "आवेदन स्वीकार करने की अवधि",
+  "applicationWindowManagementSubtitle": "हर आवेदन प्रकार के लिए आवेदन शुरू होने का समय तय करें और कार्यक्रम समाप्त होने पर आवेदन स्वीकार करना बंद करें।",
+  "applicationWindowChangeStart": "शुरू होने का समय बदलें",
+  "startAcceptingApplications": "आवेदन स्वीकार करना शुरू करें",
   "applicationHistory": "आवेदन इतिहास",
   "requestedAmount": "मांगी गई राशि",
   "approvedAmount": "स्वीकृत राशि",

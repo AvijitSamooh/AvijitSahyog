@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../causes/providers/causes_providers.dart';
 import '../data/help_applications_repository.dart';
 import '../models/help_application.dart';
+import '../models/application_window.dart';
 
 final helpApplicationsRepositoryProvider = Provider<HelpApplicationsRepository>((ref) =>
     HelpApplicationsRepository(ref.watch(apiClientProvider)));
@@ -9,3 +10,7 @@ final helpApplicationsRepositoryProvider = Provider<HelpApplicationsRepository>(
 final myHelpApplicationsProvider =
     FutureProvider.autoDispose<List<HelpApplication>>((ref) =>
         ref.watch(helpApplicationsRepositoryProvider).mine());
+
+final applicationWindowsProvider =
+    FutureProvider.autoDispose<List<ApplicationWindow>>((ref) =>
+        ref.watch(helpApplicationsRepositoryProvider).applicationWindows());

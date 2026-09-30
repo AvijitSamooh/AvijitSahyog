@@ -5,13 +5,18 @@ import { CreateHelpApplicationDto, HelpApplicationTypeDto } from './dto/create-h
 import { ResubmitHelpApplicationDto } from './dto/resubmit-help-application.dto';
 import { ReviewHelpApplicationDto, HelpApplicationDecisionDto } from './dto/review-help-application.dto';
 import { VoteHelpApplicationDto } from './dto/vote-help-application.dto';
+import { ApplicationWindowsService } from './application-windows.service';
 
 @Injectable()
 export class HelpApplicationsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly applicationWindows: ApplicationWindowsService,
+  ) {}
 
   async create(identity: FirebaseIdentity, dto: CreateHelpApplicationDto) {
     const user = await this.user(identity);
+    await this.applicationWindows.ensureAccepting(dto.type);
     this.validateApplicantDetails(dto);
     this.validateSubmission(dto.type, dto.requestedAmount, dto.mediaIds);
     const media = await this.validateMedia(dto.mediaIds, user.id);
@@ -73,6 +78,7 @@ export class HelpApplicationsService {
     const user = await this.user(identity);
     const existing = await this.prisma.helpApplication.findFirst({ where: { id, applicantId: user.id } });
     if (!existing) throw new NotFoundException('Application not found.');
+    await this.applicationWindows.ensureAccepting(existing.type);
     if (existing.status !== 'REJECTED' && existing.status !== 'CLARIFICATION_REQUIRED') {
       throw new BadRequestException('Only rejected or clarification-requested applications can be resubmitted.');
     }

@@ -260,6 +260,37 @@ class ApiClient {
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
+  Future<Map<String, dynamic>> getApplicationWindows() async {
+    final response = await _client.get(Uri.parse('$baseUrl/application-windows'), headers: await _headers());
+    _ensureSuccess(response, 'Loading application availability');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> startApplicationWindow(
+    String type, {
+    DateTime? startsAt,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/admin/application-windows/$type/start'),
+      headers: await _headers(json: true),
+      body: jsonEncode({
+        'type': type,
+        'startsAt': ?startsAt?.toUtc().toIso8601String(),
+      }),
+    );
+    _ensureSuccess(response, 'Starting application window');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> closeApplicationWindow(String type) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/admin/application-windows/$type/close'),
+      headers: await _headers(),
+    );
+    _ensureSuccess(response, 'Closing application window');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
   Future<Map<String, dynamic>> createHelpApplication(Map<String, dynamic> payload) async {
     final response = await _client.post(Uri.parse('$baseUrl/applications'), headers: await _headers(json: true), body: jsonEncode(payload));
     _ensureSuccess(response, 'Submitting application');

@@ -271,6 +271,27 @@
   "applyEducationHelp": "शिक्षण सहाय्यासाठी अर्ज करा",
   "applyMedicalHelp": "वैद्यकीय मदतीसाठी अर्ज करा",
   "applyPratibhaSamman": "प्रतिभा सन्मानासाठी अर्ज करा",
+  "applicationAcceptingStartsAt": "अर्ज {start} पासून सुरू होतील.",
+  "@applicationAcceptingStartsAt": {
+    "placeholders": {
+      "start": {}
+    }
+  },
+  "applicationAcceptingNow": "सध्या अर्ज स्वीकारले जात आहेत.",
+  "applicationAcceptingClosed": "आता अर्ज स्वीकारले जात नाहीत.",
+  "applicationAvailabilityLoadError": "अर्ज उपलब्धता लोड करता आली नाही.",
+  "applicationStartDate": "अर्ज सुरू होण्याची तारीख",
+  "applicationStartTime": "अर्ज सुरू होण्याची वेळ",
+  "applicationWindowSaved": "अर्ज स्वीकारण्याची वेळ अद्ययावत झाली.",
+  "applicationWindowSaveFailed": "अर्ज स्वीकारण्याची वेळ अद्ययावत करता आली नाही. कृपया पुन्हा प्रयत्न करा.",
+  "applicationWindowCloseTitle": "अर्ज स्वीकारणे बंद करायचे?",
+  "applicationWindowCloseConfirmation": "ही विंडो बंद केल्यानंतर लोक अर्ज सादर करू शकणार नाहीत.",
+  "closeApplications": "अर्ज स्वीकारणे बंद करा",
+  "applicationWindowClosed": "आता अर्ज बंद आहेत.",
+  "applicationWindowManagement": "अर्ज स्वीकारण्याच्या वेळा",
+  "applicationWindowManagementSubtitle": "प्रत्येक अर्ज प्रकारासाठी अर्ज कधी सुरू होतील ते ठरवा आणि कार्यक्रम संपल्यावर अर्ज स्वीकारणे बंद करा.",
+  "applicationWindowChangeStart": "सुरुवातीची वेळ बदला",
+  "startAcceptingApplications": "अर्ज स्वीकारणे सुरू करा",
   "applicationHistory": "अर्ज इतिहास",
   "requestedAmount": "मागितलेली रक्कम",
   "approvedAmount": "मंजूर रक्कम",

@@ -9,6 +9,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../auth/presentation/login_page.dart';
 import '../../auth/providers/auth_providers.dart';
 import '../models/help_application.dart';
+import '../models/application_window.dart';
 import '../providers/help_applications_providers.dart';
 
 class ApplicationsPage extends ConsumerWidget {
@@ -32,6 +33,7 @@ class ApplicationsPage extends ConsumerWidget {
     }
 
     final applications = ref.watch(myHelpApplicationsProvider);
+    final applicationWindows = ref.watch(applicationWindowsProvider);
     return AppPageScaffold(
       title: Text(l10n.applicationsTitle),
       body: RefreshIndicator(
@@ -47,39 +49,25 @@ class ApplicationsPage extends ConsumerWidget {
           const SizedBox(height: 6),
           Text(l10n.homeApplicationsSubtitle),
           const SizedBox(height: 18),
-          _ActionCard(
-            key: const ValueKey('application_education'),
+          _ApplicationActionCard(
+            window: _findWindow(applicationWindows, 'EDUCATION_ASSISTANCE'),
             icon: Icons.school_rounded,
             title: l10n.applyEducationHelp,
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const HelpApplicationFormPage(
-                  type: 'EDUCATION_ASSISTANCE',
-                ),
-              ),
-            ),
+            type: 'EDUCATION_ASSISTANCE',
           ),
           const SizedBox(height: 12),
-          _ActionCard(
-            key: const ValueKey('application_medical'),
+          _ApplicationActionCard(
+            window: _findWindow(applicationWindows, 'MEDICAL_HELP'),
             icon: Icons.medical_services_rounded,
             title: l10n.applyMedicalHelp,
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const HelpApplicationFormPage(type: 'MEDICAL_HELP'),
-              ),
-            ),
+            type: 'MEDICAL_HELP',
           ),
           const SizedBox(height: 12),
-          _ActionCard(
-            key: const ValueKey('application_pratibha'),
+          _ApplicationActionCard(
+            window: _findWindow(applicationWindows, 'PRATIBHA_SAMMAN'),
             icon: Icons.workspace_premium_rounded,
             title: l10n.applyPratibhaSamman,
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const HelpApplicationFormPage(type: 'PRATIBHA_SAMMAN'),
-              ),
-            ),
+            type: 'PRATIBHA_SAMMAN',
           ),
           const SizedBox(height: 28),
           Text(l10n.applicationHistory, style: Theme.of(context).textTheme.titleLarge),
@@ -122,6 +110,65 @@ class ApplicationsPage extends ConsumerWidget {
       if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.deleteApplicationFailed)));
     }
   }
+
+Future<void> _showWindowMessage(
+  BuildContext context,
+  String type,
+  ApplicationWindow? window,
+) async {
+  final l10n = AppLocalizations.of(context)!;
+  final title = _typeLabel(l10n, type);
+  final message = window?.status == ApplicationWindowStatus.scheduled
+      ? l10n.applicationAcceptingStartsAt(_windowDateTime(context, window!.startsAt))
+      : l10n.applicationAcceptingClosed;
+  await showDialog<void>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: Text(title),
+      content: Text(message),
+      actions: [
+        FilledButton(
+          onPressed: () => Navigator.pop(dialogContext),
+          child: Text(l10n.close),
+        ),
+      ],
+    ),
+  );
+}
+
+class _ApplicationWindowClosedView extends StatelessWidget {
+  const _ApplicationWindowClosedView({required this.window});
+
+  final ApplicationWindow? window;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final message = window?.status == ApplicationWindowStatus.scheduled
+        ? l10n.applicationAcceptingStartsAt(_windowDateTime(context, window!.startsAt))
+        : l10n.applicationAcceptingClosed;
+    return Center(
+      child: Card(
+        margin: const EdgeInsets.all(20),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.event_busy_rounded, size: 48),
+              const SizedBox(height: 16),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class _ApplicationHistoryEmpty extends StatelessWidget {
   const _ApplicationHistoryEmpty();
@@ -300,6 +347,14 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
   }
 
   Future<void> _submit() async {
+    final currentWindow = _findWindow(ref.read(applicationWindowsProvider), widget.type);
+    if (currentWindow?.isOpen != true) {
+      if (mounted) {
+        await _showWindowMessage(context, widget.type, currentWindow);
+      }
+      return;
+    }
+
     final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
     if (_mediaIds.isEmpty) {
@@ -338,6 +393,26 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isSamman = widget.type == 'PRATIBHA_SAMMAN';
+    final windows = ref.watch(applicationWindowsProvider);
+    if (windows.isLoading) {
+      return AppPageScaffold(
+        title: Text(_typeLabel(l10n, widget.type)),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+    if (windows.hasError) {
+      return AppPageScaffold(
+        title: Text(_typeLabel(l10n, widget.type)),
+        body: Center(child: Text(l10n.applicationAvailabilityLoadError)),
+      );
+    }
+    final window = _findWindow(windows, widget.type);
+    if (window?.isOpen != true) {
+      return AppPageScaffold(
+        title: Text(_typeLabel(l10n, widget.type)),
+        body: _ApplicationWindowClosedView(window: window),
+      );
+    }
     return AppPageScaffold(
       title: Text(_typeLabel(l10n, widget.type)),
       body: Form(
@@ -566,14 +641,113 @@ class _ApplicationCard extends StatelessWidget {
   }
 }
 
-class _ActionCard extends StatelessWidget {
-  const _ActionCard({super.key, required this.icon, required this.title, required this.onTap});
+String _applicationActionKey(String type) {
+  switch (type) {
+    case 'EDUCATION_ASSISTANCE':
+      return 'application_education';
+    case 'MEDICAL_HELP':
+      return 'application_medical';
+    case 'PRATIBHA_SAMMAN':
+      return 'application_pratibha';
+    default:
+      return 'application_$type';
+  }
+}
+
+ApplicationWindow? _findWindow(
+  AsyncValue<List<ApplicationWindow>> windows,
+  String type,
+) {
+  return windows.maybeWhen(
+    data: (items) {
+      for (final item in items) {
+        if (item.type == type) return item;
+      }
+      return null;
+    },
+    orElse: () => null,
+  );
+}
+
+String _windowDateTime(BuildContext context, DateTime value) {
+  final local = value.toLocal();
+  final material = MaterialLocalizations.of(context);
+  return '${material.formatMediumDate(local)} ${material.formatTimeOfDay(TimeOfDay.fromDateTime(local))}';
+}
+
+class _ApplicationActionCard extends ConsumerWidget {
+  const _ApplicationActionCard({
+    required this.window,
+    required this.icon,
+    required this.title,
+    required this.type,
+  });
+
+  final ApplicationWindow? window;
   final IconData icon;
   final String title;
+  final String type;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final status = window?.status ?? ApplicationWindowStatus.closed;
+    final subtitle = switch (status) {
+      ApplicationWindowStatus.scheduled =>
+        l10n.applicationAcceptingStartsAt(_windowDateTime(context, window!.startsAt)),
+      ApplicationWindowStatus.open => l10n.applicationAcceptingNow,
+      ApplicationWindowStatus.closed => l10n.applicationAcceptingClosed,
+    };
+
+    return _ActionCard(
+      key: ValueKey(_applicationActionKey(type)),
+      icon: icon,
+      title: title,
+      subtitle: subtitle,
+      onTap: () async {
+        if (window?.isOpen == true) {
+          await Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => HelpApplicationFormPage(type: type)),
+          );
+          ref.invalidate(applicationWindowsProvider);
+          return;
+        }
+
+        if (!context.mounted) return;
+        await showDialog<void>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: Text(title),
+            content: Text(subtitle),
+            actions: [
+              FilledButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: Text(l10n.close),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _ActionCard extends StatelessWidget {
+  const _ActionCard({super.key, required this.icon, required this.title, this.subtitle, required this.onTap});
+  final IconData icon;
+  final String title;
+  final String? subtitle;
   final VoidCallback onTap;
   @override
-  Widget build(BuildContext context) => Card(child: ListTile(
-    leading: Icon(icon), title: Text(title), trailing: const Icon(Icons.chevron_right_rounded), onTap: onTap));
+  Widget build(BuildContext context) => Card(
+    child: ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      subtitle: subtitle == null ? null : Text(subtitle!),
+      trailing: const Icon(Icons.chevron_right_rounded),
+      onTap: onTap,
+    ),
+  );
 }
 
 String _typeLabel(AppLocalizations l10n, String type) {

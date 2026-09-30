@@ -271,6 +271,27 @@
   "applyEducationHelp": "શિક્ષણ સહાય માટે અરજી કરો",
   "applyMedicalHelp": "તબીબી સહાય માટે અરજી કરો",
   "applyPratibhaSamman": "પ્રતિભા સન્માન માટે અરજી કરો",
+  "applicationAcceptingStartsAt": "અરજીઓ {start} થી શરૂ થશે.",
+  "@applicationAcceptingStartsAt": {
+    "placeholders": {
+      "start": {}
+    }
+  },
+  "applicationAcceptingNow": "હાલ અરજીઓ સ્વીકારવામાં આવી રહી છે.",
+  "applicationAcceptingClosed": "હવે અરજીઓ સ્વીકારવામાં આવતી નથી.",
+  "applicationAvailabilityLoadError": "અરજી ઉપલબ્ધતા લોડ કરી શકાઈ નથી.",
+  "applicationStartDate": "અરજી શરૂ થવાની તારીખ",
+  "applicationStartTime": "અરજી શરૂ થવાનો સમય",
+  "applicationWindowSaved": "અરજી સ્વીકારવાની વિન્ડો અપડેટ થઈ ગઈ છે.",
+  "applicationWindowSaveFailed": "અરજી સ્વીકારવાની વિન્ડો અપડેટ થઈ શકી નથી. કૃપા કરીને ફરી પ્રયાસ કરો.",
+  "applicationWindowCloseTitle": "અરજી સ્વીકારવાનું બંધ કરવું છે?",
+  "applicationWindowCloseConfirmation": "આ વિન્ડો બંધ થયા પછી લોકો અરજીઓ સબમિટ કરી શકશે નહીં.",
+  "closeApplications": "અરજીઓ સ્વીકારવાનું બંધ કરો",
+  "applicationWindowClosed": "હવે અરજીઓ બંધ છે.",
+  "applicationWindowManagement": "અરજી સ્વીકારવાની વિન્ડો",
+  "applicationWindowManagementSubtitle": "દરેક અરજી પ્રકાર માટે અરજી ક્યારે શરૂ થશે તે નક્કી કરો અને કાર્યક્રમ પૂર્ણ થાય ત્યારે અરજીઓ સ્વીકારવાનું બંધ કરો.",
+  "applicationWindowChangeStart": "શરૂઆતનો સમય બદલો",
+  "startAcceptingApplications": "અરજીઓ સ્વીકારવાનું શરૂ કરો",
   "applicationHistory": "અરજી ઇતિહાસ",
   "requestedAmount": "માગેલી રકમ",
   "approvedAmount": "મંજૂર રકમ",

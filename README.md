@@ -135,6 +135,12 @@ Changing these values affects the next build/deployment; an already-installed co
 
 For a web deployment, pass the same values as `--dart-define` arguments in the Vercel Flutter build command.
 
+### Application acceptance windows
+
+Help and recognition applications use a separate administrator-controlled business window. Administrators can schedule when Education Assistance, Medical Help and Pratibha Samman applications start accepting submissions and close each window when the relevant event cycle ends. Users see localized scheduled/open/closed messaging, and the backend rejects submissions outside an open window.
+
+See [docs/application-acceptance-windows.md](docs/application-acceptance-windows.md).
+
 ### Android Firebase and Google Sign-In
 
 Android release builds use the `GOOGLE_SERVICES_JSON` GitHub Actions variable as the single source of truth for native Firebase and Google OAuth configuration. The release workflow validates that the configuration targets project `avijitsahyog-firebase` and package `com.avijitsamooh.avijitsahyog`, then derives the Web OAuth client ID (`client_type: 3`) directly from that same file and passes it as the `GOOGLE_SIGN_IN_SERVER_CLIENT_ID` Dart define to the Android build. This prevents Firebase and Google Sign-In credentials from drifting between independently configured CI variables.

@@ -69,7 +69,7 @@ jobs:
         if: ${{ env.RELEASE_VALIDATION == 'full' }}
         run: |
           flutter analyze
-          flutter test
+          flutter test --dart-define=BACKEND_SERVICE_WINDOW_ENABLED=false
 
       - name: Decode Android upload keystore
         env:
