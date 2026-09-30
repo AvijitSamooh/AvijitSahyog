@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
+import '../theme/app_theme.dart';
 import '../analytics/analytics_events.dart';
 import '../analytics/analytics_service.dart';
 
