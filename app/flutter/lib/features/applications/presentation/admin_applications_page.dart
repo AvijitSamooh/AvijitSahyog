@@ -190,6 +190,7 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
       title: Text(l10n.adminApplications),
       body: Column(
         children: [
+          const _ApplicationRulesAdminPanel(),
           _ApplicationWindowAdminPanel(
             windows: windows,
             typeLabel: (type) => _typeLabel(l10n, type),
@@ -242,6 +243,95 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
         ],
       ),
     );
+  }
+}
+
+class _ApplicationRulesAdminPanel extends ConsumerStatefulWidget {
+  const _ApplicationRulesAdminPanel();
+  @override ConsumerState<_ApplicationRulesAdminPanel> createState() => _ApplicationRulesAdminPanelState();
+}
+
+class _ApplicationRulesAdminPanelState extends ConsumerState<_ApplicationRulesAdminPanel> {
+  String _ruleTypeLabel(AppLocalizations l10n, String type) => switch (type) {
+    'MEDICAL_HELP' => l10n.medicalHelp,
+    'PRATIBHA_SAMMAN' => l10n.pratibhaSamman,
+    _ => l10n.educationHelp,
+  };
+
+  String _type = 'PRATIBHA_SAMMAN';
+  bool _loading = true;
+  List<Map<String, dynamic>> _rules = const [];
+
+  @override void initState() { super.initState(); _load(); }
+
+  Future<void> _load() async {
+    setState(() => _loading = true);
+    try {
+      final rules = await ref.read(helpApplicationsRepositoryProvider).adminApplicationRules(_type);
+      if (mounted) setState(() { _rules = rules; _loading = false; });
+    } catch (_) { if (mounted) setState(() => _loading = false); }
+  }
+
+  Future<void> _editRule([Map<String, dynamic>? rule]) async {
+    final l10n = AppLocalizations.of(context)!;
+    final translations = <String, String>{};
+    for (final item in (rule?['translations'] as List<dynamic>? ?? const [])) {
+      final map = item as Map<String, dynamic>;
+      translations[map['language'] as String] = map['text'] as String? ?? '';
+    }
+    final en = TextEditingController(text: translations['en'] ?? '');
+    final hi = TextEditingController(text: translations['hi'] ?? '');
+    final mr = TextEditingController(text: translations['mr'] ?? '');
+    final gu = TextEditingController(text: translations['gu'] ?? '');
+    final order = TextEditingController(text: (rule?['displayOrder'] ?? (_rules.length + 1)).toString());
+    var active = rule?['isActive'] as bool? ?? true;
+    final save = await showDialog<bool>(context: context, builder: (dialogContext) => StatefulBuilder(builder: (context, setDialogState) => AlertDialog(
+      title: Text(rule == null ? l10n.addApplicationRule : l10n.editApplicationRule),
+      content: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, children: [
+        TextField(controller: order, keyboardType: TextInputType.number, decoration: InputDecoration(labelText: l10n.ruleDisplayOrder)),
+        TextField(controller: en, maxLines: 3, decoration: InputDecoration(labelText: l10n.ruleEnglish)),
+        TextField(controller: hi, maxLines: 3, decoration: InputDecoration(labelText: l10n.ruleHindi)),
+        TextField(controller: mr, maxLines: 3, decoration: InputDecoration(labelText: l10n.ruleMarathi)),
+        TextField(controller: gu, maxLines: 3, decoration: InputDecoration(labelText: l10n.ruleGujarati)),
+        SwitchListTile(contentPadding: EdgeInsets.zero, title: Text(l10n.ruleActive), value: active, onChanged: (value) => setDialogState(() => active = value)),
+      ])),
+      actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(l10n.cancel)), FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(l10n.saveRule))],
+    )));
+    if (save != true || !mounted) { for (final x in [en, hi, mr, gu, order]) { x.dispose(); } return; }
+    final values = {'en': en.text.trim(), 'hi': hi.text.trim(), 'mr': mr.text.trim(), 'gu': gu.text.trim()};
+    if (values.values.any((value) => value.isEmpty)) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.allRuleTranslationsRequired))); for (final x in [en, hi, mr, gu, order]) { x.dispose(); } return; }
+    final payload = {'type': _type, 'displayOrder': int.tryParse(order.text.trim()) ?? (_rules.length + 1), 'isActive': active, 'translations': values.entries.map((entry) => {'language': entry.key, 'text': entry.value}).toList(growable: false)};
+    try {
+      final repo = ref.read(helpApplicationsRepositoryProvider);
+      if (rule == null) { await repo.createAdminApplicationRule(payload); } else { final updatePayload = Map<String, dynamic>.from(payload)..remove('type'); await repo.updateAdminApplicationRule(rule['id'] as String, updatePayload); }
+      if (mounted) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.ruleSaved))); await _load(); }
+    } catch (_) { if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.ruleActionFailed))); }
+    finally { for (final x in [en, hi, mr, gu, order]) { x.dispose(); } }
+  }
+
+  Future<void> _deleteRule(Map<String, dynamic> rule) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(context: context, builder: (dialogContext) => AlertDialog(title: Text(l10n.deleteApplicationRuleTitle), content: Text(l10n.deleteApplicationRuleConfirmation), actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(l10n.cancel)), FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(l10n.deleteRule))]));
+    if (confirmed != true || !mounted) return;
+    try { await ref.read(helpApplicationsRepositoryProvider).deleteAdminApplicationRule(rule['id'] as String); await _load(); if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.ruleDeleted))); }
+    catch (_) { if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.ruleActionFailed))); }
+  }
+
+  @override Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Card(margin: const EdgeInsets.fromLTRB(12, 12, 12, 4), child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text(l10n.adminApplicationRules, style: Theme.of(context).textTheme.titleLarge),
+      const SizedBox(height: 4), Text(l10n.adminApplicationRulesSubtitle), const SizedBox(height: 12),
+      DropdownButtonFormField<String>(initialValue: _type, decoration: InputDecoration(labelText: l10n.applicationType), items: ['EDUCATION_ASSISTANCE','MEDICAL_HELP','PRATIBHA_SAMMAN'].map((type) => DropdownMenuItem(value: type, child: Text(_ruleTypeLabel(l10n, type)))).toList(growable: false), onChanged: (value) { if (value == null) return; setState(() => _type = value); _load(); }),
+      const SizedBox(height: 10), Align(alignment: Alignment.centerRight, child: FilledButton.icon(onPressed: () => _editRule(), icon: const Icon(Icons.add), label: Text(l10n.addApplicationRule))), const SizedBox(height: 6),
+      if (_loading) const LinearProgressIndicator(),
+      if (!_loading && _rules.isEmpty) Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text(l10n.noApplicationRules)),
+      if (!_loading) ..._rules.map((rule) {
+        final translations = (rule['translations'] as List<dynamic>? ?? const []).cast<Map<String, dynamic>>();
+        String english = ''; for (final item in translations) { if (item['language'] == 'en') { english = item['text']?.toString() ?? ''; break; } }
+        return ListTile(contentPadding: EdgeInsets.zero, leading: CircleAvatar(child: Text((rule['displayOrder'] ?? '').toString())), title: Text(english), subtitle: Text((rule['isActive'] as bool? ?? false) ? l10n.ruleActive : l10n.ruleInactive), trailing: Wrap(children: [IconButton(onPressed: () => _editRule(rule), icon: const Icon(Icons.edit_outlined), tooltip: l10n.editApplicationRule), IconButton(onPressed: () => _deleteRule(rule), icon: const Icon(Icons.delete_outline), tooltip: l10n.deleteRule)]));
+      }),
+    ])));
   }
 }
 

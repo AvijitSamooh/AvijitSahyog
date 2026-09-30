@@ -1,6 +1,7 @@
 import '../../../core/network/api_client.dart';
 import '../models/help_application.dart';
 import '../models/application_window.dart';
+import '../models/application_rule.dart';
 
 class HelpApplicationsRepository {
   HelpApplicationsRepository(this.client);
@@ -19,6 +20,7 @@ class HelpApplicationsRepository {
     required String state,
     required String pincode,
     String? clarification,
+    required List<String> acceptedRuleIds,
   }) async {
     final trimmedClarification = clarification?.trim();
     return HelpApplication.fromJson(await client.createHelpApplication({
@@ -32,9 +34,23 @@ class HelpApplicationsRepository {
       'pincode': pincode.trim(),
       'requestedAmount': ?requestedAmount,
       'mediaIds': mediaIds,
+      'acceptedRuleIds': acceptedRuleIds,
       'clarification': ?(trimmedClarification?.isNotEmpty == true ? trimmedClarification : null),
     }));
   }
+
+  Future<List<ApplicationRule>> applicationRules(String type, String languageCode) async {
+    final result = await client.getApplicationRules(type, languageCode);
+    return result.map(ApplicationRule.fromJson).toList(growable: false);
+  }
+
+  Future<List<Map<String, dynamic>>> adminApplicationRules(String type) => client.getAdminApplicationRules(type);
+
+  Future<Map<String, dynamic>> createAdminApplicationRule(Map<String, dynamic> payload) => client.createAdminApplicationRule(payload);
+
+  Future<Map<String, dynamic>> updateAdminApplicationRule(String id, Map<String, dynamic> payload) => client.updateAdminApplicationRule(id, payload);
+
+  Future<void> deleteAdminApplicationRule(String id) => client.deleteAdminApplicationRule(id);
 
   Future<List<ApplicationWindow>> applicationWindows() async {
     final result = await client.getApplicationWindows();
@@ -71,11 +87,13 @@ class HelpApplicationsRepository {
     required String id,
     required String clarification,
     required List<String> mediaIds,
+    required List<String> acceptedRuleIds,
     double? requestedAmount,
   }) async {
     return HelpApplication.fromJson(await client.resubmitHelpApplication(id, {
       'clarification': clarification,
       'mediaIds': mediaIds,
+      'acceptedRuleIds': acceptedRuleIds,
       'requestedAmount': ?requestedAmount,
     }));
   }

@@ -19,6 +19,7 @@ export class HelpApplicationsService {
     await this.applicationWindows.ensureAccepting(dto.type);
     this.validateApplicantDetails(dto);
     this.validateSubmission(dto.type, dto.requestedAmount, dto.mediaIds);
+    const acceptedRules = await this.validateAcceptedRules(dto.type, dto.acceptedRuleIds);
     const media = await this.validateMedia(dto.mediaIds, user.id);
     const item = await this.prisma.helpApplication.create({
       data: {
@@ -34,6 +35,7 @@ export class HelpApplicationsService {
         requestedAmount: dto.requestedAmount,
         clarification: dto.clarification?.trim() || null,
         media: { create: media.map((mediaId) => ({ mediaId })) },
+        ruleAcceptances: { create: acceptedRules.map((rule) => ({ ruleId: rule.id, ruleText: rule.text })) },
       },
       include: { media: { include: { media: true } } },
     });
@@ -84,8 +86,10 @@ export class HelpApplicationsService {
     }
     this.validateSubmission(existing.type, dto.requestedAmount ?? Number(existing.requestedAmount ?? 0), dto.mediaIds);
     const media = await this.validateMedia(dto.mediaIds, user.id);
+    const acceptedRules = await this.validateAcceptedRules(existing.type as HelpApplicationTypeDto, dto.acceptedRuleIds);
     return this.prisma.$transaction(async (tx) => {
       await tx.helpApplicationMedia.deleteMany({ where: { applicationId: id } });
+      await tx.helpApplicationRuleAcceptance.deleteMany({ where: { applicationId: id } });
       const updated = await tx.helpApplication.update({
         where: { id },
         data: {
@@ -97,6 +101,7 @@ export class HelpApplicationsService {
           adminNote: null,
           reviewedAt: null,
           media: { create: media.map((mediaId) => ({ mediaId })) },
+          ruleAcceptances: { create: acceptedRules.map((rule) => ({ ruleId: rule.id, ruleText: rule.text })) },
         },
         include: { media: { include: { media: true } } },
       });
@@ -211,6 +216,19 @@ export class HelpApplicationsService {
     const user = await this.user(identity);
     if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') throw new BadRequestException('Administrator access is required.');
     return user;
+  }
+
+  private async validateAcceptedRules(type: HelpApplicationTypeDto, acceptedRuleIds: string[]) {
+    const rules = await this.prisma.applicationRule.findMany({
+      where: { type, isActive: true },
+      select: { id: true, translations: { where: { language: { code: 'en' } }, select: { text: true }, take: 1 } },
+    });
+    const expected = new Set(rules.map((rule) => rule.id));
+    const accepted = new Set(acceptedRuleIds ?? []);
+    if (accepted.size !== expected.size || [...expected].some((id) => !accepted.has(id))) {
+      throw new BadRequestException('Please acknowledge every current application rule before submitting.');
+    }
+    return rules.map((rule) => ({ id: rule.id, text: rule.translations[0]?.text ?? '' }));
   }
 
   private async application(id: string) {
