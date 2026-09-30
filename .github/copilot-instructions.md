@@ -235,3 +235,8 @@ When implementing a change:
 10. Treat tests as part of the implementation contract. When changing a feature, user flow, API contract, domain model, validation rule, UI behaviour, or architecture, identify and update/add the affected automated tests in the same PR. Do not leave stale tests that describe the old behaviour.
 
 Never declare a fix complete without verifying the relevant checks.
+
+
+## AI Repository Profile
+
+Before starting work, read and apply [`.ai/repo-profile.md`](../.ai/repo-profile.md). It defines the repository-specific operating contract for Developer, Product Owner, QA, Architecture and Release workflows. This profile complements these instructions; when this file is more specific, follow this file.
