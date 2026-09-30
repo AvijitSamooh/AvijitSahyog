@@ -1,5 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { HelpApplicationsService } from './help-applications.service';
+import { ApplicationWindowsService } from './application-windows.service';
 
 describe('HelpApplicationsService', () => {
   const prisma: any = {
@@ -18,10 +19,12 @@ describe('HelpApplicationsService', () => {
     $transaction: jest.fn(),
   };
   const identity = { uid: 'firebase-1', email: 'user@example.com', displayName: 'User' };
+  const applicationWindows = { ensureAccepting: jest.fn() } as unknown as ApplicationWindowsService;
 
   beforeEach(() => {
     jest.clearAllMocks();
     prisma.user.upsert.mockResolvedValue({ id: 'user-1', role: 'USER' });
+    (applicationWindows.ensureAccepting as jest.Mock).mockResolvedValue({ type: 'EDUCATION_ASSISTANCE' });
   });
 
   it('creates an assistance application with requested amount and evidence', async () => {
@@ -39,7 +42,7 @@ describe('HelpApplicationsService', () => {
       media: [{ media: { id: 'media-1', storageKey: 'applications/a.webp', mimeType: 'image/webp' } }],
     });
 
-    const service = new HelpApplicationsService(prisma);
+    const service = new HelpApplicationsService(prisma, applicationWindows);
     const result = await service.create(identity, {
       type: 'EDUCATION_ASSISTANCE',
       applicantName: 'Test User',
@@ -56,8 +59,26 @@ describe('HelpApplicationsService', () => {
     expect(prisma.helpApplication.create).toHaveBeenCalled();
   });
 
+  it('blocks submission when the configured application window is closed', async () => {
+    (applicationWindows.ensureAccepting as jest.Mock).mockRejectedValueOnce(new BadRequestException('Applications are no longer being accepted.'));
+    const service = new HelpApplicationsService(prisma, applicationWindows);
+
+    await expect(service.create(identity, {
+      type: 'PRATIBHA_SAMMAN',
+      applicantName: 'Test User',
+      mobileNumber: '9876543210',
+      address: '123 Test Street',
+      city: 'Pune',
+      state: 'Maharashtra',
+      pincode: '411001',
+      mediaIds: ['media-1'],
+    })).rejects.toThrow('Applications are no longer being accepted.');
+    expect(prisma.media.findMany).not.toHaveBeenCalled();
+    expect(prisma.helpApplication.create).not.toHaveBeenCalled();
+  });
+
   it('requires evidence images and amount for assistance', async () => {
-    const service = new HelpApplicationsService(prisma);
+    const service = new HelpApplicationsService(prisma, applicationWindows);
     await expect(service.create(identity, {
       type: 'MEDICAL_HELP',
       applicantName: 'Test User',
@@ -73,7 +94,7 @@ describe('HelpApplicationsService', () => {
   });
 
   it('requires evidence for Pratibha Samman', async () => {
-    const service = new HelpApplicationsService(prisma);
+    const service = new HelpApplicationsService(prisma, applicationWindows);
     await expect(service.create(identity, {
       type: 'PRATIBHA_SAMMAN',
       applicantName: 'Test User',
@@ -93,7 +114,7 @@ describe('HelpApplicationsService', () => {
       requestedAmount: 10000,
       media: [],
     });
-    const service = new HelpApplicationsService(prisma);
+    const service = new HelpApplicationsService(prisma, applicationWindows);
     await expect(service.review('app-1', {
       decision: 'APPROVE',
       approvedAmount: 12000,
@@ -107,7 +128,7 @@ describe('HelpApplicationsService', () => {
       requestedAmount: 10000,
       media: [],
     });
-    const service = new HelpApplicationsService(prisma);
+    const service = new HelpApplicationsService(prisma, applicationWindows);
     await expect(service.review('app-1', { decision: 'REJECT' }))
       .rejects.toBeInstanceOf(BadRequestException);
   });
@@ -119,7 +140,7 @@ describe('HelpApplicationsService', () => {
       requestedAmount: 10000,
       media: [],
     });
-    const service = new HelpApplicationsService(prisma);
+    const service = new HelpApplicationsService(prisma, applicationWindows);
     await expect(service.review('app-1', { decision: 'CONSIDER_FOR_SAMMAN' }))
       .rejects.toBeInstanceOf(BadRequestException);
   });
@@ -127,7 +148,7 @@ describe('HelpApplicationsService', () => {
   it('deletes an applicant-owned application and rejects deletion after a final decision', async () => {
     prisma.helpApplication.findFirst.mockResolvedValueOnce({ id: 'app-1', status: 'SUBMITTED' });
     prisma.helpApplication.delete.mockResolvedValue({ id: 'app-1' });
-    const service = new HelpApplicationsService(prisma);
+    const service = new HelpApplicationsService(prisma, applicationWindows);
 
     await expect(service.deleteMine(identity, 'app-1')).resolves.toEqual({ id: 'app-1', deleted: true });
     expect(prisma.helpApplication.delete).toHaveBeenCalledWith({ where: { id: 'app-1' } });
@@ -140,7 +161,7 @@ describe('HelpApplicationsService', () => {
   it('persists both Pratibha Samman review decisions', async () => {
     prisma.helpApplication.findUnique.mockResolvedValue({ id: 'app-1', type: 'PRATIBHA_SAMMAN', requestedAmount: null, media: [] });
     prisma.helpApplication.update.mockResolvedValue({ id: 'app-1', type: 'PRATIBHA_SAMMAN', status: 'CONSIDERED_FOR_SAMMAN', media: [], votes: [] });
-    const service = new HelpApplicationsService(prisma);
+    const service = new HelpApplicationsService(prisma, applicationWindows);
 
     await service.review('app-1', { decision: 'CONSIDER_FOR_SAMMAN' });
     expect(prisma.helpApplication.update).toHaveBeenCalledWith(expect.objectContaining({
@@ -170,7 +191,7 @@ describe('HelpApplicationsService', () => {
       score: 5,
     });
 
-    const service = new HelpApplicationsService(prisma);
+    const service = new HelpApplicationsService(prisma, applicationWindows);
     const result = await service.vote(identity, 'app-1', { score: 5 });
 
     expect(result.score).toBe(5);
