@@ -204,7 +204,7 @@ void main() {
   });
 
   testWidgets('public home exposes login from the shared settings menu', (tester) async {
-    await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
+    await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp(splashDuration: Duration.zero)));
     await tester.pump();
 
     expect(find.byKey(const ValueKey('app_settings_menu')), findsOneWidget);
@@ -451,13 +451,13 @@ void main() {
   });
 
   testWidgets('home hero loads Maharaj Ji image asset', (tester) async {
-    await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
+    await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp(splashDuration: Duration.zero)));
     await tester.pump();
     expect(find.byType(Image), findsWidgets);
   });
 
   testWidgets('impact navigation opens the real impact explorer', (tester) async {
-    await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
+    await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp(splashDuration: Duration.zero)));
     await tester.pumpAndSettle();
     final impactButton = find.text('See Our Impact');
     await tester.ensureVisible(impactButton);
@@ -556,7 +556,7 @@ void main() {
   });
 
   testWidgets('language selector opens and shows all supported languages', (tester) async {
-    await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
+    await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp(splashDuration: Duration.zero)));
     await tester.pump();
 
     await tester.tap(find.byKey(const ValueKey('app_settings_menu')));
@@ -571,7 +571,7 @@ void main() {
   });
 
   testWidgets('language selector changes the app locale', (tester) async {
-    await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp()));
+    await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp(splashDuration: Duration.zero)));
     await tester.pump();
 
     await tester.tap(find.byKey(const ValueKey('app_settings_menu')));
