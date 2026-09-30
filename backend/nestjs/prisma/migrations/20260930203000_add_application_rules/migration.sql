@@ -38,6 +38,13 @@ ALTER TABLE "ApplicationRuleTranslation" ADD CONSTRAINT "ApplicationRuleTranslat
 ALTER TABLE "HelpApplicationRuleAcceptance" ADD CONSTRAINT "HelpApplicationRuleAcceptance_applicationId_fkey" FOREIGN KEY ("applicationId") REFERENCES "HelpApplication"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE "HelpApplicationRuleAcceptance" ADD CONSTRAINT "HelpApplicationRuleAcceptance_ruleId_fkey" FOREIGN KEY ("ruleId") REFERENCES "ApplicationRule"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
+INSERT INTO "Language" ("id","code","name","nativeName","isDefault","isActive","createdAt","updatedAt") VALUES
+('00000000-0000-0000-0000-000000003001','en','English','English',true,true,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP),
+('00000000-0000-0000-0000-000000003002','hi','Hindi','हिन्दी',false,true,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP),
+('00000000-0000-0000-0000-000000003003','mr','Marathi','मराठी',false,true,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP),
+('00000000-0000-0000-0000-000000003004','gu','Gujarati','ગુજરાતી',false,true,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)
+ON CONFLICT ("code") DO NOTHING;
+
 INSERT INTO "ApplicationRule" ("id","type","displayOrder","isActive","updatedAt") VALUES
 ('00000000-0000-0000-0000-000000001001','PRATIBHA_SAMMAN',1,true,CURRENT_TIMESTAMP),
 ('00000000-0000-0000-0000-000000001002','PRATIBHA_SAMMAN',2,true,CURRENT_TIMESTAMP),
