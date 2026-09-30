@@ -138,7 +138,7 @@ void main() {
     await tester.pump();
   }
 
-  testWidgets('home page matches the approved Avijit Samuh reference'), (tester) async {
+  testWidgets('home page matches the approved Avijit Samuh reference', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp(splashDuration: Duration.zero)));
     await tester.pumpAndSettle();
 
