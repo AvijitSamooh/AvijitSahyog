@@ -316,13 +316,13 @@ class _ApplicationRulesAdminPanelState extends ConsumerState<_ApplicationRulesAd
     return Card(margin: const EdgeInsets.fromLTRB(12, 12, 12, 4), child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(l10n.adminApplicationRules, style: Theme.of(context).textTheme.titleLarge),
       const SizedBox(height: 4), Text(l10n.adminApplicationRulesSubtitle), const SizedBox(height: 12),
-      DropdownButtonFormField<String>(value: _type, decoration: InputDecoration(labelText: l10n.applicationType), items: const ['EDUCATION_ASSISTANCE','MEDICAL_HELP','PRATIBHA_SAMMAN'].map((type) => DropdownMenuItem(value: type, child: Text(type))).toList(growable: false), onChanged: (value) { if (value == null) return; setState(() => _type = value); _load(); }),
+      DropdownButtonFormField<String>(value: _type, decoration: InputDecoration(labelText: l10n.applicationType), items: ['EDUCATION_ASSISTANCE','MEDICAL_HELP','PRATIBHA_SAMMAN'].map((type) => DropdownMenuItem(value: type, child: Text(_typeLabel(l10n, type)))).toList(growable: false), onChanged: (value) { if (value == null) return; setState(() => _type = value); _load(); }),
       const SizedBox(height: 10), Align(alignment: Alignment.centerRight, child: FilledButton.icon(onPressed: () => _editRule(), icon: const Icon(Icons.add), label: Text(l10n.addApplicationRule))), const SizedBox(height: 6),
       if (_loading) const LinearProgressIndicator(),
       if (!_loading && _rules.isEmpty) Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text(l10n.noApplicationRules)),
       if (!_loading) ..._rules.map((rule) {
         final translations = (rule['translations'] as List<dynamic>? ?? const []).cast<Map<String, dynamic>>();
-        final english = translations.where((item) => item['language'] == 'en').map((item) => item['text']).firstOrNull?.toString() ?? '';
+        String english = ''; for (final item in translations) { if (item['language'] == 'en') { english = item['text']?.toString() ?? ''; break; } }
         return ListTile(contentPadding: EdgeInsets.zero, leading: CircleAvatar(child: Text((rule['displayOrder'] ?? '').toString())), title: Text(english), subtitle: Text((rule['isActive'] as bool? ?? false) ? l10n.ruleActive : l10n.ruleInactive), trailing: Wrap(children: [IconButton(onPressed: () => _editRule(rule), icon: const Icon(Icons.edit_outlined), tooltip: l10n.editApplicationRule), IconButton(onPressed: () => _deleteRule(rule), icon: const Icon(Icons.delete_outline), tooltip: l10n.deleteRule)]));
       }),
     ])));
