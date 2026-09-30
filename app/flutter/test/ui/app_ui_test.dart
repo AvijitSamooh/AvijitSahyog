@@ -25,6 +25,7 @@ import 'package:avijit_sahyog/features/admin/models/admin_dashboard_summary.dart
 import 'package:avijit_sahyog/features/admin/models/admin_beneficiary.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_beneficiaries_page.dart';
 import 'package:avijit_sahyog/features/applications/presentation/applications_page.dart';
+import 'package:avijit_sahyog/features/applications/models/application_window.dart';
 import 'package:avijit_sahyog/features/applications/providers/help_applications_providers.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_causes_page.dart';
 import 'package:avijit_sahyog/features/admin/providers/admin_beneficiaries_providers.dart';
@@ -159,6 +160,40 @@ void main() {
 
     expect(find.byType(ApplicationsPage), findsOneWidget);
     expect(find.text('Please sign in to submit an application.'), findsOneWidget);
+  });
+
+  testWidgets('application page explains a scheduled and closed application window', (tester) async {
+    final scheduled = ApplicationWindow.fromJson({
+      'type': 'PRATIBHA_SAMMAN',
+      'startsAt': '2026-10-05T10:00:00.000Z',
+      'closedAt': null,
+      'status': 'SCHEDULED',
+      'canApply': false,
+    });
+    final closed = ApplicationWindow.fromJson({
+      'type': 'MEDICAL_HELP',
+      'startsAt': '2026-09-01T10:00:00.000Z',
+      'closedAt': '2026-09-29T10:00:00.000Z',
+      'status': 'CLOSED',
+      'canApply': false,
+    });
+
+    await pumpApp(
+      tester,
+      home: const ApplicationsPage(),
+      overrides: [
+        authProvider.overrideWith(() => _AuthenticatedAdminController()),
+        applicationWindowsProvider.overrideWith((ref) async => [scheduled, closed]),
+        myHelpApplicationsProvider.overrideWith((ref) async => const []),
+      ],
+    );
+
+    expect(find.textContaining('Applications will start from'), findsOneWidget);
+    expect(find.text('Applications are no longer being accepted.'), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('application_pratibha')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Applications will start from'), findsWidgets);
   });
 
   testWidgets('public home exposes login from the shared settings menu', (tester) async {
