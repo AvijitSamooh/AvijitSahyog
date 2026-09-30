@@ -7,7 +7,7 @@ import { ApplicationRulesService } from './application-rules.service';
 
 @Module({
   imports: [AuthModule],
-  controllers: [ApplicationWindowsController, AdminApplicationWindowsController, HelpApplicationsController, AdminHelpApplicationsController],
+  controllers: [ApplicationWindowsController, AdminApplicationWindowsController, HelpApplicationsController, AdminHelpApplicationsController, ApplicationRulesController, AdminApplicationRulesController],
   providers: [ApplicationWindowsService, ApplicationRulesService, HelpApplicationsService],
 })
 export class HelpApplicationsModule {}
