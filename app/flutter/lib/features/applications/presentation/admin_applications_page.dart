@@ -24,6 +24,12 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
     _load();
   }
 
+  String _ruleTypeLabel(AppLocalizations l10n, String type) => switch (type) {
+    'MEDICAL_HELP' => l10n.medicalHelp,
+    'PRATIBHA_SAMMAN' => l10n.pratibhaSamman,
+    _ => l10n.educationHelp,
+  };
+
   Future<void> _load() async {
     setState(() { _loading = true; _error = null; });
     try {
@@ -193,7 +199,7 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
           const _ApplicationRulesAdminPanel(),
           _ApplicationWindowAdminPanel(
             windows: windows,
-            typeLabel: (type) => _typeLabel(l10n, type),
+            typeLabel: (type) => _ruleTypeLabel(l10n, type),
             formatDateTime: (value) => _windowDateTime(context, value),
             onStart: _startWindow,
             onClose: _closeWindow,
