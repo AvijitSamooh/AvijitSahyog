@@ -306,7 +306,7 @@ class _ApplicationRulesAdminPanelState extends ConsumerState<_ApplicationRulesAd
       if (rule == null) { await repo.createAdminApplicationRule(payload); } else { final updatePayload = Map<String, dynamic>.from(payload)..remove('type'); await repo.updateAdminApplicationRule(rule['id'] as String, updatePayload); }
       if (mounted) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.ruleSaved))); await _load(); }
     } catch (_) { if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.ruleActionFailed))); }
-    finally { for (final x in [en, hi, mr, gu, order]) x.dispose(); }
+    finally { for (final x in [en, hi, mr, gu, order]) { x.dispose(); } }
   }
 
   Future<void> _deleteRule(Map<String, dynamic> rule) async {
