@@ -678,11 +678,6 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
               ),
             ],
 
-              controller: _pincode,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: l10n.pincodeRequired, prefixIcon: const Icon(Icons.location_on_outlined)),
-              validator: _pincodeValidator,
-            ),
             const SizedBox(height: 20),
             if (!isSamman)
               TextFormField(
