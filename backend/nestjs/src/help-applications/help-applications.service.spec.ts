@@ -169,6 +169,8 @@ describe('HelpApplicationsService', () => {
   it('persists both Pratibha Samman review decisions', async () => {
     prisma.helpApplication.findUnique.mockResolvedValue({ id: 'app-1', type: 'PRATIBHA_SAMMAN', requestedAmount: null, media: [] });
     prisma.helpApplication.update.mockResolvedValue({ id: 'app-1', type: 'PRATIBHA_SAMMAN', status: 'CONSIDERED_FOR_SAMMAN', media: [], votes: [] });
+    prisma.cause.findUnique.mockResolvedValue({ id: 'pratibha-cause' });
+    prisma.beneficiary.upsert.mockResolvedValue({ id: 'beneficiary-1' });
     const service = new HelpApplicationsService(prisma, applicationWindows);
 
     await service.review('app-1', { decision: 'CONSIDER_FOR_SAMMAN' });
