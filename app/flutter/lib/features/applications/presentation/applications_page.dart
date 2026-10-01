@@ -535,6 +535,29 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
               ),
               const SizedBox(height: 20),
             ],
+            if (isSamman && (window.registrationEndsAt != null || window.eventAt != null)) ...[
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(l10n.eventDate, style: Theme.of(context).textTheme.titleMedium),
+                      const SizedBox(height: 8),
+                      Text('\${l10n.formAvailableDate}: \${_windowDateTime(context, window.startsAt)}'),
+                      if (window.registrationEndsAt != null)
+                        Text('\${l10n.registrationLastDate}: \${_windowDateTime(context, window.registrationEndsAt!)}'),
+                      if (window.eventAt != null)
+                        Text('\${l10n.eventDate}: \${_windowDateTime(context, window.eventAt!)}'),
+                      const SizedBox(height: 6),
+                      Text(l10n.organisationManagedBy, style: Theme.of(context).textTheme.bodySmall),
+                      Text(l10n.organisationRegistrationNumber, style: Theme.of(context).textTheme.bodySmall),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
             Text(l10n.applicantDetails, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 12),
             TextFormField(
