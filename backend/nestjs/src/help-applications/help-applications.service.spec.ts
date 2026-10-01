@@ -5,7 +5,7 @@ import { ApplicationWindowsService } from './application-windows.service';
 describe('HelpApplicationsService', () => {
   const prisma: any = {
     user: { upsert: jest.fn() },
-    media: { findMany: jest.fn() },
+    media: { findMany: jest.fn(), findFirst: jest.fn() },
     applicationRule: { findMany: jest.fn() },
     helpApplicationRuleAcceptance: { deleteMany: jest.fn() },
     helpApplication: {
@@ -64,6 +64,7 @@ describe('HelpApplicationsService', () => {
 
   it('blocks submission when the configured application window is closed', async () => {
     (applicationWindows.ensureAccepting as jest.Mock).mockRejectedValueOnce(new BadRequestException('Applications are no longer being accepted.'));
+    prisma.media.findFirst.mockResolvedValue({ id: 'certificate-1' });
     const service = new HelpApplicationsService(prisma, applicationWindows);
 
     await expect(service.create(identity, {
@@ -221,6 +222,13 @@ describe('HelpApplicationsService', () => {
       state: 'Maharashtra',
       pincode: '411001',
       mediaIds: ['media-1'],
+
+      motherName: 'Mother User',
+      fatherName: 'Father User',
+      dateOfBirth: '2010-01-01T00:00:00.000Z',
+      classStandard: '10',
+      schoolInstituteName: 'Test School',
+      certificatePhotoMediaId: 'certificate-1',
       acceptedRuleIds: ['rule-1'],
     })).rejects.toThrow('Please acknowledge every current application rule before submitting.');
     expect(prisma.helpApplication.create).not.toHaveBeenCalled();
@@ -228,6 +236,7 @@ describe('HelpApplicationsService', () => {
 
   it('stores the acknowledged rule text snapshot on successful submission', async () => {
     prisma.media.findMany.mockResolvedValue([{ id: 'media-1' }]);
+    prisma.media.findFirst.mockResolvedValue({ id: 'certificate-1' });
     prisma.applicationRule.findMany.mockResolvedValue([
       { id: 'rule-1', translations: [{ text: 'Pune only' }] },
     ]);
@@ -260,6 +269,13 @@ describe('HelpApplicationsService', () => {
       state: 'Maharashtra',
       pincode: '411001',
       mediaIds: ['media-1'],
+
+      motherName: 'Mother User',
+      fatherName: 'Father User',
+      dateOfBirth: '2010-01-01T00:00:00.000Z',
+      classStandard: '10',
+      schoolInstituteName: 'Test School',
+      certificatePhotoMediaId: 'certificate-1',
       acceptedRuleIds: ['rule-1'],
     });
 
