@@ -99,4 +99,26 @@ describe('ApplicationRulesService', () => {
       data: { isActive: false },
     });
   });
+  it('caches rule descriptions and invalidates after an admin write', async () => {
+    prisma.applicationRule.findMany.mockResolvedValue([
+      {
+        id: 'rule-1',
+        type: 'PRATIBHA_SAMMAN',
+        displayOrder: 1,
+        translations: [{ text: 'Pune only', language: { code: 'en' } }],
+      },
+    ]);
+    const service = new ApplicationRulesService(prisma);
+
+    await service.list('PRATIBHA_SAMMAN', 'en');
+    await service.list('PRATIBHA_SAMMAN', 'en');
+    expect(prisma.applicationRule.findMany).toHaveBeenCalledTimes(1);
+
+    prisma.applicationRule.findUnique.mockResolvedValue({ id: 'rule-1' });
+    prisma.applicationRule.update.mockResolvedValue({ id: 'rule-1' });
+    await service.remove('rule-1');
+
+    await service.list('PRATIBHA_SAMMAN', 'en');
+    expect(prisma.applicationRule.findMany).toHaveBeenCalledTimes(2);
+  });
 });
