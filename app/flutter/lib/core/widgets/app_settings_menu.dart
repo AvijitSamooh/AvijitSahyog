@@ -142,6 +142,7 @@ class AppPageScaffold extends Scaffold {
     super.floatingActionButton,
     super.floatingActionButtonLocation,
     super.bottomSheet,
+    super.backgroundColor,
     bool automaticallyImplyLeading = true,
     PreferredSizeWidget? appBarBottom,
     double? appBarElevation,
