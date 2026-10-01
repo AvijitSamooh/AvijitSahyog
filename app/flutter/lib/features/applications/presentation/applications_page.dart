@@ -255,9 +255,16 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
   final _pincode = TextEditingController();
   final _amount = TextEditingController();
   final _clarification = TextEditingController();
+  final _motherName = TextEditingController();
+  final _fatherName = TextEditingController();
+  final _classStandard = TextEditingController();
+  final _schoolInstituteName = TextEditingController();
+  final _accomplishments = TextEditingController();
   final _picker = ImagePicker();
   final List<String> _mediaIds = [];
   final List<XFile> _selectedImages = [];
+  String? _certificatePhotoMediaId;
+  XFile? _certificatePhoto;
   bool _busy = false;
   int _uploadTotal = 0;
   int _uploadCompleted = 0;
@@ -276,11 +283,17 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     _pincode.text = existing?.pincode ?? '';
     if (existing?.requestedAmount != null) _amount.text = existing!.requestedAmount.toString();
     _clarification.text = existing?.clarification ?? '';
+    _motherName.text = existing?.motherName ?? '';
+    _fatherName.text = existing?.fatherName ?? '';
+    _classStandard.text = existing?.classStandard ?? '';
+    _schoolInstituteName.text = existing?.schoolInstituteName ?? '';
+    _accomplishments.text = existing?.accomplishments ?? '';
+    _certificatePhotoMediaId = existing?.certificatePhotoMediaId;
   }
 
   @override
   void dispose() {
-    for (final controller in [_name, _mobile, _email, _address, _city, _state, _pincode, _amount, _clarification]) {
+    for (final controller in [_name, _mobile, _email, _address, _city, _state, _pincode, _amount, _clarification, _motherName, _fatherName, _classStandard, _schoolInstituteName, _accomplishments]) {
       controller.dispose();
     }
     super.dispose();
@@ -306,6 +319,33 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
       await _uploadImages([image]);
     } catch (error) {
       if (mounted) _showError('Unable to capture image: $error');
+    }
+  }
+
+  Future<void> _pickCertificatePhoto() async {
+    if (_busy) return;
+    try {
+      final image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 92,
+        maxWidth: 1800,
+        maxHeight: 1800,
+      );
+      if (image == null) return;
+      setState(() => _busy = true);
+      final id = await ref.read(helpApplicationsRepositoryProvider).uploadImage(image.path);
+      if (mounted) {
+        setState(() {
+          _certificatePhoto = image;
+          _certificatePhotoMediaId = id;
+          _busy = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _busy = false);
+        _showError(AppLocalizations.of(context)!.certificatePhotoUploadFailed);
+      }
     }
   }
 
@@ -384,6 +424,10 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.imagesRequired)));
       return;
     }
+    if (widget.type == 'PRATIBHA_SAMMAN' && _certificatePhotoMediaId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.certificatePhotoRequired)));
+      return;
+    }
     double? amount;
     if (widget.type != 'PRATIBHA_SAMMAN') {
       amount = double.tryParse(_amount.text.trim());
@@ -396,9 +440,9 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     try {
       final repo = ref.read(helpApplicationsRepositoryProvider);
       if (widget.application == null) {
-        await repo.create(type: widget.type, requestedAmount: amount, applicantName: _name.text, mobileNumber: _mobile.text, email: _email.text, address: _address.text, city: _city.text, state: _state.text, pincode: _pincode.text, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false), clarification: _clarification.text);
+        await repo.create(type: widget.type, requestedAmount: amount, applicantName: _name.text, mobileNumber: _mobile.text, email: _email.text, address: _address.text, city: _city.text, state: _state.text, pincode: _pincode.text, motherName: isSamman ? _motherName.text : null, fatherName: isSamman ? _fatherName.text : null, dateOfBirth: isSamman ? _dob : null, classStandard: isSamman ? _classStandard.text : null, schoolInstituteName: isSamman ? _schoolInstituteName.text : null, accomplishments: isSamman ? _accomplishments.text : null, certificatePhotoMediaId: isSamman ? _certificatePhotoMediaId : null, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false), clarification: _clarification.text);
       } else {
-        await repo.resubmit(id: widget.application!.id, clarification: _clarification.text, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false), requestedAmount: amount);
+        await repo.resubmit(id: widget.application!.id, clarification: _clarification.text, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false), requestedAmount: amount, motherName: isSamman ? _motherName.text : null, fatherName: isSamman ? _fatherName.text : null, dateOfBirth: isSamman ? _dob : null, classStandard: isSamman ? _classStandard.text : null, schoolInstituteName: isSamman ? _schoolInstituteName.text : null, accomplishments: isSamman ? _accomplishments.text : null, certificatePhotoMediaId: isSamman ? _certificatePhotoMediaId : null);
       }
       ref.invalidate(myHelpApplicationsProvider);
       if (mounted) {
