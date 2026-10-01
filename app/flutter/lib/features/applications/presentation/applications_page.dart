@@ -103,7 +103,6 @@ class ApplicationsPage extends ConsumerWidget {
       ),
     );
   }
-  }
 
   Widget _wrap(
     BuildContext context, {
