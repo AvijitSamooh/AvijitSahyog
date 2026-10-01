@@ -143,6 +143,7 @@ flutter pub get
 flutter gen-l10n
 flutter analyze
 flutter test
+flutter test integration_test
 flutter build web
 ```
 
@@ -196,6 +197,7 @@ Before opening a PR, verify:
 - [ ] Assets are committed and registered
 - [ ] Backend changes have DTO/service/controller tests
 - [ ] Flutter feature/regression tests are included
+- [ ] Flutter integration tests cover the important user journey where applicable
 - [ ] Existing tests still pass
 - [ ] Static analysis passes
 - [ ] Database migrations/seeds are updated if needed

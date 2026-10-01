@@ -15,6 +15,7 @@ function Invoke-UiValidation {
         flutter gen-l10n
         flutter analyze
         flutter test
+        flutter test integration_test
         flutter build web
     } finally { Pop-Location }
 }
