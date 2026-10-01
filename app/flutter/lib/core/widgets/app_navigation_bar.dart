@@ -42,6 +42,14 @@ class AppNavigationBar extends StatelessWidget {
       height: 78,
       backgroundColor: Colors.white,
       indicatorColor: AppTheme.softSurface,
+      labelTextStyle: const WidgetStatePropertyAll(
+        TextStyle(
+          color: AppTheme.primary,
+          fontWeight: FontWeight.w600,
+          fontSize: 11,
+          height: 1.0,
+        ),
+      ),
       onDestinationSelected: (index) {
         final destination = _screenForIndex(index);
         AnalyticsService.instance.trackInteraction(
