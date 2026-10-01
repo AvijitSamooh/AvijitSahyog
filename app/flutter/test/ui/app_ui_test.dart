@@ -701,7 +701,21 @@ void main() {
       tester.view.resetDevicePixelRatio();
     });
 
-    await pumpApp(tester, home: const HomePage());
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
+        theme: AppTheme.light(),
+        home: Scaffold(
+          bottomNavigationBar: AppNavigationBar(
+            selectedIndex: 0,
+            onDestinationSelected: (_) {},
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
 
     final labels = [
       find.text('Home'),
