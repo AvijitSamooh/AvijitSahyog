@@ -102,7 +102,7 @@ jobs:
         run: flutter test --coverage --dart-define=BACKEND_SERVICE_WINDOW_ENABLED=false
 
       - name: Integration tests
-        run: flutter test integration_test --dart-define=BACKEND_SERVICE_WINDOW_ENABLED=false
+        run: xvfb-run -a flutter test integration_test -d linux --dart-define=BACKEND_SERVICE_WINDOW_ENABLED=false
 
       - name: Upload Flutter coverage artifact
         uses: actions/upload-artifact@v4
