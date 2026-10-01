@@ -186,64 +186,156 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final windows = ref.watch(applicationWindowsProvider);
+
     return AppPageScaffold(
       title: Text(l10n.adminApplications),
-      body: Column(
-        children: [
-          const _ApplicationRulesAdminPanel(),
-          _ApplicationWindowAdminPanel(
-            windows: windows,
-            typeLabel: (type) => _typeLabel(l10n, type),
-            formatDateTime: (value) => _windowDateTime(context, value),
-            onStart: _startWindow,
-            onClose: _closeWindow,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Wrap(spacing: 8, children: [
-              FilterChip(label: Text(l10n.applicationsTitle), selected: _type == null, onSelected: (_) { setState(() => _type = null); _load(); }),
-              FilterChip(label: Text(l10n.educationHelp), selected: _type == 'EDUCATION_ASSISTANCE', onSelected: (_) { setState(() => _type = 'EDUCATION_ASSISTANCE'); _load(); }),
-              FilterChip(label: Text(l10n.medicalHelp), selected: _type == 'MEDICAL_HELP', onSelected: (_) { setState(() => _type = 'MEDICAL_HELP'); _load(); }),
-              FilterChip(label: Text(l10n.pratibhaSamman), selected: _type == 'PRATIBHA_SAMMAN', onSelected: (_) { setState(() => _type = 'PRATIBHA_SAMMAN'); _load(); }),
-            ]),
-          ),
-          Expanded(child: _loading ? const Center(child: CircularProgressIndicator()) : _error != null
-            ? Center(child: Text(_error!))
-            : RefreshIndicator(
-              onRefresh: _load,
-              child: ListView.builder(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(12),
-              itemCount: _items.length,
-              itemBuilder: (context, index) {
-                final item = _items[index];
-                final votes = item['votes'] as List<dynamic>? ?? [];
-                return Card(
-                  child: ExpansionTile(
-                    title: Text(_typeLabel(l10n, item['type'] as String)),
-                    subtitle: Text(_statusLabel(l10n, item['status'] as String)),
-                    childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                    children: [
-                      Align(alignment: Alignment.centerLeft, child: Text((item['applicant']?['displayName'] ?? item['applicant']?['email'] ?? '').toString())),
-                      if (item['requestedAmount'] != null) Align(alignment: Alignment.centerLeft, child: Text('${l10n.requestedAmount}: ₹${item['requestedAmount']}')),
-                      if (item['approvedAmount'] != null) Align(alignment: Alignment.centerLeft, child: Text('${l10n.approvedAmount}: ₹${item['approvedAmount']}')),
-                      Align(alignment: Alignment.centerLeft, child: Text('${l10n.voteAverage}: ${((item['voteAverage'] as num?)?.toStringAsFixed(1) ?? '—')}')),
-                      Align(alignment: Alignment.centerLeft, child: Text('${votes.length} ${l10n.vote}')),
-                      Row(children: [
-                        TextButton.icon(onPressed: () => _vote(item), icon: const Icon(Icons.how_to_vote_rounded), label: Text(l10n.vote)),
-                        const SizedBox(width: 8),
-                        FilledButton.icon(onPressed: () => _review(item), icon: const Icon(Icons.rate_review_rounded), label: Text(l10n.reviewDecision)),
-                      ]),
-                    ],
-                  ),
-                );
-                },
+      body: RefreshIndicator(
+        onRefresh: _load,
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverToBoxAdapter(
+              child: _ApplicationWindowAdminPanel(
+                key: const ValueKey('application_window_management'),
+                windows: windows,
+                typeLabel: (type) => _typeLabel(l10n, type),
+                formatDateTime: (value) => _windowDateTime(context, value),
+                onStart: _startWindow,
+                onClose: _closeWindow,
               ),
-            )),
-        ],
+            ),
+            SliverToBoxAdapter(
+              child: const _ApplicationRulesAdminPanel(),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    FilterChip(
+                      label: Text(l10n.applicationsTitle),
+                      selected: _type == null,
+                      onSelected: (_) {
+                        setState(() => _type = null);
+                        _load();
+                      },
+                    ),
+                    FilterChip(
+                      label: Text(l10n.educationHelp),
+                      selected: _type == 'EDUCATION_ASSISTANCE',
+                      onSelected: (_) {
+                        setState(() => _type = 'EDUCATION_ASSISTANCE');
+                        _load();
+                      },
+                    ),
+                    FilterChip(
+                      label: Text(l10n.medicalHelp),
+                      selected: _type == 'MEDICAL_HELP',
+                      onSelected: (_) {
+                        setState(() => _type = 'MEDICAL_HELP');
+                        _load();
+                      },
+                    ),
+                    FilterChip(
+                      label: Text(l10n.pratibhaSamman),
+                      selected: _type == 'PRATIBHA_SAMMAN',
+                      onSelected: (_) {
+                        setState(() => _type = 'PRATIBHA_SAMMAN');
+                        _load();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (_loading)
+              const SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(child: CircularProgressIndicator()),
+              )
+            else if (_error != null)
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(child: Text(_error!)),
+              )
+            else
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final item = _items[index];
+                      final votes = item['votes'] as List<dynamic>? ?? [];
+                      return Card(
+                        child: ExpansionTile(
+                          title: Text(_typeLabel(l10n, item['type'] as String)),
+                          subtitle: Text(_statusLabel(l10n, item['status'] as String)),
+                          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                          children: [
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                (item['applicant']?['displayName'] ??
+                                        item['applicant']?['email'] ??
+                                        '')
+                                    .toString(),
+                              ),
+                            ),
+                            if (item['requestedAmount'] != null)
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  '${l10n.requestedAmount}: ₹${item['requestedAmount']}',
+                                ),
+                              ),
+                            if (item['approvedAmount'] != null)
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  '${l10n.approvedAmount}: ₹${item['approvedAmount']}',
+                                ),
+                              ),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                '${l10n.voteAverage}: ${((item['voteAverage'] as num?)?.toStringAsFixed(1) ?? '—')}',
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('${votes.length} ${l10n.vote}'),
+                            ),
+                            Row(
+                              children: [
+                                TextButton.icon(
+                                  onPressed: () => _vote(item),
+                                  icon: const Icon(Icons.how_to_vote_rounded),
+                                  label: Text(l10n.vote),
+                                ),
+                                const SizedBox(width: 8),
+                                FilledButton.icon(
+                                  onPressed: () => _review(item),
+                                  icon: const Icon(Icons.rate_review_rounded),
+                                  label: Text(l10n.reviewDecision),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    childCount: _items.length,
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
+}
 }
 
 class _ApplicationRulesAdminPanel extends ConsumerStatefulWidget {
