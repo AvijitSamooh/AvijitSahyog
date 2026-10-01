@@ -477,6 +477,7 @@
   "certificatePhotoSelected": "प्रमाणपत्र का फोटो चुना गया",
   "certificatePhotoRequired": "प्रमाणपत्र के लिए स्पष्ट चेहरे का फोटो देना आवश्यक है।",
   "certificatePhotoUploadFailed": "प्रमाणपत्र का फोटो अपलोड नहीं हो सका।",
+  "importantDates": "महत्वपूर्ण तिथियाँ",
   "formAvailableDate": "फॉर्म उपलब्ध होने की तिथि",
   "registrationLastDate": "पंजीकरण की अंतिम तिथि",
   "eventDate": "कार्यक्रम की तिथि",
