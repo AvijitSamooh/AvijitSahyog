@@ -493,6 +493,7 @@
   "certificatePhotoSelected": "Certificate photo selected",
   "certificatePhotoRequired": "Please provide the clear face photo for the certificate.",
   "certificatePhotoUploadFailed": "Unable to upload the certificate photo.",
+  "importantDates": "Important dates",
   "formAvailableDate": "Form available from",
   "registrationLastDate": "Last day for registration",
   "eventDate": "Event date",
