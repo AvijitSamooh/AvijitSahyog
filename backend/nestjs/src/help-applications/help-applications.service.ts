@@ -56,7 +56,7 @@ export class HelpApplicationsService {
     const items = await this.prisma.helpApplication.findMany({
       where: { applicantId: user.id },
       orderBy: { createdAt: 'desc' },
-      include: { media: { include: { media: true } }, votes: { select: { score: true } } },
+      include: { media: { include: { media: true } }, certificatePhotoMedia: true, votes: { select: { score: true } } },
     });
     return items.map((item) => this.toResponse(item));
   }
@@ -94,7 +94,6 @@ export class HelpApplicationsService {
       throw new BadRequestException('Only rejected or clarification-requested applications can be resubmitted.');
     }
     this.validateSubmission(existing.type, dto.requestedAmount ?? Number(existing.requestedAmount ?? 0), dto.mediaIds);
-    this.validatePratibhaDetails(existing.type, dto);
     const media = await this.validateMedia(dto.mediaIds, user.id);
     const certificatePhotoMediaId = await this.validateCertificatePhoto(existing.type, dto.certificatePhotoMediaId, user.id);
     const acceptedRules = await this.validateAcceptedRules(existing.type as HelpApplicationTypeDto, dto.acceptedRuleIds);
