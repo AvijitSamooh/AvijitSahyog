@@ -555,11 +555,11 @@ class _ApplicationWindowAdminPanel extends StatelessWidget {
                           Text(statusText),
                           if (window != null && type == 'PRATIBHA_SAMMAN') ...[
                             const SizedBox(height: 6),
-                            Text('\${l10n.formAvailableDate}: \${formatDateTime(window!.startsAt)}'),
+                            Text('${l10n.formAvailableDate}: ${formatDateTime(window!.startsAt)}'),
                             if (window.registrationEndsAt != null)
-                              Text('\${l10n.registrationLastDate}: \${formatDateTime(window.registrationEndsAt!)}'),
+                              Text('${l10n.registrationLastDate}: ${formatDateTime(window.registrationEndsAt!)}'),
                             if (window.eventAt != null)
-                              Text('\${l10n.eventDate}: \${formatDateTime(window.eventAt!)}'),
+                              Text('${l10n.eventDate}: ${formatDateTime(window.eventAt!)}'),
                             const SizedBox(height: 4),
                             Text(
                               l10n.organisationManagedBy,
