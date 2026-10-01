@@ -16,12 +16,10 @@ class AnalyticsService {
   AnalyticsService({
     FirebaseAnalytics? analytics,
     http.Client? client,
-    Duration flushInterval = const Duration(seconds: 15),
-    int batchSize = 25,
+    this._flushInterval = const Duration(seconds: 15),
+    this._batchSize = 25,
   })  : _analytics = analytics ?? _tryCreateAnalytics(),
-        _client = client ?? http.Client(),
-        _flushInterval = flushInterval,
-        _batchSize = batchSize;
+        _client = client ?? http.Client();
 
   static final AnalyticsService instance = AnalyticsService();
   static const _clientIdKey = 'analytics_client_id';
@@ -148,8 +146,8 @@ class AnalyticsService {
         'language': language,
         'deviceType': deviceType,
         if (city.isNotEmpty) 'city': city,
-        if (interactionType != null) 'interactionType': interactionType,
-        if (target != null) 'target': target,
+        if (interactionType case final value?) 'interactionType': value,
+        if (target case final value?) 'target': value,
       });
 
       if (_queue.length >= _batchSize) {
