@@ -232,11 +232,11 @@ void main() {
       'pratibha_accomplishments',
     ]) {
       final field = find.byKey(ValueKey(key));
-      await tester.scrollUntilVisible(field, 500);
+      await tester.scrollUntilVisible(field, 500, scrollable: find.byType(Scrollable).first);
       expect(field, findsOneWidget);
     }
     final batchRule = find.text('This recognition is for the 2025-26 batch only.');
-    await tester.scrollUntilVisible(batchRule, 500);
+    await tester.scrollUntilVisible(batchRule, 500, scrollable: find.byType(Scrollable).first);
     expect(batchRule, findsOneWidget);
   });
 
