@@ -520,6 +520,7 @@ class _ApplicationWindowAdminPanel extends StatelessWidget {
                             runSpacing: 8,
                             children: [
                               OutlinedButton.icon(
+                                key: ValueKey('application_window_start_$type'),
                                 onPressed: () => onStart(type),
                                 icon: const Icon(Icons.schedule_rounded),
                                 label: Text(
@@ -530,6 +531,7 @@ class _ApplicationWindowAdminPanel extends StatelessWidget {
                               ),
                               if (window != null && status != ApplicationWindowStatus.closed)
                                 TextButton.icon(
+                                  key: ValueKey('application_window_close_$type'),
                                   onPressed: () => onClose(type),
                                   icon: const Icon(Icons.stop_circle_outlined),
                                   label: Text(l10n.closeApplications),
