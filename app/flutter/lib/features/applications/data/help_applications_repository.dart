@@ -107,12 +107,26 @@ class HelpApplicationsRepository {
     required List<String> mediaIds,
     required List<String> acceptedRuleIds,
     double? requestedAmount,
+    String? motherName,
+    String? fatherName,
+    DateTime? dateOfBirth,
+    String? classStandard,
+    String? schoolInstituteName,
+    String? accomplishments,
+    String? certificatePhotoMediaId,
   }) async {
     return HelpApplication.fromJson(await client.resubmitHelpApplication(id, {
       'clarification': clarification,
       'mediaIds': mediaIds,
       'acceptedRuleIds': acceptedRuleIds,
       'requestedAmount': ?requestedAmount,
+      'motherName': ?motherName,
+      'fatherName': ?fatherName,
+      'dateOfBirth': ?dateOfBirth?.toUtc().toIso8601String(),
+      'classStandard': ?classStandard,
+      'schoolInstituteName': ?schoolInstituteName,
+      'accomplishments': ?accomplishments,
+      'certificatePhotoMediaId': ?certificatePhotoMediaId,
     }));
   }
 
