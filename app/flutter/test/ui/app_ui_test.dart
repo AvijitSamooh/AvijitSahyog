@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:avijit_sahyog/app.dart';
 import 'package:avijit_sahyog/core/navigation/app_shell_scope.dart';
+import 'package:avijit_sahyog/core/theme/app_theme.dart';
 import 'package:avijit_sahyog/core/widgets/app_navigation_bar.dart';
 import 'package:avijit_sahyog/features/causes/models/cause.dart';
 import 'package:avijit_sahyog/features/causes/models/organisation.dart';
@@ -107,7 +108,7 @@ void main() {
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             locale: const Locale('en'),
-            theme: ThemeData(useMaterial3: true),
+            theme: AppTheme.light(),
             home: home ?? const AvijitSahyogApp(splashDuration: Duration.zero),
           ),
         ),
@@ -504,6 +505,128 @@ void main() {
     expect(find.text('Impact'), findsOneWidget);
     expect(find.text('Information'), findsOneWidget);
     expect(find.text('Profile'), findsOneWidget);
+  });
+
+  testWidgets('Applications tab has one shell header and one navigation bar', (tester) async {
+    await pumpApp(
+      tester,
+      home: const HomePage(),
+      overrides: [
+        authProvider.overrideWith((ref) => _AuthenticatedAdminController()),
+        applicationWindowsProvider.overrideWith((ref) async => const []),
+        myHelpApplicationsProvider.overrideWith((ref) async => const []),
+      ],
+    );
+
+    final navigation = AppShellScope.of(
+      tester.element(find.byType(HomePage)),
+    ).navigation;
+    navigation.select(1);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AppBar), findsOneWidget);
+    expect(find.byType(AppNavigationBar), findsOneWidget);
+    expect(find.byType(ApplicationsPage), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(ApplicationsPage),
+        matching: find.byType(AppBar),
+      ),
+      findsNothing,
+      reason: 'HomePage must own the shell for tab content.',
+    );
+  });
+
+  testWidgets('Profile tab has one shell header and one navigation bar', (tester) async {
+    await pumpApp(
+      tester,
+      home: const HomePage(),
+      overrides: [
+        authProvider.overrideWith((ref) => _AuthenticatedAdminController()),
+      ],
+    );
+
+    final navigation = AppShellScope.of(
+      tester.element(find.byType(HomePage)),
+    ).navigation;
+    navigation.select(4);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AppBar), findsOneWidget);
+    expect(find.byType(AppNavigationBar), findsOneWidget);
+    expect(find.byType(ProfilePage), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(ProfilePage),
+        matching: find.byType(AppBar),
+      ),
+      findsNothing,
+      reason: 'HomePage must own the shell for tab content.',
+    );
+  });
+
+  testWidgets('application history backend failure stays inside the shared shell', (tester) async {
+    await pumpApp(
+      tester,
+      home: const HomePage(),
+      overrides: [
+        authProvider.overrideWith((ref) => _AuthenticatedAdminController()),
+        applicationWindowsProvider.overrideWith((ref) async => const []),
+        myHelpApplicationsProvider.overrideWith(
+          (ref) async => throw Exception('simulated backend unavailable'),
+        ),
+      ],
+    );
+
+    final navigation = AppShellScope.of(
+      tester.element(find.byType(HomePage)),
+    ).navigation;
+    navigation.select(1);
+    await tester.pumpAndSettle();
+
+    expect(find.text(l10n(tester).applicationLoadError), findsOneWidget);
+    expect(find.byType(AppBar), findsOneWidget);
+    expect(find.byType(AppNavigationBar), findsOneWidget);
+    expect(find.text('Unable to load'), findsNothing);
+  });
+
+  testWidgets('causes backend failure renders a recoverable screen, not a blank or black screen', (tester) async {
+    await pumpApp(
+      tester,
+      home: const CausesPage(),
+      overrides: [
+        causesProvider('en').overrideWith(
+          (ref) async => throw Exception('simulated backend unavailable'),
+        ),
+      ],
+    );
+
+    expect(find.text(l10n(tester).causesLoadError), findsOneWidget);
+    expect(find.text(l10n(tester).retry), findsOneWidget);
+    expect(find.byType(AppBar), findsOneWidget);
+    expect(find.byType(AppNavigationBar), findsOneWidget);
+    expect(
+      tester.widget<Scaffold>(find.byType(Scaffold).first).backgroundColor,
+      AppTheme.background,
+    );
+  });
+
+  testWidgets('causes success screen keeps the application background and shell', (tester) async {
+    await pumpApp(
+      tester,
+      home: const CausesPage(),
+      overrides: [
+        causesProvider('en').overrideWith((ref) async => const [_cause]),
+      ],
+    );
+
+    expect(find.text('Education'), findsOneWidget);
+    expect(find.byType(AppBar), findsOneWidget);
+    expect(find.byType(AppNavigationBar), findsOneWidget);
+    expect(
+      tester.widget<Scaffold>(find.byType(Scaffold).first).backgroundColor,
+      AppTheme.background,
+    );
   });
 
   testWidgets('Impact tab keeps a single shell header and no nested app bar', (tester) async {
