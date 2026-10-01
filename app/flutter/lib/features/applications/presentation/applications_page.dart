@@ -416,6 +416,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     }
 
     final l10n = AppLocalizations.of(context)!;
+    final isSamman = widget.type == 'PRATIBHA_SAMMAN';
     final rules = ref.read(applicationRulesProvider((type: widget.type, language: Localizations.localeOf(context).languageCode))).valueOrNull ?? const <ApplicationRule>[];
     if (_acceptedRuleIds.length != rules.length || rules.any((rule) => !_acceptedRuleIds.contains(rule.id))) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.applicationRulesRequired)));
@@ -483,6 +484,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
         body: _ApplicationWindowClosedView(window: window),
       );
     }
+    final activeWindow = window!;
     if (rules.isLoading) {
       return AppPageScaffold(
         title: Text(_typeLabel(l10n, widget.type)),
@@ -535,7 +537,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
               ),
               const SizedBox(height: 20),
             ],
-            if (isSamman && (window.registrationEndsAt != null || window.eventAt != null)) ...[
+            if (isSamman && (activeWindow.registrationEndsAt != null || activeWindow.eventAt != null)) ...[
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(14),
@@ -544,11 +546,11 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
                     children: [
                       Text(l10n.importantDates, style: Theme.of(context).textTheme.titleMedium),
                       const SizedBox(height: 8),
-                      Text('\${l10n.formAvailableDate}: \${_windowDateTime(context, window.startsAt)}'),
-                      if (window.registrationEndsAt != null)
-                        Text('\${l10n.registrationLastDate}: \${_windowDateTime(context, window.registrationEndsAt!)}'),
-                      if (window.eventAt != null)
-                        Text('\${l10n.eventDate}: \${_windowDateTime(context, window.eventAt!)}'),
+                      Text('\${l10n.formAvailableDate}: \${_windowDateTime(context, activeWindow.startsAt)}'),
+                      if (activeWindow.registrationEndsAt != null)
+                        Text('\${l10n.registrationLastDate}: \${_windowDateTime(context, activeWindow.registrationEndsAt!)}'),
+                      if (activeWindow.eventAt != null)
+                        Text('\${l10n.eventDate}: \${_windowDateTime(context, activeWindow.eventAt!)}'),
                       const SizedBox(height: 6),
                       Text(l10n.organisationManagedBy, style: Theme.of(context).textTheme.bodySmall),
                       Text(l10n.organisationRegistrationNumber, style: Theme.of(context).textTheme.bodySmall),
