@@ -480,6 +480,13 @@
     }
   },
   "serviceUnavailableBanner": "Backend service is offline from {start} to {end}.",
+  "@serviceUnavailableBanner": {
+    "description": "The backend offline interval shown in the persistent service banner.",
+    "placeholders": {
+      "start": {"type": "String"},
+      "end": {"type": "String"}
+    }
+  },
   "serviceUnavailableDismiss": "OK",
   "brandParentName": "Avijit Samuh",
   "brandTagline": "|| Education  Service  Cooperation  Recognition ||",
