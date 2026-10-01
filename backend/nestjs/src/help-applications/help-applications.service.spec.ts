@@ -201,6 +201,7 @@ describe('HelpApplicationsService', () => {
       type: 'PRATIBHA_SAMMAN',
       status: 'CONSIDERED_FOR_SAMMAN',
       applicantName: 'Aarav Jain',
+      certificatePhotoMediaId: 'certificate-1',
       media: [{ mediaId: 'evidence-1', media: { id: 'evidence-1', storageKey: 'evidence.webp', mimeType: 'image/webp' } }],
       certificatePhotoMedia: { id: 'certificate-1', storageKey: 'certificate.webp', mimeType: 'image/webp' },
       votes: [],
