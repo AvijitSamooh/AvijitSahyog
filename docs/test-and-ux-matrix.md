@@ -29,11 +29,11 @@ Flutter's official guidance distinguishes unit/widget tests from integration tes
 | Admin role/route protection | ✓ | ✓ | — | — | ✓ |
 | Admin content management | ✓ | ✓ | — | — | ✓ |
 | Media upload/attachment/partial failure | ✓ | ✓ | — | — | ✓ |
-| Application acceptance window | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Configurable application rules | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Assistance submit/history/delete | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Rejected/clarification resubmission | ✓ | ✓ | ✓ | partial | ✓ |
-| Pratibha Samman voting/decisions | ✓ | ✓ | ✓ | partial | ✓ |
+| Application acceptance window | ✓ | ✓ | ✓ | — | ✓ |
+| Configurable application rules | ✓ | ✓ | ✓ | — | ✓ |
+| Assistance submit/history/delete | ✓ | ✓ | ✓ | — | ✓ |
+| Rejected/clarification resubmission | ✓ | ✓ | ✓ | — | ✓ |
+| Pratibha Samman voting/decisions | ✓ | ✓ | ✓ | — | ✓ |
 | Service-window offline UX | ✓ | ✓ | — | targeted widget coverage | ✓ |
 | Admin dashboard/analytics/health | ✓ | ✓ | — | — | ✓ |
 | Donation allocation | ✓ | ✓ | — | — | roadmap documented |
@@ -77,3 +77,8 @@ A new feature updates all applicable columns before completion:
 - UX/error-state documentation.
 
 If a column is intentionally not applicable, the feature documentation must say why.
+
+
+### Flutter integration boundary
+
+Detailed application UX states are intentionally covered by widget tests because they require controlled Riverpod/application state. The integration suite separately validates that the Flutter application can launch on the CI Linux target and execute a real native plugin call (SharedPreferences). This avoids turning integration tests into slow duplicates of widget tests while still exercising the native/runtime boundary.
