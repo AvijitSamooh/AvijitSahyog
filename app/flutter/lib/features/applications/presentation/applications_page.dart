@@ -14,13 +14,18 @@ import '../models/application_rule.dart';
 import '../providers/help_applications_providers.dart';
 
 class ApplicationsPage extends ConsumerWidget {
-  const ApplicationsPage({super.key});
+  const ApplicationsPage({super.key, this.showAppBar = true});
+
+  /// Standalone application routes use the standard page shell. When this
+  /// page is rendered as a Home tab, HomePage already owns the shell.
+  final bool showAppBar;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     if (!ref.watch(authProvider).isAuthenticated) {
-      return AppPageScaffold(
+      return _wrap(
+        context,
         title: Text(l10n.applicationsTitle),
         body: Center(
           child: FilledButton(
@@ -35,7 +40,8 @@ class ApplicationsPage extends ConsumerWidget {
 
     final applications = ref.watch(myHelpApplicationsProvider);
     final applicationWindows = ref.watch(applicationWindowsProvider);
-    return AppPageScaffold(
+    return _wrap(
+      context,
       title: Text(l10n.applicationsTitle),
       body: RefreshIndicator(
         onRefresh: () async => ref.invalidate(myHelpApplicationsProvider),
@@ -96,6 +102,16 @@ class ApplicationsPage extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Widget _wrap(
+    BuildContext context, {
+    required Widget title,
+    required Widget body,
+  }) {
+    return showAppBar
+        ? AppPageScaffold(title: title, body: body)
+        : body;
   }
 }
 

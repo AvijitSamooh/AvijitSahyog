@@ -8,18 +8,20 @@ import '../../applications/presentation/applications_page.dart';
 import '../providers/auth_providers.dart';
 
 class ProfilePage extends ConsumerWidget {
-  const ProfilePage({super.key});
+  const ProfilePage({super.key, this.showAppBar = true});
+
+  /// Home tab rendering reuses HomePage's shell; standalone profile routes
+  /// retain the standard page shell.
+  final bool showAppBar;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authProvider).user;
     final l10n = AppLocalizations.of(context)!;
 
-    return AppPageScaffold(
-      title: Text(l10n.profile),
-      body: user == null
-          ? Center(child: Text(l10n.loginRequired))
-          : ListView(
+    final body = user == null
+        ? Center(child: Text(l10n.loginRequired))
+        : ListView(
               padding: const EdgeInsets.all(20),
               children: [
                 ListTile(
@@ -60,7 +62,9 @@ class ProfilePage extends ConsumerWidget {
                   onTap: () => ref.read(authProvider.notifier).signOut(),
                 ),
               ],
-            ),
-    );
+            );
+    return showAppBar
+        ? AppPageScaffold(title: Text(l10n.profile), body: body)
+        : body;
   }
 }
