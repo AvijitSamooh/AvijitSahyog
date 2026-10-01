@@ -22,20 +22,20 @@ Flutter's official guidance distinguishes unit/widget tests from integration tes
 |---|---:|---:|---:|---:|---:|
 | App shell / splash / primary navigation | ✓ | ✓ | — | ✓ | ✓ |
 | Four-language selection/fallback | ✓ | ✓ | — | — | ✓ |
-| Public cause discovery/detail | ✓ | ✓ | ✓ | — | ✓ |
-| Organisation discovery/detail/contact actions | ✓ | ✓ | ✓ | — | ✓ |
-| Beneficiary impact explorer | ✓ | ✓ | ✓ | — | ✓ |
-| Authentication / identity resolution | ✓ | ✓ | ✓ | — | ✓ |
-| Admin role/route protection | ✓ | ✓ | ✓ | — | ✓ |
-| Admin content management | ✓ | ✓ | ✓ | — | ✓ |
-| Media upload/attachment/partial failure | ✓ | ✓ | ✓ | — | ✓ |
+| Public cause discovery/detail | ✓ | ✓ | — | — | ✓ |
+| Organisation discovery/detail/contact actions | ✓ | ✓ | — | — | ✓ |
+| Beneficiary impact explorer | ✓ | ✓ | — | — | ✓ |
+| Authentication / identity resolution | ✓ | ✓ | — | — | ✓ |
+| Admin role/route protection | ✓ | ✓ | — | — | ✓ |
+| Admin content management | ✓ | ✓ | — | — | ✓ |
+| Media upload/attachment/partial failure | ✓ | ✓ | — | — | ✓ |
 | Application acceptance window | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Configurable application rules | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Assistance submit/history/delete | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Rejected/clarification resubmission | ✓ | ✓ | ✓ | partial | ✓ |
 | Pratibha Samman voting/decisions | ✓ | ✓ | ✓ | partial | ✓ |
 | Service-window offline UX | ✓ | ✓ | — | targeted widget coverage | ✓ |
-| Admin dashboard/analytics/health | ✓ | ✓ | ✓ | — | ✓ |
+| Admin dashboard/analytics/health | ✓ | ✓ | — | — | ✓ |
 | Donation allocation | ✓ | ✓ | — | — | roadmap documented |
 | Live payment / AutoPay | future | future | future | future | roadmap only |
 
