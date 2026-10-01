@@ -895,12 +895,21 @@ class _ApplicationActionCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final status = window?.status ?? ApplicationWindowStatus.closed;
-    final subtitle = switch (status) {
+    final baseStatus = switch (status) {
       ApplicationWindowStatus.scheduled =>
         l10n.applicationAcceptingStartsAt(_windowDateTime(context, window!.startsAt)),
       ApplicationWindowStatus.open => l10n.applicationAcceptingNow,
       ApplicationWindowStatus.closed => l10n.applicationAcceptingClosed,
     };
+    final subtitle = type == 'PRATIBHA_SAMMAN' && window != null
+        ? [
+            baseStatus,
+            if (window.registrationEndsAt != null)
+              '\${l10n.registrationLastDate}: \${_windowDateTime(context, window.registrationEndsAt!)}',
+            if (window.eventAt != null)
+              '\${l10n.eventDate}: \${_windowDateTime(context, window.eventAt!)}',
+          ].join('\n')
+        : baseStatus;
 
     return _ActionCard(
       key: ValueKey(_applicationActionKey(type)),
