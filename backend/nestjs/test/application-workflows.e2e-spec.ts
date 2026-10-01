@@ -151,7 +151,9 @@ describe('Help & Recognition application HTTP workflows', () => {
       type: 'MEDICAL_HELP', applicantName: 'User', mobileNumber: '9876543210',
       address: '123 Test Street', city: 'Pune', state: 'Maharashtra', pincode: '411001',
       requestedAmount: 25000, mediaIds: ['media-1'], acceptedRuleIds: [],
-    }).expect(201).expect(expect.objectContaining({ id: 'app-1', status: 'SUBMITTED' }));
+    }).expect(201).expect((response) => {
+      expect(response.body).toEqual(expect.objectContaining({ id: 'app-1', status: 'SUBMITTED' }));
+    });
 
     await request(app!.getHttpServer()).get('/applications/mine').expect(200);
     await request(app!.getHttpServer()).get('/applications/mine/app-1').expect(200);
