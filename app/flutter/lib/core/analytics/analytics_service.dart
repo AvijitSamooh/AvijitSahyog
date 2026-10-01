@@ -16,10 +16,12 @@ class AnalyticsService {
   AnalyticsService({
     FirebaseAnalytics? analytics,
     http.Client? client,
-    this._flushInterval = const Duration(seconds: 15),
-    this._batchSize = 25,
+    Duration? flushInterval,
+    int? batchSize,
   })  : _analytics = analytics ?? _tryCreateAnalytics(),
-        _client = client ?? http.Client();
+        _client = client ?? http.Client(),
+        _flushInterval = flushInterval ?? const Duration(seconds: 15),
+        _batchSize = batchSize ?? 25;
 
   static final AnalyticsService instance = AnalyticsService();
   static const _clientIdKey = 'analytics_client_id';
