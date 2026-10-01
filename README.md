@@ -32,6 +32,8 @@ Development is divided into incremental iterations, starting with the informatio
 
 See [docs/iteration-plan.md](docs/iteration-plan.md).
 
+Product user journeys and UX acceptance criteria are documented in [docs/user-experience.md](docs/user-experience.md), with requirements-to-test traceability in [docs/test-and-ux-matrix.md](docs/test-and-ux-matrix.md).
+
 ## Technology
 
 ### Client
@@ -180,4 +182,4 @@ Run the repository validation script from the repository root before pushing cod
 .\scripts\validate.ps1 -Target backend
 ```
 
-The script runs dependency setup, code generation, static checks, tests and production builds for the selected targets. It stops on the first failure so CI remains a final confirmation gate rather than the primary debugging environment.
+The script runs dependency setup, code generation, static checks, unit/widget tests, Flutter integration tests and production builds for the selected targets. It stops on the first failure so CI remains a final confirmation gate rather than the primary debugging environment.
