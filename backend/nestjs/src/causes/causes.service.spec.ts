@@ -4,14 +4,18 @@ import { CausesService } from './causes.service';
 describe('CausesService', () => {
   let service: CausesService;
   let prisma: {
-    cause: { findMany: jest.Mock; findFirst: jest.Mock };
+    language: { findMany: jest.Mock };
+    cause: { findMany: jest.Mock; findFirst: jest.Mock; findUnique: jest.Mock; create: jest.Mock };
   };
 
   beforeEach(() => {
     prisma = {
+      language: { findMany: jest.fn() },
       cause: {
         findMany: jest.fn(),
         findFirst: jest.fn(),
+        findUnique: jest.fn(),
+        create: jest.fn(),
       },
     };
 
