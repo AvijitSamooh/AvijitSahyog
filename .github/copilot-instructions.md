@@ -25,6 +25,10 @@ This repository is developed collaboratively by humans and AI agents. These rule
 - Reuse shared components, theme values and navigation patterns.
 - Tab destinations must remain inside the main navigation shell; do not push a tab page with Navigator when selecting an existing bottom-navigation destination.
 - Avoid nested Scaffold/AppBar structures unless explicitly required.
+- **Navigation architecture is explicit:** `HomePage` owns the primary application shell (`Scaffold`, shared `AppBar`, primary `AppNavigationBar`, and primary-tab `IndexedStack`). A primary bottom-navigation destination must render body content inside that shell and must not create another `Scaffold`, `AppBar`, or `AppNavigationBar`.
+- **Classify every new page before implementation:** (a) primary tab body, (b) secondary/detail/admin route, or (c) standalone flow. Primary tab bodies are body-only. Secondary/detail/admin routes use `AppPageScaffold`. Standalone flows may own an independent shell only when their UX explicitly requires it.
+- **Never add navigation UI locally:** do not place `AppNavigationBar` directly in a feature page and do not duplicate the global AppBar. Use `AppPageScaffold` for secondary/detail/admin routes.
+- Every new navigation destination requires a widget test asserting the expected shell composition: one primary AppBar/navigation bar for tab content, and the correct shared navigation behaviour for secondary routes.
 - Use responsive layouts and support loading, empty and error states.
 - Assets must be committed and registered in `app/flutter/pubspec.yaml`.
 - Asset paths are case-sensitive and must exactly match committed filenames.

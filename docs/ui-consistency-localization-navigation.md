@@ -8,7 +8,7 @@ The application has three persistent primary destinations:
 - Causes
 - Impact
 
-Settings/language is intentionally not a primary bottom-navigation destination. Language remains available from the top-right application menu.
+Settings/language is intentionally not a separate primary destination. The current Information destination provides a compact language-selection surface, and language is also available from the top-right application menu. Language selection must remain visually compact and must not consume most of the viewport.
 
 The shared page scaffold supplies bottom navigation to secondary, detail and admin pages so navigation remains consistent. Selecting a primary destination from a secondary page returns to the root shell and changes the selected destination.
 
