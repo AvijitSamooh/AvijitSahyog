@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,9 +17,9 @@ class _FakeClient extends http.BaseClient {
       throw Exception('backend unavailable');
     }
     return http.StreamedResponse(
-      Stream.value(
+      Stream<List<int>>.value(utf8.encode(
         '[{"id":"cause-1","slug":"jeev-daya","name":"Jeev Daya","description":"Animal welfare","displayOrder":1,"children":[]}]',
-      ).cast(),
+      )),
       200,
       request: request,
     );
