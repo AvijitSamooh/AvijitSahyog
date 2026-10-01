@@ -207,6 +207,8 @@ describe('HelpApplicationsService', () => {
   });
 
   it('rejects submission when not every active rule is acknowledged', async () => {
+    prisma.media.findMany.mockResolvedValue([{ id: 'media-1' }]);
+    prisma.media.findFirst.mockResolvedValue({ id: 'certificate-1' });
     prisma.applicationRule.findMany.mockResolvedValue([
       { id: 'rule-1', translations: [{ text: 'Pune only' }] },
       { id: 'rule-2', translations: [{ text: '80 percent minimum' }] },
