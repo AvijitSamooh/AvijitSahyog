@@ -117,8 +117,8 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Finder get anyScaffold => find.byWidgetPredicate((widget) => widget is Scaffold);
-  Finder get anyAppBar => find.byWidgetPredicate((widget) => widget is AppBar);
+  final anyScaffold = find.byWidgetPredicate((widget) => widget is Scaffold);
+  final anyAppBar = find.byWidgetPredicate((widget) => widget is AppBar);
 
   AppLocalizations l10n(WidgetTester tester) =>
       AppLocalizations.of(tester.element(anyScaffold.first))!;
