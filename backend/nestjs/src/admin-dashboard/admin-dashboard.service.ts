@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { MemoryCache } from '../common/memory-cache';
 
 @Injectable()
 export class AdminDashboardService {
+  private readonly cache = new MemoryCache();
+
   constructor(private readonly prisma: PrismaService) {}
 
   async getSummary() {
@@ -15,6 +18,10 @@ export class AdminDashboardService {
   }
 
   async getAnalytics() {
+    return this.cache.getOrLoad('dashboard:analytics', () => this.loadAnalytics(), 60_000, 10 * 60_000);
+  }
+
+  private async loadAnalytics() {
     const [audience, activity, trend] = await Promise.all([
       this.prisma.$queryRaw<Array<{dau: bigint; wau: bigint; mau: bigint; newUsers: bigint; returningUsers: bigint}>>`WITH active AS (SELECT DISTINCT "clientId" FROM "AnalyticsEvent" WHERE "createdAt" >= NOW() - INTERVAL '30 days'), first_seen AS (SELECT "clientId", MIN("createdAt") AS "firstSeenAt" FROM "AnalyticsEvent" GROUP BY "clientId") SELECT (SELECT COUNT(DISTINCT "clientId") FROM "AnalyticsEvent" WHERE "createdAt" >= NOW() - INTERVAL '1 day') AS dau, (SELECT COUNT(DISTINCT "clientId") FROM "AnalyticsEvent" WHERE "createdAt" >= NOW() - INTERVAL '7 days') AS wau, (SELECT COUNT(DISTINCT "clientId") FROM "AnalyticsEvent" WHERE "createdAt" >= NOW() - INTERVAL '30 days') AS mau, (SELECT COUNT(*) FROM active a JOIN first_seen f USING ("clientId") WHERE f."firstSeenAt" >= NOW() - INTERVAL '30 days') AS "newUsers", (SELECT COUNT(*) FROM active a JOIN first_seen f USING ("clientId") WHERE f."firstSeenAt" < NOW() - INTERVAL '30 days') AS "returningUsers"`,
       this.prisma.$queryRaw<Array<{sessions: bigint; screenViews: bigint; interactions: bigint; navigationEvents: bigint}>>`SELECT COUNT(DISTINCT "sessionId") AS sessions, COUNT(*) FILTER (WHERE "eventName" = 'screen_view') AS "screenViews", COUNT(*) FILTER (WHERE "eventName" = 'ui_interaction') AS interactions, COUNT(*) FILTER (WHERE "eventName" = 'navigation_select') AS "navigationEvents" FROM "AnalyticsEvent" WHERE "createdAt" >= NOW() - INTERVAL '30 days'`,
@@ -26,6 +33,10 @@ export class AdminDashboardService {
   }
 
   async getAdvancedAnalytics() {
+    return this.cache.getOrLoad('dashboard:advanced', () => this.loadAdvancedAnalytics(), 5 * 60_000, 60 * 60_000);
+  }
+
+  private async loadAdvancedAnalytics() {
     const [retention, engagementCohorts, featureAdoption, language, device, city] = await Promise.all([
       this.prisma.$queryRaw<Array<{cohort: Date; users: bigint; day1: bigint; day7: bigint; day30: bigint}>>`
         WITH first_seen AS (

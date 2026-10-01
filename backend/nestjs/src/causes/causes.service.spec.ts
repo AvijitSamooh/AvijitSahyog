@@ -4,14 +4,18 @@ import { CausesService } from './causes.service';
 describe('CausesService', () => {
   let service: CausesService;
   let prisma: {
-    cause: { findMany: jest.Mock; findFirst: jest.Mock };
+    language: { findMany: jest.Mock };
+    cause: { findMany: jest.Mock; findFirst: jest.Mock; findUnique: jest.Mock; create: jest.Mock };
   };
 
   beforeEach(() => {
     prisma = {
+      language: { findMany: jest.fn() },
       cause: {
         findMany: jest.fn(),
         findFirst: jest.fn(),
+        findUnique: jest.fn(),
+        create: jest.fn(),
       },
     };
 
@@ -191,4 +195,54 @@ describe('CausesService', () => {
       NotFoundException,
     );
   });
+  it('caches cause lists and avoids repeated database reads', async () => {
+    prisma.cause.findMany.mockResolvedValue([
+      {
+        id: 'cause-1',
+        slug: 'jeev-daya',
+        displayOrder: 1,
+        translations: [{ name: 'Jeev Daya', description: 'Animal welfare', language: { code: 'en' } }],
+      },
+    ]);
+
+    const first = await service.findAll('en');
+    const second = await service.findAll('en');
+
+    expect(second).toEqual(first);
+    expect(prisma.cause.findMany).toHaveBeenCalledTimes(1);
+  });
+
+  it('invalidates the cache after a cause write', async () => {
+    prisma.cause.findMany.mockResolvedValue([
+      {
+        id: 'cause-1',
+        slug: 'jeev-daya',
+        displayOrder: 1,
+        translations: [{ name: 'Jeev Daya', description: 'Old', language: { code: 'en' } }],
+      },
+    ]);
+    await service.findAll('en');
+
+    prisma.cause.findUnique.mockResolvedValue(null);
+    prisma.language.findMany.mockResolvedValue([{ id: 'lang-en', code: 'en' }]);
+    prisma.cause.create.mockResolvedValue({ id: 'cause-2', translations: [] });
+    await service.create({
+      slug: 'new-cause',
+      displayOrder: 2,
+      translations: [{ languageCode: 'en', name: 'New Cause', description: 'New' }],
+    } as any);
+
+    prisma.cause.findMany.mockResolvedValue([
+      {
+        id: 'cause-3',
+        slug: 'updated',
+        displayOrder: 1,
+        translations: [{ name: 'Updated', description: 'Updated', language: { code: 'en' } }],
+      },
+    ]);
+
+    await service.findAll('en');
+    expect(prisma.cause.findMany).toHaveBeenCalledTimes(2);
+  });
+
 });

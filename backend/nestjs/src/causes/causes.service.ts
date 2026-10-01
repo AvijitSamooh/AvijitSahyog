@@ -7,13 +7,20 @@ import {
 import { CreateCauseDto } from './dto/create-cause.dto';
 import { UpdateCauseDto } from './dto/update-cause.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { MemoryCache } from '../common/memory-cache';
 
 @Injectable()
 export class CausesService {
+  private readonly cache = new MemoryCache();
+  private static readonly FRESH_MS = 10 * 60 * 1000;
+  private static readonly STALE_MS = 24 * 60 * 60 * 1000;
+
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll(languageCode = 'en') {
-    const causes = await this.prisma.cause.findMany({
+    const causes = await this.cache.getOrLoad(
+      `causes:list:${languageCode}`,
+      async () => this.prisma.cause.findMany({
       where: { isActive: true, parentId: null },
       orderBy: { displayOrder: 'asc' },
       include: {
@@ -32,13 +39,18 @@ export class CausesService {
           },
         },
       },
-    });
+      }),
+      CausesService.FRESH_MS,
+      CausesService.STALE_MS,
+    );
 
     return causes.map((cause) => this.toResponse(cause, languageCode));
   }
 
   async findOne(slug: string, languageCode = 'en') {
-    const cause = await this.prisma.cause.findFirst({
+    const cause = await this.cache.getOrLoad(
+      `causes:detail:${slug}:${languageCode}`,
+      async () => this.prisma.cause.findFirst({
       where: { slug, isActive: true },
       include: {
         translations: {
@@ -77,7 +89,10 @@ export class CausesService {
           },
         },
       },
-    });
+      }),
+      CausesService.FRESH_MS,
+      CausesService.STALE_MS,
+    );
 
     if (!cause) {
       throw new NotFoundException(`Cause '${slug}' not found`);
@@ -173,7 +188,7 @@ export class CausesService {
 
     const languages = await this.resolveLanguages(dto.translations);
 
-    return this.prisma.cause.create({
+    const result = await this.prisma.cause.create({
       data: {
         slug: dto.slug,
         parentId: dto.parentId ?? null,
@@ -190,6 +205,8 @@ export class CausesService {
         translations: { include: { language: true } },
       },
     });
+    this.cache.invalidate('causes:');
+    return result;
   }
 
   async update(id: string, dto: UpdateCauseDto) {
@@ -210,7 +227,7 @@ export class CausesService {
       }
     }
 
-    return this.prisma.$transaction(async (tx: any) => {
+    const result = await this.prisma.$transaction(async (tx: any) => {
       if (dto.translations) {
         const languages = await tx.language.findMany({
           where: { code: { in: dto.translations.map((item) => item.languageCode) } },
@@ -255,15 +272,19 @@ export class CausesService {
         },
       });
     });
+    this.cache.invalidate('causes:');
+    return result;
   }
 
   async setActive(id: string, isActive: boolean) {
     await this.findOneForAdmin(id);
 
-    return this.prisma.cause.update({
+    const result = await this.prisma.cause.update({
       where: { id },
       data: { isActive },
     });
+    this.cache.invalidate('causes:');
+    return result;
   }
 
   private validateTranslations(
