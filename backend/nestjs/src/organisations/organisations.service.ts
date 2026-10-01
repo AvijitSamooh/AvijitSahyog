@@ -9,13 +9,20 @@ import { UpdateOrganisationDto } from './dto/update-organisation.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import type { AttachOrganisationMediaDto } from './dto/attach-organisation-media.dto';
 import type { UpdateOrganisationMediaDto } from './dto/update-organisation-media.dto';
+import { MemoryCache } from '../common/memory-cache';
 
 @Injectable()
 export class OrganisationsService {
+  private readonly cache = new MemoryCache();
+  private static readonly FRESH_MS = 10 * 60 * 1000;
+  private static readonly STALE_MS = 24 * 60 * 60 * 1000;
+
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll(languageCode = 'en') {
-    const organisations = await this.prisma.organisation.findMany({
+    const organisations = await this.cache.getOrLoad(
+      `organisations:list:${languageCode}`,
+      async () => this.prisma.organisation.findMany({
       where: { isActive: true },
       orderBy: { displayOrder: 'asc' },
       include: {
@@ -42,7 +49,10 @@ export class OrganisationsService {
           },
         },
       },
-    });
+      }),
+      OrganisationsService.FRESH_MS,
+      OrganisationsService.STALE_MS,
+    );
 
     return organisations.map((organisation) => ({
       ...this.baseResponse(organisation, languageCode),
@@ -56,7 +66,9 @@ export class OrganisationsService {
   }
 
   async findOne(slug: string, languageCode = 'en') {
-    const organisation = await this.prisma.organisation.findFirst({
+    const organisation = await this.cache.getOrLoad(
+      `organisations:detail:${slug}:${languageCode}`,
+      async () => this.prisma.organisation.findFirst({
       where: { slug, isActive: true },
       include: {
         translations: {
@@ -82,7 +94,10 @@ export class OrganisationsService {
           },
         },
       },
-    });
+      }),
+      OrganisationsService.FRESH_MS,
+      OrganisationsService.STALE_MS,
+    );
 
     if (!organisation) {
       throw new NotFoundException(`Organisation '${slug}' not found`);
@@ -138,7 +153,7 @@ export class OrganisationsService {
     const slug = await this.generateUniqueSlug(dto.slug, dto.translations);
     const languages = await this.resolveLanguages(dto.translations);
     const mobileNumber = this.normalizeMobileNumber(dto.mobileNumber);
-    return this.prisma.organisation.create({
+    const result = await this.prisma.organisation.create({
       data: {
         slug,
         logoUrl: dto.logoUrl,
@@ -161,6 +176,8 @@ export class OrganisationsService {
       },
       include: { translations: { include: { language: true } } },
     });
+    this.cache.invalidate('organisations:');
+    return result;
   }
 
   async update(id: string, dto: UpdateOrganisationDto) {
@@ -181,7 +198,7 @@ export class OrganisationsService {
       }
     }
 
-    return this.prisma.$transaction(async (tx: any) => {
+    const result = await this.prisma.$transaction(async (tx: any) => {
       if (dto.translations) {
         const languages = await tx.language.findMany({
           where: { code: { in: dto.translations.map((item) => item.languageCode) } },
@@ -232,6 +249,8 @@ export class OrganisationsService {
         include: { translations: { include: { language: true } } },
       });
     });
+    this.cache.invalidate('organisations:');
+    return result;
   }
   async updateCauses(id: string, causeIds: string[]) {
     await this.findOneForAdmin(id);
@@ -247,7 +266,7 @@ export class OrganisationsService {
       throw new BadRequestException('One or more causes do not exist.');
     }
 
-    return this.prisma.$transaction(async (tx: any) => {
+    const result = await this.prisma.$transaction(async (tx: any) => {
       await tx.organisationCause.deleteMany({ where: { organisationId: id } });
       if (causeIds.length) {
         await tx.organisationCause.createMany({
@@ -268,6 +287,8 @@ export class OrganisationsService {
         },
       });
     });
+    this.cache.invalidate('organisations:');
+    return result;
   }
 
 
@@ -422,10 +443,12 @@ export class OrganisationsService {
 
   async setActive(id: string, isActive: boolean) {
     await this.findOneForAdmin(id);
-    return this.prisma.organisation.update({
+    const result = await this.prisma.organisation.update({
       where: { id },
       data: { isActive },
     });
+    this.cache.invalidate('organisations:');
+    return result;
   }
 
   private normalizeMobileNumber(value: string | undefined): string | null {
