@@ -222,7 +222,9 @@ void main() {
       ],
     );
 
-    expect(find.byKey(const ValueKey('pratibha_mother_name')), findsOneWidget);
+    final motherField = find.byKey(const ValueKey('pratibha_mother_name'));
+    await tester.scrollUntilVisible(motherField, 500);
+    expect(motherField, findsOneWidget);
     expect(find.byKey(const ValueKey('pratibha_father_name')), findsOneWidget);
     expect(find.byKey(const ValueKey('pratibha_date_of_birth')), findsOneWidget);
     expect(find.byKey(const ValueKey('pratibha_class_standard')), findsOneWidget);
