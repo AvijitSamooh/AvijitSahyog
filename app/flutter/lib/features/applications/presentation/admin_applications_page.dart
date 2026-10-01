@@ -38,9 +38,12 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
   Future<void> _startWindow(String type) async {
     final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
+    final current = ref.read(applicationWindowsProvider).valueOrNull?.where((w) => w.type == type).firstOrNull;
+    final defaultEventDate = type == 'PRATIBHA_SAMMAN' ? DateTime(2026, 10, 25) : (current?.eventAt ?? now.add(const Duration(days: 30)));
+
     final date = await showDatePicker(
       context: context,
-      initialDate: now,
+      initialDate: current?.startsAt.toLocal() ?? now,
       firstDate: DateTime(now.year, now.month, now.day),
       lastDate: DateTime(now.year + 2, 12, 31),
       helpText: l10n.applicationStartDate,
@@ -48,16 +51,45 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
     if (date == null || !mounted) return;
     final time = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.fromDateTime(now),
+      initialTime: TimeOfDay.fromDateTime(current?.startsAt.toLocal() ?? now),
       helpText: l10n.applicationStartTime,
     );
     if (time == null || !mounted) return;
 
     final startsAt = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+
+    DateTime? registrationEndsAt;
+    if (type == 'PRATIBHA_SAMMAN') {
+      registrationEndsAt = await showDatePicker(
+        context: context,
+        initialDate: current?.registrationEndsAt?.toLocal() ?? startsAt.add(const Duration(days: 7)),
+        firstDate: DateTime(date.year, date.month, date.day),
+        lastDate: DateTime(now.year + 2, 12, 31),
+        helpText: l10n.registrationLastDate,
+      );
+      if (registrationEndsAt == null || !mounted) return;
+      registrationEndsAt = DateTime(registrationEndsAt.year, registrationEndsAt.month, registrationEndsAt.day, 23, 59, 59);
+    }
+
+    DateTime? eventAt;
+    if (type == 'PRATIBHA_SAMMAN') {
+      eventAt = await showDatePicker(
+        context: context,
+        initialDate: current?.eventAt?.toLocal() ?? defaultEventDate,
+        firstDate: DateTime(date.year, date.month, date.day),
+        lastDate: DateTime(now.year + 2, 12, 31),
+        helpText: l10n.eventDate,
+      );
+      if (eventAt == null || !mounted) return;
+      eventAt = DateTime(eventAt.year, eventAt.month, eventAt.day);
+    }
+
     try {
       await ref.read(helpApplicationsRepositoryProvider).startApplicationWindow(
         type: type,
         startsAt: startsAt,
+        registrationEndsAt: registrationEndsAt,
+        eventAt: eventAt,
       );
       ref.invalidate(applicationWindowsProvider);
       if (mounted) {
