@@ -39,6 +39,13 @@ Submission safeguards:
 - success shows confirmation;
 - failure leaves the form available for retry.
 
+### Rules and dates — rendering acceptance
+
+- Every active rule is rendered with its display order and localized text.
+- The rendered rules must use the currently selected language: English, Hindi, Marathi or Gujarati.
+- Important application dates must display their resolved values and localized labels; implementation interpolation expressions must never be visible.
+- Long and multiline rules must remain readable without clipping or truncation that changes meaning.
+
 ### Application history and recovery
 
 History → Status → Delete when allowed OR Resubmit after rejection/clarification
