@@ -285,9 +285,7 @@ void main() {
         home: const HelpApplicationFormPage(type: 'PRATIBHA_SAMMAN'),
         overrides: [
           applicationWindowsProvider.overrideWith((ref) async => [open]),
-          applicationRulesProvider(
-            (type: 'PRATIBHA_SAMMAN', language: entry.key),
-          ).overrideWith((ref) async => rules),
+          applicationRulesProvider.overrideWith((ref, key) async => rules),
         ],
       );
 
