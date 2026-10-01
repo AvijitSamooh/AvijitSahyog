@@ -13,7 +13,7 @@ describe('ApplicationRulesService', () => {
 
   beforeEach(() => jest.clearAllMocks());
 
-  it('returns active rules in the requested language with English fallback', async () => {
+  it('returns the requested supported language and falls back to English', async () => {
     prisma.applicationRule.findMany.mockResolvedValue([
       {
         id: 'rule-1',
@@ -22,16 +22,29 @@ describe('ApplicationRulesService', () => {
         translations: [
           { text: 'Pune only', language: { code: 'en' } },
           { text: 'केवल पुणे', language: { code: 'hi' } },
+          { text: 'फक्त पुणे', language: { code: 'mr' } },
+          { text: 'ફક્ત પુણે', language: { code: 'gu' } },
         ],
       },
     ]);
     const service = new ApplicationRulesService(prisma);
 
-    expect(await service.list('PRATIBHA_SAMMAN', 'hi')).toEqual([
+    await expect(service.list('PRATIBHA_SAMMAN', 'en')).resolves.toEqual([
+      { id: 'rule-1', type: 'PRATIBHA_SAMMAN', displayOrder: 1, text: 'Pune only' },
+    ]);
+    await expect(service.list('PRATIBHA_SAMMAN', 'hi')).resolves.toEqual([
       { id: 'rule-1', type: 'PRATIBHA_SAMMAN', displayOrder: 1, text: 'केवल पुणे' },
     ]);
+    await expect(service.list('PRATIBHA_SAMMAN', 'mr')).resolves.toEqual([
+      { id: 'rule-1', type: 'PRATIBHA_SAMMAN', displayOrder: 1, text: 'फक्त पुणे' },
+    ]);
+    await expect(service.list('PRATIBHA_SAMMAN', 'gu')).resolves.toEqual([
+      { id: 'rule-1', type: 'PRATIBHA_SAMMAN', displayOrder: 1, text: 'ફક્ત પુણે' },
+    ]);
+    await expect(service.list('PRATIBHA_SAMMAN', 'ta')).resolves.toEqual([
+      { id: 'rule-1', type: 'PRATIBHA_SAMMAN', displayOrder: 1, text: 'Pune only' },
+    ]);
   });
-
   it('rejects an admin rule when any supported language is missing', async () => {
     const service = new ApplicationRulesService(prisma);
 

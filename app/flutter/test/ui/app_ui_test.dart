@@ -99,6 +99,7 @@ void main() {
     WidgetTester tester, {
     Widget? home,
     List<Override> overrides = const [],
+    Locale locale = const Locale('en'),
   }) async {
     await tester.pumpWidget(
       ProviderScope(
@@ -109,7 +110,7 @@ void main() {
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
+            locale: locale,
             theme: AppTheme.light(),
             home: home ?? const AvijitSahyogApp(splashDuration: Duration.zero),
           ),
@@ -242,6 +243,41 @@ void main() {
       expect(find.byKey(ValueKey(key)), findsOneWidget);
     }
     expect(find.byType(CheckboxListTile), findsOneWidget);
+  });
+
+  testWidgets('application rules and important dates render in the selected language', (tester) async {
+    final open = ApplicationWindow.fromJson({
+      'type': 'PRATIBHA_SAMMAN',
+      'startsAt': '2026-10-01T10:00:00.000Z',
+      'registrationEndsAt': '2026-10-20T23:59:59.000Z',
+      'eventAt': '2026-10-25T00:00:00.000Z',
+      'closedAt': null,
+      'status': 'OPEN',
+      'canApply': true,
+    });
+    final hindiRule = ApplicationRule.fromJson({
+      'id': 'rule-hi',
+      'type': 'PRATIBHA_SAMMAN',
+      'text': 'केवल पुणे के विद्यार्थी पात्र हैं।',
+      'displayOrder': 1,
+    });
+
+    await pumpApp(
+      tester,
+      locale: const Locale('hi'),
+      home: const HelpApplicationFormPage(type: 'PRATIBHA_SAMMAN'),
+      overrides: [
+        applicationWindowsProvider.overrideWith((ref) async => [open]),
+        applicationRulesProvider(
+          (type: 'PRATIBHA_SAMMAN', language: 'hi'),
+        ).overrideWith((ref) async => [hindiRule]),
+      ],
+    );
+
+    expect(find.text('1. केवल पुणे के विद्यार्थी पात्र हैं।'), findsOneWidget);
+    expect(find.textContaining(r'\${entry.key + 1}.'), findsNothing);
+    expect(find.textContaining(r'\${l10n.registrationLastDate}'), findsNothing);
+    expect(find.textContaining(r'\${l10n.eventDate}'), findsNothing);
   });
 
   testWidgets('application page explains a scheduled and closed application window', (tester) async {

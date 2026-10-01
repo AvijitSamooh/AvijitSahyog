@@ -520,7 +520,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
                         value: _acceptedRuleIds.contains(rule.id),
                         controlAffinity: ListTileControlAffinity.leading,
                         contentPadding: EdgeInsets.zero,
-                        title: Text('\${entry.key + 1}. \${rule.text}'),
+                        title: Text('${entry.key + 1}. ${rule.text}'),
                         onChanged: _busy ? null : (checked) {
                           setState(() {
                             if (checked == true) {
@@ -546,11 +546,11 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
                     children: [
                       Text(l10n.importantDates, style: Theme.of(context).textTheme.titleMedium),
                       const SizedBox(height: 8),
-                      Text('\${l10n.formAvailableDate}: \${_windowDateTime(context, activeWindow.startsAt)}'),
+                      Text('${l10n.formAvailableDate}: ${_windowDateTime(context, activeWindow.startsAt)}'),
                       if (activeWindow.registrationEndsAt != null)
-                        Text('\${l10n.registrationLastDate}: \${_windowDateTime(context, activeWindow.registrationEndsAt!)}'),
+                        Text('${l10n.registrationLastDate}: ${_windowDateTime(context, activeWindow.registrationEndsAt!)}'),
                       if (activeWindow.eventAt != null)
-                        Text('\${l10n.eventDate}: \${_windowDateTime(context, activeWindow.eventAt!)}'),
+                        Text('${l10n.eventDate}: ${_windowDateTime(context, activeWindow.eventAt!)}'),
                       const SizedBox(height: 6),
                       Text(l10n.organisationManagedBy, style: Theme.of(context).textTheme.bodySmall),
                       Text(l10n.organisationRegistrationNumber, style: Theme.of(context).textTheme.bodySmall),
@@ -931,9 +931,9 @@ class _ApplicationActionCard extends ConsumerWidget {
         ? [
             baseStatus,
             if (activeWindow.registrationEndsAt != null)
-              '\${l10n.registrationLastDate}: \${_windowDateTime(context, activeWindow.registrationEndsAt!)}',
+              '${l10n.registrationLastDate}: ${_windowDateTime(context, activeWindow.registrationEndsAt!)}',
             if (activeWindow.eventAt != null)
-              '\${l10n.eventDate}: \${_windowDateTime(context, activeWindow.eventAt!)}',
+              '${l10n.eventDate}: ${_windowDateTime(context, activeWindow.eventAt!)}',
           ].join('\n')
         : baseStatus;
 
