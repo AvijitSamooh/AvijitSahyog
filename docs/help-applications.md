@@ -145,3 +145,7 @@ Administrator review actions surface localized success/failure feedback. Pratibh
 ### Application rules
 
 Administrators can configure ordered acceptance rules for each application type. Application windows additionally support a form availability date, registration deadline and event date; the backend prevents submissions after the configured registration deadline. Rules require English, Hindi, Marathi and Gujarati text. Applicants see the active rules in their selected language and must acknowledge every current rule before submission; the backend validates the full active rule set and stores a text snapshot of the acknowledged rules with the application.
+
+### Selected Pratibha Samman students in Labharthi / Impact
+
+When an administrator selects a Pratibha Samman application, the student is automatically published into the existing Beneficiary (Labharthi) / Impact explorer. The submitted clear certificate photo is used as the public profile photo, supporting evidence is available as gallery media, and the public story includes the 2025-26 batch, class/standard, school/institute, achievements and the administrator's recognition note. The publication is linked to the source application so the same application cannot create duplicate beneficiary records. Recognition beneficiaries do not display a monetary contribution amount.
