@@ -22,13 +22,13 @@ void main() {
 
     expect(find.byType(GridView), findsOneWidget);
     expect(find.text('English'), findsOneWidget);
-    expect(find.text('हिन्दी'), findsOneWidget);
-    expect(find.text('मराठी'), findsOneWidget);
-    expect(find.text('ગુજરાતી'), findsOneWidget);
+    expect(find.text('Hindi'), findsOneWidget);
+    expect(find.text('Marathi'), findsOneWidget);
+    expect(find.text('Gujarati'), findsOneWidget);
     expect(find.byIcon(Icons.check_circle_rounded), findsOneWidget);
     expect(find.byType(Card), findsOneWidget);
 
-    await tester.tap(find.text('हिन्दी'));
+    await tester.tap(find.text('Hindi'));
     expect(selected, const Locale('hi'));
   });
 }
