@@ -18,10 +18,12 @@ class AnalyticsService {
     http.Client? client,
     Duration? flushInterval,
     int? batchSize,
+    bool? scheduleFlushTimer,
   })  : _analytics = analytics ?? _tryCreateAnalytics(),
         _client = client ?? http.Client(),
         _flushInterval = flushInterval ?? const Duration(seconds: 15),
-        _batchSize = batchSize ?? 25;
+        _batchSize = batchSize ?? 25,
+        _scheduleFlushTimer = scheduleFlushTimer ?? !kDebugMode;
 
   static final AnalyticsService instance = AnalyticsService();
   static const _clientIdKey = 'analytics_client_id';
@@ -33,6 +35,7 @@ class AnalyticsService {
   final http.Client _client;
   final Duration _flushInterval;
   final int _batchSize;
+  final bool _scheduleFlushTimer;
   final List<Map<String, dynamic>> _queue = <Map<String, dynamic>>[];
   Timer? _flushTimer;
   Future<String>? _clientIdFuture;
@@ -154,7 +157,7 @@ class AnalyticsService {
 
       if (_queue.length >= _batchSize) {
         unawaited(flush());
-      } else {
+      } else if (_scheduleFlushTimer) {
         _flushTimer ??= Timer(_flushInterval, () {
           _flushTimer = null;
           unawaited(flush());
