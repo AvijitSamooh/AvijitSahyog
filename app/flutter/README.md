@@ -51,6 +51,6 @@ The Flutter app initializes Firebase at startup, restores an existing Firebase s
 
 ## UX and integration coverage
 
-Important application journeys are exercised through integration_test/, including authentication gating, application-window states and configurable application-rule presentation. CI runs these integration tests on Linux with an X virtual framebuffer.
+Detailed application journeys are covered by the unit/widget suites; the integration_test/ suite validates the real Linux runtime and native plugin boundary. CI runs these integration tests on Linux with an X virtual framebuffer.
 
 See ../../docs/user-experience.md for the user journey specification and ../../docs/test-and-ux-matrix.md for traceability.
