@@ -14,7 +14,9 @@ Applicants provide a requested amount and supporting images. Administrators revi
 
 ### Pratibha Samman
 
-A student can apply with marksheets and achievement evidence. Administrators review the evidence, record a 1–5 score and optional comment, and can mark the profile as **Considered for Samman** or **Not Selected**.
+A student can apply with marksheets and achievement evidence. For the 2025-26 batch, the form also collects a clear face photo for certificate printing, mother and father names, date of birth, class/standard, school/institute name, address and mobile/WhatsApp contact, plus optional additional accomplishments. Administrators review the evidence, record a 1–5 score and optional comment, and can mark the profile as **Considered for Samman** or **Not Selected**.
+
+The Pratibha Samman application window exposes three important dates: form availability, the last registration date, and the event date. The 2026 event date is intended to be Sharad Purnima, 25 October 2026; the registration deadline remains administrator-configurable. The event is organised under **Avijit Sarv Kalyaan Samiti**, registration number **01/05/03/37787/21**. Avijit Sahyog is part of the Avijit Samooh ecosystem.
 
 Pratibha Samman is deliberately a separate workflow from need-based assistance.
 
@@ -122,6 +124,9 @@ Every new help or recognition application collects a contact snapshot from the a
 - Requested amount for assistance applications
 - Need/achievement explanation
 - Supporting documents or images
+- Pratibha Samman certificate photo (recognition applications only)
+- Mother name, father name, date of birth, class/standard and school/institute (recognition applications only)
+- Other accomplishments (optional for recognition applications)
 
 The applicant details are stored with the application so administrators can review the request even if the user's profile later changes.
 
@@ -139,4 +144,4 @@ Administrator review actions surface localized success/failure feedback. Pratibh
 
 ### Application rules
 
-Administrators can configure ordered acceptance rules for each application type. Rules require English, Hindi, Marathi and Gujarati text. Applicants see the active rules in their selected language and must acknowledge every current rule before submission; the backend validates the full active rule set and stores a text snapshot of the acknowledged rules with the application.
+Administrators can configure ordered acceptance rules for each application type. Application windows additionally support a form availability date, registration deadline and event date; the backend prevents submissions after the configured registration deadline. Rules require English, Hindi, Marathi and Gujarati text. Applicants see the active rules in their selected language and must acknowledge every current rule before submission; the backend validates the full active rule set and stores a text snapshot of the acknowledged rules with the application.
