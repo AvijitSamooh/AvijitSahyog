@@ -38,7 +38,13 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
   Future<void> _startWindow(String type) async {
     final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
-    final current = ref.read(applicationWindowsProvider).valueOrNull?.where((w) => w.type == type).firstOrNull;
+    ApplicationWindow? current;
+    for (final item in ref.read(applicationWindowsProvider).valueOrNull ?? const <ApplicationWindow>[]) {
+      if (item.type == type) {
+        current = item;
+        break;
+      }
+    }
     final defaultEventDate = type == 'PRATIBHA_SAMMAN' ? DateTime(2026, 10, 25) : (current?.eventAt ?? now.add(const Duration(days: 30)));
 
     final date = await showDatePicker(
