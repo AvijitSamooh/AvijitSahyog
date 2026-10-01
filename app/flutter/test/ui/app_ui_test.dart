@@ -245,7 +245,7 @@ void main() {
     expect(find.byType(CheckboxListTile), findsOneWidget);
   });
 
-  testWidgets('application rules and important dates render in the selected language', (tester) async {
+  testWidgets('application rules render translated text, order, dates, and no implementation placeholders in every supported language', (tester) async {
     final open = ApplicationWindow.fromJson({
       'type': 'PRATIBHA_SAMMAN',
       'startsAt': '2026-10-01T10:00:00.000Z',
@@ -255,29 +255,62 @@ void main() {
       'status': 'OPEN',
       'canApply': true,
     });
-    final hindiRule = ApplicationRule.fromJson({
-      'id': 'rule-hi',
-      'type': 'PRATIBHA_SAMMAN',
-      'text': 'केवल पुणे के विद्यार्थी पात्र हैं।',
-      'displayOrder': 1,
-    });
 
-    await pumpApp(
-      tester,
-      locale: const Locale('hi'),
-      home: const HelpApplicationFormPage(type: 'PRATIBHA_SAMMAN'),
-      overrides: [
-        applicationWindowsProvider.overrideWith((ref) async => [open]),
-        applicationRulesProvider(
-          (type: 'PRATIBHA_SAMMAN', language: 'hi'),
-        ).overrideWith((ref) async => [hindiRule]),
-      ],
-    );
+    const translations = {
+      'en': 'Only students from Pune are eligible.',
+      'hi': 'केवल पुणे के विद्यार्थी पात्र हैं।',
+      'mr': 'फक्त पुण्यातील विद्यार्थी पात्र आहेत.',
+      'gu': 'માત્ર પુણેના વિદ્યાર્થીઓ જ પાત્ર છે.',
+    };
 
-    expect(find.text('1. केवल पुणे के विद्यार्थी पात्र हैं।'), findsOneWidget);
-    expect(find.textContaining(r'\${entry.key + 1}.'), findsNothing);
-    expect(find.textContaining(r'\${l10n.registrationLastDate}'), findsNothing);
-    expect(find.textContaining(r'\${l10n.eventDate}'), findsNothing);
+    for (final entry in translations.entries) {
+      final rules = [
+        ApplicationRule.fromJson({
+          'id': 'rule-${entry.key}-1',
+          'type': 'PRATIBHA_SAMMAN',
+          'text': entry.value,
+          'displayOrder': 1,
+        }),
+        ApplicationRule.fromJson({
+          'id': 'rule-${entry.key}-2',
+          'type': 'PRATIBHA_SAMMAN',
+          'text': 'This is a deliberately long rule with multiple clauses that must remain readable when rendered in the application form.\\nThe second line is part of the same rule.',
+          'displayOrder': 2,
+        }),
+      ];
+
+      await pumpApp(
+        tester,
+        locale: Locale(entry.key),
+        home: const HelpApplicationFormPage(type: 'PRATIBHA_SAMMAN'),
+        overrides: [
+          applicationWindowsProvider.overrideWith((ref) async => [open]),
+          applicationRulesProvider(
+            (type: 'PRATIBHA_SAMMAN', language: entry.key),
+          ).overrideWith((ref) async => rules),
+        ],
+      );
+
+      final localizations = l10n(tester);
+      final registrationDate = MaterialLocalizations.of(
+        tester.element(anyScaffold.first),
+      ).formatMediumDate(open.registrationEndsAt!.toLocal());
+      final eventDate = MaterialLocalizations.of(
+        tester.element(anyScaffold.first),
+      ).formatMediumDate(open.eventAt!.toLocal());
+
+      expect(find.text('1. ${entry.value}'), findsOneWidget);
+      expect(find.textContaining('2. This is a deliberately long rule'), findsOneWidget);
+      expect(find.textContaining(localizations.registrationLastDate), findsOneWidget);
+      expect(find.textContaining(registrationDate), findsOneWidget);
+      expect(find.textContaining(localizations.eventDate), findsOneWidget);
+      expect(find.textContaining(eventDate), findsOneWidget);
+
+      expect(find.textContaining(r'\${entry.key + 1}.'), findsNothing);
+      expect(find.textContaining(r'\${rule.text}'), findsNothing);
+      expect(find.textContaining(r'\${l10n.registrationLastDate}'), findsNothing);
+      expect(find.textContaining(r'\${l10n.eventDate}'), findsNothing);
+    }
   });
 
   testWidgets('application page explains a scheduled and closed application window', (tester) async {
