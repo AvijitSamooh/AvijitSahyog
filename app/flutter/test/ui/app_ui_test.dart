@@ -222,7 +222,11 @@ void main() {
       ],
     );
 
-    final formList = find.byType(ListView).first;
+    final formScrollable = find.byType(Scrollable).first;
+    for (var i = 0; i < 12; i++) {
+      await tester.drag(formScrollable, const Offset(0, -600));
+      await tester.pump();
+    }
     for (final key in const [
       'pratibha_mother_name',
       'pratibha_father_name',
@@ -232,13 +236,7 @@ void main() {
       'pratibha_certificate_photo',
       'pratibha_accomplishments',
     ]) {
-      final field = find.byKey(ValueKey(key));
-      await tester.scrollUntilVisible(
-        field,
-        500,
-        scrollable: formList,
-      );
-      expect(field, findsOneWidget);
+      expect(find.byKey(ValueKey(key)), findsOneWidget);
     }
     expect(find.text('This recognition is for the 2025-26 batch only.'), findsOneWidget);
   });
