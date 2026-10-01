@@ -20,6 +20,13 @@ class HelpApplicationsRepository {
     required String state,
     required String pincode,
     String? clarification,
+    String? motherName,
+    String? fatherName,
+    DateTime? dateOfBirth,
+    String? classStandard,
+    String? schoolInstituteName,
+    String? accomplishments,
+    String? certificatePhotoMediaId,
     required List<String> acceptedRuleIds,
   }) async {
     final trimmedClarification = clarification?.trim();
@@ -36,6 +43,13 @@ class HelpApplicationsRepository {
       'mediaIds': mediaIds,
       'acceptedRuleIds': acceptedRuleIds,
       'clarification': ?(trimmedClarification?.isNotEmpty == true ? trimmedClarification : null),
+      'motherName': ?(motherName?.trim().isNotEmpty == true ? motherName!.trim() : null),
+      'fatherName': ?(fatherName?.trim().isNotEmpty == true ? fatherName!.trim() : null),
+      'dateOfBirth': ?dateOfBirth?.toUtc().toIso8601String(),
+      'classStandard': ?(classStandard?.trim().isNotEmpty == true ? classStandard!.trim() : null),
+      'schoolInstituteName': ?(schoolInstituteName?.trim().isNotEmpty == true ? schoolInstituteName!.trim() : null),
+      'accomplishments': ?(accomplishments?.trim().isNotEmpty == true ? accomplishments!.trim() : null),
+      'certificatePhotoMediaId': ?certificatePhotoMediaId,
     }));
   }
 
