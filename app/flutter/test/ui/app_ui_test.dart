@@ -611,6 +611,77 @@ void main() {
     );
   });
 
+  testWidgets('causes retry recovers after a transient backend failure', (tester) async {
+    var failed = true;
+    await pumpApp(
+      tester,
+      home: const CausesPage(),
+      overrides: [
+        causesProvider('en').overrideWith((ref) async {
+          if (failed) {
+            failed = false;
+            throw Exception('transient backend failure');
+          }
+          return const [_cause];
+        }),
+      ],
+    );
+
+    expect(find.text(l10n(tester).causesLoadError), findsOneWidget);
+    await tester.tap(find.text(l10n(tester).retry));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Education'), findsOneWidget);
+    expect(find.text(l10n(tester).causesLoadError), findsNothing);
+    expect(find.byType(AppBar), findsOneWidget);
+    expect(find.byType(AppNavigationBar), findsOneWidget);
+  });
+
+  testWidgets('Impact backend failure stays inside the Home shell', (tester) async {
+    await pumpApp(
+      tester,
+      home: const HomePage(),
+      overrides: [
+        beneficiariesProvider((search: '', sort: null)).overrideWith(
+          (ref) async => throw Exception('simulated backend unavailable'),
+        ),
+      ],
+    );
+
+    final navigation = AppShellScope.of(
+      tester.element(find.byType(HomePage)),
+    ).navigation;
+    navigation.select(2);
+    await tester.pumpAndSettle();
+
+    expect(find.text(l10n(tester).impactLoadError), findsOneWidget);
+    expect(find.text(l10n(tester).tryAgain), findsOneWidget);
+    expect(find.byType(AppBar), findsOneWidget);
+    expect(find.byType(AppNavigationBar), findsOneWidget);
+  });
+
+  testWidgets('opening Causes from Home keeps the route on the application shell', (tester) async {
+    await pumpApp(
+      tester,
+      home: const HomePage(),
+      overrides: [
+        causesProvider('en').overrideWith((ref) async => const [_cause]),
+      ],
+    );
+
+    await tester.tap(find.text('Service'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(CausesPage), findsOneWidget);
+    expect(find.byType(AppBar), findsOneWidget);
+    expect(find.byType(AppNavigationBar), findsOneWidget);
+    expect(find.text('Education'), findsOneWidget);
+    expect(
+      tester.widget<Scaffold>(find.byType(Scaffold).last).backgroundColor,
+      AppTheme.background,
+    );
+  });
+
   testWidgets('causes success screen keeps the application background and shell', (tester) async {
     await pumpApp(
       tester,
