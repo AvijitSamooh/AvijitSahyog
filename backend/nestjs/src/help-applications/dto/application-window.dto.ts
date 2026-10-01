@@ -8,4 +8,12 @@ export class StartApplicationWindowDto {
   @IsOptional()
   @IsDateString()
   startsAt?: string;
+
+  @IsOptional()
+  @IsDateString()
+  registrationEndsAt?: string;
+
+  @IsOptional()
+  @IsDateString()
+  eventAt?: string;
 }
