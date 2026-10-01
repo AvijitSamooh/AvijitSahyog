@@ -67,6 +67,27 @@ const _cause = Cause(
 );
 
 void main() {
+  testWidgets('service window messages keep the offline interval start and end ordered', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: SizedBox.shrink(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final localizations = AppLocalizations.of(tester.element(find.byType(SizedBox)))!;
+    expect(
+      localizations.serviceUnavailableMessage('8:00 AM', '9:00 PM'),
+      'The service is offline from 9:00 PM to 8:00 AM. You can still view available content, but actions that need the backend are temporarily unavailable.',
+    );
+    expect(
+      localizations.serviceUnavailableBanner('8:00 AM', '9:00 PM'),
+      'Backend service is offline from 9:00 PM to 8:00 AM.',
+    );
+  });
+
   setUp(() {
     SharedPreferences.setMockInitialValues({});
   });
