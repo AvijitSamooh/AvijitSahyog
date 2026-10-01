@@ -241,7 +241,7 @@ void main() {
     ]) {
       expect(find.byKey(ValueKey(key)), findsOneWidget);
     }
-    expect(find.textContaining('This recognition is for the 2025-26 batch only.'), findsOneWidget);
+    expect(find.byType(CheckboxListTile), findsOneWidget);
   });
 
   testWidgets('application page explains a scheduled and closed application window', (tester) async {
