@@ -24,6 +24,7 @@ class SettingsPage extends StatelessWidget {
         Text(l10n.language, style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 12),
         Card(
+          key: const ValueKey('settings_language_selector'),
           margin: EdgeInsets.zero,
           child: Padding(
             padding: const EdgeInsets.all(12),
