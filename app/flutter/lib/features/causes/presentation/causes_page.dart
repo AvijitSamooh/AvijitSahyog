@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_settings_menu.dart';
 import '../../../l10n/app_localizations.dart';
 import '../models/cause.dart';
@@ -17,6 +18,7 @@ class CausesPage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return AppPageScaffold(
+      backgroundColor: AppTheme.background,
       title: Text(l10n.causesTitle),
       body: causesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
