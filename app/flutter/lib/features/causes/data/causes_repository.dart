@@ -21,7 +21,7 @@ class CausesRepository {
   final Future<SharedPreferences> Function() _preferencesProvider;
 
   Future<List<Cause>> getCauses(String languageCode) async {
-    final key = _cachePrefix + languageCode;
+    final key = '$_cachePrefix$languageCode';
     final cached = await _readCache(key);
     if (cached != null && cached.isFresh) {
       return _decodeList(cached.payload);
@@ -44,7 +44,7 @@ class CausesRepository {
   }
 
   Future<Cause> getCause(String slug, String languageCode) async {
-    final key = _cachePrefix + languageCode + '_' + slug;
+    final key = '${_cachePrefix}${languageCode}_$slug';
     final cached = await _readCache(key);
     if (cached != null && cached.isFresh) {
       return Cause.fromJson(cached.payload as Map<String, dynamic>);
