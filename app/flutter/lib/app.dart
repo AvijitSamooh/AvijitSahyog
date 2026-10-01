@@ -110,8 +110,8 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
                         Expanded(
                           child: Text(
                             localizations.serviceUnavailableBanner(
-                              BackendServiceAvailability.startLabel,
-                              BackendServiceAvailability.endLabel,
+                              start: BackendServiceAvailability.startLabel,
+                              end: BackendServiceAvailability.endLabel,
                             ),
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
@@ -144,8 +144,8 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
                               const SizedBox(height: 12),
                               Text(
                                 localizations.serviceUnavailableMessage(
-                                  BackendServiceAvailability.startLabel,
-                                  BackendServiceAvailability.endLabel,
+                                  start: BackendServiceAvailability.startLabel,
+                                  end: BackendServiceAvailability.endLabel,
                                 ),
                                 style: Theme.of(context).textTheme.bodyLarge,
                               ),
