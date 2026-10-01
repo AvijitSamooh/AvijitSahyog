@@ -477,6 +477,7 @@
   "certificatePhotoSelected": "प्रमाणपत्राचा फोटो निवडला",
   "certificatePhotoRequired": "प्रमाणपत्रासाठी स्पष्ट चेहऱ्याचा फोटो आवश्यक आहे.",
   "certificatePhotoUploadFailed": "प्रमाणपत्राचा फोटो अपलोड करता आला नाही.",
+  "importantDates": "महत्त्वाच्या तारखा",
   "formAvailableDate": "फॉर्म उपलब्ध होण्याची तारीख",
   "registrationLastDate": "नोंदणीची अंतिम तारीख",
   "eventDate": "कार्यक्रमाची तारीख",
