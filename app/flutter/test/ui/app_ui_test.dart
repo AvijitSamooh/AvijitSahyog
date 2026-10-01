@@ -28,6 +28,7 @@ import 'package:avijit_sahyog/features/admin/presentation/admin_beneficiaries_pa
 import 'package:avijit_sahyog/features/applications/presentation/applications_page.dart';
 import 'package:avijit_sahyog/features/applications/presentation/admin_applications_page.dart';
 import 'package:avijit_sahyog/features/applications/models/application_window.dart';
+import 'package:avijit_sahyog/features/applications/models/application_rule.dart';
 import 'package:avijit_sahyog/features/applications/providers/help_applications_providers.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_causes_page.dart';
 import 'package:avijit_sahyog/features/admin/providers/admin_beneficiaries_providers.dart';
@@ -191,6 +192,44 @@ void main() {
 
     expect(find.byType(ApplicationsPage), findsOneWidget);
     expect(find.text('Please sign in to submit an application.'), findsOneWidget);
+  });
+
+  testWidgets('Pratibha Samman form collects certificate and student details', (tester) async {
+    final open = ApplicationWindow.fromJson({
+      'type': 'PRATIBHA_SAMMAN',
+      'startsAt': '2026-10-01T10:00:00.000Z',
+      'registrationEndsAt': '2026-10-20T23:59:59.000Z',
+      'eventAt': '2026-10-25T00:00:00.000Z',
+      'closedAt': null,
+      'status': 'OPEN',
+      'canApply': true,
+    });
+    final rule = ApplicationRule.fromJson({
+      'id': 'rule-1',
+      'type': 'PRATIBHA_SAMMAN',
+      'text': 'This recognition is for the 2025-26 batch only.',
+      'displayOrder': 1,
+    });
+
+    await pumpApp(
+      tester,
+      home: const HelpApplicationFormPage(type: 'PRATIBHA_SAMMAN'),
+      overrides: [
+        applicationWindowsProvider.overrideWith((ref) async => [open]),
+        applicationRulesProvider(
+          (type: 'PRATIBHA_SAMMAN', language: 'en'),
+        ).overrideWith((ref) async => [rule]),
+      ],
+    );
+
+    expect(find.byKey(const ValueKey('pratibha_mother_name')), findsOneWidget);
+    expect(find.byKey(const ValueKey('pratibha_father_name')), findsOneWidget);
+    expect(find.byKey(const ValueKey('pratibha_date_of_birth')), findsOneWidget);
+    expect(find.byKey(const ValueKey('pratibha_class_standard')), findsOneWidget);
+    expect(find.byKey(const ValueKey('pratibha_school_institute')), findsOneWidget);
+    expect(find.byKey(const ValueKey('pratibha_certificate_photo')), findsOneWidget);
+    expect(find.byKey(const ValueKey('pratibha_accomplishments')), findsOneWidget);
+    expect(find.text('This recognition is for the 2025-26 batch only.'), findsOneWidget);
   });
 
   testWidgets('application page explains a scheduled and closed application window', (tester) async {
