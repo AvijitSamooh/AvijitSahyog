@@ -28,6 +28,7 @@ flutter run --dart-define=API_BASE_URL=http://localhost:3000
 ```bash
 flutter analyze
 flutter test
+flutter test integration_test
 flutter test --coverage
 ```
 
@@ -46,3 +47,10 @@ Firebase must be configured before running the authentication flow:
 4. Configure the backend with Firebase Admin credentials so `/auth/me` can verify ID tokens.
 
 The Flutter app initializes Firebase at startup, restores an existing Firebase session, exchanges the Firebase ID token with the backend through `GET /auth/me`, and uses the resolved backend role to unlock protected admin operations.
+
+
+## UX and integration coverage
+
+Important application journeys are exercised through integration_test/, including authentication gating, application-window states and configurable application-rule presentation. CI runs these integration tests on Linux with an X virtual framebuffer.
+
+See ../../docs/user-experience.md for the user journey specification and ../../docs/test-and-ux-matrix.md for traceability.
