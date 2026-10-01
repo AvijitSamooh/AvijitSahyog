@@ -222,16 +222,22 @@ void main() {
       ],
     );
 
-    final motherField = find.byKey(const ValueKey('pratibha_mother_name'));
-    await tester.scrollUntilVisible(motherField, 500);
-    expect(motherField, findsOneWidget);
-    expect(find.byKey(const ValueKey('pratibha_father_name')), findsOneWidget);
-    expect(find.byKey(const ValueKey('pratibha_date_of_birth')), findsOneWidget);
-    expect(find.byKey(const ValueKey('pratibha_class_standard')), findsOneWidget);
-    expect(find.byKey(const ValueKey('pratibha_school_institute')), findsOneWidget);
-    expect(find.byKey(const ValueKey('pratibha_certificate_photo')), findsOneWidget);
-    expect(find.byKey(const ValueKey('pratibha_accomplishments')), findsOneWidget);
-    expect(find.text('This recognition is for the 2025-26 batch only.'), findsOneWidget);
+    for (final key in const [
+      'pratibha_mother_name',
+      'pratibha_father_name',
+      'pratibha_date_of_birth',
+      'pratibha_class_standard',
+      'pratibha_school_institute',
+      'pratibha_certificate_photo',
+      'pratibha_accomplishments',
+    ]) {
+      final field = find.byKey(ValueKey(key));
+      await tester.scrollUntilVisible(field, 500);
+      expect(field, findsOneWidget);
+    }
+    final batchRule = find.text('This recognition is for the 2025-26 batch only.');
+    await tester.scrollUntilVisible(batchRule, 500);
+    expect(batchRule, findsOneWidget);
   });
 
   testWidgets('application page explains a scheduled and closed application window', (tester) async {
