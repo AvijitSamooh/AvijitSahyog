@@ -5,7 +5,7 @@ import { ApplicationWindowsService } from './application-windows.service';
 describe('HelpApplicationsService', () => {
   const prisma: any = {
     user: { upsert: jest.fn() },
-    media: { findMany: jest.fn() },
+    media: { findMany: jest.fn(), findFirst: jest.fn() },
     applicationRule: { findMany: jest.fn() },
     helpApplicationRuleAcceptance: { deleteMany: jest.fn() },
     helpApplication: {
@@ -18,6 +18,9 @@ describe('HelpApplicationsService', () => {
     },
     helpApplicationMedia: { deleteMany: jest.fn() },
     helpApplicationVote: { upsert: jest.fn() },
+    cause: { findUnique: jest.fn() },
+    beneficiary: { upsert: jest.fn() },
+    beneficiaryMedia: { findFirst: jest.fn(), findMany: jest.fn(), create: jest.fn() },
     $transaction: jest.fn(),
   };
   const identity = { uid: 'firebase-1', email: 'user@example.com', displayName: 'User' };
@@ -28,6 +31,7 @@ describe('HelpApplicationsService', () => {
     prisma.user.upsert.mockResolvedValue({ id: 'user-1', role: 'USER' });
     prisma.applicationRule.findMany.mockResolvedValue([]);
     (applicationWindows.ensureAccepting as jest.Mock).mockResolvedValue({ type: 'EDUCATION_ASSISTANCE' });
+    prisma.$transaction.mockImplementation(async (callback: any) => callback(prisma));
   });
 
   it('creates an assistance application with requested amount and evidence', async () => {
@@ -64,6 +68,7 @@ describe('HelpApplicationsService', () => {
 
   it('blocks submission when the configured application window is closed', async () => {
     (applicationWindows.ensureAccepting as jest.Mock).mockRejectedValueOnce(new BadRequestException('Applications are no longer being accepted.'));
+    prisma.media.findFirst.mockResolvedValue({ id: 'certificate-1' });
     const service = new HelpApplicationsService(prisma, applicationWindows);
 
     await expect(service.create(identity, {
@@ -164,6 +169,8 @@ describe('HelpApplicationsService', () => {
   it('persists both Pratibha Samman review decisions', async () => {
     prisma.helpApplication.findUnique.mockResolvedValue({ id: 'app-1', type: 'PRATIBHA_SAMMAN', requestedAmount: null, media: [] });
     prisma.helpApplication.update.mockResolvedValue({ id: 'app-1', type: 'PRATIBHA_SAMMAN', status: 'CONSIDERED_FOR_SAMMAN', media: [], votes: [] });
+    prisma.cause.findUnique.mockResolvedValue({ id: 'pratibha-cause' });
+    prisma.beneficiary.upsert.mockResolvedValue({ id: 'beneficiary-1' });
     const service = new HelpApplicationsService(prisma, applicationWindows);
 
     await service.review('app-1', { decision: 'CONSIDER_FOR_SAMMAN' });
@@ -179,6 +186,64 @@ describe('HelpApplicationsService', () => {
       data: expect.objectContaining({ status: 'NOT_SELECTED' }),
     }));
   });
+  it('publishes a selected Pratibha Samman application to the beneficiary explorer', async () => {
+    prisma.helpApplication.findUnique.mockResolvedValue({
+      id: 'app-1',
+      type: 'PRATIBHA_SAMMAN',
+      applicantName: 'Aarav Jain',
+      classStandard: '10th',
+      schoolInstituteName: 'Pune School',
+      accomplishments: 'Passed 10th with distinction',
+      adminNote: 'Selected for Pratibha Samman',
+      certificatePhotoMediaId: 'certificate-1',
+      media: [{ mediaId: 'evidence-1', media: { id: 'evidence-1' } }],
+    });
+    prisma.helpApplication.update.mockResolvedValue({
+      id: 'app-1',
+      type: 'PRATIBHA_SAMMAN',
+      status: 'CONSIDERED_FOR_SAMMAN',
+      applicantName: 'Aarav Jain',
+      certificatePhotoMediaId: 'certificate-1',
+      media: [{ mediaId: 'evidence-1', media: { id: 'evidence-1', storageKey: 'evidence.webp', mimeType: 'image/webp' } }],
+      certificatePhotoMedia: { id: 'certificate-1', storageKey: 'certificate.webp', mimeType: 'image/webp' },
+      votes: [],
+    });
+    prisma.cause.findUnique.mockResolvedValue({ id: 'pratibha-cause' });
+    prisma.beneficiary.upsert.mockResolvedValue({ id: 'beneficiary-1' });
+    prisma.beneficiaryMedia.findFirst.mockResolvedValue(null);
+    prisma.beneficiaryMedia.findMany.mockResolvedValue([]);
+    prisma.beneficiaryMedia.create.mockResolvedValue({});
+
+    const service = new HelpApplicationsService(prisma, applicationWindows);
+    await service.review('app-1', { decision: 'CONSIDER_FOR_SAMMAN' });
+
+    expect(prisma.beneficiary.upsert).toHaveBeenCalledWith(expect.objectContaining({
+      where: { sourceApplicationId: 'app-1' },
+      create: expect.objectContaining({
+        sourceApplicationId: 'app-1',
+        name: 'Aarav Jain',
+        supportedYear: 2026,
+        contributionAmount: 0,
+        causeId: 'pratibha-cause',
+      }),
+    }));
+    expect(prisma.beneficiaryMedia.create).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({
+        beneficiaryId: 'beneficiary-1',
+        mediaId: 'certificate-1',
+        purpose: 'PROFILE',
+        isPrimary: true,
+      }),
+    }));
+    expect(prisma.beneficiaryMedia.create).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({
+        beneficiaryId: 'beneficiary-1',
+        mediaId: 'evidence-1',
+        purpose: 'GALLERY',
+      }),
+    }));
+  });
+
   it('upserts one vote per administrator and supports score 1 to 5', async () => {
     prisma.user.upsert.mockResolvedValue({ id: 'admin-1', role: 'ADMIN' });
     prisma.helpApplication.findUnique.mockResolvedValue({
@@ -206,6 +271,8 @@ describe('HelpApplicationsService', () => {
   });
 
   it('rejects submission when not every active rule is acknowledged', async () => {
+    prisma.media.findMany.mockResolvedValue([{ id: 'media-1' }]);
+    prisma.media.findFirst.mockResolvedValue({ id: 'certificate-1' });
     prisma.applicationRule.findMany.mockResolvedValue([
       { id: 'rule-1', translations: [{ text: 'Pune only' }] },
       { id: 'rule-2', translations: [{ text: '80 percent minimum' }] },
@@ -221,6 +288,13 @@ describe('HelpApplicationsService', () => {
       state: 'Maharashtra',
       pincode: '411001',
       mediaIds: ['media-1'],
+
+      motherName: 'Mother User',
+      fatherName: 'Father User',
+      dateOfBirth: '2010-01-01T00:00:00.000Z',
+      classStandard: '10',
+      schoolInstituteName: 'Test School',
+      certificatePhotoMediaId: 'certificate-1',
       acceptedRuleIds: ['rule-1'],
     })).rejects.toThrow('Please acknowledge every current application rule before submitting.');
     expect(prisma.helpApplication.create).not.toHaveBeenCalled();
@@ -228,6 +302,7 @@ describe('HelpApplicationsService', () => {
 
   it('stores the acknowledged rule text snapshot on successful submission', async () => {
     prisma.media.findMany.mockResolvedValue([{ id: 'media-1' }]);
+    prisma.media.findFirst.mockResolvedValue({ id: 'certificate-1' });
     prisma.applicationRule.findMany.mockResolvedValue([
       { id: 'rule-1', translations: [{ text: 'Pune only' }] },
     ]);
@@ -260,6 +335,13 @@ describe('HelpApplicationsService', () => {
       state: 'Maharashtra',
       pincode: '411001',
       mediaIds: ['media-1'],
+
+      motherName: 'Mother User',
+      fatherName: 'Father User',
+      dateOfBirth: '2010-01-01T00:00:00.000Z',
+      classStandard: '10',
+      schoolInstituteName: 'Test School',
+      certificatePhotoMediaId: 'certificate-1',
       acceptedRuleIds: ['rule-1'],
     });
 

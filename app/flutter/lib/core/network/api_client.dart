@@ -299,6 +299,8 @@ class ApiClient {
   Future<Map<String, dynamic>> startApplicationWindow(
     String type, {
     DateTime? startsAt,
+    DateTime? registrationEndsAt,
+    DateTime? eventAt,
   }) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/admin/application-windows/$type/start'),
@@ -306,6 +308,8 @@ class ApiClient {
       body: jsonEncode({
         'type': type,
         'startsAt': ?startsAt?.toUtc().toIso8601String(),
+        'registrationEndsAt': ?registrationEndsAt?.toUtc().toIso8601String(),
+        'eventAt': ?eventAt?.toUtc().toIso8601String(),
       }),
     );
     _ensureSuccess(response, 'Starting application window');

@@ -26,7 +26,9 @@ import 'package:avijit_sahyog/features/admin/models/admin_dashboard_summary.dart
 import 'package:avijit_sahyog/features/admin/models/admin_beneficiary.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_beneficiaries_page.dart';
 import 'package:avijit_sahyog/features/applications/presentation/applications_page.dart';
+import 'package:avijit_sahyog/features/applications/presentation/admin_applications_page.dart';
 import 'package:avijit_sahyog/features/applications/models/application_window.dart';
+import 'package:avijit_sahyog/features/applications/models/application_rule.dart';
 import 'package:avijit_sahyog/features/applications/providers/help_applications_providers.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_causes_page.dart';
 import 'package:avijit_sahyog/features/admin/providers/admin_beneficiaries_providers.dart';
@@ -192,6 +194,56 @@ void main() {
     expect(find.text('Please sign in to submit an application.'), findsOneWidget);
   });
 
+  testWidgets('Pratibha Samman form collects certificate and student details', (tester) async {
+    final open = ApplicationWindow.fromJson({
+      'type': 'PRATIBHA_SAMMAN',
+      'startsAt': '2026-10-01T10:00:00.000Z',
+      'registrationEndsAt': '2026-10-20T23:59:59.000Z',
+      'eventAt': '2026-10-25T00:00:00.000Z',
+      'closedAt': null,
+      'status': 'OPEN',
+      'canApply': true,
+    });
+    final rule = ApplicationRule.fromJson({
+      'id': 'rule-1',
+      'type': 'PRATIBHA_SAMMAN',
+      'text': 'This recognition is for the 2025-26 batch only.',
+      'displayOrder': 1,
+    });
+
+    tester.view.physicalSize = const Size(1080, 5000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await pumpApp(
+      tester,
+      home: const HelpApplicationFormPage(type: 'PRATIBHA_SAMMAN'),
+      overrides: [
+        applicationWindowsProvider.overrideWith((ref) async => [open]),
+        applicationRulesProvider(
+          (type: 'PRATIBHA_SAMMAN', language: 'en'),
+        ).overrideWith((ref) async => [rule]),
+      ],
+    );
+
+    await tester.pumpAndSettle();
+    for (final key in const [
+      'pratibha_mother_name',
+      'pratibha_father_name',
+      'pratibha_date_of_birth',
+      'pratibha_class_standard',
+      'pratibha_school_institute',
+      'pratibha_certificate_photo',
+      'pratibha_accomplishments',
+    ]) {
+      expect(find.byKey(ValueKey(key)), findsOneWidget);
+    }
+    expect(find.byType(CheckboxListTile), findsOneWidget);
+  });
+
   testWidgets('application page explains a scheduled and closed application window', (tester) async {
     final scheduled = ApplicationWindow.fromJson({
       'type': 'EDUCATION_ASSISTANCE',
@@ -231,6 +283,70 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('application_education')));
     await tester.pumpAndSettle();
     expect(find.textContaining('Applications will start from'), findsWidgets);
+  });
+
+  testWidgets('admin applications page scrolls to window controls and application list', (tester) async {
+    final scheduled = ApplicationWindow.fromJson({
+      'type': 'EDUCATION_ASSISTANCE',
+      'startsAt': '2026-10-05T10:00:00.000Z',
+      'closedAt': null,
+      'status': 'SCHEDULED',
+      'canApply': false,
+    });
+    final open = ApplicationWindow.fromJson({
+      'type': 'MEDICAL_HELP',
+      'startsAt': '2026-09-01T10:00:00.000Z',
+      'closedAt': null,
+      'status': 'OPEN',
+      'canApply': true,
+    });
+    final closed = ApplicationWindow.fromJson({
+      'type': 'PRATIBHA_SAMMAN',
+      'startsAt': '2026-09-01T10:00:00.000Z',
+      'closedAt': '2026-09-29T10:00:00.000Z',
+      'status': 'CLOSED',
+      'canApply': false,
+    });
+
+    await pumpApp(
+      tester,
+      home: const AdminApplicationsPage(),
+      overrides: [
+        authProvider.overrideWith((ref) => _AuthenticatedAdminController()),
+        applicationWindowsProvider.overrideWith(
+          (ref) async => [scheduled, open, closed],
+        ),
+      ],
+    );
+
+    expect(find.byKey(const ValueKey('application_window_management')), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('application_window_start_EDUCATION_ASSISTANCE')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('application_window_start_MEDICAL_HELP')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const ValueKey('application_window_start_PRATIBHA_SAMMAN')),
+      findsOneWidget,
+    );
+
+    final closedButton = find.byKey(
+      const ValueKey('application_window_close_PRATIBHA_SAMMAN'),
+    );
+    expect(closedButton, findsNothing);
+
+    final openCloseButton = find.byKey(
+      const ValueKey('application_window_close_MEDICAL_HELP'),
+    );
+    await tester.scrollUntilVisible(
+      openCloseButton,
+      500,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(openCloseButton, findsOneWidget);
   });
 
   testWidgets('public home exposes login from the shared settings menu', (tester) async {

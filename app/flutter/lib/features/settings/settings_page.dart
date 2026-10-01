@@ -24,6 +24,7 @@ class SettingsPage extends StatelessWidget {
         Text(l10n.language, style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 12),
         Card(
+          key: const ValueKey('settings_language_selector'),
           margin: EdgeInsets.zero,
           child: Padding(
             padding: const EdgeInsets.all(12),
@@ -39,6 +40,33 @@ class SettingsPage extends StatelessWidget {
                 _languageTile(context, label: l10n.languageHindi, locale: const Locale('hi'), selected: currentLocale == 'hi'),
                 _languageTile(context, label: l10n.languageMarathi, locale: const Locale('mr'), selected: currentLocale == 'mr'),
                 _languageTile(context, label: l10n.languageGujarati, locale: const Locale('gu'), selected: currentLocale == 'gu'),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Card(
+          margin: EdgeInsets.zero,
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.account_balance_outlined),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.homeOrganisationTitle,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(l10n.homeOrganisationDetails),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),

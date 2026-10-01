@@ -11,6 +11,10 @@ describe('HelpApplicationsService applicant actions', () => {
       findUnique: jest.fn(),
       update: jest.fn(),
     },
+    cause: { findUnique: jest.fn() },
+    beneficiary: { upsert: jest.fn() },
+    beneficiaryMedia: { findFirst: jest.fn(), findMany: jest.fn(), create: jest.fn() },
+    $transaction: jest.fn(),
   };
   const applicationWindows = { ensureAccepting: jest.fn().mockResolvedValue({}) } as unknown as ApplicationWindowsService;
 
@@ -19,6 +23,9 @@ describe('HelpApplicationsService applicant actions', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     prisma.user.upsert.mockResolvedValue({ id: 'user-1', role: 'USER' });
+    prisma.$transaction.mockImplementation(async (callback: any) => callback(prisma));
+    prisma.cause.findUnique.mockResolvedValue({ id: 'pratibha-cause' });
+    prisma.beneficiary.upsert.mockResolvedValue({ id: 'beneficiary-1' });
   });
 
   it('does not allow deleting another applicant application', async () => {

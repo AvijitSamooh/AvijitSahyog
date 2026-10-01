@@ -255,9 +255,17 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
   final _pincode = TextEditingController();
   final _amount = TextEditingController();
   final _clarification = TextEditingController();
+  final _motherName = TextEditingController();
+  final _fatherName = TextEditingController();
+  final _classStandard = TextEditingController();
+  final _schoolInstituteName = TextEditingController();
+  final _accomplishments = TextEditingController();
   final _picker = ImagePicker();
   final List<String> _mediaIds = [];
   final List<XFile> _selectedImages = [];
+  String? _certificatePhotoMediaId;
+  XFile? _certificatePhoto;
+  DateTime? _dob;
   bool _busy = false;
   int _uploadTotal = 0;
   int _uploadCompleted = 0;
@@ -276,11 +284,18 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     _pincode.text = existing?.pincode ?? '';
     if (existing?.requestedAmount != null) _amount.text = existing!.requestedAmount.toString();
     _clarification.text = existing?.clarification ?? '';
+    _motherName.text = existing?.motherName ?? '';
+    _fatherName.text = existing?.fatherName ?? '';
+    _classStandard.text = existing?.classStandard ?? '';
+    _schoolInstituteName.text = existing?.schoolInstituteName ?? '';
+    _accomplishments.text = existing?.accomplishments ?? '';
+    _certificatePhotoMediaId = existing?.certificatePhotoMediaId;
+    _dob = existing?.dateOfBirth;
   }
 
   @override
   void dispose() {
-    for (final controller in [_name, _mobile, _email, _address, _city, _state, _pincode, _amount, _clarification]) {
+    for (final controller in [_name, _mobile, _email, _address, _city, _state, _pincode, _amount, _clarification, _motherName, _fatherName, _classStandard, _schoolInstituteName, _accomplishments]) {
       controller.dispose();
     }
     super.dispose();
@@ -306,6 +321,33 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
       await _uploadImages([image]);
     } catch (error) {
       if (mounted) _showError('Unable to capture image: $error');
+    }
+  }
+
+  Future<void> _pickCertificatePhoto() async {
+    if (_busy) return;
+    try {
+      final image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 92,
+        maxWidth: 1800,
+        maxHeight: 1800,
+      );
+      if (image == null) return;
+      setState(() => _busy = true);
+      final id = await ref.read(helpApplicationsRepositoryProvider).uploadImage(image.path);
+      if (mounted) {
+        setState(() {
+          _certificatePhoto = image;
+          _certificatePhotoMediaId = id;
+          _busy = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _busy = false);
+        _showError(AppLocalizations.of(context)!.certificatePhotoUploadFailed);
+      }
     }
   }
 
@@ -374,6 +416,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     }
 
     final l10n = AppLocalizations.of(context)!;
+    final isSamman = widget.type == 'PRATIBHA_SAMMAN';
     final rules = ref.read(applicationRulesProvider((type: widget.type, language: Localizations.localeOf(context).languageCode))).valueOrNull ?? const <ApplicationRule>[];
     if (_acceptedRuleIds.length != rules.length || rules.any((rule) => !_acceptedRuleIds.contains(rule.id))) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.applicationRulesRequired)));
@@ -382,6 +425,10 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     if (!_formKey.currentState!.validate()) return;
     if (_mediaIds.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.imagesRequired)));
+      return;
+    }
+    if (widget.type == 'PRATIBHA_SAMMAN' && _certificatePhotoMediaId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.certificatePhotoRequired)));
       return;
     }
     double? amount;
@@ -396,9 +443,9 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     try {
       final repo = ref.read(helpApplicationsRepositoryProvider);
       if (widget.application == null) {
-        await repo.create(type: widget.type, requestedAmount: amount, applicantName: _name.text, mobileNumber: _mobile.text, email: _email.text, address: _address.text, city: _city.text, state: _state.text, pincode: _pincode.text, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false), clarification: _clarification.text);
+        await repo.create(type: widget.type, requestedAmount: amount, applicantName: _name.text, mobileNumber: _mobile.text, email: _email.text, address: _address.text, city: _city.text, state: _state.text, pincode: _pincode.text, motherName: isSamman ? _motherName.text : null, fatherName: isSamman ? _fatherName.text : null, dateOfBirth: isSamman ? _dob : null, classStandard: isSamman ? _classStandard.text : null, schoolInstituteName: isSamman ? _schoolInstituteName.text : null, accomplishments: isSamman ? _accomplishments.text : null, certificatePhotoMediaId: isSamman ? _certificatePhotoMediaId : null, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false), clarification: _clarification.text);
       } else {
-        await repo.resubmit(id: widget.application!.id, clarification: _clarification.text, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false), requestedAmount: amount);
+        await repo.resubmit(id: widget.application!.id, clarification: _clarification.text, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false), requestedAmount: amount, motherName: isSamman ? _motherName.text : null, fatherName: isSamman ? _fatherName.text : null, dateOfBirth: isSamman ? _dob : null, classStandard: isSamman ? _classStandard.text : null, schoolInstituteName: isSamman ? _schoolInstituteName.text : null, accomplishments: isSamman ? _accomplishments.text : null, certificatePhotoMediaId: isSamman ? _certificatePhotoMediaId : null);
       }
       ref.invalidate(myHelpApplicationsProvider);
       if (mounted) {
@@ -437,6 +484,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
         body: _ApplicationWindowClosedView(window: window),
       );
     }
+    final activeWindow = window!;
     if (rules.isLoading) {
       return AppPageScaffold(
         title: Text(_typeLabel(l10n, widget.type)),
@@ -489,6 +537,29 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
               ),
               const SizedBox(height: 20),
             ],
+            if (isSamman && (activeWindow.registrationEndsAt != null || activeWindow.eventAt != null)) ...[
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(l10n.importantDates, style: Theme.of(context).textTheme.titleMedium),
+                      const SizedBox(height: 8),
+                      Text('\${l10n.formAvailableDate}: \${_windowDateTime(context, activeWindow.startsAt)}'),
+                      if (activeWindow.registrationEndsAt != null)
+                        Text('\${l10n.registrationLastDate}: \${_windowDateTime(context, activeWindow.registrationEndsAt!)}'),
+                      if (activeWindow.eventAt != null)
+                        Text('\${l10n.eventDate}: \${_windowDateTime(context, activeWindow.eventAt!)}'),
+                      const SizedBox(height: 6),
+                      Text(l10n.organisationManagedBy, style: Theme.of(context).textTheme.bodySmall),
+                      Text(l10n.organisationRegistrationNumber, style: Theme.of(context).textTheme.bodySmall),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
             Text(l10n.applicantDetails, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 12),
             TextFormField(
@@ -502,7 +573,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
               key: const ValueKey('application_mobile'),
               controller: _mobile,
               keyboardType: TextInputType.phone,
-              decoration: InputDecoration(labelText: l10n.mobileNumberRequired, prefixIcon: const Icon(Icons.phone_outlined)),
+              decoration: InputDecoration(labelText: isSamman ? l10n.mobileWhatsappRequired : l10n.mobileNumberRequired, prefixIcon: const Icon(Icons.phone_outlined)),
               validator: _mobileValidator,
             ),
             TextFormField(
@@ -544,6 +615,94 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
               decoration: InputDecoration(labelText: l10n.pincodeRequired, prefixIcon: const Icon(Icons.location_on_outlined)),
               validator: _pincodeValidator,
             ),
+            if (isSamman) ...[
+              const SizedBox(height: 20),
+              Text(l10n.pratibhaStudentDetails, style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 10),
+              TextFormField(
+                key: const ValueKey('pratibha_mother_name'),
+                controller: _motherName,
+                textCapitalization: TextCapitalization.words,
+                decoration: InputDecoration(labelText: l10n.motherNameRequired, prefixIcon: const Icon(Icons.family_restroom)),
+                validator: (v) => _required(v, l10n.motherNameRequired),
+              ),
+              TextFormField(
+                key: const ValueKey('pratibha_father_name'),
+                controller: _fatherName,
+                textCapitalization: TextCapitalization.words,
+                decoration: InputDecoration(labelText: l10n.fatherNameRequired, prefixIcon: const Icon(Icons.family_restroom)),
+                validator: (v) => _required(v, l10n.fatherNameRequired),
+              ),
+              FormField<DateTime>(
+                key: const ValueKey('pratibha_date_of_birth'),
+                validator: (_) => _dob == null ? l10n.dateOfBirthRequired : null,
+                builder: (field) => InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: l10n.dateOfBirthRequired,
+                    prefixIcon: const Icon(Icons.cake_outlined),
+                    errorText: field.errorText,
+                  ),
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(_dob == null ? l10n.selectDateOfBirth : _windowDateTime(context, _dob!)),
+                    trailing: const Icon(Icons.calendar_month_outlined),
+                    onTap: _busy ? null : () async {
+                      final now = DateTime.now();
+                      final selected = await showDatePicker(
+                        context: context,
+                        initialDate: _dob ?? DateTime(now.year - 10, now.month, now.day),
+                        firstDate: DateTime(1980),
+                        lastDate: now,
+                        helpText: l10n.dateOfBirthRequired,
+                      );
+                      if (selected != null) {
+                        setState(() => _dob = selected);
+                        field.didChange(selected);
+                      }
+                    },
+                  ),
+                ),
+              ),
+              TextFormField(
+                key: const ValueKey('pratibha_class_standard'),
+                controller: _classStandard,
+                decoration: InputDecoration(labelText: l10n.classStandardRequired, prefixIcon: const Icon(Icons.school_outlined)),
+                validator: (v) => _required(v, l10n.classStandardRequired),
+              ),
+              TextFormField(
+                key: const ValueKey('pratibha_school_institute'),
+                controller: _schoolInstituteName,
+                decoration: InputDecoration(labelText: l10n.schoolInstituteRequired, prefixIcon: const Icon(Icons.account_balance_outlined)),
+                validator: (v) => _required(v, l10n.schoolInstituteRequired),
+              ),
+              const SizedBox(height: 8),
+              Text(l10n.certificatePhotoTitle, style: Theme.of(context).textTheme.titleSmall),
+              const SizedBox(height: 4),
+              Text(l10n.certificatePhotoHint, style: Theme.of(context).textTheme.bodySmall),
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                key: const ValueKey('pratibha_certificate_photo'),
+                onPressed: _busy ? null : _pickCertificatePhoto,
+                icon: const Icon(Icons.badge_outlined),
+                label: Text(_certificatePhotoMediaId == null ? l10n.selectCertificatePhoto : l10n.certificatePhotoSelected),
+              ),
+              if (_certificatePhoto != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.file(File(_certificatePhoto!.path), height: 160, width: double.infinity, fit: BoxFit.cover),
+                  ),
+                ),
+              TextFormField(
+                key: const ValueKey('pratibha_accomplishments'),
+                controller: _accomplishments,
+                minLines: 3,
+                maxLines: 6,
+                decoration: InputDecoration(labelText: l10n.otherAccomplishmentsOptional, alignLabelWithHint: true, prefixIcon: const Icon(Icons.emoji_events_outlined)),
+              ),
+            ],
+
             const SizedBox(height: 20),
             if (!isSamman)
               TextFormField(
@@ -761,12 +920,22 @@ class _ApplicationActionCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final status = window?.status ?? ApplicationWindowStatus.closed;
-    final subtitle = switch (status) {
+    final baseStatus = switch (status) {
       ApplicationWindowStatus.scheduled =>
         l10n.applicationAcceptingStartsAt(_windowDateTime(context, window!.startsAt)),
       ApplicationWindowStatus.open => l10n.applicationAcceptingNow,
       ApplicationWindowStatus.closed => l10n.applicationAcceptingClosed,
     };
+    final activeWindow = window;
+    final subtitle = type == 'PRATIBHA_SAMMAN' && activeWindow != null
+        ? [
+            baseStatus,
+            if (activeWindow.registrationEndsAt != null)
+              '\${l10n.registrationLastDate}: \${_windowDateTime(context, activeWindow.registrationEndsAt!)}',
+            if (activeWindow.eventAt != null)
+              '\${l10n.eventDate}: \${_windowDateTime(context, activeWindow.eventAt!)}',
+          ].join('\n')
+        : baseStatus;
 
     return _ActionCard(
       key: ValueKey(_applicationActionKey(type)),

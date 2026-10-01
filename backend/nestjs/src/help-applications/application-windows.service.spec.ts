@@ -71,6 +71,38 @@ describe('ApplicationWindowsService', () => {
     }));
   });
 
+  it('persists and validates the registration deadline and event date', async () => {
+    prisma.applicationWindow.upsert.mockResolvedValue({
+      type: 'PRATIBHA_SAMMAN',
+      startsAt: new Date('2026-10-05T09:00:00.000Z'),
+      registrationEndsAt: new Date('2026-10-20T23:59:59.000Z'),
+      eventAt: new Date('2026-10-25T00:00:00.000Z'),
+      closedAt: null,
+    });
+    const service = new ApplicationWindowsService(prisma);
+
+    await service.start(identity, 'PRATIBHA_SAMMAN', {
+      type: 'PRATIBHA_SAMMAN',
+      startsAt: '2026-10-05T09:00:00.000Z',
+      registrationEndsAt: '2026-10-20T23:59:59.000Z',
+      eventAt: '2026-10-25T00:00:00.000Z',
+    });
+
+    expect(prisma.applicationWindow.upsert).toHaveBeenCalledWith(expect.objectContaining({
+      create: expect.objectContaining({
+        registrationEndsAt: new Date('2026-10-20T23:59:59.000Z'),
+        eventAt: new Date('2026-10-25T00:00:00.000Z'),
+      }),
+    }));
+
+    await expect(service.start(identity, 'PRATIBHA_SAMMAN', {
+      type: 'PRATIBHA_SAMMAN',
+      startsAt: '2026-10-20T09:00:00.000Z',
+      registrationEndsAt: '2026-10-19T23:59:59.000Z',
+      eventAt: '2026-10-25T00:00:00.000Z',
+    })).rejects.toBeInstanceOf(BadRequestException);
+  });
+
   it('closes an existing window and records the administrator', async () => {
     prisma.applicationWindow.findUnique.mockResolvedValue({
       type: 'PRATIBHA_SAMMAN',

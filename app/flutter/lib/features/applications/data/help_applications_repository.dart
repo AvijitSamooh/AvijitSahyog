@@ -20,6 +20,13 @@ class HelpApplicationsRepository {
     required String state,
     required String pincode,
     String? clarification,
+    String? motherName,
+    String? fatherName,
+    DateTime? dateOfBirth,
+    String? classStandard,
+    String? schoolInstituteName,
+    String? accomplishments,
+    String? certificatePhotoMediaId,
     required List<String> acceptedRuleIds,
   }) async {
     final trimmedClarification = clarification?.trim();
@@ -36,6 +43,13 @@ class HelpApplicationsRepository {
       'mediaIds': mediaIds,
       'acceptedRuleIds': acceptedRuleIds,
       'clarification': ?(trimmedClarification?.isNotEmpty == true ? trimmedClarification : null),
+      'motherName': ?(motherName?.trim().isNotEmpty == true ? motherName!.trim() : null),
+      'fatherName': ?(fatherName?.trim().isNotEmpty == true ? fatherName!.trim() : null),
+      'dateOfBirth': ?dateOfBirth?.toUtc().toIso8601String(),
+      'classStandard': ?(classStandard?.trim().isNotEmpty == true ? classStandard!.trim() : null),
+      'schoolInstituteName': ?(schoolInstituteName?.trim().isNotEmpty == true ? schoolInstituteName!.trim() : null),
+      'accomplishments': ?(accomplishments?.trim().isNotEmpty == true ? accomplishments!.trim() : null),
+      'certificatePhotoMediaId': ?certificatePhotoMediaId,
     }));
   }
 
@@ -63,11 +77,15 @@ class HelpApplicationsRepository {
   Future<ApplicationWindow> startApplicationWindow({
     required String type,
     DateTime? startsAt,
+    DateTime? registrationEndsAt,
+    DateTime? eventAt,
   }) async {
     return ApplicationWindow.fromJson(
       await client.startApplicationWindow(
         type,
         startsAt: startsAt,
+        registrationEndsAt: registrationEndsAt,
+        eventAt: eventAt,
       ),
     );
   }
@@ -89,12 +107,26 @@ class HelpApplicationsRepository {
     required List<String> mediaIds,
     required List<String> acceptedRuleIds,
     double? requestedAmount,
+    String? motherName,
+    String? fatherName,
+    DateTime? dateOfBirth,
+    String? classStandard,
+    String? schoolInstituteName,
+    String? accomplishments,
+    String? certificatePhotoMediaId,
   }) async {
     return HelpApplication.fromJson(await client.resubmitHelpApplication(id, {
       'clarification': clarification,
       'mediaIds': mediaIds,
       'acceptedRuleIds': acceptedRuleIds,
       'requestedAmount': ?requestedAmount,
+      'motherName': ?motherName,
+      'fatherName': ?fatherName,
+      'dateOfBirth': ?dateOfBirth?.toUtc().toIso8601String(),
+      'classStandard': ?classStandard,
+      'schoolInstituteName': ?schoolInstituteName,
+      'accomplishments': ?accomplishments,
+      'certificatePhotoMediaId': ?certificatePhotoMediaId,
     }));
   }
 

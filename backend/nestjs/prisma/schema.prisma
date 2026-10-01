@@ -210,6 +210,7 @@ model DonationAllocation {
 
 model Beneficiary {
   id                 String   @id @default(uuid()) @db.Uuid
+  sourceApplicationId String?  @unique @db.Uuid
   name               String   @db.VarChar(250)
   photoUrl           String?  @db.VarChar(1000)
   story              String?  @db.Text
@@ -222,6 +223,7 @@ model Beneficiary {
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
+  sourceApplication HelpApplication? @relation("SourceApplication", fields: [sourceApplicationId], references: [id], onDelete: SetNull)
   cause        Cause              @relation(fields: [causeId], references: [id], onDelete: Restrict)
   organisation Organisation?      @relation(fields: [organisationId], references: [id], onDelete: SetNull)
   media        BeneficiaryMedia[]
@@ -245,6 +247,7 @@ model Media {
   organisationMedia OrganisationMedia[]
   beneficiaryMedia  BeneficiaryMedia[]
   helpApplicationMedia HelpApplicationMedia[]
+  certificatePhotoApplications HelpApplication[] @relation("CertificatePhoto")
   uploadedBy User? @relation("UserUploadedMedia", fields: [uploadedById], references: [id], onDelete: SetNull)
 
   @@index([uploadedById])
@@ -356,6 +359,15 @@ model HelpApplication {
   approvedAmount  Decimal?              @db.Decimal(12, 2)
   rejectionReason String?               @db.Text
   clarification   String?               @db.Text
+  beneficiary     Beneficiary?           @relation("SourceApplication")
+  motherName      String?               @db.VarChar(250)
+  fatherName      String?               @db.VarChar(250)
+  dateOfBirth     DateTime?
+  classStandard   String?               @db.VarChar(100)
+  schoolInstituteName String?           @db.VarChar(300)
+  accomplishments String?               @db.Text
+  certificatePhotoMediaId String?       @db.Uuid
+  certificatePhotoMedia Media?          @relation("CertificatePhoto", fields: [certificatePhotoMediaId], references: [id], onDelete: SetNull)
   adminNote       String?               @db.Text
   submittedAt     DateTime              @default(now())
   reviewedAt      DateTime?
@@ -375,6 +387,8 @@ model ApplicationWindow {
   id          String              @id @default(uuid()) @db.Uuid
   type        HelpApplicationType @unique
   startsAt    DateTime
+  registrationEndsAt DateTime?
+  eventAt     DateTime?
   closedAt    DateTime?
   updatedById String?             @db.Uuid
   createdAt   DateTime            @default(now())

@@ -28,8 +28,17 @@ export class ApplicationWindowsService {
       throw new BadRequestException('Application type in the path and request body must match.');
     }
     const startsAt = dto.startsAt ? new Date(dto.startsAt) : new Date();
-    if (Number.isNaN(startsAt.getTime())) {
-      throw new BadRequestException('Application start date is invalid.');
+    const registrationEndsAt = dto.registrationEndsAt ? new Date(dto.registrationEndsAt) : null;
+    const eventAt = dto.eventAt ? new Date(dto.eventAt) : null;
+    if (Number.isNaN(startsAt.getTime()) || (registrationEndsAt && Number.isNaN(registrationEndsAt.getTime())) || (eventAt && Number.isNaN(eventAt.getTime()))) {
+      throw new BadRequestException('Application schedule contains an invalid date.');
+    }
+    if (registrationEndsAt && registrationEndsAt < startsAt) {
+      throw new BadRequestException('Registration end cannot be before the form availability date.');
+    }
+    const eventMinimum = registrationEndsAt ?? startsAt;
+    if (eventAt && eventAt < eventMinimum) {
+      throw new BadRequestException('Event date cannot be before the registration end date or form availability date.');
     }
 
     const now = new Date();
@@ -38,11 +47,15 @@ export class ApplicationWindowsService {
       create: {
         type,
         startsAt,
+        registrationEndsAt,
+        eventAt,
         closedAt: null,
         updatedById: admin.id,
       },
       update: {
         startsAt,
+        registrationEndsAt,
+        eventAt,
         closedAt: null,
         updatedById: admin.id,
       },
@@ -76,6 +89,9 @@ export class ApplicationWindowsService {
     if (window.startsAt > now) {
       throw new BadRequestException(`Applications will start from ${window.startsAt.toISOString()}.`);
     }
+    if (window.registrationEndsAt && window.registrationEndsAt <= now) {
+      throw new BadRequestException('The registration deadline has passed.');
+    }
     if (window.closedAt && window.closedAt <= now) {
       throw new BadRequestException('Applications are no longer being accepted.');
     }
@@ -86,7 +102,7 @@ export class ApplicationWindowsService {
     let status: 'SCHEDULED' | 'OPEN' | 'CLOSED';
     if (window.startsAt > now) {
       status = 'SCHEDULED';
-    } else if (window.closedAt && window.closedAt <= now) {
+    } else if ((window.registrationEndsAt && window.registrationEndsAt <= now) || (window.closedAt && window.closedAt <= now)) {
       status = 'CLOSED';
     } else {
       status = 'OPEN';
@@ -95,6 +111,8 @@ export class ApplicationWindowsService {
     return {
       type: window.type,
       startsAt: window.startsAt,
+      registrationEndsAt: window.registrationEndsAt,
+      eventAt: window.eventAt,
       closedAt: window.closedAt,
       status,
       canApply: status === 'OPEN',

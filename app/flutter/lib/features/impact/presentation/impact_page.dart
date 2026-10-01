@@ -168,7 +168,8 @@ class _Card extends StatelessWidget {
               Text(x.cause),
               const SizedBox(height: 14),
               Text(AppLocalizations.of(context)!.supportedIn(x.supportedYear)),
-              Text(AppLocalizations.of(context)!.contributionAmount(x.contributionAmount.toStringAsFixed(0))),
+              if (x.contributionAmount > 0)
+                Text(AppLocalizations.of(context)!.contributionAmount(x.contributionAmount.toStringAsFixed(0))),
               const SizedBox(height: 10),
               Align(
                 alignment: Alignment.centerRight,

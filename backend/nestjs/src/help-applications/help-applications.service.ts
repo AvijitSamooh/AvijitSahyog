@@ -19,8 +19,10 @@ export class HelpApplicationsService {
     await this.applicationWindows.ensureAccepting(dto.type);
     this.validateApplicantDetails(dto);
     this.validateSubmission(dto.type, dto.requestedAmount, dto.mediaIds);
+    this.validatePratibhaDetails(dto.type, dto);
     const acceptedRules = await this.validateAcceptedRules(dto.type, dto.acceptedRuleIds);
     const media = await this.validateMedia(dto.mediaIds, user.id);
+    const certificatePhotoMediaId = await this.validateCertificatePhoto(dto.type, dto.certificatePhotoMediaId, user.id);
     const item = await this.prisma.helpApplication.create({
       data: {
         applicantId: user.id,
@@ -34,10 +36,17 @@ export class HelpApplicationsService {
         type: dto.type,
         requestedAmount: dto.requestedAmount,
         clarification: dto.clarification?.trim() || null,
+        motherName: dto.motherName?.trim() || null,
+        fatherName: dto.fatherName?.trim() || null,
+        dateOfBirth: dto.dateOfBirth ? new Date(dto.dateOfBirth) : null,
+        classStandard: dto.classStandard?.trim() || null,
+        schoolInstituteName: dto.schoolInstituteName?.trim() || null,
+        accomplishments: dto.accomplishments?.trim() || null,
+        certificatePhotoMediaId,
         media: { create: media.map((mediaId) => ({ mediaId })) },
         ruleAcceptances: { create: acceptedRules.map((rule) => ({ ruleId: rule.id, ruleText: rule.text })) },
       },
-      include: { media: { include: { media: true } } },
+      include: { media: { include: { media: true } }, certificatePhotoMedia: true },
     });
     return this.toResponse(item);
   }
@@ -47,7 +56,7 @@ export class HelpApplicationsService {
     const items = await this.prisma.helpApplication.findMany({
       where: { applicantId: user.id },
       orderBy: { createdAt: 'desc' },
-      include: { media: { include: { media: true } }, votes: { select: { score: true } } },
+      include: { media: { include: { media: true } }, certificatePhotoMedia: true, votes: { select: { score: true } } },
     });
     return items.map((item) => this.toResponse(item));
   }
@@ -56,7 +65,7 @@ export class HelpApplicationsService {
     const user = await this.user(identity);
     const item = await this.prisma.helpApplication.findFirst({
       where: { id, applicantId: user.id },
-      include: { media: { include: { media: true } } },
+      include: { media: { include: { media: true } }, certificatePhotoMedia: true },
     });
     if (!item) throw new NotFoundException('Application not found.');
     return this.toResponse(item);
@@ -86,6 +95,7 @@ export class HelpApplicationsService {
     }
     this.validateSubmission(existing.type, dto.requestedAmount ?? Number(existing.requestedAmount ?? 0), dto.mediaIds);
     const media = await this.validateMedia(dto.mediaIds, user.id);
+    const certificatePhotoMediaId = await this.validateCertificatePhoto(existing.type, dto.certificatePhotoMediaId, user.id);
     const acceptedRules = await this.validateAcceptedRules(existing.type as HelpApplicationTypeDto, dto.acceptedRuleIds);
     return this.prisma.$transaction(async (tx) => {
       await tx.helpApplicationMedia.deleteMany({ where: { applicationId: id } });
@@ -98,12 +108,19 @@ export class HelpApplicationsService {
           approvedAmount: null,
           rejectionReason: null,
           clarification: dto.clarification.trim(),
+          motherName: dto.motherName?.trim() || existing.motherName,
+          fatherName: dto.fatherName?.trim() || existing.fatherName,
+          dateOfBirth: dto.dateOfBirth ? new Date(dto.dateOfBirth) : existing.dateOfBirth,
+          classStandard: dto.classStandard?.trim() || existing.classStandard,
+          schoolInstituteName: dto.schoolInstituteName?.trim() || existing.schoolInstituteName,
+          accomplishments: dto.accomplishments?.trim() || existing.accomplishments,
+          certificatePhotoMediaId: certificatePhotoMediaId ?? existing.certificatePhotoMediaId,
           adminNote: null,
           reviewedAt: null,
           media: { create: media.map((mediaId) => ({ mediaId })) },
           ruleAcceptances: { create: acceptedRules.map((rule) => ({ ruleId: rule.id, ruleText: rule.text })) },
         },
-        include: { media: { include: { media: true } } },
+        include: { media: { include: { media: true } }, certificatePhotoMedia: true },
       });
       return this.toResponse(updated);
     });
@@ -116,6 +133,7 @@ export class HelpApplicationsService {
       include: {
         applicant: { select: { id: true, displayName: true, email: true } },
         media: { include: { media: true } },
+        certificatePhotoMedia: true,
         votes: { include: { admin: { select: { id: true, displayName: true } } }, orderBy: { updatedAt: 'desc' } },
       },
     });
@@ -161,20 +179,113 @@ export class HelpApplicationsService {
       return this.updateStatus(id, 'CLARIFICATION_REQUIRED', null, dto.reason.trim(), dto.note);
     }
     if (existing.type !== 'PRATIBHA_SAMMAN') throw new BadRequestException('Samman decisions are only valid for Pratibha Samman applications.');
-    return this.updateStatus(id, dto.decision === HelpApplicationDecisionDto.CONSIDER_FOR_SAMMAN ? 'CONSIDERED_FOR_SAMMAN' : 'NOT_SELECTED', null, dto.reason?.trim() || null, dto.note);
+    return this.updateStatus(
+      id,
+      dto.decision === HelpApplicationDecisionDto.CONSIDER_FOR_SAMMAN ? 'CONSIDERED_FOR_SAMMAN' : 'NOT_SELECTED',
+      null,
+      dto.reason?.trim() || null,
+      dto.note,
+    );
   }
 
   private async updateStatus(id: string, status: any, approvedAmount: number | null, reason: string | null, note?: string) {
-    const item = await this.prisma.helpApplication.update({
-      where: { id },
-      data: { status, approvedAmount, rejectionReason: reason, adminNote: note?.trim() || null, reviewedAt: new Date() },
-      include: {
-        applicant: { select: { id: true, displayName: true, email: true } },
-        media: { include: { media: true } },
-        votes: { include: { admin: { select: { id: true, displayName: true } } } },
-      },
+    const item = await this.prisma.$transaction(async (tx) => {
+      const updated = await tx.helpApplication.update({
+        where: { id },
+        data: { status, approvedAmount, rejectionReason: reason, adminNote: note?.trim() || null, reviewedAt: new Date() },
+        include: {
+          applicant: { select: { id: true, displayName: true, email: true } },
+          media: { include: { media: true } },
+          certificatePhotoMedia: true,
+          votes: { include: { admin: { select: { id: true, displayName: true } } } },
+        },
+      });
+
+      if (status === 'CONSIDERED_FOR_SAMMAN' && updated.type === 'PRATIBHA_SAMMAN') {
+        await this.publishPratibhaBeneficiary(tx, updated);
+      }
+      return updated;
     });
     return this.toAdminResponse(item);
+  }
+
+  private async publishPratibhaBeneficiary(tx: any, application: any) {
+    const cause = await tx.cause.findUnique({
+      where: { slug: 'pratibha-samman' },
+      select: { id: true },
+    });
+    if (!cause) throw new BadRequestException('Pratibha Samman cause is not configured.');
+
+    const achievementLines = [
+      'Pratibha Samman — 2025-26 batch',
+      application.classStandard ? `Class/Standard: ${application.classStandard}` : null,
+      application.schoolInstituteName ? `School/Institute: ${application.schoolInstituteName}` : null,
+      application.accomplishments ? `Achievements: ${application.accomplishments}` : null,
+      application.adminNote ? `Recognition note: ${application.adminNote}` : null,
+    ].filter(Boolean);
+
+    const beneficiary = await tx.beneficiary.upsert({
+      where: { sourceApplicationId: application.id },
+      create: {
+        sourceApplicationId: application.id,
+        name: application.applicantName,
+        story: achievementLines.join('\\n'),
+        supportedYear: 2026,
+        contributionAmount: 0,
+        causeId: cause.id,
+        displayOrder: 0,
+      },
+      update: {
+        name: application.applicantName,
+        story: achievementLines.join('\\n'),
+        supportedYear: 2026,
+        causeId: cause.id,
+      },
+    });
+
+    const certificatePhotoId = application.certificatePhotoMediaId;
+    if (certificatePhotoId) {
+      const existingProfile = await tx.beneficiaryMedia.findFirst({
+        where: { beneficiaryId: beneficiary.id, purpose: 'PROFILE' },
+        select: { id: true },
+      });
+      if (!existingProfile) {
+        await tx.beneficiaryMedia.create({
+          data: {
+            beneficiaryId: beneficiary.id,
+            mediaId: certificatePhotoId,
+            purpose: 'PROFILE',
+            isPrimary: true,
+            displayOrder: 0,
+          },
+        });
+      }
+    }
+
+    const supportingMedia = (application.media ?? [])
+      .map((item: any) => item.mediaId)
+      .filter((mediaId: string) => mediaId && mediaId !== certificatePhotoId);
+    if (supportingMedia.length) {
+      const existingGallery = await tx.beneficiaryMedia.findMany({
+        where: { beneficiaryId: beneficiary.id, mediaId: { in: supportingMedia } },
+        select: { mediaId: true },
+      });
+      const existingIds = new Set(existingGallery.map((item: any) => item.mediaId));
+      for (const mediaId of supportingMedia) {
+        if (!existingIds.has(mediaId)) {
+          await tx.beneficiaryMedia.create({
+            data: {
+              beneficiaryId: beneficiary.id,
+              mediaId,
+              purpose: 'GALLERY',
+              displayOrder: 0,
+              isPrimary: false,
+            },
+          });
+        }
+      }
+    }
+    return beneficiary;
   }
 
   private validateApplicantDetails(dto: CreateHelpApplicationDto) {
@@ -195,6 +306,34 @@ export class HelpApplicationsService {
     if (!mediaIds?.length || mediaIds.length > 10) throw new BadRequestException('Upload between 1 and 10 supporting images.');
     if (type === HelpApplicationTypeDto.PRATIBHA_SAMMAN) return;
     if (!amount || amount <= 0) throw new BadRequestException('Requested amount must be greater than zero.');
+  }
+
+  private validatePratibhaDetails(type: string, dto: any) {
+    if (type !== HelpApplicationTypeDto.PRATIBHA_SAMMAN) return;
+    const required = [
+      ['motherName', dto.motherName],
+      ['fatherName', dto.fatherName],
+      ['dateOfBirth', dto.dateOfBirth],
+      ['classStandard', dto.classStandard],
+      ['schoolInstituteName', dto.schoolInstituteName],
+      ['certificatePhotoMediaId', dto.certificatePhotoMediaId],
+    ];
+    const missing = required.filter(([, value]) => value == null || String(value).trim() === '').map(([name]) => name);
+    if (missing.length) throw new BadRequestException('Pratibha Samman requires mother name, father name, date of birth, class/standard, school/institute and a clear certificate photo.');
+    if (dto.dateOfBirth && Number.isNaN(new Date(dto.dateOfBirth).getTime())) {
+      throw new BadRequestException('Date of birth is invalid.');
+    }
+  }
+
+  private async validateCertificatePhoto(type: string, mediaId: string | undefined, uploadedById: string) {
+    if (type !== HelpApplicationTypeDto.PRATIBHA_SAMMAN) return null;
+    if (!mediaId) throw new BadRequestException('A clear certificate photo is required for Pratibha Samman.');
+    const media = await this.prisma.media.findFirst({
+      where: { id: mediaId, uploadedById },
+      select: { id: true },
+    });
+    if (!media) throw new BadRequestException('The certificate photo is unavailable.');
+    return media.id;
   }
 
   private async validateMedia(ids: string[], uploadedById: string) {
@@ -243,7 +382,7 @@ export class HelpApplicationsService {
   }
 
   private toResponse(item: any) {
-    return { id: item.id, type: item.type, status: item.status, applicantName: item.applicantName, mobileNumber: item.mobileNumber, email: item.email, address: item.address, city: item.city, state: item.state, pincode: item.pincode, requestedAmount: item.requestedAmount, approvedAmount: item.approvedAmount, rejectionReason: item.rejectionReason, clarification: item.clarification, adminNote: item.adminNote, submittedAt: item.submittedAt, reviewedAt: item.reviewedAt, media: (item.media ?? []).map((m: any) => this.mediaResponse(m)) };
+    return { id: item.id, type: item.type, status: item.status, applicantName: item.applicantName, mobileNumber: item.mobileNumber, email: item.email, address: item.address, city: item.city, state: item.state, pincode: item.pincode, requestedAmount: item.requestedAmount, approvedAmount: item.approvedAmount, rejectionReason: item.rejectionReason, clarification: item.clarification, motherName: item.motherName, fatherName: item.fatherName, dateOfBirth: item.dateOfBirth, classStandard: item.classStandard, schoolInstituteName: item.schoolInstituteName, accomplishments: item.accomplishments, certificatePhotoMediaId: item.certificatePhotoMediaId, certificatePhoto: item.certificatePhotoMedia ? this.mediaResponse({ media: item.certificatePhotoMedia }) : null, adminNote: item.adminNote, submittedAt: item.submittedAt, reviewedAt: item.reviewedAt, media: (item.media ?? []).map((m: any) => this.mediaResponse(m)) };
   }
 
   private toAdminResponse(item: any) {

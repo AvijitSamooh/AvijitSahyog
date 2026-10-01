@@ -37,6 +37,14 @@ class HelpApplication {
     this.approvedAmount,
     this.rejectionReason,
     this.clarification,
+    this.motherName,
+    this.fatherName,
+    this.dateOfBirth,
+    this.classStandard,
+    this.schoolInstituteName,
+    this.accomplishments,
+    this.certificatePhotoMediaId,
+    this.certificatePhoto,
     this.adminNote,
     this.submittedAt,
     this.reviewedAt,
@@ -57,6 +65,14 @@ class HelpApplication {
   final num? approvedAmount;
   final String? rejectionReason;
   final String? clarification;
+  final String? motherName;
+  final String? fatherName;
+  final DateTime? dateOfBirth;
+  final String? classStandard;
+  final String? schoolInstituteName;
+  final String? accomplishments;
+  final String? certificatePhotoMediaId;
+  final HelpApplicationMedia? certificatePhoto;
   final String? adminNote;
   final DateTime? submittedAt;
   final DateTime? reviewedAt;
@@ -78,6 +94,16 @@ class HelpApplication {
         approvedAmount: _parseAmount(json['approvedAmount']),
         rejectionReason: json['rejectionReason'] as String?,
         clarification: json['clarification'] as String?,
+        motherName: json['motherName'] as String?,
+        fatherName: json['fatherName'] as String?,
+        dateOfBirth: DateTime.tryParse(json['dateOfBirth']?.toString() ?? ''),
+        classStandard: json['classStandard'] as String?,
+        schoolInstituteName: json['schoolInstituteName'] as String?,
+        accomplishments: json['accomplishments'] as String?,
+        certificatePhotoMediaId: json['certificatePhotoMediaId'] as String?,
+        certificatePhoto: json['certificatePhoto'] == null
+            ? null
+            : HelpApplicationMedia.fromJson(json['certificatePhoto'] as Map<String, dynamic>),
         adminNote: json['adminNote'] as String?,
         submittedAt: DateTime.tryParse(json['submittedAt']?.toString() ?? ''),
         reviewedAt: DateTime.tryParse(json['reviewedAt']?.toString() ?? ''),
