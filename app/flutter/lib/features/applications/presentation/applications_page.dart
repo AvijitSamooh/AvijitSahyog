@@ -926,13 +926,14 @@ class _ApplicationActionCard extends ConsumerWidget {
       ApplicationWindowStatus.open => l10n.applicationAcceptingNow,
       ApplicationWindowStatus.closed => l10n.applicationAcceptingClosed,
     };
-    final subtitle = type == 'PRATIBHA_SAMMAN' && window != null
+    final activeWindow = window;
+    final subtitle = type == 'PRATIBHA_SAMMAN' && activeWindow != null
         ? [
             baseStatus,
-            if (window.registrationEndsAt != null)
-              '\${l10n.registrationLastDate}: \${_windowDateTime(context, window.registrationEndsAt!)}',
-            if (window.eventAt != null)
-              '\${l10n.eventDate}: \${_windowDateTime(context, window.eventAt!)}',
+            if (activeWindow.registrationEndsAt != null)
+              '\${l10n.registrationLastDate}: \${_windowDateTime(context, activeWindow.registrationEndsAt!)}',
+            if (activeWindow.eventAt != null)
+              '\${l10n.eventDate}: \${_windowDateTime(context, activeWindow.eventAt!)}',
           ].join('\n')
         : baseStatus;
 
