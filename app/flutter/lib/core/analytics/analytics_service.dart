@@ -147,9 +147,9 @@ class AnalyticsService {
         'screenName': screenName,
         'language': language,
         'deviceType': deviceType,
-        if (city.isNotEmpty) 'city': city,
-        if (interactionType case final value?) 'interactionType': value,
-        if (target case final value?) 'target': value,
+        'city': city,
+        ...?interactionType == null ? null : {'interactionType': interactionType},
+        ...?target == null ? null : {'target': target},
       });
 
       if (_queue.length >= _batchSize) {
