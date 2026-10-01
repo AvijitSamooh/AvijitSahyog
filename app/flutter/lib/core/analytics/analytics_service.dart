@@ -202,7 +202,7 @@ class AnalyticsService {
       }
     } finally {
       _flushInProgress = false;
-      if (_queue.isNotEmpty && !BackendServiceAvailability.isDowntime) {
+      if (_scheduleFlushTimer && _queue.isNotEmpty && !BackendServiceAvailability.isDowntime) {
         _flushTimer ??= Timer(_flushInterval, () {
           _flushTimer = null;
           unawaited(flush());
