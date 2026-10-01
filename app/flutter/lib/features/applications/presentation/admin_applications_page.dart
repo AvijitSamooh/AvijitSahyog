@@ -546,6 +546,23 @@ class _ApplicationWindowAdminPanel extends StatelessWidget {
                           Text(typeLabel(type), style: Theme.of(context).textTheme.titleMedium),
                           const SizedBox(height: 3),
                           Text(statusText),
+                          if (window != null && type == 'PRATIBHA_SAMMAN') ...[
+                            const SizedBox(height: 6),
+                            Text('\${l10n.formAvailableDate}: \${formatDateTime(window!.startsAt)}'),
+                            if (window.registrationEndsAt != null)
+                              Text('\${l10n.registrationLastDate}: \${formatDateTime(window.registrationEndsAt!)}'),
+                            if (window.eventAt != null)
+                              Text('\${l10n.eventDate}: \${formatDateTime(window.eventAt!)}'),
+                            const SizedBox(height: 4),
+                            Text(
+                              l10n.organisationManagedBy,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            Text(
+                              l10n.organisationRegistrationNumber,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
                           const SizedBox(height: 6),
                           Wrap(
                             spacing: 8,
