@@ -79,11 +79,11 @@ void main() {
 
     final localizations = AppLocalizations.of(tester.element(find.byType(SizedBox)))!;
     expect(
-      localizations.serviceUnavailableMessage(start: '9:00 PM', end: '8:00 AM'),
+      localizations.serviceUnavailableMessage('8:00 AM', '9:00 PM'),
       'The service is offline from 9:00 PM to 8:00 AM. You can still view available content, but actions that need the backend are temporarily unavailable.',
     );
     expect(
-      localizations.serviceUnavailableBanner(start: '9:00 PM', end: '8:00 AM'),
+      localizations.serviceUnavailableBanner('8:00 AM', '9:00 PM'),
       'Backend service is offline from 9:00 PM to 8:00 AM.',
     );
   });
