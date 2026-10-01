@@ -30,7 +30,7 @@ Flutter's official guidance distinguishes unit/widget tests from integration tes
 | Admin content management | ✓ | ✓ | — | — | ✓ |
 | Media upload/attachment/partial failure | ✓ | ✓ | — | — | ✓ |
 | Application acceptance window | ✓ | ✓ | ✓ | — | ✓ |
-| Configurable application rules | ✓ | ✓ | ✓ | — | ✓ |
+| Configurable application rules | ✓ | ✓* | ✓ | — | ✓ |
 | Assistance submit/history/delete | ✓ | ✓ | ✓ | — | ✓ |
 | Rejected/clarification resubmission | ✓ | ✓ | ✓ | — | ✓ |
 | Pratibha Samman voting/decisions | ✓ | ✓ | ✓ | — | ✓ |
@@ -53,6 +53,38 @@ For application and admin workflows, tests should cover:
 8. Localized user-visible outcome.
 
 The service tests already cover business-rule variants. The HTTP integration suite verifies those workflows are reachable through actual route and guard boundaries. Flutter integration tests verify the corresponding user-facing availability and rules states.
+
+### Application rules — rendered UI regression matrix
+
+The configurable-rules row is considered covered by widget/UI tests only when the test verifies the **user-visible rendered output**, not merely provider/service data.
+
+| Regression scenario | Required boundary | Assertion |
+|---|---|---|
+| Rule number renders | Widget/UI | Visible ordinal such as `1.` |
+| Rule text renders | Widget/UI | Exact localized rule text is visible |
+| English rule rendering | Widget/UI | English translation appears |
+| Hindi rule rendering | Widget/UI | Hindi translation appears |
+| Marathi rule rendering | Widget/UI | Marathi translation appears |
+| Gujarati rule rendering | Widget/UI | Gujarati translation appears |
+| Language/provider wiring | Widget/UI | Selected locale requests and displays the matching translation |
+| Important dates | Widget/UI | Available/registration/event dates display actual values, not implementation placeholders |
+| Literal interpolation regression | Widget/UI | No literal `${...}` implementation expression is visible |
+| Long/multiline rule | Widget/UI | Full rule remains readable without clipping |
+| Loading/empty/error | Widget/UI | Explicit state and retry/empty behaviour are asserted where applicable |
+| Admin translation → user rendering | Widget + HTTP | Saved translation is returned and rendered for the selected language |
+
+`*` For configurable rules, a passing provider/service test alone is insufficient. The UI test must exercise the actual screen and assert rendered content.
+
+### Release regression gate
+
+For a user-visible dynamic feature, coverage must validate the path:
+
+**persisted/API data → repository/provider → widget → rendered user-visible result**
+
+A test that only verifies an intermediate model/provider response does not count as UI regression coverage.
+
+For multilingual features, at least one representative rendered assertion is required for each supported language when the feature's content itself is localized (English, Hindi, Marathi and Gujarati). Tests must also assert that implementation placeholders such as escaped interpolation are not displayed to users.
+
 
 ## Coverage policy
 
