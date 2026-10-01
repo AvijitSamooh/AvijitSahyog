@@ -693,6 +693,49 @@ void main() {
     expect(find.text('Profile'), findsOneWidget);
   });
 
+  testWidgets('bottom navigation keeps five labels on one line and evenly aligned', (tester) async {
+    tester.view.physicalSize = const Size(360, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
+        theme: AppTheme.light(),
+        home: Scaffold(
+          bottomNavigationBar: AppNavigationBar(
+            selectedIndex: 0,
+            onDestinationSelected: (_) {},
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final labels = [
+      find.text('Home'),
+      find.text('Applications'),
+      find.text('Impact'),
+      find.text('Information'),
+      find.text('Profile'),
+    ];
+    final expectedCenters = [36.0, 108.0, 180.0, 252.0, 324.0];
+
+    for (var i = 0; i < labels.length; i++) {
+      expect(labels[i], findsOneWidget);
+      expect(tester.getSize(labels[i]).height, lessThanOrEqualTo(24));
+      expect(
+        tester.getCenter(labels[i]).dx,
+        closeTo(expectedCenters[i], 8),
+      );
+    }
+  });
+
   testWidgets('Applications tab has one shell header and one navigation bar', (tester) async {
     await pumpApp(
       tester,
