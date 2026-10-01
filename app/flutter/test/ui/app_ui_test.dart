@@ -274,7 +274,7 @@ void main() {
         ApplicationRule.fromJson({
           'id': 'rule-${entry.key}-2',
           'type': 'PRATIBHA_SAMMAN',
-          'text': 'This is a deliberately long rule with multiple clauses that must remain readable when rendered in the application form.\\nThe second line is part of the same rule.',
+          'text': 'This is a deliberately long rule with multiple clauses that must remain readable when rendered in the application form.\nThe second line is part of the same rule.',
           'displayOrder': 2,
         }),
       ];
