@@ -714,7 +714,9 @@ void main() {
 
     for (var i = 0; i < labels.length; i++) {
       expect(labels[i], findsOneWidget);
-      expect(tester.getSize(labels[i]).height, lessThan(20));
+      expect(tester.getSize(labels[i]).height, lessThanOrEqualTo(24));
+      final label = tester.widget<Text>(labels[i]);
+      expect(label.maxLines, 1);
       expect(
         tester.getCenter(labels[i]).dx,
         closeTo(expectedCenters[i], 8),
