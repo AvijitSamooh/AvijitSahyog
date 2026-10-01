@@ -492,6 +492,7 @@ String _windowDateTime(BuildContext context, DateTime value) {
 
 class _ApplicationWindowAdminPanel extends StatelessWidget {
   const _ApplicationWindowAdminPanel({
+    super.key,
     required this.windows,
     required this.typeLabel,
     required this.formatDateTime,
