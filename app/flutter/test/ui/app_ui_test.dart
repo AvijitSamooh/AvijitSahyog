@@ -117,8 +117,11 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  Finder get anyScaffold => find.byWidgetPredicate((widget) => widget is Scaffold);
+  Finder get anyAppBar => find.byWidgetPredicate((widget) => widget is AppBar);
+
   AppLocalizations l10n(WidgetTester tester) =>
-      AppLocalizations.of(tester.element(find.byType(Scaffold).first))!;
+      AppLocalizations.of(tester.element(anyScaffold.first))!;
 
   Future<void> pumpDonationPage(
     WidgetTester tester, {
@@ -498,7 +501,7 @@ void main() {
   testWidgets('reference home shell keeps a single app bar and five-tab navigation', (tester) async {
     await pumpApp(tester, home: const HomePage());
 
-    expect(find.byType(AppBar), findsOneWidget);
+    expect(anyAppBar, findsOneWidget);
     expect(find.byType(AppNavigationBar), findsOneWidget);
     expect(find.text('Home'), findsOneWidget);
     expect(find.text('Applications'), findsOneWidget);
@@ -530,7 +533,7 @@ void main() {
     expect(
       find.descendant(
         of: find.byType(ApplicationsPage),
-        matching: find.byType(AppBar),
+        matching: anyAppBar,
       ),
       findsNothing,
       reason: 'HomePage must own the shell for tab content.',
@@ -558,7 +561,7 @@ void main() {
     expect(
       find.descendant(
         of: find.byType(ProfilePage),
-        matching: find.byType(AppBar),
+        matching: anyAppBar,
       ),
       findsNothing,
       reason: 'HomePage must own the shell for tab content.',
@@ -606,7 +609,7 @@ void main() {
     expect(find.byType(AppBar), findsOneWidget);
     expect(find.byType(AppNavigationBar), findsOneWidget);
     expect(
-      tester.widget<Scaffold>(find.byType(Scaffold).first).backgroundColor,
+      tester.widget<Scaffold>(anyScaffold.first).backgroundColor,
       AppTheme.background,
     );
   });
@@ -677,7 +680,7 @@ void main() {
     expect(find.byType(AppNavigationBar), findsOneWidget);
     expect(find.text('Education'), findsOneWidget);
     expect(
-      tester.widget<Scaffold>(find.byType(Scaffold).last).backgroundColor,
+      tester.widget<Scaffold>(anyScaffold.last).backgroundColor,
       AppTheme.background,
     );
   });
@@ -721,14 +724,14 @@ void main() {
     expect(
       find.descendant(
         of: find.byType(HomePage),
-        matching: find.byType(AppBar),
+        matching: anyAppBar,
       ),
       findsOneWidget,
     );
     expect(
       find.descendant(
         of: find.byType(ImpactPage),
-        matching: find.byType(AppBar),
+        matching: anyAppBar,
       ),
       findsNothing,
       reason: 'ImpactPage must remain body-only; HomePage owns the single app bar.',
