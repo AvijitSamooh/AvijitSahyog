@@ -265,6 +265,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
   final List<XFile> _selectedImages = [];
   String? _certificatePhotoMediaId;
   XFile? _certificatePhoto;
+  DateTime? _dob;
   bool _busy = false;
   int _uploadTotal = 0;
   int _uploadCompleted = 0;
@@ -289,6 +290,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     _schoolInstituteName.text = existing?.schoolInstituteName ?? '';
     _accomplishments.text = existing?.accomplishments ?? '';
     _certificatePhotoMediaId = existing?.certificatePhotoMediaId;
+    _dob = existing?.dateOfBirth;
   }
 
   @override
@@ -546,7 +548,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
               key: const ValueKey('application_mobile'),
               controller: _mobile,
               keyboardType: TextInputType.phone,
-              decoration: InputDecoration(labelText: l10n.mobileNumberRequired, prefixIcon: const Icon(Icons.phone_outlined)),
+              decoration: InputDecoration(labelText: isSamman ? l10n.mobileWhatsappRequired : l10n.mobileNumberRequired, prefixIcon: const Icon(Icons.phone_outlined)),
               validator: _mobileValidator,
             ),
             TextFormField(
@@ -583,6 +585,99 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
             ),
             TextFormField(
               key: const ValueKey('application_pincode'),
+              controller: _pincode,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: l10n.pincodeRequired, prefixIcon: const Icon(Icons.location_on_outlined)),
+              validator: _pincodeValidator,
+            ),
+            if (isSamman) ...[
+              const SizedBox(height: 20),
+              Text(l10n.pratibhaStudentDetails, style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 10),
+              TextFormField(
+                key: const ValueKey('pratibha_mother_name'),
+                controller: _motherName,
+                textCapitalization: TextCapitalization.words,
+                decoration: InputDecoration(labelText: l10n.motherNameRequired, prefixIcon: const Icon(Icons.family_restroom)),
+                validator: (v) => _required(v, l10n.motherNameRequired),
+              ),
+              TextFormField(
+                key: const ValueKey('pratibha_father_name'),
+                controller: _fatherName,
+                textCapitalization: TextCapitalization.words,
+                decoration: InputDecoration(labelText: l10n.fatherNameRequired, prefixIcon: const Icon(Icons.family_restroom)),
+                validator: (v) => _required(v, l10n.fatherNameRequired),
+              ),
+              FormField<DateTime>(
+                key: const ValueKey('pratibha_date_of_birth'),
+                validator: (_) => _dob == null ? l10n.dateOfBirthRequired : null,
+                builder: (field) => InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: l10n.dateOfBirthRequired,
+                    prefixIcon: const Icon(Icons.cake_outlined),
+                    errorText: field.errorText,
+                  ),
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(_dob == null ? l10n.selectDateOfBirth : _windowDateTime(context, _dob!)),
+                    trailing: const Icon(Icons.calendar_month_outlined),
+                    onTap: _busy ? null : () async {
+                      final now = DateTime.now();
+                      final selected = await showDatePicker(
+                        context: context,
+                        initialDate: _dob ?? DateTime(now.year - 10, now.month, now.day),
+                        firstDate: DateTime(1980),
+                        lastDate: now,
+                        helpText: l10n.dateOfBirthRequired,
+                      );
+                      if (selected != null) {
+                        setState(() => _dob = selected);
+                        field.didChange(selected);
+                      }
+                    },
+                  ),
+                ),
+              ),
+              TextFormField(
+                key: const ValueKey('pratibha_class_standard'),
+                controller: _classStandard,
+                decoration: InputDecoration(labelText: l10n.classStandardRequired, prefixIcon: const Icon(Icons.school_outlined)),
+                validator: (v) => _required(v, l10n.classStandardRequired),
+              ),
+              TextFormField(
+                key: const ValueKey('pratibha_school_institute'),
+                controller: _schoolInstituteName,
+                decoration: InputDecoration(labelText: l10n.schoolInstituteRequired, prefixIcon: const Icon(Icons.account_balance_outlined)),
+                validator: (v) => _required(v, l10n.schoolInstituteRequired),
+              ),
+              const SizedBox(height: 8),
+              Text(l10n.certificatePhotoTitle, style: Theme.of(context).textTheme.titleSmall),
+              const SizedBox(height: 4),
+              Text(l10n.certificatePhotoHint, style: Theme.of(context).textTheme.bodySmall),
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                key: const ValueKey('pratibha_certificate_photo'),
+                onPressed: _busy ? null : _pickCertificatePhoto,
+                icon: const Icon(Icons.badge_outlined),
+                label: Text(_certificatePhotoMediaId == null ? l10n.selectCertificatePhoto : l10n.certificatePhotoSelected),
+              ),
+              if (_certificatePhoto != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.file(File(_certificatePhoto!.path), height: 160, width: double.infinity, fit: BoxFit.cover),
+                  ),
+                ),
+              TextFormField(
+                key: const ValueKey('pratibha_accomplishments'),
+                controller: _accomplishments,
+                minLines: 3,
+                maxLines: 6,
+                decoration: InputDecoration(labelText: l10n.otherAccomplishmentsOptional, alignLabelWithHint: true, prefixIcon: const Icon(Icons.emoji_events_outlined)),
+              ),
+            ],
+
               controller: _pincode,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(labelText: l10n.pincodeRequired, prefixIcon: const Icon(Icons.location_on_outlined)),
