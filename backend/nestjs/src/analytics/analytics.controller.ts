@@ -1,7 +1,8 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AnalyticsService } from './analytics.service';
 import { ANALYTICS_EVENT_NAMES, AnalyticsEventName } from './analytics.constants';
-import { MAX_ANALYTICS_BATCH_SIZE, TrackAnalyticsEventInput } from './analytics.service';
+import { MAX_ANALYTICS_BATCH_SIZE } from './analytics.service';
+import type { TrackAnalyticsEventInput } from './analytics.service';
 
 @Controller('analytics')
 export class AnalyticsController {
