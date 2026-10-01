@@ -527,7 +527,7 @@ void main() {
     navigation.select(1);
     await tester.pumpAndSettle();
 
-    expect(find.byType(AppBar), findsOneWidget);
+    expect(anyAppBar, findsOneWidget);
     expect(find.byType(AppNavigationBar), findsOneWidget);
     expect(find.byType(ApplicationsPage), findsOneWidget);
     expect(
@@ -555,7 +555,7 @@ void main() {
     navigation.select(4);
     await tester.pumpAndSettle();
 
-    expect(find.byType(AppBar), findsOneWidget);
+    expect(anyAppBar, findsOneWidget);
     expect(find.byType(AppNavigationBar), findsOneWidget);
     expect(find.byType(ProfilePage), findsOneWidget);
     expect(
@@ -588,7 +588,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(l10n(tester).applicationLoadError), findsOneWidget);
-    expect(find.byType(AppBar), findsOneWidget);
+    expect(anyAppBar, findsOneWidget);
     expect(find.byType(AppNavigationBar), findsOneWidget);
     expect(find.text('Unable to load'), findsNothing);
   });
@@ -606,7 +606,7 @@ void main() {
 
     expect(find.text(l10n(tester).causesLoadError), findsOneWidget);
     expect(find.text(l10n(tester).retry), findsOneWidget);
-    expect(find.byType(AppBar), findsOneWidget);
+    expect(anyAppBar, findsOneWidget);
     expect(find.byType(AppNavigationBar), findsOneWidget);
     expect(
       tester.widget<Scaffold>(anyScaffold.first).backgroundColor,
@@ -636,7 +636,7 @@ void main() {
 
     expect(find.text('Education'), findsOneWidget);
     expect(find.text(l10n(tester).causesLoadError), findsNothing);
-    expect(find.byType(AppBar), findsOneWidget);
+    expect(anyAppBar, findsOneWidget);
     expect(find.byType(AppNavigationBar), findsOneWidget);
   });
 
@@ -659,7 +659,7 @@ void main() {
 
     expect(find.text(l10n(tester).impactLoadError), findsOneWidget);
     expect(find.text(l10n(tester).tryAgain), findsOneWidget);
-    expect(find.byType(AppBar), findsOneWidget);
+    expect(anyAppBar, findsOneWidget);
     expect(find.byType(AppNavigationBar), findsOneWidget);
   });
 
@@ -676,7 +676,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(CausesPage), findsOneWidget);
-    expect(find.byType(AppBar), findsOneWidget);
+    expect(anyAppBar, findsOneWidget);
     expect(find.byType(AppNavigationBar), findsOneWidget);
     expect(find.text('Education'), findsOneWidget);
     expect(
@@ -695,10 +695,10 @@ void main() {
     );
 
     expect(find.text('Education'), findsOneWidget);
-    expect(find.byType(AppBar), findsOneWidget);
+    expect(anyAppBar, findsOneWidget);
     expect(find.byType(AppNavigationBar), findsOneWidget);
     expect(
-      tester.widget<Scaffold>(find.byType(Scaffold).first).backgroundColor,
+      tester.widget<Scaffold>(anyScaffold.first).backgroundColor,
       AppTheme.background,
     );
   });
@@ -720,7 +720,7 @@ void main() {
     navigation.select(2);
     await tester.pumpAndSettle();
 
-    expect(find.byType(AppBar), findsOneWidget);
+    expect(anyAppBar, findsOneWidget);
     expect(
       find.descendant(
         of: find.byType(HomePage),
