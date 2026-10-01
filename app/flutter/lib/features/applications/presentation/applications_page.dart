@@ -542,7 +542,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(l10n.eventDate, style: Theme.of(context).textTheme.titleMedium),
+                      Text(l10n.importantDates, style: Theme.of(context).textTheme.titleMedium),
                       const SizedBox(height: 8),
                       Text('\${l10n.formAvailableDate}: \${_windowDateTime(context, window.startsAt)}'),
                       if (window.registrationEndsAt != null)
