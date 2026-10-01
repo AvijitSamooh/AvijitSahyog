@@ -93,13 +93,13 @@ class _HomePageState extends ConsumerState<HomePage> {
               onCooperation: () => _selectNavigation(2),
               onRecognition: () => _selectNavigation(1),
             ),
-            const ApplicationsPage(),
+            const ApplicationsPage(showAppBar: false),
             const ImpactPage(),
             SettingsPage(
               onLocaleChanged: AppShellScope.of(context).onLocaleChanged,
               showAppBar: false,
             ),
-            const ProfilePage(),
+            const ProfilePage(showAppBar: false),
           ],
         ),
         bottomNavigationBar: AppNavigationBar(
