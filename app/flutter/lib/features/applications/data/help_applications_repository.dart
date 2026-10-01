@@ -63,11 +63,15 @@ class HelpApplicationsRepository {
   Future<ApplicationWindow> startApplicationWindow({
     required String type,
     DateTime? startsAt,
+    DateTime? registrationEndsAt,
+    DateTime? eventAt,
   }) async {
     return ApplicationWindow.fromJson(
       await client.startApplicationWindow(
         type,
         startsAt: startsAt,
+        registrationEndsAt: registrationEndsAt,
+        eventAt: eventAt,
       ),
     );
   }
