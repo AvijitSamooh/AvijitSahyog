@@ -336,7 +336,6 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
     );
   }
 }
-}
 
 class _ApplicationRulesAdminPanel extends ConsumerStatefulWidget {
   const _ApplicationRulesAdminPanel();
