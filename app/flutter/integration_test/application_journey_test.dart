@@ -31,6 +31,17 @@ class _NoopAuthRepository implements AuthRepository {
   Future<void> signOut() async {}
 }
 
+class _AnonymousAuthRepository implements AuthRepository {
+  @override
+  Future<AppUser> signInWithGoogle() => throw UnimplementedError();
+
+  @override
+  Future<AppUser?> restoreSession() async => null;
+
+  @override
+  Future<void> signOut() async {}
+}
+
 class _AuthenticatedController extends AuthController {
   _AuthenticatedController() : super(_NoopAuthRepository()) {
     state = const AuthState.authenticated(
@@ -90,7 +101,7 @@ void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
   testWidgets('unauthenticated users are directed to sign in before applying', (tester) async {
-    final auth = AuthController(_NoopAuthRepository());
+    final auth = AuthController(_AnonymousAuthRepository());
 
     await tester.pumpWidget(
       ProviderScope(
@@ -140,7 +151,7 @@ void main() {
       ],
     );
 
-    expect(find.textContaining('Applications start'), findsOneWidget);
+    expect(find.textContaining('Applications will start from'), findsOneWidget);
     expect(find.text('Applications are no longer being accepted.'), findsOneWidget);
 
     await tester.tap(find.byKey(const ValueKey('application_pratibha')));
