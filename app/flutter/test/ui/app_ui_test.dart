@@ -211,6 +211,13 @@ void main() {
       'displayOrder': 1,
     });
 
+    tester.view.physicalSize = const Size(1080, 5000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
     await pumpApp(
       tester,
       home: const HelpApplicationFormPage(type: 'PRATIBHA_SAMMAN'),
@@ -222,11 +229,7 @@ void main() {
       ],
     );
 
-    final formList = find.byType(ListView).last;
-    for (var i = 0; i < 16; i++) {
-      await tester.drag(formList, const Offset(0, -500));
-      await tester.pump();
-    }
+    await tester.pumpAndSettle();
     for (final key in const [
       'pratibha_mother_name',
       'pratibha_father_name',
