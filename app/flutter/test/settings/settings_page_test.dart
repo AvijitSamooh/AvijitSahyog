@@ -26,7 +26,7 @@ void main() {
     expect(find.text('Marathi'), findsOneWidget);
     expect(find.text('Gujarati'), findsOneWidget);
     expect(find.byIcon(Icons.check_circle_rounded), findsOneWidget);
-    expect(find.byType(Card), findsOneWidget);
+    expect(find.byKey(const ValueKey('settings_language_selector')), findsOneWidget);
 
     await tester.tap(find.text('Hindi'));
     expect(selected, const Locale('hi'));
