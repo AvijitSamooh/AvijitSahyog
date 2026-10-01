@@ -179,21 +179,113 @@ export class HelpApplicationsService {
       return this.updateStatus(id, 'CLARIFICATION_REQUIRED', null, dto.reason.trim(), dto.note);
     }
     if (existing.type !== 'PRATIBHA_SAMMAN') throw new BadRequestException('Samman decisions are only valid for Pratibha Samman applications.');
-    return this.updateStatus(id, dto.decision === HelpApplicationDecisionDto.CONSIDER_FOR_SAMMAN ? 'CONSIDERED_FOR_SAMMAN' : 'NOT_SELECTED', null, dto.reason?.trim() || null, dto.note);
+    return this.updateStatus(
+      id,
+      dto.decision === HelpApplicationDecisionDto.CONSIDER_FOR_SAMMAN ? 'CONSIDERED_FOR_SAMMAN' : 'NOT_SELECTED',
+      null,
+      dto.reason?.trim() || null,
+      dto.note,
+    );
   }
 
   private async updateStatus(id: string, status: any, approvedAmount: number | null, reason: string | null, note?: string) {
-    const item = await this.prisma.helpApplication.update({
-      where: { id },
-      data: { status, approvedAmount, rejectionReason: reason, adminNote: note?.trim() || null, reviewedAt: new Date() },
-      include: {
-        applicant: { select: { id: true, displayName: true, email: true } },
-        media: { include: { media: true } },
-        certificatePhotoMedia: true,
-        votes: { include: { admin: { select: { id: true, displayName: true } } } },
-      },
+    const item = await this.prisma.$transaction(async (tx) => {
+      const updated = await tx.helpApplication.update({
+        where: { id },
+        data: { status, approvedAmount, rejectionReason: reason, adminNote: note?.trim() || null, reviewedAt: new Date() },
+        include: {
+          applicant: { select: { id: true, displayName: true, email: true } },
+          media: { include: { media: true } },
+          certificatePhotoMedia: true,
+          votes: { include: { admin: { select: { id: true, displayName: true } } } },
+        },
+      });
+
+      if (status === 'CONSIDERED_FOR_SAMMAN' && updated.type === 'PRATIBHA_SAMMAN') {
+        await this.publishPratibhaBeneficiary(tx, updated);
+      }
+      return updated;
     });
     return this.toAdminResponse(item);
+  }
+
+  private async publishPratibhaBeneficiary(tx: any, application: any) {
+    const cause = await tx.cause.findUnique({
+      where: { slug: 'pratibha-samman' },
+      select: { id: true },
+    });
+    if (!cause) throw new BadRequestException('Pratibha Samman cause is not configured.');
+
+    const achievementLines = [
+      'Pratibha Samman — 2025-26 batch',
+      application.classStandard ? `Class/Standard: ${application.classStandard}` : null,
+      application.schoolInstituteName ? `School/Institute: ${application.schoolInstituteName}` : null,
+      application.accomplishments ? `Achievements: ${application.accomplishments}` : null,
+      application.adminNote ? `Recognition note: ${application.adminNote}` : null,
+    ].filter(Boolean);
+
+    const beneficiary = await tx.beneficiary.upsert({
+      where: { sourceApplicationId: application.id },
+      create: {
+        sourceApplicationId: application.id,
+        name: application.applicantName,
+        story: achievementLines.join('\\n'),
+        supportedYear: 2026,
+        contributionAmount: 0,
+        causeId: cause.id,
+        displayOrder: 0,
+      },
+      update: {
+        name: application.applicantName,
+        story: achievementLines.join('\\n'),
+        supportedYear: 2026,
+        causeId: cause.id,
+      },
+    });
+
+    const certificatePhotoId = application.certificatePhotoMediaId;
+    if (certificatePhotoId) {
+      const existingProfile = await tx.beneficiaryMedia.findFirst({
+        where: { beneficiaryId: beneficiary.id, purpose: 'PROFILE' },
+        select: { id: true },
+      });
+      if (!existingProfile) {
+        await tx.beneficiaryMedia.create({
+          data: {
+            beneficiaryId: beneficiary.id,
+            mediaId: certificatePhotoId,
+            purpose: 'PROFILE',
+            isPrimary: true,
+            displayOrder: 0,
+          },
+        });
+      }
+    }
+
+    const supportingMedia = (application.media ?? [])
+      .map((item: any) => item.mediaId)
+      .filter((mediaId: string) => mediaId && mediaId !== certificatePhotoId);
+    if (supportingMedia.length) {
+      const existingGallery = await tx.beneficiaryMedia.findMany({
+        where: { beneficiaryId: beneficiary.id, mediaId: { in: supportingMedia } },
+        select: { mediaId: true },
+      });
+      const existingIds = new Set(existingGallery.map((item: any) => item.mediaId));
+      for (const mediaId of supportingMedia) {
+        if (!existingIds.has(mediaId)) {
+          await tx.beneficiaryMedia.create({
+            data: {
+              beneficiaryId: beneficiary.id,
+              mediaId,
+              purpose: 'GALLERY',
+              displayOrder: 0,
+              isPrimary: false,
+            },
+          });
+        }
+      }
+    }
+    return beneficiary;
   }
 
   private validateApplicantDetails(dto: CreateHelpApplicationDto) {
