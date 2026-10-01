@@ -36,8 +36,9 @@ export class ApplicationWindowsService {
     if (registrationEndsAt && registrationEndsAt < startsAt) {
       throw new BadRequestException('Registration end cannot be before the form availability date.');
     }
-    if (eventAt && registrationEndsAt && eventAt < registrationEndsAt) {
-      throw new BadRequestException('Event date cannot be before the registration end date.');
+    const eventMinimum = registrationEndsAt ?? startsAt;
+    if (eventAt && eventAt < eventMinimum) {
+      throw new BadRequestException('Event date cannot be before the registration end date or form availability date.');
     }
 
     const now = new Date();
