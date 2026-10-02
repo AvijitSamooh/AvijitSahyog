@@ -254,6 +254,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
   final _state = TextEditingController();
   final _pincode = TextEditingController();
   final _amount = TextEditingController();
+  final _overallPercentage = TextEditingController();
   final _clarification = TextEditingController();
   final _motherName = TextEditingController();
   final _fatherName = TextEditingController();
@@ -287,6 +288,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     _state.text = existing?.state ?? '';
     _pincode.text = existing?.pincode ?? '';
     if (existing?.requestedAmount != null) _amount.text = existing!.requestedAmount.toString();
+    if (existing?.overallPercentage != null) _overallPercentage.text = existing!.overallPercentage!.toString();
     _clarification.text = existing?.clarification ?? '';
     _motherName.text = existing?.motherName ?? '';
     _fatherName.text = existing?.fatherName ?? '';
@@ -304,7 +306,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
 
   @override
   void dispose() {
-    for (final controller in [_name, _mobile, _email, _address, _city, _state, _pincode, _amount, _clarification, _motherName, _fatherName, _classStandard, _schoolInstituteName, _accomplishments]) {
+    for (final controller in [_name, _mobile, _email, _address, _city, _state, _pincode, _amount, _overallPercentage, _clarification, _motherName, _fatherName, _classStandard, _schoolInstituteName, _accomplishments]) {
       controller.dispose();
     }
     super.dispose();
@@ -468,6 +470,11 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
       return;
     }
     if (!_formKey.currentState!.validate()) return;
+    final overallPercentage = double.tryParse(_overallPercentage.text.trim());
+    if (overallPercentage == null || overallPercentage < 0 || overallPercentage > 100) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.overallPercentageInvalid)));
+      return;
+    }
     if (_mediaIds.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.imagesRequired)));
       return;
@@ -488,9 +495,9 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     try {
       final repo = ref.read(helpApplicationsRepositoryProvider);
       if (widget.application == null) {
-        await repo.create(type: widget.type, requestedAmount: amount, applicantName: _name.text, mobileNumber: _mobile.text, email: _email.text, address: _address.text, city: _city.text, state: _state.text, pincode: _pincode.text, motherName: isSamman ? _motherName.text : null, fatherName: isSamman ? _fatherName.text : null, dateOfBirth: isSamman ? _dob : null, classStandard: isSamman ? _classStandard.text : null, schoolInstituteName: isSamman ? _schoolInstituteName.text : null, accomplishments: isSamman ? _accomplishments.text : null, certificatePhotoMediaId: isSamman ? _certificatePhotoMediaId : null, facePhotoMediaId: _facePhotoMediaId!, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false), clarification: _clarification.text);
+        await repo.create(type: widget.type, requestedAmount: amount, overallPercentage: overallPercentage, applicantName: _name.text, mobileNumber: _mobile.text, email: _email.text, address: _address.text, city: _city.text, state: _state.text, pincode: _pincode.text, motherName: isSamman ? _motherName.text : null, fatherName: isSamman ? _fatherName.text : null, dateOfBirth: isSamman ? _dob : null, classStandard: isSamman ? _classStandard.text : null, schoolInstituteName: isSamman ? _schoolInstituteName.text : null, accomplishments: isSamman ? _accomplishments.text : null, certificatePhotoMediaId: isSamman ? _certificatePhotoMediaId : null, facePhotoMediaId: _facePhotoMediaId!, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false), clarification: _clarification.text);
       } else {
-        await repo.update(id: widget.application!.id, type: widget.type, applicantName: _name.text, mobileNumber: _mobile.text, email: _email.text, address: _address.text, city: _city.text, state: _state.text, pincode: _pincode.text, requestedAmount: amount, clarification: _clarification.text, motherName: isSamman ? _motherName.text : null, fatherName: isSamman ? _fatherName.text : null, dateOfBirth: isSamman ? _dob : null, classStandard: isSamman ? _classStandard.text : null, schoolInstituteName: isSamman ? _schoolInstituteName.text : null, accomplishments: isSamman ? _accomplishments.text : null, certificatePhotoMediaId: isSamman ? _certificatePhotoMediaId : null, facePhotoMediaId: _facePhotoMediaId!, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false));
+        await repo.update(id: widget.application!.id, type: widget.type, overallPercentage: overallPercentage, applicantName: _name.text, mobileNumber: _mobile.text, email: _email.text, address: _address.text, city: _city.text, state: _state.text, pincode: _pincode.text, requestedAmount: amount, clarification: _clarification.text, motherName: isSamman ? _motherName.text : null, fatherName: isSamman ? _fatherName.text : null, dateOfBirth: isSamman ? _dob : null, classStandard: isSamman ? _classStandard.text : null, schoolInstituteName: isSamman ? _schoolInstituteName.text : null, accomplishments: isSamman ? _accomplishments.text : null, certificatePhotoMediaId: isSamman ? _certificatePhotoMediaId : null, facePhotoMediaId: _facePhotoMediaId!, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false));
       }
       ref.invalidate(myHelpApplicationsProvider);
       if (mounted) {
@@ -821,6 +828,25 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
             ],
 
             const SizedBox(height: 20),
+            TextFormField(
+              key: const ValueKey('application_overall_percentage'),
+              controller: _overallPercentage,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: InputDecoration(
+                labelText: l10n.overallPercentage,
+                hintText: l10n.overallPercentageHint,
+                prefixIcon: const Icon(Icons.percent_rounded),
+              ),
+              validator: (value) {
+                final required = _required(value, l10n.overallPercentage);
+                if (required != null) return required;
+                final parsed = double.tryParse(value!.trim());
+                return parsed != null && parsed >= 0 && parsed <= 100
+                    ? null
+                    : l10n.overallPercentageInvalid;
+              },
+            ),
+            const SizedBox(height: 12),
             if (!isSamman)
               TextFormField(
                 controller: _amount,
