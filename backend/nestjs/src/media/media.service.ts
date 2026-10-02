@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  NotFoundException,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
@@ -96,4 +97,31 @@ export class MediaService {
       );
     }
   }
+  async deleteUserImage(id: string, uploadedById: string) {
+    const media = await this.prisma.media.findFirst({
+      where: { id, uploadedById },
+      select: {
+        id: true,
+        storageKey: true,
+        _count: {
+          select: {
+            organisationMedia: true,
+            beneficiaryMedia: true,
+            helpApplicationMedia: true,
+            certificatePhotoApplications: true,
+            facePhotoApplications: true,
+          },
+        },
+      },
+    });
+    if (!media) throw new NotFoundException('Image not found.');
+    const refs = Object.values(media._count).reduce((sum, count) => sum + count, 0);
+    if (refs > 0) {
+      throw new BadRequestException('This image is still attached to an application and cannot be deleted.');
+    }
+    await this.r2StorageService.delete(media.storageKey);
+    await this.prisma.media.delete({ where: { id: media.id } });
+    return { id, deleted: true };
+  }
+
 }
