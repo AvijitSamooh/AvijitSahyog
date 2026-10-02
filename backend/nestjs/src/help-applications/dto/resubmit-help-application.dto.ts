@@ -1,4 +1,4 @@
-import { IsArray, IsDateString, IsNumber, IsOptional, IsString, IsUUID, MaxLength, Min } from 'class-validator';
+import { IsArray, IsDateString, IsNumber, IsOptional, IsString, IsUUID, Matches, MaxLength, Min } from 'class-validator';
 
 export class ResubmitHelpApplicationDto {
   @IsOptional()
@@ -15,7 +15,8 @@ export class ResubmitHelpApplicationDto {
   mediaIds!: string[];
 
   @IsArray()
-  @IsUUID('all', { each: true })
+  @IsString({ each: true })
+  @Matches(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, { each: true })
   acceptedRuleIds!: string[];
 
   @IsOptional()
