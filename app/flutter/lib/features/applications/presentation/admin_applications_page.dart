@@ -49,11 +49,40 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
     }catch(_){if(mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(l10n.applicationActionFailed)));}
   }
   Future<void> _photoManifest() async {
-    final l10n=AppLocalizations.of(context)!;
-    try{
-      final items=await ref.read(helpApplicationsRepositoryProvider).photoManifest(type:_type,status:_status);if(!mounted)return;
-      await showDialog<void>(context:context,builder:(_)=>AlertDialog(title:Text(l10n.applicationPhotoManifest),content:SizedBox(width:700,child:items.isEmpty?Text(l10n.noApplicationPhotos):ListView.separated(shrinkWrap:true,itemCount:items.length,separatorBuilder:(_,_)=>const Divider(),itemBuilder:(_,i){final item=items[i];final photo=item['facePhoto'] as Map<String,dynamic>?;final url=photo?['url']?.toString();return ListTile(leading:url==null?const Icon(Icons.person_outline):CircleAvatar(backgroundImage:NetworkImage(url)),title:Text(item['name']?.toString()??l10n.fullNameRequired),subtitle:SelectableText(url??''));}})),actions:[FilledButton(onPressed:()=>Navigator.pop(context),child:Text(l10n.close))]));
-    }catch(_){if(mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(l10n.applicationActionFailed)));}
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final items = await ref.read(helpApplicationsRepositoryProvider).photoManifest(type: _type, status: _status);
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text(l10n.applicationPhotoManifest),
+          content: SizedBox(
+            width: 700,
+            child: items.isEmpty
+                ? Text(l10n.noApplicationPhotos)
+                : ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: items.length,
+                    separatorBuilder: (_, _) => const Divider(),
+                    itemBuilder: (_, i) {
+                      final item = items[i];
+                      final photo = item['facePhoto'] as Map<String, dynamic>?;
+                      final url = photo?['url']?.toString();
+                      return ListTile(
+                        leading: url == null ? const Icon(Icons.person_outline) : CircleAvatar(backgroundImage: NetworkImage(url)),
+                        title: Text(item['name']?.toString() ?? l10n.fullNameRequired),
+                        subtitle: SelectableText(url ?? ''),
+                      );
+                    },
+                  ),
+          ),
+          actions: [FilledButton(onPressed: () => Navigator.pop(context), child: Text(l10n.close))],
+        ),
+      );
+    } catch (_) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.applicationActionFailed)));
+    }
   }
   @override Widget build(BuildContext context){
     final l10n=AppLocalizations.of(context)!;
@@ -93,7 +122,7 @@ class AdminApplicationDetailsPage extends StatelessWidget {
       const SizedBox(height:16),Text(item['applicantName']?.toString()??'',style:Theme.of(context).textTheme.headlineSmall),const SizedBox(height:8),
       field(l10n.applicationStatus,_statusLabel(l10n,item['status'] as String? ?? '')),field(l10n.requestedAmount,item['requestedAmount']==null?null:'₹${item['requestedAmount']}'),field(l10n.approvedAmount,item['approvedAmount']==null?null:'₹${item['approvedAmount']}'),
       field(l10n.mobileNumberRequired,item['mobileNumber']),field(l10n.emailOptional,item['email']),field(l10n.addressRequired,item['address']),field(l10n.cityRequired,item['city']),field(l10n.stateRequired,item['state']),field(l10n.pincodeRequired,item['pincode']),
-      field(l10n.motherNameRequired,item['motherName']),field(l10n.fatherNameRequired,item['fatherName']),field(l10n.dateOfBirthRequired,item['dateOfBirth']),field(l10n.classStandardRequired,item['classStandard']),field(l10n.schoolInstituteRequired,item['schoolInstituteName']),field(l10n.otherAccomplishmentsOptional,item['accomplishments']),field(l10n.explainNeed,item['clarification']),field(l10n.rejectionReason,item['rejectionReason']),field(l10n.adminNote,item['adminNote']),
+      field(l10n.motherNameRequired,item['motherName']),field(l10n.fatherNameRequired,item['fatherName']),field(l10n.dateOfBirthRequired,item['dateOfBirth']),field(l10n.classStandardRequired,item['classStandard']),field(l10n.schoolInstituteRequired,item['schoolInstituteName']),field(l10n.otherAccomplishmentsOptional,item['accomplishments']),field(l10n.explainNeed,item['clarification']),field(l10n.rejectionReason,item['rejectionReason']),
       const SizedBox(height:16),Text(l10n.supportingDocuments,style:Theme.of(context).textTheme.titleMedium),const SizedBox(height:10),
       GridView.builder(shrinkWrap:true,physics:const NeverScrollableScrollPhysics(),itemCount:images.length,gridDelegate:const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount:2,crossAxisSpacing:8,mainAxisSpacing:8),itemBuilder:(_,i){final url=images[i]['url']?.toString();return InkWell(onTap:url==null?null:()=>showDialog<void>(context:context,builder:(_)=>Dialog(child:InteractiveViewer(child:Image.network(url)))),child:ClipRRect(borderRadius:BorderRadius.circular(10),child:url==null?const Icon(Icons.broken_image_outlined):Image.network(url,fit:BoxFit.cover)));}),
     ]));
