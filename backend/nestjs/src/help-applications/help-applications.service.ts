@@ -208,7 +208,7 @@ export class HelpApplicationsService {
   async listForAdmin(type?: string, status?: string) {
     const items = await this.prisma.helpApplication.findMany({
       where: { ...(type ? { type: type as any } : {}), ...(status ? { status: status as any } : {}) },
-      orderBy: [{ overallPercentage: 'desc' }, { createdAt: 'asc' }],
+      orderBy: [{ createdAt: 'asc' }],
       include: {
         applicant: { select: { id: true, displayName: true, email: true } },
         media: { include: { media: true } },
@@ -218,12 +218,11 @@ export class HelpApplicationsService {
       },
     });
     const responses = items.map((item) => this.toAdminResponse(item));
-    if (type === 'PRATIBHA_SAMMAN') {
-      responses.sort((a, b) =>
-        (b.overallPercentage ?? -1) - (a.overallPercentage ?? -1) ||
-        (b.voteAverage ?? -1) - (a.voteAverage ?? -1),
-      );
-    }
+    responses.sort((a, b) =>
+      (b.overallPercentage ?? -1) - (a.overallPercentage ?? -1) ||
+      (type === 'PRATIBHA_SAMMAN' ? (b.voteAverage ?? -1) - (a.voteAverage ?? -1) : 0) ||
+      new Date(a.submittedAt ?? 0).getTime() - new Date(b.submittedAt ?? 0).getTime(),
+    );
     return responses;
   }
 
