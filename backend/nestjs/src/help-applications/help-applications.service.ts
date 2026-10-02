@@ -6,12 +6,15 @@ import { ResubmitHelpApplicationDto } from './dto/resubmit-help-application.dto'
 import { ReviewHelpApplicationDto, HelpApplicationDecisionDto } from './dto/review-help-application.dto';
 import { VoteHelpApplicationDto } from './dto/vote-help-application.dto';
 import { ApplicationWindowsService } from './application-windows.service';
+import { UpdateHelpApplicationDto } from './dto/update-help-application.dto';
+import { MediaService } from '../media/media.service';
 
 @Injectable()
 export class HelpApplicationsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly applicationWindows: ApplicationWindowsService,
+    private readonly mediaService: MediaService,
   ) {}
 
   async create(identity: FirebaseIdentity, dto: CreateHelpApplicationDto) {
@@ -22,7 +25,8 @@ export class HelpApplicationsService {
     this.validatePratibhaDetails(dto.type, dto);
     const acceptedRules = await this.validateAcceptedRules(dto.type, dto.acceptedRuleIds);
     const media = await this.validateMedia(dto.mediaIds, user.id);
-    const certificatePhotoMediaId = await this.validateCertificatePhoto(dto.type, dto.certificatePhotoMediaId, user.id);
+    const facePhotoMediaId = await this.validateFacePhoto(dto.facePhotoMediaId, user.id);
+    const certificatePhotoMediaId = await this.validateCertificatePhoto(dto.type, dto.certificatePhotoMediaId, user.id, facePhotoMediaId);
     const item = await this.prisma.helpApplication.create({
       data: {
         applicantId: user.id,
@@ -43,10 +47,11 @@ export class HelpApplicationsService {
         schoolInstituteName: dto.schoolInstituteName?.trim() || null,
         accomplishments: dto.accomplishments?.trim() || null,
         certificatePhotoMediaId,
+        facePhotoMediaId,
         media: { create: media.map((mediaId) => ({ mediaId })) },
         ruleAcceptances: { create: acceptedRules.map((rule) => ({ ruleId: rule.id, ruleText: rule.text })) },
       },
-      include: { media: { include: { media: true } }, certificatePhotoMedia: true },
+      include: { media: { include: { media: true } }, certificatePhotoMedia: true, facePhotoMedia: true },
     });
     return this.toResponse(item);
   }
@@ -56,7 +61,7 @@ export class HelpApplicationsService {
     const items = await this.prisma.helpApplication.findMany({
       where: { applicantId: user.id },
       orderBy: { createdAt: 'desc' },
-      include: { media: { include: { media: true } }, certificatePhotoMedia: true, votes: { select: { score: true } } },
+      include: { media: { include: { media: true } }, certificatePhotoMedia: true, facePhotoMedia: true, votes: { select: { score: true } } },
     });
     return items.map((item) => this.toResponse(item));
   }
@@ -69,6 +74,79 @@ export class HelpApplicationsService {
     });
     if (!item) throw new NotFoundException('Application not found.');
     return this.toResponse(item);
+  }
+
+  async updateMine(identity: FirebaseIdentity, id: string, dto: UpdateHelpApplicationDto) {
+    const user = await this.user(identity);
+    const existing = await this.prisma.helpApplication.findFirst({
+      where: { id, applicantId: user.id },
+      include: { media: { select: { mediaId: true } } },
+    });
+    if (!existing) throw new NotFoundException('Application not found.');
+    if (['APPROVED_FOR_DONATION', 'CONSIDERED_FOR_SAMMAN', 'NOT_SELECTED'].includes(existing.status)) {
+      throw new BadRequestException('This application can no longer be edited.');
+    }
+
+    await this.applicationWindows.ensureAccepting(existing.type);
+    this.validateApplicantDetails(dto as any);
+    this.validateSubmission(existing.type, dto.requestedAmount, dto.mediaIds);
+    this.validatePratibhaDetails(existing.type, dto);
+    const acceptedRules = await this.validateAcceptedRules(existing.type as HelpApplicationTypeDto, dto.acceptedRuleIds);
+    const media = await this.validateMedia(dto.mediaIds, user.id);
+    const facePhotoMediaId = await this.validateFacePhoto(dto.facePhotoMediaId, user.id);
+    const certificatePhotoMediaId = await this.validateCertificatePhoto(existing.type, dto.certificatePhotoMediaId, user.id, facePhotoMediaId);
+    const previousMediaIds = existing.media.map((item) => item.mediaId);
+    const removedMediaIds = previousMediaIds.filter((mediaId) => !media.includes(mediaId));
+    if (existing.status === 'UNDER_REVIEW') {
+      // Editing invalidates previous reviewer votes; the application returns to the
+      // normal submitted queue with a fresh review cycle.
+      await this.prisma.helpApplicationVote.deleteMany({ where: { applicationId: id } });
+    }
+
+    const updated = await this.prisma.$transaction(async (tx) => {
+      await tx.helpApplicationMedia.deleteMany({ where: { applicationId: id } });
+      await tx.helpApplicationRuleAcceptance.deleteMany({ where: { applicationId: id } });
+      return tx.helpApplication.update({
+        where: { id },
+        data: {
+          applicantName: dto.applicantName.trim(),
+          mobileNumber: dto.mobileNumber.trim(),
+          email: dto.email?.trim() || null,
+          address: dto.address.trim(),
+          city: dto.city.trim(),
+          state: dto.state.trim(),
+          pincode: dto.pincode.trim(),
+          status: 'SUBMITTED',
+          requestedAmount: dto.requestedAmount ?? null,
+          approvedAmount: null,
+          rejectionReason: null,
+          clarification: dto.clarification?.trim() || null,
+          motherName: dto.motherName?.trim() || null,
+          fatherName: dto.fatherName?.trim() || null,
+          dateOfBirth: dto.dateOfBirth ? new Date(dto.dateOfBirth) : null,
+          classStandard: dto.classStandard?.trim() || null,
+          schoolInstituteName: dto.schoolInstituteName?.trim() || null,
+          accomplishments: dto.accomplishments?.trim() || null,
+          certificatePhotoMediaId,
+          facePhotoMediaId,
+          adminNote: null,
+          reviewedAt: null,
+          media: { create: media.map((mediaId) => ({ mediaId })) },
+          ruleAcceptances: { create: acceptedRules.map((rule) => ({ ruleId: rule.id, ruleText: rule.text })) },
+        },
+        include: { media: { include: { media: true } }, certificatePhotoMedia: true, facePhotoMedia: true },
+      });
+    });
+
+    for (const mediaId of removedMediaIds) {
+      try {
+        await this.mediaService.deleteUserImage(mediaId, user.id);
+      } catch (_) {
+        // A media item may still be referenced by another domain record. Keep it
+        // rather than failing an otherwise successful application update.
+      }
+    }
+    return this.toResponse(updated);
   }
 
   async deleteMine(identity: FirebaseIdentity, id: string) {
@@ -134,6 +212,7 @@ export class HelpApplicationsService {
         applicant: { select: { id: true, displayName: true, email: true } },
         media: { include: { media: true } },
         certificatePhotoMedia: true,
+        facePhotoMedia: true,
         votes: { include: { admin: { select: { id: true, displayName: true } } }, orderBy: { updatedAt: 'desc' } },
       },
     });
@@ -197,6 +276,7 @@ export class HelpApplicationsService {
           applicant: { select: { id: true, displayName: true, email: true } },
           media: { include: { media: true } },
           certificatePhotoMedia: true,
+          facePhotoMedia: true,
           votes: { include: { admin: { select: { id: true, displayName: true } } } },
         },
       });
@@ -325,11 +405,22 @@ export class HelpApplicationsService {
     }
   }
 
-  private async validateCertificatePhoto(type: string, mediaId: string | undefined, uploadedById: string) {
-    if (type !== HelpApplicationTypeDto.PRATIBHA_SAMMAN) return null;
-    if (!mediaId) throw new BadRequestException('A clear certificate photo is required for Pratibha Samman.');
+  private async validateFacePhoto(mediaId: string | undefined, uploadedById: string) {
+    if (!mediaId) throw new BadRequestException('A clear face photo is required.');
     const media = await this.prisma.media.findFirst({
       where: { id: mediaId, uploadedById },
+      select: { id: true },
+    });
+    if (!media) throw new BadRequestException('The face photo is unavailable.');
+    return media.id;
+  }
+
+  private async validateCertificatePhoto(type: string, mediaId: string | undefined, uploadedById: string, facePhotoMediaId?: string) {
+    if (type !== HelpApplicationTypeDto.PRATIBHA_SAMMAN) return null;
+    const effectiveId = mediaId ?? facePhotoMediaId;
+    if (!effectiveId) throw new BadRequestException('A clear certificate photo is required for Pratibha Samman.');
+    const media = await this.prisma.media.findFirst({
+      where: { id: effectiveId, uploadedById },
       select: { id: true },
     });
     if (!media) throw new BadRequestException('The certificate photo is unavailable.');
@@ -371,7 +462,7 @@ export class HelpApplicationsService {
   }
 
   private async application(id: string) {
-    const item = await this.prisma.helpApplication.findUnique({ where: { id }, include: { media: { include: { media: true } } } });
+    const item = await this.prisma.helpApplication.findUnique({ where: { id }, include: { media: { include: { media: true } }, facePhotoMedia: true, certificatePhotoMedia: true } });
     if (!item) throw new NotFoundException('Application not found.');
     return item;
   }
@@ -382,7 +473,7 @@ export class HelpApplicationsService {
   }
 
   private toResponse(item: any) {
-    return { id: item.id, type: item.type, status: item.status, applicantName: item.applicantName, mobileNumber: item.mobileNumber, email: item.email, address: item.address, city: item.city, state: item.state, pincode: item.pincode, requestedAmount: item.requestedAmount, approvedAmount: item.approvedAmount, rejectionReason: item.rejectionReason, clarification: item.clarification, motherName: item.motherName, fatherName: item.fatherName, dateOfBirth: item.dateOfBirth, classStandard: item.classStandard, schoolInstituteName: item.schoolInstituteName, accomplishments: item.accomplishments, certificatePhotoMediaId: item.certificatePhotoMediaId, certificatePhoto: item.certificatePhotoMedia ? this.mediaResponse({ media: item.certificatePhotoMedia }) : null, adminNote: item.adminNote, submittedAt: item.submittedAt, reviewedAt: item.reviewedAt, media: (item.media ?? []).map((m: any) => this.mediaResponse(m)) };
+    return { id: item.id, type: item.type, status: item.status, applicantName: item.applicantName, mobileNumber: item.mobileNumber, email: item.email, address: item.address, city: item.city, state: item.state, pincode: item.pincode, requestedAmount: item.requestedAmount, approvedAmount: item.approvedAmount, rejectionReason: item.rejectionReason, clarification: item.clarification, motherName: item.motherName, fatherName: item.fatherName, dateOfBirth: item.dateOfBirth, classStandard: item.classStandard, schoolInstituteName: item.schoolInstituteName, accomplishments: item.accomplishments, certificatePhotoMediaId: item.certificatePhotoMediaId, facePhotoMediaId: item.facePhotoMediaId, facePhoto: item.facePhotoMedia ? this.mediaResponse({ media: item.facePhotoMedia }) : null, certificatePhoto: item.certificatePhotoMedia ? this.mediaResponse({ media: item.certificatePhotoMedia }) : null, adminNote: item.adminNote, submittedAt: item.submittedAt, reviewedAt: item.reviewedAt, media: (item.media ?? []).map((m: any) => this.mediaResponse(m)) };
   }
 
   private toAdminResponse(item: any) {
