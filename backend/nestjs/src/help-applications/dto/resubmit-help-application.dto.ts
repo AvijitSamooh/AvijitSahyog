@@ -1,6 +1,11 @@
 import { IsArray, IsDateString, IsNumber, IsOptional, IsString, IsUUID, Matches, MaxLength, Min } from 'class-validator';
 
 export class ResubmitHelpApplicationDto {
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0)
+  @Max(100)
+  overallPercentage!: number;
+
   @IsOptional()
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(1)
