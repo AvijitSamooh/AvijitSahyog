@@ -545,5 +545,6 @@
   "facePhotoSelected": "Face photo selected",
   "facePhotoRequired": "Please provide a clear face photo.",
   "facePhotoUploadFailed": "Unable to upload the face photo.",
-  "editApplication": "Edit application"
+  "editApplication": "Edit application",
+  "deleteImage": "Delete image"
 }
