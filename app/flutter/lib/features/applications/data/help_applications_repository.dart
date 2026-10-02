@@ -165,6 +165,9 @@ class HelpApplicationsRepository {
     return json['id'] as String;
   }
 
+  Future<Map<String, dynamic>> adminSummary({String? type}) =>
+      client.getAdminApplicationSummary(type: type);
+
   Future<List<Map<String, dynamic>>> adminList({String? type, String? status}) =>
       client.getAdminHelpApplications(type: type, status: status);
 
