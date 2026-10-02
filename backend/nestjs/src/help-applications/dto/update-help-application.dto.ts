@@ -30,6 +30,11 @@ export class UpdateHelpApplicationDto {
   @MaxLength(10)
   pincode!: string;
 
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0)
+  @Max(100)
+  overallPercentage!: number;
+
   @IsOptional()
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(1)
