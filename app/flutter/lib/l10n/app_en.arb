@@ -535,5 +535,15 @@
   "homeOrganisationTitle": "About the organisation",
   "homeOrganisationDetails": "Avijit Sahyog is part of Avijit Samooh. Recognition events are organised under Avijit Sarv Kalyaan Samiti (Registration No. 01/05/03/37787/21).",
   "homePurposeTitle": "Our Purpose",
-  "homePurposeText": "Serving society, expanding education, building cooperation and recognising excellence — together with compassion and transparency."
+  "homePurposeText": "Serving society, expanding education, building cooperation and recognising excellence — together with compassion and transparency.",
+  "applicationConfiguration": "Application configuration",
+  "applicationConfigurationSubtitle": "Manage application windows and rules",
+  "applicationPhotoManifest": "Named photo list",
+  "noApplicationPhotos": "No application photos available.",
+  "facePhotoTitle": "Clear face photo *",
+  "facePhotoHint": "Upload a clear, front-facing photo. This photo is shown on application cards.",
+  "facePhotoSelected": "Face photo selected",
+  "facePhotoRequired": "Please provide a clear face photo.",
+  "facePhotoUploadFailed": "Unable to upload the face photo.",
+  "editApplication": "Edit application"
 }
