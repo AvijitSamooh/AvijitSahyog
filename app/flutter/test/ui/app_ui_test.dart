@@ -256,14 +256,16 @@ void main() {
   });
 
   testWidgets('certificate upload progress widget renders visible progress feedback', (tester) async {
-    await pumpApp(
-      tester,
-      home: const ApplicationUploadProgress(
-        label: 'Uploading image...',
-        completed: 0,
-        total: 1,
+    await tester.pumpWidget(
+      MaterialApp(
+        home: const ApplicationUploadProgress(
+          label: 'Uploading image...',
+          completed: 0,
+          total: 1,
+        ),
       ),
     );
+    await tester.pump();
 
     expect(find.byKey(const ValueKey('application_upload_progress')), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
