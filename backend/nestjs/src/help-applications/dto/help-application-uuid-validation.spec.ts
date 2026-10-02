@@ -30,8 +30,8 @@ describe('help application rule ID validation', () => {
     const resubmit = new ResubmitHelpApplicationDto();
     resubmit.acceptedRuleIds = [generatedRuleId];
 
-    await expect(validate(create)).resolves.toEqual([]);
-    await expect(validate(resubmit)).resolves.toEqual([]);
+    await expect(ruleIdValidationErrors(create)).resolves.toEqual([]);
+    await expect(ruleIdValidationErrors(resubmit)).resolves.toEqual([]);
   });
 
   it('rejects non-UUID rule identifiers', async () => {
