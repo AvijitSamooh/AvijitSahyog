@@ -46,8 +46,8 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
     try{
       final reviewPayload = <String, dynamic>{
         'decision': decision,
-        if (amount != null) 'approvedAmount': amount,
-        if (reason?.trim().isNotEmpty == true) 'reason': reason!.trim(),
+        'approvedAmount': amount,
+        'reason': reason?.trim().isNotEmpty == true ? reason!.trim() : null,
       };
       await ref.read(helpApplicationsRepositoryProvider).review(item['id'] as String, reviewPayload);
       if(mounted){ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(l10n.reviewSaved)));await _load();}
@@ -130,14 +130,14 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
   }
 }
 
-Widget _summaryCard(BuildContext context, String label, String value, IconData icon) => SizedBox(width:170,child:Card(child:Padding(padding:const EdgeInsets.all(12),child:Row(children:[Icon(icon),const SizedBox(width:10),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(value,style:Theme.of(context).textTheme.titleLarge),Text(label,overflow:TextOverflow.ellipsis)]))])));
+Widget _summaryCard(BuildContext context, String label, String value, IconData icon) => SizedBox(width:170,child:Card(child:Padding(padding:const EdgeInsets.all(12),child:Row(children:[Icon(icon),const SizedBox(width:10),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(value,style:Theme.of(context).textTheme.titleLarge),Text(label,overflow:TextOverflow.ellipsis)]))]))));
 
 class AdminApplicationDetailsPage extends StatelessWidget {
   const AdminApplicationDetailsPage({super.key,required this.item});
   final Map<String,dynamic> item;
   @override Widget build(BuildContext context){
     final l10n=AppLocalizations.of(context)!;final face=item['facePhoto'] as Map<String,dynamic>?;final cert=item['certificatePhoto'] as Map<String,dynamic>?;final media=(item['media'] as List<dynamic>? ?? const []).cast<Map<String,dynamic>>();
-    final images=<Map<String,dynamic>>[if(face!=null)face,if(cert!=null&&cert['id']!=face?['id'])cert,...media];
+    final images=<Map<String,dynamic>>[?face,if(cert!=null&&cert['id']!=face?['id'])cert,...media];
     Widget field(String label,dynamic value){final s=value?.toString().trim()??'';if(s.isEmpty||s=='null')return const SizedBox.shrink();return Padding(padding:const EdgeInsets.only(bottom:8),child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[SizedBox(width:145,child:Text(label,style:Theme.of(context).textTheme.labelLarge)),Expanded(child:SelectableText(s))]));}
     return AppPageScaffold(title:Text(l10n.adminApplications),body:ListView(padding:const EdgeInsets.all(16),children:[
       if(face?['url']!=null)ClipRRect(borderRadius:BorderRadius.circular(16),child:Image.network(face!['url'].toString(),height:240,fit:BoxFit.cover)),
