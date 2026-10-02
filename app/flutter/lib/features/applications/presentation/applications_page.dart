@@ -263,6 +263,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
   final _picker = ImagePicker();
   final List<String> _mediaIds = [];
   final List<XFile> _selectedImages = [];
+  final List<String> _selectedImageIds = [];
   String? _certificatePhotoMediaId;
   String? _facePhotoMediaId;
   XFile? _certificatePhoto;
@@ -915,7 +916,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
                             tooltip: l10n.deleteImage,
                             icon: const Icon(Icons.close, size: 18),
                             onPressed: _busy ? null : () => setState(() {
-                              final id = _mediaIds.last;
+                              final id = _selectedImageIds.removeAt(index);
                               _mediaIds.remove(id);
                               _selectedImages.removeAt(index);
                             }),
