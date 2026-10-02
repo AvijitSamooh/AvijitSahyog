@@ -43,11 +43,11 @@ class _AdminApplicationConfigurationPageState extends ConsumerState<AdminApplica
   @override Widget build(BuildContext context){
     final l10n=AppLocalizations.of(context)!;final windows=ref.watch(applicationWindowsProvider);
     return AppPageScaffold(title:Text(l10n.applicationConfiguration),body:ListView(padding:const EdgeInsets.all(12),children:[
-      Text(l10n.applicationWindowManagement,style:Theme.of(context).textTheme.titleLarge),const SizedBox(height:4),Text(l10n.applicationWindowManagementSubtitle),const SizedBox(height:12),
+      Text(l10n.applicationWindowManagement,key:const ValueKey('application_window_management'),style:Theme.of(context).textTheme.titleLarge),const SizedBox(height:4),Text(l10n.applicationWindowManagementSubtitle),const SizedBox(height:12),
       windows.when(loading:()=>const LinearProgressIndicator(),error:(_,_)=>Text(l10n.applicationAvailabilityLoadError),data:(items)=>Column(children:['EDUCATION_ASSISTANCE','MEDICAL_HELP','PRATIBHA_SAMMAN'].map((type){
         final current=items.where((w)=>w.type==type).firstOrNull;final status=current?.status??ApplicationWindowStatus.closed;
         final text=switch(status){ApplicationWindowStatus.scheduled=>l10n.applicationAcceptingStartsAt(_date(context,current!.startsAt)),ApplicationWindowStatus.open=>l10n.applicationAcceptingNow,ApplicationWindowStatus.closed=>l10n.applicationAcceptingClosed};
-        return Card(child:ListTile(title:Text(_typeLabel(l10n,type)),subtitle:Text(text),trailing:Wrap(children:[IconButton(onPressed:()=>_start(type),icon:const Icon(Icons.schedule_rounded)),if(current!=null&&status!=ApplicationWindowStatus.closed)IconButton(onPressed:()=>_close(type),icon:const Icon(Icons.stop_circle_outlined))])));
+        return Card(child:ListTile(title:Text(_typeLabel(l10n,type)),subtitle:Text(text),trailing:Wrap(children:[IconButton(key:ValueKey('application_window_start_$type'),onPressed:()=>_start(type),icon:const Icon(Icons.schedule_rounded)),if(current!=null&&status!=ApplicationWindowStatus.closed)IconButton(key:ValueKey('application_window_close_$type'),onPressed:()=>_close(type),icon:const Icon(Icons.stop_circle_outlined))])));
       }).toList())),
       const SizedBox(height:20),const _ApplicationRulesConfiguration(),
     ]));
