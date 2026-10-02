@@ -412,7 +412,7 @@ void main() {
       ],
     );
 
-    expect(find.textContaining('Application window'), findsOneWidget);
+    expect(find.byKey(const ValueKey('application_window_management')), findsOneWidget);
     expect(find.byKey(const ValueKey('application_window_start_EDUCATION_ASSISTANCE')), findsOneWidget);
     expect(find.byKey(const ValueKey('application_window_start_MEDICAL_HELP')), findsOneWidget);
     expect(find.byKey(const ValueKey('application_window_start_PRATIBHA_SAMMAN')), findsOneWidget);
