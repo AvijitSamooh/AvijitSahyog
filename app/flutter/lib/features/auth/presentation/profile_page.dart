@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/widgets/app_settings_menu.dart';
 import '../../../l10n/app_localizations.dart';
+import 'login_page.dart';
 import '../../admin/presentation/admin_portal_page.dart';
 import '../../applications/presentation/applications_page.dart';
 import '../providers/auth_providers.dart';
@@ -20,7 +21,33 @@ class ProfilePage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
 
     final body = user == null
-        ? Center(child: Text(l10n.loginRequired))
+        ? Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      l10n.loginRequired,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    FilledButton.icon(
+                      key: const ValueKey('profile_login'),
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const LoginPage()),
+                      ),
+                      icon: const Icon(Icons.login_rounded),
+                      label: Text(l10n.login),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          )
         : ListView(
               padding: const EdgeInsets.all(20),
               children: [
