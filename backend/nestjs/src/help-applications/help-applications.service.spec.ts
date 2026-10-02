@@ -43,6 +43,7 @@ describe('HelpApplicationsService', () => {
       type: 'EDUCATION_ASSISTANCE',
       status: 'SUBMITTED',
       requestedAmount: 25000,
+      overallPercentage: 82.5,
       approvedAmount: null,
       rejectionReason: null,
       clarification: null,
@@ -62,6 +63,7 @@ describe('HelpApplicationsService', () => {
       state: 'Maharashtra',
       pincode: '411001',
       requestedAmount: 25000,
+      overallPercentage: 82.5,
       mediaIds: ['media-1'],
       facePhotoMediaId: 'face-1',
     });
@@ -125,6 +127,7 @@ describe('HelpApplicationsService', () => {
       id: 'app-1',
       type: 'MEDICAL_HELP',
       requestedAmount: 10000,
+      overallPercentage: 82.5,
       media: [],
     });
     const service = new HelpApplicationsService(prisma, applicationWindows, mediaService);
@@ -139,6 +142,7 @@ describe('HelpApplicationsService', () => {
       id: 'app-1',
       type: 'EDUCATION_ASSISTANCE',
       requestedAmount: 10000,
+      overallPercentage: 82.5,
       media: [],
     });
     const service = new HelpApplicationsService(prisma, applicationWindows, mediaService);
@@ -151,6 +155,7 @@ describe('HelpApplicationsService', () => {
       id: 'app-1',
       type: 'MEDICAL_HELP',
       requestedAmount: 10000,
+      overallPercentage: 82.5,
       media: [],
     });
     const service = new HelpApplicationsService(prisma, applicationWindows, mediaService);
@@ -366,6 +371,7 @@ describe('HelpApplicationsService', () => {
       type: 'MEDICAL_HELP',
       status: 'UNDER_REVIEW',
       requestedAmount: 10000,
+      overallPercentage: 82.5,
       media: [{ mediaId: 'old-media' }],
     });
     prisma.media.findMany.mockResolvedValue([{ id: 'new-media' }]);
@@ -382,6 +388,7 @@ describe('HelpApplicationsService', () => {
       state: 'Maharashtra',
       pincode: '411001',
       requestedAmount: 15000,
+      overallPercentage: 82.5,
       approvedAmount: null,
       rejectionReason: null,
       clarification: 'Updated need',
@@ -399,6 +406,7 @@ describe('HelpApplicationsService', () => {
       state: 'Maharashtra',
       pincode: '411001',
       requestedAmount: 15000,
+      overallPercentage: 82.5,
       clarification: 'Updated need',
       facePhotoMediaId: 'new-face',
       mediaIds: ['new-media'],
@@ -431,6 +439,7 @@ describe('HelpApplicationsService', () => {
       state: 'Maharashtra',
       pincode: '411001',
       requestedAmount: 1000,
+      overallPercentage: 82.5,
       facePhotoMediaId: 'face-1',
       mediaIds: ['media-1'],
       facePhotoMediaId: 'face-1',
