@@ -324,29 +324,48 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     }
   }
 
-  Future<void> _pickCertificatePhoto() async {
+  Future<void> _pickCertificatePhoto() => _uploadCertificatePhoto(ImageSource.gallery);
+
+  Future<void> _takeCertificatePhoto() => _uploadCertificatePhoto(ImageSource.camera);
+
+  Future<void> _uploadCertificatePhoto(ImageSource source) async {
     if (_busy) return;
     try {
       final image = await _picker.pickImage(
-        source: ImageSource.gallery,
+        source: source,
         imageQuality: 92,
         maxWidth: 1800,
         maxHeight: 1800,
       );
       if (image == null) return;
-      setState(() => _busy = true);
+      setState(() {
+        _busy = true;
+        _uploadTotal = 1;
+        _uploadCompleted = 0;
+      });
       final id = await ref.read(helpApplicationsRepositoryProvider).uploadImage(image.path);
       if (mounted) {
         setState(() {
           _certificatePhoto = image;
           _certificatePhotoMediaId = id;
-          _busy = false;
+          _uploadCompleted = 1;
         });
+        await Future<void>.delayed(const Duration(milliseconds: 250));
       }
-    } catch (_) {
+    } catch (error) {
       if (mounted) {
-        setState(() => _busy = false);
-        _showError(AppLocalizations.of(context)!.certificatePhotoUploadFailed);
+        final detail = _friendlySubmissionError(error);
+        _showError(detail.isEmpty
+            ? AppLocalizations.of(context)!.certificatePhotoUploadFailed
+            : '${AppLocalizations.of(context)!.certificatePhotoUploadFailed} $detail');
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _uploadTotal = 0;
+          _uploadCompleted = 0;
+        });
       }
     }
   }
@@ -452,8 +471,20 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
         await showDialog<void>(context: context, barrierDismissible: false, builder: (dialogContext) => AlertDialog(title: Text(l10n.applicationSubmissionSuccessTitle), content: Text(l10n.applicationSubmitted), actions: [FilledButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.close))]));
         if (mounted) Navigator.of(context).pop();
       }
-    } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.applicationSubmissionFailed)));
+    } catch (error) {
+      if (mounted) {
+        final detail = _friendlySubmissionError(error);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              detail.isEmpty
+                  ? l10n.applicationSubmissionFailed
+                  : l10n.applicationSubmissionFailedWithReason(detail),
+            ),
+            duration: const Duration(seconds: 7),
+          ),
+        );
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -521,6 +552,16 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
                         controlAffinity: ListTileControlAffinity.leading,
                         contentPadding: EdgeInsets.zero,
                         title: Text('${entry.key + 1}. ${rule.text}'),
+                        checkboxShape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        fillColor: MaterialStateProperty.resolveWith((states) {
+                          if (states.contains(MaterialState.selected)) {
+                            return Colors.green.shade600;
+                          }
+                          return Colors.transparent;
+                        }),
+                        checkColor: Colors.white,
                         onChanged: _busy ? null : (checked) {
                           setState(() {
                             if (checked == true) {
@@ -680,12 +721,38 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
               const SizedBox(height: 4),
               Text(l10n.certificatePhotoHint, style: Theme.of(context).textTheme.bodySmall),
               const SizedBox(height: 8),
-              OutlinedButton.icon(
-                key: const ValueKey('pratibha_certificate_photo'),
-                onPressed: _busy ? null : _pickCertificatePhoto,
-                icon: const Icon(Icons.badge_outlined),
-                label: Text(_certificatePhotoMediaId == null ? l10n.selectCertificatePhoto : l10n.certificatePhotoSelected),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      key: const ValueKey('pratibha_certificate_photo'),
+                      onPressed: _busy ? null : _pickCertificatePhoto,
+                      icon: const Icon(Icons.photo_library_outlined),
+                      label: Text(l10n.gallery),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      key: const ValueKey('pratibha_certificate_camera'),
+                      onPressed: _busy ? null : _takeCertificatePhoto,
+                      icon: const Icon(Icons.camera_alt_outlined),
+                      label: Text(l10n.camera),
+                    ),
+                  ),
+                ],
               ),
+              if (_certificatePhotoMediaId != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.check_circle_rounded, size: 18),
+                      const SizedBox(width: 6),
+                      Expanded(child: Text(l10n.certificatePhotoSelected)),
+                    ],
+                  ),
+                ),
               if (_certificatePhoto != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
@@ -895,6 +962,18 @@ ApplicationWindow? _findWindow(
     },
     orElse: () => null,
   );
+}
+
+String _friendlySubmissionError(Object error) {
+  final raw = error.toString().replaceFirst('Exception: ', '').trim();
+  if (raw.isEmpty) return '';
+  final statusMatch = RegExp(r'\b(5\d{2})\b').firstMatch(raw);
+  if (statusMatch != null) return '';
+  final separator = raw.indexOf(': ');
+  if (separator >= 0 && separator < raw.length - 2) {
+    return raw.substring(separator + 2).trim();
+  }
+  return raw.length > 240 ? raw.substring(0, 240) : raw;
 }
 
 String _windowDateTime(BuildContext context, DateTime value) {
