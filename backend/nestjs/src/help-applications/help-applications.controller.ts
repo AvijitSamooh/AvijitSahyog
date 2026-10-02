@@ -93,6 +93,11 @@ export class AdminHelpApplicationsController {
     return this.service.listForAdmin(type, status);
   }
 
+  @Get('photo-manifest')
+  photoManifest(@Query('type') type?: string, @Query('status') status?: string) {
+    return this.service.photoManifest(type, status);
+  }
+
   @Post(':id/vote')
   vote(@Req() req: Request & AuthenticatedRequest, @Param('id') id: string, @Body() dto: VoteHelpApplicationDto) {
     return this.service.vote(req.user, id, dto);
