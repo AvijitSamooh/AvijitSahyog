@@ -529,5 +529,6 @@
   "facePhotoSelected": "ચહેરાનો ફોટો પસંદ થયો",
   "facePhotoRequired": "કૃપા કરીને સ્પષ્ટ ચહેરાનો ફોટો આપો.",
   "facePhotoUploadFailed": "ચહેરાનો ફોટો અપલોડ થઈ શક્યો નથી.",
-  "editApplication": "અરજી સંપાદિત કરો"
+  "editApplication": "અરજી સંપાદિત કરો",
+  "deleteImage": "ફોટો કાઢો"
 }
