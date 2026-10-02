@@ -530,5 +530,21 @@
   "facePhotoRequired": "कृपया स्पष्ट चेहरे का फोटो दें।",
   "facePhotoUploadFailed": "चेहरे का फोटो अपलोड नहीं हो सका।",
   "editApplication": "आवेदन संपादित करें",
-  "deleteImage": "फोटो हटाएँ"
+  "deleteImage": "फोटो हटाएँ",
+  "overallPercentage": "कुल प्रतिशत",
+  "overallPercentageHint": "कुल प्रतिशत दर्ज करें (0–100)",
+  "overallPercentageInvalid": "0 से 100 के बीच मान्य प्रतिशत दर्ज करें।",
+  "reviewQueue": "समीक्षा कतार",
+  "selectedApplications": "चयनित",
+  "needsReview": "समीक्षा आवश्यक",
+  "rejectedApplications": "अस्वीकृत",
+  "notSelectedApplications": "चयनित नहीं",
+  "shortlistByPercentage": "कुल प्रतिशत के अनुसार क्रम",
+  "reviewStatus": "समीक्षा स्थिति",
+  "allApplications": "सभी आवेदन",
+  "reviewSummary": "समीक्षा सारांश",
+  "selectedCount": "चयनित {count}",
+  "needsReviewCount": "समीक्षा आवश्यक {count}",
+  "rejectedCount": "अस्वीकृत {count}",
+  "notSelectedCount": "चयनित नहीं {count}"
 }
