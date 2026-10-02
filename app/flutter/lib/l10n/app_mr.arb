@@ -308,6 +308,7 @@
   "deleteApplicationTitle": "हा अर्ज हटवायचा आहे का?",
   "deleteApplication": "अर्ज हटवा",
   "applicationSubmissionFailed": "अर्ज सादर करता आला नाही. कृपया पुन्हा प्रयत्न करा.",
+  "applicationSubmissionFailedWithReason": "अर्ज सादर करता आला नाही. {reason}",
   "applicationSubmissionSuccessTitle": "अर्ज यशस्वीपणे सादर झाला",
   "applicationLoadError": "अर्ज लोड करता आले नाहीत.",
   "noApplications": "आपण अद्याप कोणतेही अर्ज सादर केलेले नाहीत.",
