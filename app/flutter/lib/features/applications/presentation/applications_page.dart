@@ -695,6 +695,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
               ]),
               if (_facePhotoMediaId != null) Padding(padding: const EdgeInsets.only(top: 8), child: Row(children: [const Icon(Icons.check_circle_rounded, size: 18), const SizedBox(width: 6), Expanded(child: Text(l10n.facePhotoSelected))])),
               if (_facePhoto != null) Padding(padding: const EdgeInsets.only(top: 8), child: ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.file(File(_facePhoto!.path), height: 160, width: double.infinity, fit: BoxFit.cover))),
+              if (_facePhoto == null && widget.application?.facePhoto?.url != null) Padding(padding: const EdgeInsets.only(top: 8), child: ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.network(widget.application!.facePhoto!.url, height: 160, width: double.infinity, fit: BoxFit.cover))),
             ],
             const SizedBox(height: 20),
             if (isSamman) ...[
