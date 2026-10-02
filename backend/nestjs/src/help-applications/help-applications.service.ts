@@ -102,7 +102,6 @@ export class HelpApplicationsService {
       // Any applicant edit creates a new review cycle. Clear reviewer votes and
       // review metadata atomically with the edited application.
       await tx.helpApplicationVote.deleteMany({ where: { applicationId: id } });
-      await tx.helpApplicationVote.deleteMany({ where: { applicationId: id } });
       await tx.helpApplicationMedia.deleteMany({ where: { applicationId: id } });
       await tx.helpApplicationRuleAcceptance.deleteMany({ where: { applicationId: id } });
       return tx.helpApplication.update({
@@ -176,6 +175,7 @@ export class HelpApplicationsService {
     const certificatePhotoMediaId = await this.validateCertificatePhoto(existing.type, dto.certificatePhotoMediaId, user.id);
     const acceptedRules = await this.validateAcceptedRules(existing.type as HelpApplicationTypeDto, dto.acceptedRuleIds);
     return this.prisma.$transaction(async (tx) => {
+      await tx.helpApplicationVote.deleteMany({ where: { applicationId: id } });
       await tx.helpApplicationMedia.deleteMany({ where: { applicationId: id } });
       await tx.helpApplicationRuleAcceptance.deleteMany({ where: { applicationId: id } });
       const updated = await tx.helpApplication.update({
@@ -219,7 +219,10 @@ export class HelpApplicationsService {
     });
     const responses = items.map((item) => this.toAdminResponse(item));
     if (type === 'PRATIBHA_SAMMAN') {
-      responses.sort((a, b) => (b.voteAverage ?? -1) - (a.voteAverage ?? -1));
+      responses.sort((a, b) =>
+        (b.overallPercentage ?? -1) - (a.overallPercentage ?? -1) ||
+        (b.voteAverage ?? -1) - (a.voteAverage ?? -1),
+      );
     }
     return responses;
   }
