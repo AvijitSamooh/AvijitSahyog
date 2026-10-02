@@ -130,7 +130,7 @@ Every new help or recognition application collects a contact snapshot from the a
 
 The applicant details are stored with the application so administrators can review the request even if the user's profile later changes.
 
-Supporting images are uploaded through the authenticated user media endpoint before the application is submitted. The UI supports gallery selection and camera capture, shows uploaded previews/count, limits an application to 10 images, and surfaces upload errors so the user can retry.
+Supporting images are uploaded through the authenticated user media endpoint before the application is submitted. The UI supports gallery selection and camera capture, shows uploaded previews/count and upload progress, limits an application to 10 images, and surfaces upload errors so the user can retry. The Pratibha Samman certificate photo supports both gallery and camera capture and shows the same upload-progress feedback.
 
 
 ## Submission and deletion behaviour

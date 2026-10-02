@@ -308,6 +308,7 @@
   "deleteApplicationTitle": "Delete this application?",
   "deleteApplication": "Delete application",
   "applicationSubmissionFailed": "Your application could not be submitted. Please try again.",
+  "applicationSubmissionFailedWithReason": "Your application could not be submitted. {reason}",
   "applicationSubmissionSuccessTitle": "Application submitted",
   "applicationLoadError": "Unable to load applications.",
   "noApplications": "You have not submitted any applications yet.",
