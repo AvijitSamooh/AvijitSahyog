@@ -10,11 +10,11 @@ class AdminApplicationsPage extends ConsumerStatefulWidget {
   @override ConsumerState<AdminApplicationsPage> createState() => _AdminApplicationsPageState();
 }
 class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
-  String? _type; String? _status; bool _loading = true; String? _error; List<Map<String,dynamic>> _items = const [];
+  String? _type; String? _status; bool _loading = true; String? _error; List<Map<String,dynamic>> _items = const []; Map<String,dynamic>? _summary; bool _topOnly = false; int _topLimit = 50;
   @override void initState(){super.initState();_load();}
   Future<void> _load() async {
     if(mounted)setState((){_loading=true;_error=null;});
-    try{final items=await ref.read(helpApplicationsRepositoryProvider).adminList(type:_type,status:_status);if(mounted)setState((){_items=items;_loading=false;});}
+    try{final results=await Future.wait([ref.read(helpApplicationsRepositoryProvider).adminList(type:_type,status:_status),ref.read(helpApplicationsRepositoryProvider).adminSummary(type:_type)]);if(mounted)setState((){_items=results[0] as List<Map<String,dynamic>>;_summary=results[1] as Map<String,dynamic>;_loading=false;});}
     catch(e){if(mounted)setState((){_error=e.toString();_loading=false;});}
   }
   Future<void> _vote(Map<String,dynamic> item) async {
@@ -84,10 +84,25 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.applicationActionFailed)));
     }
   }
+  List<Map<String,dynamic>> get _visibleItems => _topOnly ? _items.take(_topLimit).toList(growable: false) : _items;
+
   @override Widget build(BuildContext context){
     final l10n=AppLocalizations.of(context)!;
     return AppPageScaffold(title:Text(l10n.adminApplications),body:RefreshIndicator(onRefresh:_load,child:CustomScrollView(physics:const AlwaysScrollableScrollPhysics(),slivers:[
       SliverToBoxAdapter(child:Padding(padding:const EdgeInsets.all(12),child:Column(children:[
+        if(_summary!=null)
+          Wrap(spacing:8,runSpacing:8,children:[
+            _summaryCard(context,l10n.reviewSummary,(_summary!['total']??0).toString(),Icons.inbox_outlined),
+            _summaryCard(context,l10n.needsReview,(_summary!['needsReview']??0).toString(),Icons.pending_actions_outlined),
+            _summaryCard(context,l10n.selectedApplications,(_summary!['selected']??0).toString(),Icons.check_circle_outline),
+            _summaryCard(context,l10n.rejectedApplications,(_summary!['rejected']??0).toString(),Icons.cancel_outlined),
+          ]),
+        const SizedBox(height:10),
+        Row(children:[
+          Expanded(child:Text(l10n.shortlistByPercentage,style:Theme.of(context).textTheme.titleSmall)),
+          FilterChip(selected:_topOnly,label:Text(l10n.shortlistByPercentage + ' 50'),onSelected:(value){setState(()=>_topOnly=value);}),
+        ]),
+        const SizedBox(height:8),
         Wrap(spacing:8,runSpacing:8,children:[
           FilterChip(label:Text(l10n.applicationsTitle),selected:_type==null,onSelected:(_){setState(()=>_type=null);_load();}),
           FilterChip(label:Text(l10n.educationHelp),selected:_type=='EDUCATION_ASSISTANCE',onSelected:(_){setState(()=>_type='EDUCATION_ASSISTANCE');_load();}),
@@ -101,14 +116,16 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
       ]))),
       if(_loading)const SliverFillRemaining(hasScrollBody:false,child:Center(child:CircularProgressIndicator()))
       else if(_error!=null)SliverFillRemaining(hasScrollBody:false,child:Center(child:Text(_error!)))
-      else if(_items.isEmpty)SliverFillRemaining(hasScrollBody:false,child:Center(child:Text(l10n.noApplications)))
+      else if(_visibleItems.isEmpty)SliverFillRemaining(hasScrollBody:false,child:Center(child:Text(l10n.noApplications)))
       else SliverPadding(padding:const EdgeInsets.fromLTRB(12,4,12,24),sliver:SliverList(delegate:SliverChildBuilderDelegate((context,index){
-        final item=_items[index];final face=item['facePhoto'] as Map<String,dynamic>?;final url=face?['url']?.toString();final name=(item['applicantName']??item['applicant']?['displayName']??item['applicant']?['email']??l10n.fullNameRequired).toString();final status=item['status'] as String? ?? '';
-        return Card(child:ListTile(contentPadding:const EdgeInsets.all(10),leading:url==null?const CircleAvatar(child:Icon(Icons.person_outline)):CircleAvatar(radius:30,backgroundImage:NetworkImage(url)),title:Text(name),subtitle:Text('${_typeLabel(l10n,item['type'] as String)} • ${_statusLabel(l10n,status)}'),onTap:()=>Navigator.of(context).push(MaterialPageRoute(builder:(_)=>AdminApplicationDetailsPage(item:item))),trailing:PopupMenuButton<String>(onSelected:(v){if(v=='vote')_vote(item);if(v=='review')_review(item);},itemBuilder:(_)=>[PopupMenuItem(value:'vote',child:Text(l10n.vote)),PopupMenuItem(value:'review',child:Text(l10n.reviewDecision))])));
+        final item=_visibleItems[index];final face=item['facePhoto'] as Map<String,dynamic>?;final url=face?['url']?.toString();final name=(item['applicantName']??item['applicant']?['displayName']??item['applicant']?['email']??l10n.fullNameRequired).toString();final status=item['status'] as String? ?? '';
+        return Card(child:ListTile(contentPadding:const EdgeInsets.all(10),leading:url==null?const CircleAvatar(child:Icon(Icons.person_outline)):CircleAvatar(radius:30,backgroundImage:NetworkImage(url)),title:Text(name),subtitle:Text('${_typeLabel(l10n,item['type'] as String)} • ${_statusLabel(l10n,status)} • ${item['overallPercentage'] ?? '—'}%'),onTap:()=>Navigator.of(context).push(MaterialPageRoute(builder:(_)=>AdminApplicationDetailsPage(item:item))),trailing:PopupMenuButton<String>(onSelected:(v){if(v=='vote')_vote(item);if(v=='review')_review(item);},itemBuilder:(_)=>[PopupMenuItem(value:'vote',child:Text(l10n.vote)),PopupMenuItem(value:'review',child:Text(l10n.reviewDecision))])));
       },childCount:_items.length))),
     ])));
   }
 }
+
+Widget _summaryCard(BuildContext context, String label, String value, IconData icon) => SizedBox(width:170,child:Card(child:Padding(padding:const EdgeInsets.all(12),child:Row(children:[Icon(icon),const SizedBox(width:10),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(value,style:Theme.of(context).textTheme.titleLarge),Text(label,overflow:TextOverflow.ellipsis)]))])));
 
 class AdminApplicationDetailsPage extends StatelessWidget {
   const AdminApplicationDetailsPage({super.key,required this.item});
@@ -120,7 +137,7 @@ class AdminApplicationDetailsPage extends StatelessWidget {
     return AppPageScaffold(title:Text(l10n.adminApplications),body:ListView(padding:const EdgeInsets.all(16),children:[
       if(face?['url']!=null)ClipRRect(borderRadius:BorderRadius.circular(16),child:Image.network(face!['url'].toString(),height:240,fit:BoxFit.cover)),
       const SizedBox(height:16),Text(item['applicantName']?.toString()??'',style:Theme.of(context).textTheme.headlineSmall),const SizedBox(height:8),
-      field(l10n.applicationStatus,_statusLabel(l10n,item['status'] as String? ?? '')),field(l10n.requestedAmount,item['requestedAmount']==null?null:'₹${item['requestedAmount']}'),field(l10n.approvedAmount,item['approvedAmount']==null?null:'₹${item['approvedAmount']}'),
+      field(l10n.applicationStatus,_statusLabel(l10n,item['status'] as String? ?? '')),field(l10n.overallPercentage,item['overallPercentage']==null?null:'${item['overallPercentage']}%'),field(l10n.requestedAmount,item['requestedAmount']==null?null:'₹${item['requestedAmount']}'),field(l10n.approvedAmount,item['approvedAmount']==null?null:'₹${item['approvedAmount']}'),
       field(l10n.mobileNumberRequired,item['mobileNumber']),field(l10n.emailOptional,item['email']),field(l10n.addressRequired,item['address']),field(l10n.cityRequired,item['city']),field(l10n.stateRequired,item['state']),field(l10n.pincodeRequired,item['pincode']),
       field(l10n.motherNameRequired,item['motherName']),field(l10n.fatherNameRequired,item['fatherName']),field(l10n.dateOfBirthRequired,item['dateOfBirth']),field(l10n.classStandardRequired,item['classStandard']),field(l10n.schoolInstituteRequired,item['schoolInstituteName']),field(l10n.otherAccomplishmentsOptional,item['accomplishments']),field(l10n.explainNeed,item['clarification']),field(l10n.rejectionReason,item['rejectionReason']),
       const SizedBox(height:16),Text(l10n.supportingDocuments,style:Theme.of(context).textTheme.titleMedium),const SizedBox(height:10),
