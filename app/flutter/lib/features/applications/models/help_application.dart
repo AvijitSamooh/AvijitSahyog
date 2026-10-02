@@ -44,6 +44,8 @@ class HelpApplication {
     this.schoolInstituteName,
     this.accomplishments,
     this.certificatePhotoMediaId,
+    this.facePhotoMediaId,
+    this.facePhoto,
     this.certificatePhoto,
     this.adminNote,
     this.submittedAt,
@@ -72,6 +74,8 @@ class HelpApplication {
   final String? schoolInstituteName;
   final String? accomplishments;
   final String? certificatePhotoMediaId;
+  final String? facePhotoMediaId;
+  final HelpApplicationMedia? facePhoto;
   final HelpApplicationMedia? certificatePhoto;
   final String? adminNote;
   final DateTime? submittedAt;
@@ -101,6 +105,10 @@ class HelpApplication {
         schoolInstituteName: json['schoolInstituteName'] as String?,
         accomplishments: json['accomplishments'] as String?,
         certificatePhotoMediaId: json['certificatePhotoMediaId'] as String?,
+        facePhotoMediaId: json['facePhotoMediaId'] as String?,
+        facePhoto: json['facePhoto'] == null
+            ? null
+            : HelpApplicationMedia.fromJson(json['facePhoto'] as Map<String, dynamic>),
         certificatePhoto: json['certificatePhoto'] == null
             ? null
             : HelpApplicationMedia.fromJson(json['certificatePhoto'] as Map<String, dynamic>),
