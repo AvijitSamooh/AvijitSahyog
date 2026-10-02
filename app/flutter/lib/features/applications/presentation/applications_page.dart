@@ -950,31 +950,43 @@ class _ApplicationCard extends StatelessWidget {
   const _ApplicationCard({required this.application, required this.onDelete});
   final HelpApplication application;
   final VoidCallback onDelete;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final canResubmit = application.status == 'REJECTED' || application.status == 'CLARIFICATION_REQUIRED';
-    final canDelete = application.status != 'APPROVED_FOR_DONATION' && application.status != 'CONSIDERED_FOR_SAMMAN';
-    return Card(
-      child: ListTile(
-        title: Text(_typeLabel(l10n, application.type)),
-        subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('${l10n.applicationStatus}: ${_statusLabel(l10n, application.status)}'),
-          if (application.requestedAmount != null) Text('${l10n.requestedAmount}: ₹${application.requestedAmount}'),
-          if (application.approvedAmount != null) Text('${l10n.approvedAmount}: ₹${application.approvedAmount}'),
-          if (application.rejectionReason != null) Text('${l10n.rejectionReason}: ${application.rejectionReason!}'),
-          if (application.clarification != null) Text('${l10n.clarification}: ${application.clarification!}'),
-        ]),
-        isThreeLine: true,
-        trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-          if (canResubmit) IconButton(tooltip: l10n.resubmitApplication, icon: const Icon(Icons.refresh_rounded), onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => HelpApplicationFormPage(type: application.type, application: application)))),
-          if (canDelete) IconButton(key: ValueKey('application_delete_${application.id}'), tooltip: l10n.deleteApplication, icon: const Icon(Icons.delete_outline_rounded), onPressed: onDelete),
-        ]),
-      ),
-    );
+  @override Widget build(BuildContext context) {
+    final l10n=AppLocalizations.of(context)!;
+    final canEdit=!['APPROVED_FOR_DONATION','CONSIDERED_FOR_SAMMAN','NOT_SELECTED'].contains(application.status);
+    return Card(child:ListTile(
+      contentPadding:const EdgeInsets.all(10),
+      leading:application.facePhoto?.url!=null?CircleAvatar(radius:30,backgroundImage:NetworkImage(application.facePhoto!.url)):const CircleAvatar(radius:30,child:Icon(Icons.person_outline)),
+      title:Text(application.applicantName??_typeLabel(l10n,application.type)),
+      subtitle:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(_typeLabel(l10n,application.type)),Text('${l10n.applicationStatus}: ${_statusLabel(l10n,application.status)}'),if(application.requestedAmount!=null)Text('${l10n.requestedAmount}: ₹${application.requestedAmount}')]),
+      isThreeLine:true,
+      onTap:()=>Navigator.of(context).push(MaterialPageRoute(builder:(_)=>ApplicationDetailsPage(application:application))),
+      trailing:Wrap(spacing:0,children:[
+        if(canEdit)IconButton(key:ValueKey('application_edit_${application.id}'),tooltip:l10n.editApplication,icon:const Icon(Icons.edit_outlined),onPressed:()=>Navigator.of(context).push(MaterialPageRoute(builder:(_)=>HelpApplicationFormPage(type:application.type,application:application)))),
+        if(canEdit)IconButton(key:ValueKey('application_delete_${application.id}'),tooltip:l10n.deleteApplication,icon:const Icon(Icons.delete_outline_rounded),onPressed:onDelete),
+      ]),
+    ));
   }
 }
+
+class ApplicationDetailsPage extends StatelessWidget {
+  const ApplicationDetailsPage({super.key,required this.application});
+  final HelpApplication application;
+  @override Widget build(BuildContext context){
+    final l10n=AppLocalizations.of(context)!;
+    final images=<HelpApplicationMedia>[if(application.facePhoto!=null)application.facePhoto!,if(application.certificatePhoto!=null&&application.certificatePhoto!.id!=application.facePhoto?.id)application.certificatePhoto!,...application.media];
+    Widget field(String label,String? value){if(value==null||value.trim().isEmpty)return const SizedBox.shrink();return Padding(padding:const EdgeInsets.only(bottom:8),child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[SizedBox(width:135,child:Text(label,style:Theme.of(context).textTheme.labelLarge)),Expanded(child:SelectableText(value))]));}
+    return AppPageScaffold(title:Text(_typeLabel(l10n,application.type)),body:ListView(padding:const EdgeInsets.all(16),children:[
+      if(application.facePhoto!=null)ClipRRect(borderRadius:BorderRadius.circular(16),child:Image.network(application.facePhoto!.url,height:240,fit:BoxFit.cover)),
+      const SizedBox(height:16),Text(application.applicantName??'',style:Theme.of(context).textTheme.headlineSmall),const SizedBox(height:10),
+      field(l10n.applicationStatus,_statusLabel(l10n,application.status)),field(l10n.mobileNumberRequired,application.mobileNumber),field(l10n.emailOptional,application.email),field(l10n.addressRequired,application.address),field(l10n.cityRequired,application.city),field(l10n.stateRequired,application.state),field(l10n.pincodeRequired,application.pincode),
+      field(l10n.requestedAmount,application.requestedAmount==null?null:'₹${application.requestedAmount}'),field(l10n.approvedAmount,application.approvedAmount==null?null:'₹${application.approvedAmount}'),field(l10n.rejectionReason,application.rejectionReason),field(l10n.clarification,application.clarification),
+      field(l10n.motherNameRequired,application.motherName),field(l10n.fatherNameRequired,application.fatherName),field(l10n.dateOfBirthRequired,application.dateOfBirth?.toLocal().toString()),field(l10n.classStandardRequired,application.classStandard),field(l10n.schoolInstituteRequired,application.schoolInstituteName),field(l10n.otherAccomplishmentsOptional,application.accomplishments),
+      const SizedBox(height:16),Text(l10n.supportingDocuments,style:Theme.of(context).textTheme.titleMedium),const SizedBox(height:10),
+      GridView.builder(shrinkWrap:true,physics:const NeverScrollableScrollPhysics(),itemCount:images.length,gridDelegate:const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount:2,crossAxisSpacing:8,mainAxisSpacing:8),itemBuilder:(_,i){final image=images[i];return InkWell(onTap:()=>showDialog<void>(context:context,builder:(_)=>Dialog(child:InteractiveViewer(child:Image.network(image.url)))),child:ClipRRect(borderRadius:BorderRadius.circular(10),child:Image.network(image.url,fit:BoxFit.cover)));}),
+    ]));
+  }
+}
+
 
 String _applicationActionKey(String type) {
   switch (type) {
