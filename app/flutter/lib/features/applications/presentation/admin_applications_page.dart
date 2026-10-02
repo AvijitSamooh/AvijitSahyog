@@ -120,7 +120,7 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
       else SliverPadding(padding:const EdgeInsets.fromLTRB(12,4,12,24),sliver:SliverList(delegate:SliverChildBuilderDelegate((context,index){
         final item=_visibleItems[index];final face=item['facePhoto'] as Map<String,dynamic>?;final url=face?['url']?.toString();final name=(item['applicantName']??item['applicant']?['displayName']??item['applicant']?['email']??l10n.fullNameRequired).toString();final status=item['status'] as String? ?? '';
         return Card(child:ListTile(contentPadding:const EdgeInsets.all(10),leading:url==null?const CircleAvatar(child:Icon(Icons.person_outline)):CircleAvatar(radius:30,backgroundImage:NetworkImage(url)),title:Text(name),subtitle:Text('${_typeLabel(l10n,item['type'] as String)} • ${_statusLabel(l10n,status)} • ${item['overallPercentage'] ?? '—'}%'),onTap:()=>Navigator.of(context).push(MaterialPageRoute(builder:(_)=>AdminApplicationDetailsPage(item:item))),trailing:PopupMenuButton<String>(onSelected:(v){if(v=='vote')_vote(item);if(v=='review')_review(item);},itemBuilder:(_)=>[PopupMenuItem(value:'vote',child:Text(l10n.vote)),PopupMenuItem(value:'review',child:Text(l10n.reviewDecision))])));
-      },childCount:_items.length))),
+      },childCount:_visibleItems.length))),
     ])));
   }
 }
