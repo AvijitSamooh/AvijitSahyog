@@ -556,7 +556,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
                           borderRadius: BorderRadius.circular(5),
                         ),
                         fillColor: WidgetStateProperty.resolveWith((states) {
-                          if (states.contains(MaterialState.selected)) {
+                          if (states.contains(WidgetState.selected)) {
                             return Colors.green.shade600;
                           }
                           return Colors.transparent;
