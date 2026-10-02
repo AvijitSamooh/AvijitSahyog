@@ -1039,7 +1039,7 @@ class _ApplicationCard extends StatelessWidget {
       contentPadding:const EdgeInsets.all(10),
       leading:application.facePhoto?.url!=null?CircleAvatar(radius:30,backgroundImage:NetworkImage(application.facePhoto!.url)):const CircleAvatar(radius:30,child:Icon(Icons.person_outline)),
       title:Text(application.applicantName??_typeLabel(l10n,application.type)),
-      subtitle:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(_typeLabel(l10n,application.type)),Text('${l10n.applicationStatus}: ${_statusLabel(l10n,application.status)}'),if(application.requestedAmount!=null)Text('${l10n.requestedAmount}: ₹${application.requestedAmount}')]),
+      subtitle:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(_typeLabel(l10n,application.type)),Text('${l10n.applicationStatus}: ${_statusLabel(l10n,application.status)}'),if(application.overallPercentage!=null)Text('${l10n.overallPercentage}: ${application.overallPercentage}%'),if(application.requestedAmount!=null)Text('${l10n.requestedAmount}: ₹${application.requestedAmount}')]),
       isThreeLine:true,
       onTap:()=>Navigator.of(context).push(MaterialPageRoute(builder:(_)=>ApplicationDetailsPage(application:application))),
       trailing:Wrap(spacing:0,children:[
@@ -1060,7 +1060,7 @@ class ApplicationDetailsPage extends StatelessWidget {
     return AppPageScaffold(title:Text(_typeLabel(l10n,application.type)),body:ListView(padding:const EdgeInsets.all(16),children:[
       if(application.facePhoto!=null)ClipRRect(borderRadius:BorderRadius.circular(16),child:Image.network(application.facePhoto!.url,height:240,fit:BoxFit.cover)),
       const SizedBox(height:16),Text(application.applicantName??'',style:Theme.of(context).textTheme.headlineSmall),const SizedBox(height:10),
-      field(l10n.applicationStatus,_statusLabel(l10n,application.status)),field(l10n.mobileNumberRequired,application.mobileNumber),field(l10n.emailOptional,application.email),field(l10n.addressRequired,application.address),field(l10n.cityRequired,application.city),field(l10n.stateRequired,application.state),field(l10n.pincodeRequired,application.pincode),
+      field(l10n.applicationStatus,_statusLabel(l10n,application.status)),field(l10n.overallPercentage,application.overallPercentage==null?null:'${application.overallPercentage}%'),field(l10n.mobileNumberRequired,application.mobileNumber),field(l10n.emailOptional,application.email),field(l10n.addressRequired,application.address),field(l10n.cityRequired,application.city),field(l10n.stateRequired,application.state),field(l10n.pincodeRequired,application.pincode),
       field(l10n.requestedAmount,application.requestedAmount==null?null:'₹${application.requestedAmount}'),field(l10n.approvedAmount,application.approvedAmount==null?null:'₹${application.approvedAmount}'),field(l10n.rejectionReason,application.rejectionReason),field(l10n.clarification,application.clarification),
       field(l10n.motherNameRequired,application.motherName),field(l10n.fatherNameRequired,application.fatherName),field(l10n.dateOfBirthRequired,application.dateOfBirth?.toLocal().toString()),field(l10n.classStandardRequired,application.classStandard),field(l10n.schoolInstituteRequired,application.schoolInstituteName),field(l10n.otherAccomplishmentsOptional,application.accomplishments),
       const SizedBox(height:16),Text(l10n.supportingDocuments,style:Theme.of(context).textTheme.titleMedium),const SizedBox(height:10),
