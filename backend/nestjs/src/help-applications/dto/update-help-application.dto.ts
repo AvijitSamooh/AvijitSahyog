@@ -1,15 +1,6 @@
-import { IsArray, IsDateString, IsEnum, IsNumber, IsOptional, IsString, IsUUID, Matches, Max, MaxLength, Min } from 'class-validator';
+import { IsArray, IsDateString, IsNumber, IsOptional, IsString, IsUUID, Matches, MaxLength, Min } from 'class-validator';
 
-export enum HelpApplicationTypeDto {
-  EDUCATION_ASSISTANCE = 'EDUCATION_ASSISTANCE',
-  MEDICAL_HELP = 'MEDICAL_HELP',
-  PRATIBHA_SAMMAN = 'PRATIBHA_SAMMAN',
-}
-
-export class CreateHelpApplicationDto {
-  @IsEnum(HelpApplicationTypeDto)
-  type!: HelpApplicationTypeDto;
-
+export class UpdateHelpApplicationDto {
   @IsString()
   @MaxLength(250)
   applicantName!: string;

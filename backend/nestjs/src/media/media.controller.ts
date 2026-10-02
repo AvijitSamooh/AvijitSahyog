@@ -1,7 +1,9 @@
 import {
   Controller,
+  Delete,
   Get,
   Post,
+  Param,
   UploadedFile,
   Req,
   UseGuards,
@@ -65,5 +67,11 @@ export class UserMediaController {
   async uploadUserImage(@Req() req: Request & AuthenticatedRequest, @UploadedFile() file: Express.Multer.File) {
     const user = await this.authService.getCurrentUser(req.user);
     return this.mediaService.uploadImage(file, 'applications', user.id);
+  }
+
+  @Delete(':id')
+  async deleteUserImage(@Req() req: Request & AuthenticatedRequest, @Param('id') id: string) {
+    const user = await this.authService.getCurrentUser(req.user);
+    return this.mediaService.deleteUserImage(id, user.id);
   }
 }

@@ -34,6 +34,8 @@ Pratibha Samman is deliberately a separate workflow from need-based assistance.
       ↓
     Application history + current status
       ↓
+    Open full application / edit while non-final
+      ↓
     Success confirmation after submit / localized error on failure
       ↓
     Applicant can delete their own non-final application
@@ -86,12 +88,15 @@ Authenticated user endpoints:
 - POST /applications
 - GET /applications/mine
 - GET /applications/mine/:id
+- PATCH /applications/mine/:id
 - DELETE /applications/mine/:id
+- DELETE /media/:id (only for unreferenced user-uploaded images)
 - PATCH /applications/mine/:id/resubmit
 
 Administrator endpoints:
 
 - GET /admin/applications
+- GET /admin/applications/photo-manifest
 - POST /admin/applications/:id/vote
 - PATCH /admin/applications/:id/review
 
@@ -123,6 +128,7 @@ Every new help or recognition application collects a contact snapshot from the a
 - PIN code
 - Requested amount for assistance applications
 - Need/achievement explanation
+- Mandatory clear face photo
 - Supporting documents or images
 - Pratibha Samman certificate photo (recognition applications only)
 - Mother name, father name, date of birth, class/standard and school/institute (recognition applications only)
@@ -149,3 +155,11 @@ Administrators can configure ordered acceptance rules for each application type.
 ### Selected Pratibha Samman students in Labharthi / Impact
 
 When an administrator selects a Pratibha Samman application, the student is automatically published into the existing Beneficiary (Labharthi) / Impact explorer. The submitted clear certificate photo is used as the public profile photo, supporting evidence is available as gallery media, and the public story includes the 2025-26 batch, class/standard, school/institute, achievements and the administrator's recognition note. The publication is linked to the source application so the same application cannot create duplicate beneficiary records. Recognition beneficiaries do not display a monetary contribution amount.
+
+### Application management UX
+
+Applicants can open any non-final application from history to view the complete submitted details and uploaded images. Non-final applications can be edited; saving an edit replaces the submitted media/rules snapshot and restarts the review cycle. Removed supporting images are detached and cleaned from storage when they are no longer referenced. Final decisions cannot be edited.
+
+Every new application requires a clear face photo. The face photo is displayed on applicant history and administrator application cards. For Pratibha Samman, the certificate face photo is also used as the application face photo unless a separate certificate photo is supplied.
+
+The administrator portal separates **Applications** from **Application configuration** so application review/list browsing cannot accidentally open window/rule editing controls. The application list opens a full detail screen with all applicant fields and uploaded media, and provides a named photo manifest for sharing the face-photo URLs with the certificate-printing team.

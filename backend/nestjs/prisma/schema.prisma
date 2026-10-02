@@ -248,6 +248,7 @@ model Media {
   beneficiaryMedia  BeneficiaryMedia[]
   helpApplicationMedia HelpApplicationMedia[]
   certificatePhotoApplications HelpApplication[] @relation("CertificatePhoto")
+  facePhotoApplications HelpApplication[] @relation("ApplicationFacePhoto")
   uploadedBy User? @relation("UserUploadedMedia", fields: [uploadedById], references: [id], onDelete: SetNull)
 
   @@index([uploadedById])
@@ -368,6 +369,8 @@ model HelpApplication {
   accomplishments String?               @db.Text
   certificatePhotoMediaId String?       @db.Uuid
   certificatePhotoMedia Media?          @relation("CertificatePhoto", fields: [certificatePhotoMediaId], references: [id], onDelete: SetNull)
+  facePhotoMediaId String?               @db.Uuid
+  facePhotoMedia Media?                  @relation("ApplicationFacePhoto", fields: [facePhotoMediaId], references: [id], onDelete: SetNull)
   adminNote       String?               @db.Text
   submittedAt     DateTime              @default(now())
   reviewedAt      DateTime?
@@ -381,6 +384,7 @@ model HelpApplication {
 
   @@index([applicantId, createdAt])
   @@index([type, status, createdAt])
+  @@index([facePhotoMediaId])
 }
 
 model ApplicationWindow {

@@ -27,6 +27,7 @@ class HelpApplicationsRepository {
     String? schoolInstituteName,
     String? accomplishments,
     String? certificatePhotoMediaId,
+    required String facePhotoMediaId,
     required List<String> acceptedRuleIds,
   }) async {
     final trimmedClarification = clarification?.trim();
@@ -50,6 +51,7 @@ class HelpApplicationsRepository {
       'schoolInstituteName': ?(schoolInstituteName?.trim().isNotEmpty == true ? schoolInstituteName!.trim() : null),
       'accomplishments': ?(accomplishments?.trim().isNotEmpty == true ? accomplishments!.trim() : null),
       'certificatePhotoMediaId': ?certificatePhotoMediaId,
+      'facePhotoMediaId': facePhotoMediaId,
     }));
   }
 
@@ -132,6 +134,32 @@ class HelpApplicationsRepository {
 
   Future<void> delete(String id) => client.deleteMyHelpApplication(id);
 
+  Future<HelpApplication> update({required String id, required String type, required String applicantName, required String mobileNumber, String? email, required String address, required String city, required String state, required String pincode, double? requestedAmount, String? clarification, String? motherName, String? fatherName, DateTime? dateOfBirth, String? classStandard, String? schoolInstituteName, String? accomplishments, String? certificatePhotoMediaId, required String facePhotoMediaId, required List<String> mediaIds, required List<String> acceptedRuleIds}) async {
+    return HelpApplication.fromJson(await client.updateMyHelpApplication(id, {
+      'applicantName': applicantName.trim(),
+      'mobileNumber': mobileNumber.trim(),
+      'email': ?(email?.trim().isNotEmpty == true ? email!.trim() : null),
+      'address': address.trim(),
+      'city': city.trim(),
+      'state': state.trim(),
+      'pincode': pincode.trim(),
+      'requestedAmount': ?requestedAmount,
+      'clarification': ?(clarification?.trim().isNotEmpty == true ? clarification!.trim() : null),
+      'motherName': ?(motherName?.trim().isNotEmpty == true ? motherName!.trim() : null),
+      'fatherName': ?(fatherName?.trim().isNotEmpty == true ? fatherName!.trim() : null),
+      'dateOfBirth': ?dateOfBirth?.toUtc().toIso8601String(),
+      'classStandard': ?(classStandard?.trim().isNotEmpty == true ? classStandard!.trim() : null),
+      'schoolInstituteName': ?(schoolInstituteName?.trim().isNotEmpty == true ? schoolInstituteName!.trim() : null),
+      'accomplishments': ?(accomplishments?.trim().isNotEmpty == true ? accomplishments!.trim() : null),
+      'certificatePhotoMediaId': ?certificatePhotoMediaId,
+      'facePhotoMediaId': facePhotoMediaId,
+      'mediaIds': mediaIds,
+      'acceptedRuleIds': acceptedRuleIds,
+    }));
+  }
+
+  Future<void> deleteImage(String id) => client.deleteApplicationImage(id);
+
   Future<String> uploadImage(String path) async {
     final json = await client.uploadApplicationImage(path);
     return json['id'] as String;
@@ -139,6 +167,9 @@ class HelpApplicationsRepository {
 
   Future<List<Map<String, dynamic>>> adminList({String? type, String? status}) =>
       client.getAdminHelpApplications(type: type, status: status);
+
+  Future<List<Map<String, dynamic>>> photoManifest({String? type, String? status}) =>
+      client.getAdminApplicationPhotoManifest(type: type, status: status);
 
   Future<void> vote(String id, int score, {String? comment}) =>
       client.voteHelpApplication(id, score, comment: comment);

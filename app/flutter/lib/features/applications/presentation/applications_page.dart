@@ -263,8 +263,12 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
   final _picker = ImagePicker();
   final List<String> _mediaIds = [];
   final List<XFile> _selectedImages = [];
+  final List<String> _selectedImageIds = [];
   String? _certificatePhotoMediaId;
+  String? _facePhotoMediaId;
   XFile? _certificatePhoto;
+  XFile? _facePhoto;
+  final List<HelpApplicationMedia> _existingMedia = [];
   DateTime? _dob;
   bool _busy = false;
   int _uploadTotal = 0;
@@ -290,6 +294,11 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     _schoolInstituteName.text = existing?.schoolInstituteName ?? '';
     _accomplishments.text = existing?.accomplishments ?? '';
     _certificatePhotoMediaId = existing?.certificatePhotoMediaId;
+    _facePhotoMediaId = existing?.facePhotoMediaId ?? existing?.certificatePhotoMediaId;
+    if (existing != null) {
+      _mediaIds.addAll(existing.media.map((m) => m.id));
+      _existingMedia.addAll(existing.media);
+    }
     _dob = existing?.dateOfBirth;
   }
 
@@ -324,6 +333,21 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     }
   }
 
+  Future<void> _uploadFacePhoto(ImageSource source) async {
+    if (_busy) return;
+    try {
+      final image = await _picker.pickImage(source: source, imageQuality: 92, maxWidth: 1800, maxHeight: 1800);
+      if (image == null) return;
+      setState(() { _busy = true; _uploadTotal = 1; _uploadCompleted = 0; });
+      final id = await ref.read(helpApplicationsRepositoryProvider).uploadImage(image.path);
+      if (mounted) setState(() { _facePhoto = image; _facePhotoMediaId = id; _uploadCompleted = 1; });
+    } catch (_) {
+      if (mounted) _showError(AppLocalizations.of(context)!.facePhotoUploadFailed);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   Future<void> _pickCertificatePhoto() => _uploadCertificatePhoto(ImageSource.gallery);
 
   Future<void> _takeCertificatePhoto() => _uploadCertificatePhoto(ImageSource.camera);
@@ -347,7 +371,9 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
       if (mounted) {
         setState(() {
           _certificatePhoto = image;
+          _facePhoto = image;
           _certificatePhotoMediaId = id;
+          _facePhotoMediaId = id;
           _uploadCompleted = 1;
         });
         await Future<void>.delayed(const Duration(milliseconds: 250));
@@ -446,8 +472,8 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.imagesRequired)));
       return;
     }
-    if (widget.type == 'PRATIBHA_SAMMAN' && _certificatePhotoMediaId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.certificatePhotoRequired)));
+    if (_facePhotoMediaId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(widget.type == 'PRATIBHA_SAMMAN' ? l10n.certificatePhotoRequired : l10n.facePhotoRequired)));
       return;
     }
     double? amount;
@@ -462,9 +488,9 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     try {
       final repo = ref.read(helpApplicationsRepositoryProvider);
       if (widget.application == null) {
-        await repo.create(type: widget.type, requestedAmount: amount, applicantName: _name.text, mobileNumber: _mobile.text, email: _email.text, address: _address.text, city: _city.text, state: _state.text, pincode: _pincode.text, motherName: isSamman ? _motherName.text : null, fatherName: isSamman ? _fatherName.text : null, dateOfBirth: isSamman ? _dob : null, classStandard: isSamman ? _classStandard.text : null, schoolInstituteName: isSamman ? _schoolInstituteName.text : null, accomplishments: isSamman ? _accomplishments.text : null, certificatePhotoMediaId: isSamman ? _certificatePhotoMediaId : null, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false), clarification: _clarification.text);
+        await repo.create(type: widget.type, requestedAmount: amount, applicantName: _name.text, mobileNumber: _mobile.text, email: _email.text, address: _address.text, city: _city.text, state: _state.text, pincode: _pincode.text, motherName: isSamman ? _motherName.text : null, fatherName: isSamman ? _fatherName.text : null, dateOfBirth: isSamman ? _dob : null, classStandard: isSamman ? _classStandard.text : null, schoolInstituteName: isSamman ? _schoolInstituteName.text : null, accomplishments: isSamman ? _accomplishments.text : null, certificatePhotoMediaId: isSamman ? _certificatePhotoMediaId : null, facePhotoMediaId: _facePhotoMediaId!, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false), clarification: _clarification.text);
       } else {
-        await repo.resubmit(id: widget.application!.id, clarification: _clarification.text, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false), requestedAmount: amount, motherName: isSamman ? _motherName.text : null, fatherName: isSamman ? _fatherName.text : null, dateOfBirth: isSamman ? _dob : null, classStandard: isSamman ? _classStandard.text : null, schoolInstituteName: isSamman ? _schoolInstituteName.text : null, accomplishments: isSamman ? _accomplishments.text : null, certificatePhotoMediaId: isSamman ? _certificatePhotoMediaId : null);
+        await repo.update(id: widget.application!.id, type: widget.type, applicantName: _name.text, mobileNumber: _mobile.text, email: _email.text, address: _address.text, city: _city.text, state: _state.text, pincode: _pincode.text, requestedAmount: amount, clarification: _clarification.text, motherName: isSamman ? _motherName.text : null, fatherName: isSamman ? _fatherName.text : null, dateOfBirth: isSamman ? _dob : null, classStandard: isSamman ? _classStandard.text : null, schoolInstituteName: isSamman ? _schoolInstituteName.text : null, accomplishments: isSamman ? _accomplishments.text : null, certificatePhotoMediaId: isSamman ? _certificatePhotoMediaId : null, facePhotoMediaId: _facePhotoMediaId!, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false));
       }
       ref.invalidate(myHelpApplicationsProvider);
       if (mounted) {
@@ -656,6 +682,22 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
               decoration: InputDecoration(labelText: l10n.pincodeRequired, prefixIcon: const Icon(Icons.location_on_outlined)),
               validator: _pincodeValidator,
             ),
+            if (!isSamman) ...[
+              const SizedBox(height: 20),
+              Text(l10n.facePhotoTitle, style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 4),
+              Text(l10n.facePhotoHint, style: Theme.of(context).textTheme.bodySmall),
+              const SizedBox(height: 8),
+              Row(children: [
+                Expanded(child: OutlinedButton.icon(onPressed: _busy ? null : () => _uploadFacePhoto(ImageSource.gallery), icon: const Icon(Icons.photo_library_outlined), label: Text(l10n.gallery))),
+                const SizedBox(width: 10),
+                Expanded(child: OutlinedButton.icon(onPressed: _busy ? null : () => _uploadFacePhoto(ImageSource.camera), icon: const Icon(Icons.camera_alt_outlined), label: Text(l10n.camera))),
+              ]),
+              if (_facePhotoMediaId != null) Padding(padding: const EdgeInsets.only(top: 8), child: Row(children: [const Icon(Icons.check_circle_rounded, size: 18), const SizedBox(width: 6), Expanded(child: Text(l10n.facePhotoSelected))])),
+              if (_facePhoto != null) Padding(padding: const EdgeInsets.only(top: 8), child: ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.file(File(_facePhoto!.path), height: 160, width: double.infinity, fit: BoxFit.cover))),
+              if (_facePhoto == null && widget.application?.facePhoto?.url != null) Padding(padding: const EdgeInsets.only(top: 8), child: ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.network(widget.application!.facePhoto!.url, height: 160, width: double.infinity, fit: BoxFit.cover))),
+            ],
+            const SizedBox(height: 20),
             if (isSamman) ...[
               const SizedBox(height: 20),
               Text(l10n.pratibhaStudentDetails, style: Theme.of(context).textTheme.titleMedium),
@@ -761,6 +803,14 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
                     child: Image.file(File(_certificatePhoto!.path), height: 160, width: double.infinity, fit: BoxFit.cover),
                   ),
                 ),
+              if (_certificatePhoto == null && widget.application?.certificatePhoto?.url != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.network(widget.application!.certificatePhoto!.url, height: 160, width: double.infinity, fit: BoxFit.cover),
+                  ),
+                ),
               TextFormField(
                 key: const ValueKey('pratibha_accomplishments'),
                 controller: _accomplishments,
@@ -816,18 +866,64 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
                 )),
               ],
             ),
+            if (_existingMedia.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: SizedBox(
+                  height: 108,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _existingMedia.length,
+                    separatorBuilder: (_, _) => const SizedBox(width: 8),
+                    itemBuilder: (_, index) {
+                      final media = _existingMedia[index];
+                      return Stack(
+                        children: [
+                          ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.network(media.url, width: 108, height: 108, fit: BoxFit.cover)),
+                          Positioned(
+                            right: 2,
+                            top: 2,
+                            child: IconButton.filledTonal(
+                              tooltip: l10n.deleteImage,
+                              icon: const Icon(Icons.close, size: 18),
+                              onPressed: _busy ? null : () => setState(() {
+                                _mediaIds.remove(media.id);
+                                _existingMedia.removeAt(index);
+                              }),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ),
             if (_selectedImages.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 12),
                 child: SizedBox(
-                  height: 92,
+                  height: 108,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     itemCount: _selectedImages.length,
                     separatorBuilder: (_, _) => const SizedBox(width: 8),
-                    itemBuilder: (_, index) => ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.file(File(_selectedImages[index].path), width: 92, height: 92, fit: BoxFit.cover),
+                    itemBuilder: (_, index) => Stack(
+                      children: [
+                        ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.file(File(_selectedImages[index].path), width: 108, height: 108, fit: BoxFit.cover)),
+                        Positioned(
+                          right: 2,
+                          top: 2,
+                          child: IconButton.filledTonal(
+                            tooltip: l10n.deleteImage,
+                            icon: const Icon(Icons.close, size: 18),
+                            onPressed: _busy ? null : () => setState(() {
+                              final id = _selectedImageIds.removeAt(index);
+                              _mediaIds.remove(id);
+                              _selectedImages.removeAt(index);
+                            }),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -910,31 +1006,43 @@ class _ApplicationCard extends StatelessWidget {
   const _ApplicationCard({required this.application, required this.onDelete});
   final HelpApplication application;
   final VoidCallback onDelete;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final canResubmit = application.status == 'REJECTED' || application.status == 'CLARIFICATION_REQUIRED';
-    final canDelete = application.status != 'APPROVED_FOR_DONATION' && application.status != 'CONSIDERED_FOR_SAMMAN';
-    return Card(
-      child: ListTile(
-        title: Text(_typeLabel(l10n, application.type)),
-        subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('${l10n.applicationStatus}: ${_statusLabel(l10n, application.status)}'),
-          if (application.requestedAmount != null) Text('${l10n.requestedAmount}: ₹${application.requestedAmount}'),
-          if (application.approvedAmount != null) Text('${l10n.approvedAmount}: ₹${application.approvedAmount}'),
-          if (application.rejectionReason != null) Text('${l10n.rejectionReason}: ${application.rejectionReason!}'),
-          if (application.clarification != null) Text('${l10n.clarification}: ${application.clarification!}'),
-        ]),
-        isThreeLine: true,
-        trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-          if (canResubmit) IconButton(tooltip: l10n.resubmitApplication, icon: const Icon(Icons.refresh_rounded), onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => HelpApplicationFormPage(type: application.type, application: application)))),
-          if (canDelete) IconButton(key: ValueKey('application_delete_${application.id}'), tooltip: l10n.deleteApplication, icon: const Icon(Icons.delete_outline_rounded), onPressed: onDelete),
-        ]),
-      ),
-    );
+  @override Widget build(BuildContext context) {
+    final l10n=AppLocalizations.of(context)!;
+    final canEdit=!['APPROVED_FOR_DONATION','CONSIDERED_FOR_SAMMAN','NOT_SELECTED'].contains(application.status);
+    return Card(child:ListTile(
+      contentPadding:const EdgeInsets.all(10),
+      leading:application.facePhoto?.url!=null?CircleAvatar(radius:30,backgroundImage:NetworkImage(application.facePhoto!.url)):const CircleAvatar(radius:30,child:Icon(Icons.person_outline)),
+      title:Text(application.applicantName??_typeLabel(l10n,application.type)),
+      subtitle:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(_typeLabel(l10n,application.type)),Text('${l10n.applicationStatus}: ${_statusLabel(l10n,application.status)}'),if(application.requestedAmount!=null)Text('${l10n.requestedAmount}: ₹${application.requestedAmount}')]),
+      isThreeLine:true,
+      onTap:()=>Navigator.of(context).push(MaterialPageRoute(builder:(_)=>ApplicationDetailsPage(application:application))),
+      trailing:Wrap(spacing:0,children:[
+        if(canEdit)IconButton(key:ValueKey('application_edit_${application.id}'),tooltip:l10n.editApplication,icon:const Icon(Icons.edit_outlined),onPressed:()=>Navigator.of(context).push(MaterialPageRoute(builder:(_)=>HelpApplicationFormPage(type:application.type,application:application)))),
+        if(canEdit)IconButton(key:ValueKey('application_delete_${application.id}'),tooltip:l10n.deleteApplication,icon:const Icon(Icons.delete_outline_rounded),onPressed:onDelete),
+      ]),
+    ));
   }
 }
+
+class ApplicationDetailsPage extends StatelessWidget {
+  const ApplicationDetailsPage({super.key,required this.application});
+  final HelpApplication application;
+  @override Widget build(BuildContext context){
+    final l10n=AppLocalizations.of(context)!;
+    final images=<HelpApplicationMedia>[if(application.facePhoto!=null)application.facePhoto!,if(application.certificatePhoto!=null&&application.certificatePhoto!.id!=application.facePhoto?.id)application.certificatePhoto!,...application.media];
+    Widget field(String label,String? value){if(value==null||value.trim().isEmpty)return const SizedBox.shrink();return Padding(padding:const EdgeInsets.only(bottom:8),child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[SizedBox(width:135,child:Text(label,style:Theme.of(context).textTheme.labelLarge)),Expanded(child:SelectableText(value))]));}
+    return AppPageScaffold(title:Text(_typeLabel(l10n,application.type)),body:ListView(padding:const EdgeInsets.all(16),children:[
+      if(application.facePhoto!=null)ClipRRect(borderRadius:BorderRadius.circular(16),child:Image.network(application.facePhoto!.url,height:240,fit:BoxFit.cover)),
+      const SizedBox(height:16),Text(application.applicantName??'',style:Theme.of(context).textTheme.headlineSmall),const SizedBox(height:10),
+      field(l10n.applicationStatus,_statusLabel(l10n,application.status)),field(l10n.mobileNumberRequired,application.mobileNumber),field(l10n.emailOptional,application.email),field(l10n.addressRequired,application.address),field(l10n.cityRequired,application.city),field(l10n.stateRequired,application.state),field(l10n.pincodeRequired,application.pincode),
+      field(l10n.requestedAmount,application.requestedAmount==null?null:'₹${application.requestedAmount}'),field(l10n.approvedAmount,application.approvedAmount==null?null:'₹${application.approvedAmount}'),field(l10n.rejectionReason,application.rejectionReason),field(l10n.clarification,application.clarification),
+      field(l10n.motherNameRequired,application.motherName),field(l10n.fatherNameRequired,application.fatherName),field(l10n.dateOfBirthRequired,application.dateOfBirth?.toLocal().toString()),field(l10n.classStandardRequired,application.classStandard),field(l10n.schoolInstituteRequired,application.schoolInstituteName),field(l10n.otherAccomplishmentsOptional,application.accomplishments),
+      const SizedBox(height:16),Text(l10n.supportingDocuments,style:Theme.of(context).textTheme.titleMedium),const SizedBox(height:10),
+      GridView.builder(shrinkWrap:true,physics:const NeverScrollableScrollPhysics(),itemCount:images.length,gridDelegate:const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount:2,crossAxisSpacing:8,mainAxisSpacing:8),itemBuilder:(_,i){final image=images[i];return InkWell(onTap:()=>showDialog<void>(context:context,builder:(_)=>Dialog(child:InteractiveViewer(child:Image.network(image.url)))),child:ClipRRect(borderRadius:BorderRadius.circular(10),child:Image.network(image.url,fit:BoxFit.cover)));}),
+    ]));
+  }
+}
+
 
 String _applicationActionKey(String type) {
   switch (type) {

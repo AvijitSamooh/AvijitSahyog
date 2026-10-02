@@ -343,10 +343,21 @@ class ApiClient {
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
+  Future<Map<String, dynamic>> updateMyHelpApplication(String id, Map<String, dynamic> payload) async {
+    final response = await _client.patch(Uri.parse('$baseUrl/applications/mine/$id'), headers: await _headers(json: true), body: jsonEncode(payload));
+    _ensureSuccess(response, 'Updating application');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
   Future<Map<String, dynamic>> resubmitHelpApplication(String id, Map<String, dynamic> payload) async {
     final response = await _client.patch(Uri.parse('$baseUrl/applications/mine/$id/resubmit'), headers: await _headers(json: true), body: jsonEncode(payload));
     _ensureSuccess(response, 'Resubmitting application');
     return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<void> deleteApplicationImage(String id) async {
+    final response = await _client.delete(Uri.parse('$baseUrl/media/$id'), headers: await _headers());
+    _ensureSuccess(response, 'Deleting application image');
   }
 
   Future<void> deleteMyHelpApplication(String id) async {
@@ -361,6 +372,16 @@ class ApiClient {
     });
     final response = await _client.get(uri, headers: await _headers());
     _ensureSuccess(response, 'Loading applications');
+    return (jsonDecode(response.body) as List<dynamic>).cast<Map<String, dynamic>>();
+  }
+
+  Future<List<Map<String, dynamic>>> getAdminApplicationPhotoManifest({String? type, String? status}) async {
+    final uri = Uri.parse('$baseUrl/admin/applications/photo-manifest').replace(queryParameters: {
+      if (type != null && type.isNotEmpty) 'type': type,
+      if (status != null && status.isNotEmpty) 'status': status,
+    });
+    final response = await _client.get(uri, headers: await _headers());
+    _ensureSuccess(response, 'Loading application photo manifest');
     return (jsonDecode(response.body) as List<dynamic>).cast<Map<String, dynamic>>();
   }
 
