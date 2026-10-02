@@ -9,6 +9,7 @@ import 'admin_analytics_page.dart';
 import 'admin_dashboard_page.dart';
 import 'admin_beneficiaries_page.dart';
 import '../../applications/presentation/admin_applications_page.dart';
+import '../../applications/presentation/admin_application_configuration_page.dart';
 import 'admin_causes_page.dart';
 import 'admin_organisations_page.dart';
 import 'admin_users_page.dart';
@@ -122,6 +123,13 @@ class _AdminPortalPageState extends ConsumerState<AdminPortalPage> {
               title: l10n.adminApplications,
               subtitle: l10n.applicationHistory,
               onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AdminApplicationsPage())),
+            ),
+            const SizedBox(height: 12),
+            _AdminSectionCard(
+              icon: Icons.tune_rounded,
+              title: l10n.applicationConfiguration,
+              subtitle: l10n.applicationConfigurationSubtitle,
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AdminApplicationConfigurationPage())),
             ),
             const SizedBox(height: 12),
             _AdminSectionCard(
