@@ -238,11 +238,37 @@ void main() {
       'pratibha_class_standard',
       'pratibha_school_institute',
       'pratibha_certificate_photo',
+      'pratibha_certificate_camera',
       'pratibha_accomplishments',
     ]) {
       expect(find.byKey(ValueKey(key)), findsOneWidget);
     }
     expect(find.byType(CheckboxListTile), findsOneWidget);
+    final checkbox = tester.widget<Checkbox>(find.byType(Checkbox));
+    expect(
+      checkbox.fillColor?.resolve({MaterialState.selected}),
+      Colors.green.shade600,
+    );
+    expect(
+      checkbox.checkColor,
+      Colors.white,
+    );
+  });
+
+  testWidgets('certificate upload progress widget renders visible progress feedback', (tester) async {
+    await pumpApp(
+      tester,
+      home: const ApplicationUploadProgress(
+        label: 'Uploading image...',
+        completed: 0,
+        total: 1,
+      ),
+    );
+
+    expect(find.byKey(const ValueKey('application_upload_progress')), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byType(LinearProgressIndicator), findsOneWidget);
+    expect(find.text('Uploading image... 0/1'), findsOneWidget);
   });
 
   testWidgets('application rules render translated text, order, dates, and no implementation placeholders in every supported language', (tester) async {
