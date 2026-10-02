@@ -375,6 +375,17 @@ class ApiClient {
     return (jsonDecode(response.body) as List<dynamic>).cast<Map<String, dynamic>>();
   }
 
+  Future<Map<String, dynamic>> getAdminApplicationSummary({String? type}) async {
+    final uri = Uri.parse('$baseUrl/admin/applications/summary').replace(
+      queryParameters: {
+        if (type != null && type.isNotEmpty) 'type': type,
+      },
+    );
+    final response = await _client.get(uri, headers: await _headers());
+    _ensureSuccess(response, 'Loading application summary');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
   Future<List<Map<String, dynamic>>> getAdminApplicationPhotoManifest({String? type, String? status}) async {
     final uri = Uri.parse('$baseUrl/admin/applications/photo-manifest').replace(queryParameters: {
       if (type != null && type.isNotEmpty) 'type': type,

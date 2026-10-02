@@ -237,6 +237,7 @@ void main() {
       'pratibha_date_of_birth',
       'pratibha_class_standard',
       'pratibha_school_institute',
+      'application_overall_percentage',
       'pratibha_certificate_photo',
       'pratibha_certificate_camera',
       'pratibha_accomplishments',

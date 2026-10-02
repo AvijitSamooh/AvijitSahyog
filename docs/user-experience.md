@@ -120,3 +120,17 @@ Before release:
 - [ ] Navigation returns to the main shell consistently.
 - [ ] Accessibility/basic responsive behaviour is reviewed.
 - [ ] Documentation matches shipped behaviour.
+
+
+## High-volume application review
+
+For application rounds with hundreds of applicants, the administrator workflow is designed as a queue rather than a configuration form:
+
+1. Open the Applications review queue.
+2. See the summary counts for total, needs review, selected and rejected applications.
+3. Use the overall-percentage ordering to inspect the strongest candidates first.
+4. Use the Top 50 view as a working shortlist when the round has a fixed target of approximately 50 finalists.
+5. Open the full profile/evidence before making the final decision.
+6. If an applicant edits or resubmits, their previous reviewer votes and decision metadata are cleared and the application re-enters the review queue.
+
+The Top 50 view does not automatically approve applicants; it is a review aid so the final decision remains an explicit administrator action.

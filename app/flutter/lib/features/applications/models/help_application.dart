@@ -34,6 +34,7 @@ class HelpApplication {
     this.state,
     this.pincode,
     this.requestedAmount,
+    this.overallPercentage,
     this.approvedAmount,
     this.rejectionReason,
     this.clarification,
@@ -64,6 +65,7 @@ class HelpApplication {
   final String? pincode;
   final String status;
   final num? requestedAmount;
+  final num? overallPercentage;
   final num? approvedAmount;
   final String? rejectionReason;
   final String? clarification;
@@ -95,6 +97,7 @@ class HelpApplication {
         state: json['state'] as String?,
         pincode: json['pincode'] as String?,
         requestedAmount: _parseAmount(json['requestedAmount']),
+        overallPercentage: _parseAmount(json['overallPercentage']),
         approvedAmount: _parseAmount(json['approvedAmount']),
         rejectionReason: json['rejectionReason'] as String?,
         clarification: json['clarification'] as String?,

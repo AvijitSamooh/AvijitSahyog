@@ -1,4 +1,4 @@
-import { IsArray, IsDateString, IsNumber, IsOptional, IsString, IsUUID, Matches, MaxLength, Min } from 'class-validator';
+import { IsArray, IsDateString, IsNumber, IsOptional, IsString, IsUUID, Matches, Max, MaxLength, Min } from 'class-validator';
 
 export class UpdateHelpApplicationDto {
   @IsString()
@@ -29,6 +29,11 @@ export class UpdateHelpApplicationDto {
   @IsString()
   @MaxLength(10)
   pincode!: string;
+
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0)
+  @Max(100)
+  overallPercentage!: number;
 
   @IsOptional()
   @IsNumber({ maxDecimalPlaces: 2 })

@@ -39,6 +39,7 @@ export class HelpApplicationsService {
         pincode: dto.pincode.trim(),
         type: dto.type,
         requestedAmount: dto.requestedAmount,
+        overallPercentage: dto.overallPercentage,
         clarification: dto.clarification?.trim() || null,
         motherName: dto.motherName?.trim() || null,
         fatherName: dto.fatherName?.trim() || null,
@@ -97,13 +98,10 @@ export class HelpApplicationsService {
     const certificatePhotoMediaId = await this.validateCertificatePhoto(existing.type, dto.certificatePhotoMediaId, user.id, facePhotoMediaId);
     const previousMediaIds = existing.media.map((item) => item.mediaId);
     const removedMediaIds = previousMediaIds.filter((mediaId) => !media.includes(mediaId));
-    if (existing.status === 'UNDER_REVIEW') {
-      // Editing invalidates previous reviewer votes; the application returns to the
-      // normal submitted queue with a fresh review cycle.
-      await this.prisma.helpApplicationVote.deleteMany({ where: { applicationId: id } });
-    }
-
     const updated = await this.prisma.$transaction(async (tx) => {
+      // Any applicant edit creates a new review cycle. Clear reviewer votes and
+      // review metadata atomically with the edited application.
+      await tx.helpApplicationVote.deleteMany({ where: { applicationId: id } });
       await tx.helpApplicationMedia.deleteMany({ where: { applicationId: id } });
       await tx.helpApplicationRuleAcceptance.deleteMany({ where: { applicationId: id } });
       return tx.helpApplication.update({
@@ -118,6 +116,7 @@ export class HelpApplicationsService {
           pincode: dto.pincode.trim(),
           status: 'SUBMITTED',
           requestedAmount: dto.requestedAmount ?? null,
+          overallPercentage: dto.overallPercentage,
           approvedAmount: null,
           rejectionReason: null,
           clarification: dto.clarification?.trim() || null,
@@ -176,6 +175,7 @@ export class HelpApplicationsService {
     const certificatePhotoMediaId = await this.validateCertificatePhoto(existing.type, dto.certificatePhotoMediaId, user.id);
     const acceptedRules = await this.validateAcceptedRules(existing.type as HelpApplicationTypeDto, dto.acceptedRuleIds);
     return this.prisma.$transaction(async (tx) => {
+      await tx.helpApplicationVote.deleteMany({ where: { applicationId: id } });
       await tx.helpApplicationMedia.deleteMany({ where: { applicationId: id } });
       await tx.helpApplicationRuleAcceptance.deleteMany({ where: { applicationId: id } });
       const updated = await tx.helpApplication.update({
@@ -183,6 +183,7 @@ export class HelpApplicationsService {
         data: {
           status: 'SUBMITTED',
           requestedAmount: dto.requestedAmount ?? existing.requestedAmount,
+          overallPercentage: dto.overallPercentage,
           approvedAmount: null,
           rejectionReason: null,
           clarification: dto.clarification.trim(),
@@ -207,7 +208,7 @@ export class HelpApplicationsService {
   async listForAdmin(type?: string, status?: string) {
     const items = await this.prisma.helpApplication.findMany({
       where: { ...(type ? { type: type as any } : {}), ...(status ? { status: status as any } : {}) },
-      orderBy: [{ status: 'asc' }, { createdAt: 'asc' }],
+      orderBy: [{ createdAt: 'asc' }],
       include: {
         applicant: { select: { id: true, displayName: true, email: true } },
         media: { include: { media: true } },
@@ -217,10 +218,38 @@ export class HelpApplicationsService {
       },
     });
     const responses = items.map((item) => this.toAdminResponse(item));
-    if (type === 'PRATIBHA_SAMMAN') {
-      responses.sort((a, b) => (b.voteAverage ?? -1) - (a.voteAverage ?? -1));
-    }
+    responses.sort((a, b) =>
+      (b.overallPercentage ?? -1) - (a.overallPercentage ?? -1) ||
+      (type === 'PRATIBHA_SAMMAN' ? (b.voteAverage ?? -1) - (a.voteAverage ?? -1) : 0) ||
+      new Date(a.submittedAt ?? 0).getTime() - new Date(b.submittedAt ?? 0).getTime(),
+    );
     return responses;
+  }
+
+  async adminSummary(type?: string) {
+    const where = type ? { type: type as any } : {};
+    const groups = await this.prisma.helpApplication.groupBy({
+      by: ['status'],
+      where,
+      _count: { _all: true },
+    });
+    const counts = Object.fromEntries(groups.map((group) => [group.status, group._count._all]));
+    const selected = (counts.APPROVED_FOR_DONATION ?? 0) + (counts.CONSIDERED_FOR_SAMMAN ?? 0);
+    const rejected = counts.REJECTED ?? 0;
+    const notSelected = counts.NOT_SELECTED ?? 0;
+    const needsReview =
+      (counts.SUBMITTED ?? 0) +
+      (counts.UNDER_REVIEW ?? 0) +
+      (counts.CLARIFICATION_REQUIRED ?? 0);
+    return {
+      total: Object.values(counts).reduce((sum, value) => sum + value, 0),
+      needsReview,
+      selected,
+      rejected,
+      notSelected,
+      clarificationRequired: counts.CLARIFICATION_REQUIRED ?? 0,
+      byStatus: counts,
+    };
   }
 
   async photoManifest(type?: string, status?: string) {
@@ -491,7 +520,7 @@ export class HelpApplicationsService {
   }
 
   private toResponse(item: any) {
-    return { id: item.id, type: item.type, status: item.status, applicantName: item.applicantName, mobileNumber: item.mobileNumber, email: item.email, address: item.address, city: item.city, state: item.state, pincode: item.pincode, requestedAmount: item.requestedAmount, approvedAmount: item.approvedAmount, rejectionReason: item.rejectionReason, clarification: item.clarification, motherName: item.motherName, fatherName: item.fatherName, dateOfBirth: item.dateOfBirth, classStandard: item.classStandard, schoolInstituteName: item.schoolInstituteName, accomplishments: item.accomplishments, certificatePhotoMediaId: item.certificatePhotoMediaId, facePhotoMediaId: item.facePhotoMediaId, facePhoto: item.facePhotoMedia ? this.mediaResponse({ media: item.facePhotoMedia }) : null, certificatePhoto: item.certificatePhotoMedia ? this.mediaResponse({ media: item.certificatePhotoMedia }) : null, adminNote: item.adminNote, submittedAt: item.submittedAt, reviewedAt: item.reviewedAt, media: (item.media ?? []).map((m: any) => this.mediaResponse(m)) };
+    return { id: item.id, type: item.type, status: item.status, applicantName: item.applicantName, mobileNumber: item.mobileNumber, email: item.email, address: item.address, city: item.city, state: item.state, pincode: item.pincode, requestedAmount: item.requestedAmount, overallPercentage: item.overallPercentage, approvedAmount: item.approvedAmount, rejectionReason: item.rejectionReason, clarification: item.clarification, motherName: item.motherName, fatherName: item.fatherName, dateOfBirth: item.dateOfBirth, classStandard: item.classStandard, schoolInstituteName: item.schoolInstituteName, accomplishments: item.accomplishments, certificatePhotoMediaId: item.certificatePhotoMediaId, facePhotoMediaId: item.facePhotoMediaId, facePhoto: item.facePhotoMedia ? this.mediaResponse({ media: item.facePhotoMedia }) : null, certificatePhoto: item.certificatePhotoMedia ? this.mediaResponse({ media: item.certificatePhotoMedia }) : null, adminNote: item.adminNote, submittedAt: item.submittedAt, reviewedAt: item.reviewedAt, media: (item.media ?? []).map((m: any) => this.mediaResponse(m)) };
   }
 
   private toAdminResponse(item: any) {

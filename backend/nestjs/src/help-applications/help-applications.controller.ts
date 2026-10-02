@@ -93,6 +93,11 @@ export class AdminHelpApplicationsController {
     return this.service.listForAdmin(type, status);
   }
 
+  @Get('summary')
+  summary(@Query('type') type?: string) {
+    return this.service.adminSummary(type);
+  }
+
   @Get('photo-manifest')
   photoManifest(@Query('type') type?: string, @Query('status') status?: string) {
     return this.service.photoManifest(type, status);

@@ -163,3 +163,20 @@ Applicants can open any non-final application from history to view the complete 
 Every new application requires a clear face photo. The face photo is displayed on applicant history and administrator application cards. For Pratibha Samman, the certificate face photo is also used as the application face photo unless a separate certificate photo is supplied.
 
 The administrator portal separates **Applications** from **Application configuration** so application review/list browsing cannot accidentally open window/rule editing controls. The application list opens a full detail screen with all applicant fields and uploaded media, and provides a named photo manifest for sharing the face-photo URLs with the certificate-printing team.
+
+
+## Review queue and shortlisting
+
+Each new or edited application must provide an overall percentage from 0 to 100. The backend stores the value and the administrator application queue orders candidates by overall percentage descending, with applications that predate this field kept as legacy records.
+
+The admin review screen provides:
+- total application count;
+- needs-review count (submitted, under review and clarification-required);
+- selected count (approved for donation or considered for Samman);
+- rejected count;
+- not-selected count for Samman applications;
+- a Top 50 by overall percentage review view for high-volume rounds.
+
+The percentage is a prioritisation signal, not an automatic approval. Administrators still inspect evidence, cast reviewer votes where applicable, and make the final review decision.
+
+When an applicant edits an application or resubmits after rejection/clarification, the application returns to SUBMITTED, reviewer votes are cleared, approval/rejection metadata is reset, and it enters a fresh review cycle.

@@ -13,6 +13,7 @@ describe('HelpApplicationsService', () => {
       findMany: jest.fn(),
       findFirst: jest.fn(),
       findUnique: jest.fn(),
+      groupBy: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
     },
@@ -43,6 +44,7 @@ describe('HelpApplicationsService', () => {
       type: 'EDUCATION_ASSISTANCE',
       status: 'SUBMITTED',
       requestedAmount: 25000,
+      overallPercentage: 82.5,
       approvedAmount: null,
       rejectionReason: null,
       clarification: null,
@@ -62,6 +64,7 @@ describe('HelpApplicationsService', () => {
       state: 'Maharashtra',
       pincode: '411001',
       requestedAmount: 25000,
+      overallPercentage: 82.5,
       mediaIds: ['media-1'],
       facePhotoMediaId: 'face-1',
     });
@@ -125,6 +128,7 @@ describe('HelpApplicationsService', () => {
       id: 'app-1',
       type: 'MEDICAL_HELP',
       requestedAmount: 10000,
+      overallPercentage: 82.5,
       media: [],
     });
     const service = new HelpApplicationsService(prisma, applicationWindows, mediaService);
@@ -139,6 +143,7 @@ describe('HelpApplicationsService', () => {
       id: 'app-1',
       type: 'EDUCATION_ASSISTANCE',
       requestedAmount: 10000,
+      overallPercentage: 82.5,
       media: [],
     });
     const service = new HelpApplicationsService(prisma, applicationWindows, mediaService);
@@ -151,6 +156,7 @@ describe('HelpApplicationsService', () => {
       id: 'app-1',
       type: 'MEDICAL_HELP',
       requestedAmount: 10000,
+      overallPercentage: 82.5,
       media: [],
     });
     const service = new HelpApplicationsService(prisma, applicationWindows, mediaService);
@@ -366,6 +372,7 @@ describe('HelpApplicationsService', () => {
       type: 'MEDICAL_HELP',
       status: 'UNDER_REVIEW',
       requestedAmount: 10000,
+      overallPercentage: 82.5,
       media: [{ mediaId: 'old-media' }],
     });
     prisma.media.findMany.mockResolvedValue([{ id: 'new-media' }]);
@@ -382,6 +389,7 @@ describe('HelpApplicationsService', () => {
       state: 'Maharashtra',
       pincode: '411001',
       requestedAmount: 15000,
+      overallPercentage: 82.5,
       approvedAmount: null,
       rejectionReason: null,
       clarification: 'Updated need',
@@ -399,6 +407,7 @@ describe('HelpApplicationsService', () => {
       state: 'Maharashtra',
       pincode: '411001',
       requestedAmount: 15000,
+      overallPercentage: 82.5,
       clarification: 'Updated need',
       facePhotoMediaId: 'new-face',
       mediaIds: ['new-media'],
@@ -431,11 +440,34 @@ describe('HelpApplicationsService', () => {
       state: 'Maharashtra',
       pincode: '411001',
       requestedAmount: 1000,
+      overallPercentage: 82.5,
       facePhotoMediaId: 'face-1',
       mediaIds: ['media-1'],
       facePhotoMediaId: 'face-1',
       acceptedRuleIds: [],
     })).rejects.toThrow('can no longer be edited');
+  });
+
+  it('returns review queue summary counts', async () => {
+    prisma.helpApplication.groupBy.mockResolvedValue([
+      { status: 'SUBMITTED', _count: { _all: 120 } },
+      { status: 'UNDER_REVIEW', _count: { _all: 30 } },
+      { status: 'CLARIFICATION_REQUIRED', _count: { _all: 10 } },
+      { status: 'APPROVED_FOR_DONATION', _count: { _all: 40 } },
+      { status: 'REJECTED', _count: { _all: 90 } },
+      { status: 'CONSIDERED_FOR_SAMMAN', _count: { _all: 5 } },
+      { status: 'NOT_SELECTED', _count: { _all: 15 } },
+    ]);
+    const service = new HelpApplicationsService(prisma, applicationWindows, mediaService);
+
+    await expect(service.adminSummary()).resolves.toEqual(expect.objectContaining({
+      total: 310,
+      needsReview: 160,
+      selected: 45,
+      rejected: 90,
+      notSelected: 15,
+      clarificationRequired: 10,
+    }));
   });
 
 });
