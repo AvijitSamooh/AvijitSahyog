@@ -530,5 +530,21 @@
   "facePhotoRequired": "कृपया स्पष्ट चेहऱ्याचा फोटो द्या.",
   "facePhotoUploadFailed": "चेहऱ्याचा फोटो अपलोड करता आला नाही.",
   "editApplication": "अर्ज संपादित करा",
-  "deleteImage": "फोटो हटवा"
+  "deleteImage": "फोटो हटवा",
+  "overallPercentage": "एकूण टक्केवारी",
+  "overallPercentageHint": "एकूण टक्केवारी नोंदवा (0–100)",
+  "overallPercentageInvalid": "0 ते 100 दरम्यान वैध टक्केवारी नोंदवा.",
+  "reviewQueue": "पुनरावलोकन रांग",
+  "selectedApplications": "निवडलेले",
+  "needsReview": "पुनरावलोकन आवश्यक",
+  "rejectedApplications": "नाकारलेले",
+  "notSelectedApplications": "निवडलेले नाही",
+  "shortlistByPercentage": "एकूण टक्केवारीनुसार क्रम",
+  "reviewStatus": "पुनरावलोकन स्थिती",
+  "allApplications": "सर्व अर्ज",
+  "reviewSummary": "पुनरावलोकन सारांश",
+  "selectedCount": "निवडलेले {count}",
+  "needsReviewCount": "पुनरावलोकन आवश्यक {count}",
+  "rejectedCount": "नाकारलेले {count}",
+  "notSelectedCount": "निवडलेले नाही {count}"
 }
