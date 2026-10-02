@@ -84,6 +84,7 @@ describe('HelpApplicationsService', () => {
       state: 'Maharashtra',
       pincode: '411001',
       mediaIds: ['media-1'],
+      facePhotoMediaId: 'face-1',
     })).rejects.toThrow('Applications are no longer being accepted.');
     expect(prisma.media.findMany).not.toHaveBeenCalled();
     expect(prisma.helpApplication.create).not.toHaveBeenCalled();
@@ -292,6 +293,7 @@ describe('HelpApplicationsService', () => {
       state: 'Maharashtra',
       pincode: '411001',
       mediaIds: ['media-1'],
+      facePhotoMediaId: 'face-1',
 
       motherName: 'Mother User',
       fatherName: 'Father User',
@@ -339,6 +341,7 @@ describe('HelpApplicationsService', () => {
       state: 'Maharashtra',
       pincode: '411001',
       mediaIds: ['media-1'],
+      facePhotoMediaId: 'face-1',
 
       motherName: 'Mother User',
       fatherName: 'Father User',
@@ -430,6 +433,7 @@ describe('HelpApplicationsService', () => {
       requestedAmount: 1000,
       facePhotoMediaId: 'face-1',
       mediaIds: ['media-1'],
+      facePhotoMediaId: 'face-1',
       acceptedRuleIds: [],
     })).rejects.toThrow('can no longer be edited');
   });
