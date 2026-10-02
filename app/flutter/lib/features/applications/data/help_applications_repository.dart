@@ -168,6 +168,9 @@ class HelpApplicationsRepository {
   Future<List<Map<String, dynamic>>> adminList({String? type, String? status}) =>
       client.getAdminHelpApplications(type: type, status: status);
 
+  Future<List<Map<String, dynamic>>> photoManifest({String? type, String? status}) =>
+      client.getAdminApplicationPhotoManifest(type: type, status: status);
+
   Future<void> vote(String id, int score, {String? comment}) =>
       client.voteHelpApplication(id, score, comment: comment);
 
