@@ -13,6 +13,7 @@ describe('HelpApplicationsService', () => {
       findMany: jest.fn(),
       findFirst: jest.fn(),
       findUnique: jest.fn(),
+      groupBy: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
     },
@@ -445,6 +446,28 @@ describe('HelpApplicationsService', () => {
       facePhotoMediaId: 'face-1',
       acceptedRuleIds: [],
     })).rejects.toThrow('can no longer be edited');
+  });
+
+  it('returns review queue summary counts', async () => {
+    prisma.helpApplication.groupBy.mockResolvedValue([
+      { status: 'SUBMITTED', _count: { _all: 120 } },
+      { status: 'UNDER_REVIEW', _count: { _all: 30 } },
+      { status: 'CLARIFICATION_REQUIRED', _count: { _all: 10 } },
+      { status: 'APPROVED_FOR_DONATION', _count: { _all: 40 } },
+      { status: 'REJECTED', _count: { _all: 90 } },
+      { status: 'CONSIDERED_FOR_SAMMAN', _count: { _all: 5 } },
+      { status: 'NOT_SELECTED', _count: { _all: 15 } },
+    ]);
+    const service = new HelpApplicationsService(prisma, applicationWindows, mediaService);
+
+    await expect(service.adminSummary()).resolves.toEqual(expect.objectContaining({
+      total: 310,
+      needsReview: 160,
+      selected: 45,
+      rejected: 90,
+      notSelected: 15,
+      clarificationRequired: 10,
+    }));
   });
 
 });
