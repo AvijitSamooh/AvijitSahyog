@@ -17,7 +17,7 @@ describe('HelpApplicationsService', () => {
       delete: jest.fn(),
     },
     helpApplicationMedia: { deleteMany: jest.fn() },
-    helpApplicationVote: { upsert: jest.fn() },
+    helpApplicationVote: { upsert: jest.fn(), deleteMany: jest.fn() },
     cause: { findUnique: jest.fn() },
     beneficiary: { upsert: jest.fn() },
     beneficiaryMedia: { findFirst: jest.fn(), findMany: jest.fn(), create: jest.fn() },
@@ -25,11 +25,13 @@ describe('HelpApplicationsService', () => {
   };
   const identity = { uid: 'firebase-1', email: 'user@example.com', displayName: 'User' };
   const applicationWindows = { ensureAccepting: jest.fn() } as unknown as ApplicationWindowsService;
+  const mediaService = { deleteUserImage: jest.fn() } as any;
 
   beforeEach(() => {
     jest.clearAllMocks();
     prisma.user.upsert.mockResolvedValue({ id: 'user-1', role: 'USER' });
     prisma.applicationRule.findMany.mockResolvedValue([]);
+    prisma.media.findFirst.mockResolvedValue({ id: 'face-1' });
     (applicationWindows.ensureAccepting as jest.Mock).mockResolvedValue({ type: 'EDUCATION_ASSISTANCE' });
     prisma.$transaction.mockImplementation(async (callback: any) => callback(prisma));
   });
@@ -47,9 +49,10 @@ describe('HelpApplicationsService', () => {
       adminNote: null,
       applicantName: 'Test User', mobileNumber: '9876543210', email: null, address: '123 Test Street', city: 'Pune', state: 'Maharashtra', pincode: '411001',
       media: [{ media: { id: 'media-1', storageKey: 'applications/a.webp', mimeType: 'image/webp' } }],
+      facePhotoMedia: { id: 'face-1', storageKey: 'applications/face.webp', mimeType: 'image/webp' },
     });
 
-    const service = new HelpApplicationsService(prisma, applicationWindows);
+    const service = new HelpApplicationsService(prisma, applicationWindows, mediaService);
     const result = await service.create(identity, {
       type: 'EDUCATION_ASSISTANCE',
       applicantName: 'Test User',
@@ -60,6 +63,7 @@ describe('HelpApplicationsService', () => {
       pincode: '411001',
       requestedAmount: 25000,
       mediaIds: ['media-1'],
+      facePhotoMediaId: 'face-1',
     });
 
     expect(result.requestedAmount).toBe(25000);
@@ -69,7 +73,7 @@ describe('HelpApplicationsService', () => {
   it('blocks submission when the configured application window is closed', async () => {
     (applicationWindows.ensureAccepting as jest.Mock).mockRejectedValueOnce(new BadRequestException('Applications are no longer being accepted.'));
     prisma.media.findFirst.mockResolvedValue({ id: 'certificate-1' });
-    const service = new HelpApplicationsService(prisma, applicationWindows);
+    const service = new HelpApplicationsService(prisma, applicationWindows, mediaService);
 
     await expect(service.create(identity, {
       type: 'PRATIBHA_SAMMAN',
@@ -86,7 +90,7 @@ describe('HelpApplicationsService', () => {
   });
 
   it('requires evidence images and amount for assistance', async () => {
-    const service = new HelpApplicationsService(prisma, applicationWindows);
+    const service = new HelpApplicationsService(prisma, applicationWindows, mediaService);
     await expect(service.create(identity, {
       type: 'MEDICAL_HELP',
       applicantName: 'Test User',
@@ -102,7 +106,7 @@ describe('HelpApplicationsService', () => {
   });
 
   it('requires evidence for Pratibha Samman', async () => {
-    const service = new HelpApplicationsService(prisma, applicationWindows);
+    const service = new HelpApplicationsService(prisma, applicationWindows, mediaService);
     await expect(service.create(identity, {
       type: 'PRATIBHA_SAMMAN',
       applicantName: 'Test User',
@@ -122,7 +126,7 @@ describe('HelpApplicationsService', () => {
       requestedAmount: 10000,
       media: [],
     });
-    const service = new HelpApplicationsService(prisma, applicationWindows);
+    const service = new HelpApplicationsService(prisma, applicationWindows, mediaService);
     await expect(service.review('app-1', {
       decision: 'APPROVE',
       approvedAmount: 12000,
@@ -136,7 +140,7 @@ describe('HelpApplicationsService', () => {
       requestedAmount: 10000,
       media: [],
     });
-    const service = new HelpApplicationsService(prisma, applicationWindows);
+    const service = new HelpApplicationsService(prisma, applicationWindows, mediaService);
     await expect(service.review('app-1', { decision: 'REJECT' }))
       .rejects.toBeInstanceOf(BadRequestException);
   });
@@ -148,7 +152,7 @@ describe('HelpApplicationsService', () => {
       requestedAmount: 10000,
       media: [],
     });
-    const service = new HelpApplicationsService(prisma, applicationWindows);
+    const service = new HelpApplicationsService(prisma, applicationWindows, mediaService);
     await expect(service.review('app-1', { decision: 'CONSIDER_FOR_SAMMAN' }))
       .rejects.toBeInstanceOf(BadRequestException);
   });
@@ -156,7 +160,7 @@ describe('HelpApplicationsService', () => {
   it('deletes an applicant-owned application and rejects deletion after a final decision', async () => {
     prisma.helpApplication.findFirst.mockResolvedValueOnce({ id: 'app-1', status: 'SUBMITTED' });
     prisma.helpApplication.delete.mockResolvedValue({ id: 'app-1' });
-    const service = new HelpApplicationsService(prisma, applicationWindows);
+    const service = new HelpApplicationsService(prisma, applicationWindows, mediaService);
 
     await expect(service.deleteMine(identity, 'app-1')).resolves.toEqual({ id: 'app-1', deleted: true });
     expect(prisma.helpApplication.delete).toHaveBeenCalledWith({ where: { id: 'app-1' } });
@@ -171,7 +175,7 @@ describe('HelpApplicationsService', () => {
     prisma.helpApplication.update.mockResolvedValue({ id: 'app-1', type: 'PRATIBHA_SAMMAN', status: 'CONSIDERED_FOR_SAMMAN', media: [], votes: [] });
     prisma.cause.findUnique.mockResolvedValue({ id: 'pratibha-cause' });
     prisma.beneficiary.upsert.mockResolvedValue({ id: 'beneficiary-1' });
-    const service = new HelpApplicationsService(prisma, applicationWindows);
+    const service = new HelpApplicationsService(prisma, applicationWindows, mediaService);
 
     await service.review('app-1', { decision: 'CONSIDER_FOR_SAMMAN' });
     expect(prisma.helpApplication.update).toHaveBeenCalledWith(expect.objectContaining({
@@ -214,7 +218,7 @@ describe('HelpApplicationsService', () => {
     prisma.beneficiaryMedia.findMany.mockResolvedValue([]);
     prisma.beneficiaryMedia.create.mockResolvedValue({});
 
-    const service = new HelpApplicationsService(prisma, applicationWindows);
+    const service = new HelpApplicationsService(prisma, applicationWindows, mediaService);
     await service.review('app-1', { decision: 'CONSIDER_FOR_SAMMAN' });
 
     expect(prisma.beneficiary.upsert).toHaveBeenCalledWith(expect.objectContaining({
@@ -259,7 +263,7 @@ describe('HelpApplicationsService', () => {
       score: 5,
     });
 
-    const service = new HelpApplicationsService(prisma, applicationWindows);
+    const service = new HelpApplicationsService(prisma, applicationWindows, mediaService);
     const result = await service.vote(identity, 'app-1', { score: 5 });
 
     expect(result.score).toBe(5);
@@ -277,7 +281,7 @@ describe('HelpApplicationsService', () => {
       { id: 'rule-1', translations: [{ text: 'Pune only' }] },
       { id: 'rule-2', translations: [{ text: '80 percent minimum' }] },
     ]);
-    const service = new HelpApplicationsService(prisma, applicationWindows);
+    const service = new HelpApplicationsService(prisma, applicationWindows, mediaService);
 
     await expect(service.create(identity, {
       type: 'PRATIBHA_SAMMAN',
@@ -324,7 +328,7 @@ describe('HelpApplicationsService', () => {
       pincode: '411001',
       media: [],
     });
-    const service = new HelpApplicationsService(prisma, applicationWindows);
+    const service = new HelpApplicationsService(prisma, applicationWindows, mediaService);
 
     await service.create(identity, {
       type: 'PRATIBHA_SAMMAN',
