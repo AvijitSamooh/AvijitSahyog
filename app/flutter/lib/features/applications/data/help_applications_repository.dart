@@ -11,6 +11,7 @@ class HelpApplicationsRepository {
   Future<HelpApplication> create({
     required String type,
     required double? requestedAmount,
+    required double overallPercentage,
     required List<String> mediaIds,
     required String applicantName,
     required String mobileNumber,
@@ -41,6 +42,7 @@ class HelpApplicationsRepository {
       'state': state.trim(),
       'pincode': pincode.trim(),
       'requestedAmount': ?requestedAmount,
+      'overallPercentage': overallPercentage,
       'mediaIds': mediaIds,
       'acceptedRuleIds': acceptedRuleIds,
       'clarification': ?(trimmedClarification?.isNotEmpty == true ? trimmedClarification : null),
@@ -108,6 +110,7 @@ class HelpApplicationsRepository {
     required String clarification,
     required List<String> mediaIds,
     required List<String> acceptedRuleIds,
+    required double overallPercentage,
     double? requestedAmount,
     String? motherName,
     String? fatherName,
@@ -122,6 +125,7 @@ class HelpApplicationsRepository {
       'mediaIds': mediaIds,
       'acceptedRuleIds': acceptedRuleIds,
       'requestedAmount': ?requestedAmount,
+      'overallPercentage': overallPercentage,
       'motherName': ?motherName,
       'fatherName': ?fatherName,
       'dateOfBirth': ?dateOfBirth?.toUtc().toIso8601String(),
@@ -134,7 +138,7 @@ class HelpApplicationsRepository {
 
   Future<void> delete(String id) => client.deleteMyHelpApplication(id);
 
-  Future<HelpApplication> update({required String id, required String type, required String applicantName, required String mobileNumber, String? email, required String address, required String city, required String state, required String pincode, double? requestedAmount, String? clarification, String? motherName, String? fatherName, DateTime? dateOfBirth, String? classStandard, String? schoolInstituteName, String? accomplishments, String? certificatePhotoMediaId, required String facePhotoMediaId, required List<String> mediaIds, required List<String> acceptedRuleIds}) async {
+  Future<HelpApplication> update({required String id, required String type, required String applicantName, required String mobileNumber, String? email, required String address, required String city, required String state, required String pincode, required double overallPercentage, double? requestedAmount, String? clarification, String? motherName, String? fatherName, DateTime? dateOfBirth, String? classStandard, String? schoolInstituteName, String? accomplishments, String? certificatePhotoMediaId, required String facePhotoMediaId, required List<String> mediaIds, required List<String> acceptedRuleIds}) async {
     return HelpApplication.fromJson(await client.updateMyHelpApplication(id, {
       'applicantName': applicantName.trim(),
       'mobileNumber': mobileNumber.trim(),
@@ -144,6 +148,7 @@ class HelpApplicationsRepository {
       'state': state.trim(),
       'pincode': pincode.trim(),
       'requestedAmount': ?requestedAmount,
+      'overallPercentage': overallPercentage,
       'clarification': ?(clarification?.trim().isNotEmpty == true ? clarification!.trim() : null),
       'motherName': ?(motherName?.trim().isNotEmpty == true ? motherName!.trim() : null),
       'fatherName': ?(fatherName?.trim().isNotEmpty == true ? fatherName!.trim() : null),
