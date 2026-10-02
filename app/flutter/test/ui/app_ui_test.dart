@@ -21,6 +21,7 @@ import 'package:avijit_sahyog/features/auth/presentation/login_page.dart';
 import 'package:avijit_sahyog/features/auth/presentation/profile_page.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_portal_page.dart';
 import 'package:avijit_sahyog/features/admin/presentation/admin_dashboard_page.dart';
+import 'package:avijit_sahyog/features/applications/presentation/admin_application_configuration_page.dart';
 import 'package:avijit_sahyog/features/admin/providers/admin_dashboard_providers.dart';
 import 'package:avijit_sahyog/features/admin/models/admin_dashboard_summary.dart';
 import 'package:avijit_sahyog/features/admin/models/admin_beneficiary.dart';
@@ -380,7 +381,7 @@ void main() {
     expect(find.textContaining('Applications will start from'), findsWidgets);
   });
 
-  testWidgets('admin applications page scrolls to window controls and application list', (tester) async {
+  testWidgets('admin application configuration exposes window controls separately', (tester) async {
     final scheduled = ApplicationWindow.fromJson({
       'type': 'EDUCATION_ASSISTANCE',
       'startsAt': '2026-10-05T10:00:00.000Z',
@@ -405,44 +406,24 @@ void main() {
 
     await pumpApp(
       tester,
-      home: const AdminApplicationsPage(),
+      home: const AdminApplicationConfigurationPage(),
       overrides: [
         authProvider.overrideWith((ref) => _AuthenticatedAdminController()),
-        applicationWindowsProvider.overrideWith(
-          (ref) async => [scheduled, open, closed],
-        ),
+        applicationWindowsProvider.overrideWith((ref) async => [scheduled, open, closed]),
       ],
     );
 
-    expect(find.byKey(const ValueKey('application_window_management')), findsOneWidget);
-    expect(
-      find.byKey(const ValueKey('application_window_start_EDUCATION_ASSISTANCE')),
-      findsOneWidget,
-    );
-    expect(
-      find.byKey(const ValueKey('application_window_start_MEDICAL_HELP')),
-      findsOneWidget,
-    );
-    expect(
-      find.byKey(const ValueKey('application_window_start_PRATIBHA_SAMMAN')),
-      findsOneWidget,
-    );
+    expect(find.textContaining('Application window'), findsOneWidget);
+    expect(find.byKey(const ValueKey('application_window_start_EDUCATION_ASSISTANCE')), findsOneWidget);
+    expect(find.byKey(const ValueKey('application_window_start_MEDICAL_HELP')), findsOneWidget);
+    expect(find.byKey(const ValueKey('application_window_start_PRATIBHA_SAMMAN')), findsOneWidget);
 
-    final closedButton = find.byKey(
-      const ValueKey('application_window_close_PRATIBHA_SAMMAN'),
-    );
-    expect(closedButton, findsNothing);
-
-    final openCloseButton = find.byKey(
-      const ValueKey('application_window_close_MEDICAL_HELP'),
-    );
-    await tester.scrollUntilVisible(
-      openCloseButton,
-      500,
-      scrollable: find.byType(Scrollable).first,
-    );
+    expect(find.byKey(const ValueKey('application_window_close_PRATIBHA_SAMMAN')), findsNothing);
+    final openCloseButton = find.byKey(const ValueKey('application_window_close_MEDICAL_HELP'));
+    await tester.scrollUntilVisible(openCloseButton, 500, scrollable: find.byType(Scrollable).first);
     expect(openCloseButton, findsOneWidget);
   });
+
 
   testWidgets('public home exposes login from the shared settings menu', (tester) async {
     await tester.pumpWidget(const ProviderScope(child: AvijitSahyogApp(splashDuration: Duration.zero)));
