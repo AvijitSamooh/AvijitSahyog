@@ -115,7 +115,7 @@ class AdminApplicationDetailsPage extends StatelessWidget {
   final Map<String,dynamic> item;
   @override Widget build(BuildContext context){
     final l10n=AppLocalizations.of(context)!;final face=item['facePhoto'] as Map<String,dynamic>?;final cert=item['certificatePhoto'] as Map<String,dynamic>?;final media=(item['media'] as List<dynamic>? ?? const []).cast<Map<String,dynamic>>();
-    final images=<Map<String,dynamic>>[if(face!=null)face,if(cert!=null&&cert['id']!=face?['id'])cert,...media];
+    final images=<Map<String,dynamic>>[?face,if(cert!=null&&cert['id']!=face?['id'])cert,...media];
     Widget field(String label,dynamic value){final s=value?.toString().trim()??'';if(s.isEmpty||s=='null')return const SizedBox.shrink();return Padding(padding:const EdgeInsets.only(bottom:8),child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[SizedBox(width:145,child:Text(label,style:Theme.of(context).textTheme.labelLarge)),Expanded(child:SelectableText(s))]));}
     return AppPageScaffold(title:Text(l10n.adminApplications),body:ListView(padding:const EdgeInsets.all(16),children:[
       if(face?['url']!=null)ClipRRect(borderRadius:BorderRadius.circular(16),child:Image.network(face!['url'].toString(),height:240,fit:BoxFit.cover)),
