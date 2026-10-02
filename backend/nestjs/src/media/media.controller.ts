@@ -3,6 +3,7 @@ import {
   Delete,
   Get,
   Post,
+  Param,
   UploadedFile,
   Req,
   UseGuards,
