@@ -308,6 +308,7 @@
   "deleteApplicationTitle": "क्या यह आवेदन हटाएँ?",
   "deleteApplication": "आवेदन हटाएँ",
   "applicationSubmissionFailed": "आवेदन जमा नहीं हो सका। कृपया फिर से प्रयास करें।",
+  "applicationSubmissionFailedWithReason": "आवेदन जमा नहीं हो सका। {reason}",
   "applicationSubmissionSuccessTitle": "आवेदन सफलतापूर्वक जमा हुआ",
   "applicationLoadError": "आवेदन लोड नहीं हो सके।",
   "noApplications": "आपने अभी कोई आवेदन जमा नहीं किया है।",
