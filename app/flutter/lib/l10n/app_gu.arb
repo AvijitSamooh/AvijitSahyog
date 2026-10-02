@@ -308,6 +308,7 @@
   "deleteApplicationTitle": "આ અરજી કાઢી નાખવી છે?",
   "deleteApplication": "અરજી કાઢી નાખો",
   "applicationSubmissionFailed": "અરજી સબમિટ થઈ શકી નથી. કૃપા કરીને ફરી પ્રયાસ કરો.",
+  "applicationSubmissionFailedWithReason": "અરજી સબમિટ થઈ શકી નથી. {reason}",
   "applicationSubmissionSuccessTitle": "અરજી સફળતાપૂર્વક સબમિટ થઈ",
   "applicationLoadError": "અરજીઓ લોડ થઈ શકી નથી.",
   "noApplications": "તમે હજી કોઈ અરજી સબમિટ કરી નથી.",
