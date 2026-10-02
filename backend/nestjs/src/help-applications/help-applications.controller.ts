@@ -6,6 +6,7 @@ import { AuthenticatedRequest } from '../auth/auth.types';
 import { CreateHelpApplicationDto, HelpApplicationTypeDto } from './dto/create-help-application.dto';
 import { StartApplicationWindowDto } from './dto/application-window.dto';
 import { ResubmitHelpApplicationDto } from './dto/resubmit-help-application.dto';
+import { UpdateHelpApplicationDto } from './dto/update-help-application.dto';
 import { ReviewHelpApplicationDto } from './dto/review-help-application.dto';
 import { VoteHelpApplicationDto } from './dto/vote-help-application.dto';
 import { CreateApplicationRuleDto, PublicApplicationRulesQueryDto, UpdateApplicationRuleDto } from './dto/application-rule.dto';
@@ -64,6 +65,11 @@ export class HelpApplicationsController {
   @Get('mine/:id')
   findMine(@Req() req: Request & AuthenticatedRequest, @Param('id') id: string) {
     return this.service.findMine(req.user, id);
+  }
+
+  @Patch('mine/:id')
+  updateMine(@Req() req: Request & AuthenticatedRequest, @Param('id') id: string, @Body() dto: UpdateHelpApplicationDto) {
+    return this.service.updateMine(req.user, id, dto);
   }
 
   @Delete('mine/:id')
