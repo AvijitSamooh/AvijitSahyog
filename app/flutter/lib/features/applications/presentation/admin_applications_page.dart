@@ -44,7 +44,12 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
       controller.dispose();
     }
     try{
-      await ref.read(helpApplicationsRepositoryProvider).review(item['id'] as String,{'decision':decision,'approvedAmount':amount,'reason':reason?.trim().isNotEmpty==true?reason!.trim():null});
+      final reviewPayload = <String, dynamic>{
+        'decision': decision,
+        if (amount != null) 'approvedAmount': amount,
+        if (reason?.trim().isNotEmpty == true) 'reason': reason!.trim(),
+      };
+      await ref.read(helpApplicationsRepositoryProvider).review(item['id'] as String, reviewPayload);
       if(mounted){ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(l10n.reviewSaved)));await _load();}
     }catch(_){if(mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(l10n.applicationActionFailed)));}
   }
@@ -100,7 +105,7 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
         const SizedBox(height:10),
         Row(children:[
           Expanded(child:Text(l10n.shortlistByPercentage,style:Theme.of(context).textTheme.titleSmall)),
-          FilterChip(selected:_topOnly,label:Text(l10n.shortlistByPercentage + ' 50'),onSelected:(value){setState(()=>_topOnly=value);}),
+          FilterChip(selected:_topOnly,label:Text('${l10n.shortlistByPercentage} 50'),onSelected:(value){setState(()=>_topOnly=value);}),
         ]),
         const SizedBox(height:8),
         Wrap(spacing:8,runSpacing:8,children:[
