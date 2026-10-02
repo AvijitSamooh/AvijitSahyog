@@ -546,5 +546,21 @@
   "facePhotoRequired": "Please provide a clear face photo.",
   "facePhotoUploadFailed": "Unable to upload the face photo.",
   "editApplication": "Edit application",
-  "deleteImage": "Delete image"
+  "deleteImage": "Delete image",
+  "overallPercentage": "Overall percentage",
+  "overallPercentageHint": "Enter overall percentage (0–100)",
+  "overallPercentageInvalid": "Enter a valid percentage from 0 to 100.",
+  "reviewQueue": "Review queue",
+  "selectedApplications": "Selected",
+  "needsReview": "Needs review",
+  "rejectedApplications": "Rejected",
+  "notSelectedApplications": "Not selected",
+  "shortlistByPercentage": "Sort by overall percentage",
+  "reviewStatus": "Review status",
+  "allApplications": "All applications",
+  "reviewSummary": "Review summary",
+  "selectedCount": "Selected {count}",
+  "needsReviewCount": "Needs review {count}",
+  "rejectedCount": "Rejected {count}",
+  "notSelectedCount": "Not selected {count}"
 }
