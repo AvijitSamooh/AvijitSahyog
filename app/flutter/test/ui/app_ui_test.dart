@@ -565,6 +565,27 @@ void main() {
     
   });
 
+  testWidgets('guest profile provides a login CTA', (tester) async {
+    await pumpApp(
+      tester,
+      home: const ProfilePage(),
+      overrides: [
+        authProvider.overrideWith((ref) => _GuestAuthController()),
+      ],
+    );
+
+    expect(find.text(l10n(tester).loginRequired), findsOneWidget);
+    final loginButton = find.byKey(const ValueKey('profile_login'));
+    expect(loginButton, findsOneWidget);
+    expect(find.widgetWithText(FilledButton, l10n(tester).login), findsOneWidget);
+
+    await tester.tap(loginButton);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(LoginPage), findsOneWidget);
+    expect(find.byKey(const ValueKey('auth_google_sign_in')), findsOneWidget);
+  });
+
   testWidgets('authenticated admin can see the admin portal entry', (tester) async {
     await pumpApp(
       tester,
@@ -1463,6 +1484,23 @@ void main() {
       '500',
     );
   });
+}
+
+class _GuestAuthController extends AuthController {
+  _GuestAuthController() : super(_GuestAuthRepository()) {
+    state = const AuthState.guest();
+  }
+}
+
+class _GuestAuthRepository implements AuthRepository {
+  @override
+  Future<AppUser> signInWithGoogle() => throw UnimplementedError();
+
+  @override
+  Future<AppUser?> restoreSession() async => null;
+
+  @override
+  Future<void> signOut() async {}
 }
 
 class _AuthenticatedAdminController extends AuthController {
