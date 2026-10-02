@@ -555,7 +555,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
                         checkboxShape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5),
                         ),
-                        fillColor: MaterialStateProperty.resolveWith((states) {
+                        fillColor: WidgetStateProperty.resolveWith((states) {
                           if (states.contains(MaterialState.selected)) {
                             return Colors.green.shade600;
                           }
