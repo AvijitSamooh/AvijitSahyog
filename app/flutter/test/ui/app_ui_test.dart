@@ -1165,6 +1165,80 @@ void main() {
     expect(find.byType(HelpApplicationFormPage), findsOneWidget);
   });
 
+  testWidgets('cause detail application CTAs are visible and consistent for all application causes', (tester) async {
+    const cases = [
+      (
+        slug: 'education-assistance',
+        cause: Cause(
+          id: 'education-assistance',
+          slug: 'education-assistance',
+          name: 'Education Assistance',
+          description: 'Need-based support for students.',
+        ),
+        type: 'EDUCATION_ASSISTANCE',
+        label: 'Apply for Education Assistance',
+      ),
+      (
+        slug: 'healthcare',
+        cause: Cause(
+          id: 'healthcare',
+          slug: 'healthcare',
+          name: 'Healthcare',
+          description: 'Support for healthcare and medical assistance.',
+        ),
+        type: 'MEDICAL_HELP',
+        label: 'Apply for Medical Help',
+      ),
+      (
+        slug: 'pratibha-samman',
+        cause: Cause(
+          id: 'pratibha-samman',
+          slug: 'pratibha-samman',
+          name: 'Pratibha Samman',
+          description: 'Recognize and honour exceptional achievements.',
+        ),
+        type: 'PRATIBHA_SAMMAN',
+        label: 'Apply for Pratibha Samman',
+      ),
+    ];
+
+    for (final item in cases) {
+      await pumpApp(
+        tester,
+        home: CauseDetailPage(slug: item.slug),
+        overrides: [
+          causeProvider((slug: item.slug, languageCode: 'en'))
+              .overrideWith((ref) async => item.cause),
+        ],
+      );
+
+      final applyButton = find.byKey(ValueKey('cause_apply_${item.type}'));
+      expect(
+        applyButton,
+        findsOneWidget,
+        reason: '${item.slug} must expose its application CTA',
+      );
+
+      final button = tester.widget<OutlinedButton>(applyButton);
+      expect(
+        button.style?.foregroundColor?.resolve({}),
+        const Color(0xFFF5A623),
+      );
+      expect(
+        button.style?.side?.resolve({}),
+        const BorderSide(color: Color(0xFFF5A623)),
+      );
+      expect(find.text(item.label), findsOneWidget);
+
+      await tester.tap(applyButton);
+      await tester.pumpAndSettle();
+      expect(find.byType(HelpApplicationFormPage), findsOneWidget);
+
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+    }
+  });
+
   testWidgets('support cause button opens donation page', (tester) async {
     await pumpApp(
       tester,
