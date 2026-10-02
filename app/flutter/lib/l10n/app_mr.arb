@@ -529,5 +529,6 @@
   "facePhotoSelected": "चेहऱ्याचा फोटो निवडला",
   "facePhotoRequired": "कृपया स्पष्ट चेहऱ्याचा फोटो द्या.",
   "facePhotoUploadFailed": "चेहऱ्याचा फोटो अपलोड करता आला नाही.",
-  "editApplication": "अर्ज संपादित करा"
+  "editApplication": "अर्ज संपादित करा",
+  "deleteImage": "फोटो हटवा"
 }
