@@ -264,7 +264,10 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
   final List<String> _mediaIds = [];
   final List<XFile> _selectedImages = [];
   String? _certificatePhotoMediaId;
+  String? _facePhotoMediaId;
   XFile? _certificatePhoto;
+  XFile? _facePhoto;
+  final List<HelpApplicationMedia> _existingMedia = [];
   DateTime? _dob;
   bool _busy = false;
   int _uploadTotal = 0;
@@ -290,6 +293,11 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     _schoolInstituteName.text = existing?.schoolInstituteName ?? '';
     _accomplishments.text = existing?.accomplishments ?? '';
     _certificatePhotoMediaId = existing?.certificatePhotoMediaId;
+    _facePhotoMediaId = existing?.facePhotoMediaId ?? existing?.certificatePhotoMediaId;
+    if (existing != null) {
+      _mediaIds.addAll(existing.media.map((m) => m.id));
+      _existingMedia.addAll(existing.media);
+    }
     _dob = existing?.dateOfBirth;
   }
 
@@ -324,6 +332,21 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     }
   }
 
+  Future<void> _uploadFacePhoto(ImageSource source) async {
+    if (_busy) return;
+    try {
+      final image = await _picker.pickImage(source: source, imageQuality: 92, maxWidth: 1800, maxHeight: 1800);
+      if (image == null) return;
+      setState(() { _busy = true; _uploadTotal = 1; _uploadCompleted = 0; });
+      final id = await ref.read(helpApplicationsRepositoryProvider).uploadImage(image.path);
+      if (mounted) setState(() { _facePhoto = image; _facePhotoMediaId = id; _uploadCompleted = 1; });
+    } catch (_) {
+      if (mounted) _showError(AppLocalizations.of(context)!.facePhotoUploadFailed);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   Future<void> _pickCertificatePhoto() => _uploadCertificatePhoto(ImageSource.gallery);
 
   Future<void> _takeCertificatePhoto() => _uploadCertificatePhoto(ImageSource.camera);
@@ -347,7 +370,9 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
       if (mounted) {
         setState(() {
           _certificatePhoto = image;
+          _facePhoto = image;
           _certificatePhotoMediaId = id;
+          _facePhotoMediaId = id;
           _uploadCompleted = 1;
         });
         await Future<void>.delayed(const Duration(milliseconds: 250));
@@ -446,8 +471,8 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.imagesRequired)));
       return;
     }
-    if (widget.type == 'PRATIBHA_SAMMAN' && _certificatePhotoMediaId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.certificatePhotoRequired)));
+    if (_facePhotoMediaId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(widget.type == 'PRATIBHA_SAMMAN' ? l10n.certificatePhotoRequired : l10n.facePhotoRequired)));
       return;
     }
     double? amount;
@@ -462,7 +487,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     try {
       final repo = ref.read(helpApplicationsRepositoryProvider);
       if (widget.application == null) {
-        await repo.create(type: widget.type, requestedAmount: amount, applicantName: _name.text, mobileNumber: _mobile.text, email: _email.text, address: _address.text, city: _city.text, state: _state.text, pincode: _pincode.text, motherName: isSamman ? _motherName.text : null, fatherName: isSamman ? _fatherName.text : null, dateOfBirth: isSamman ? _dob : null, classStandard: isSamman ? _classStandard.text : null, schoolInstituteName: isSamman ? _schoolInstituteName.text : null, accomplishments: isSamman ? _accomplishments.text : null, certificatePhotoMediaId: isSamman ? _certificatePhotoMediaId : null, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false), clarification: _clarification.text);
+        await repo.create(type: widget.type, requestedAmount: amount, applicantName: _name.text, mobileNumber: _mobile.text, email: _email.text, address: _address.text, city: _city.text, state: _state.text, pincode: _pincode.text, motherName: isSamman ? _motherName.text : null, fatherName: isSamman ? _fatherName.text : null, dateOfBirth: isSamman ? _dob : null, classStandard: isSamman ? _classStandard.text : null, schoolInstituteName: isSamman ? _schoolInstituteName.text : null, accomplishments: isSamman ? _accomplishments.text : null, certificatePhotoMediaId: isSamman ? _certificatePhotoMediaId : null, facePhotoMediaId: _facePhotoMediaId!, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false), clarification: _clarification.text);
       } else {
         await repo.resubmit(id: widget.application!.id, clarification: _clarification.text, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false), requestedAmount: amount, motherName: isSamman ? _motherName.text : null, fatherName: isSamman ? _fatherName.text : null, dateOfBirth: isSamman ? _dob : null, classStandard: isSamman ? _classStandard.text : null, schoolInstituteName: isSamman ? _schoolInstituteName.text : null, accomplishments: isSamman ? _accomplishments.text : null, certificatePhotoMediaId: isSamman ? _certificatePhotoMediaId : null);
       }
@@ -656,6 +681,21 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
               decoration: InputDecoration(labelText: l10n.pincodeRequired, prefixIcon: const Icon(Icons.location_on_outlined)),
               validator: _pincodeValidator,
             ),
+            if (!isSamman) ...[
+              const SizedBox(height: 20),
+              Text(l10n.facePhotoTitle, style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 4),
+              Text(l10n.facePhotoHint, style: Theme.of(context).textTheme.bodySmall),
+              const SizedBox(height: 8),
+              Row(children: [
+                Expanded(child: OutlinedButton.icon(onPressed: _busy ? null : () => _uploadFacePhoto(ImageSource.gallery), icon: const Icon(Icons.photo_library_outlined), label: Text(l10n.gallery))),
+                const SizedBox(width: 10),
+                Expanded(child: OutlinedButton.icon(onPressed: _busy ? null : () => _uploadFacePhoto(ImageSource.camera), icon: const Icon(Icons.camera_alt_outlined), label: Text(l10n.camera))),
+              ]),
+              if (_facePhotoMediaId != null) Padding(padding: const EdgeInsets.only(top: 8), child: Row(children: [const Icon(Icons.check_circle_rounded, size: 18), const SizedBox(width: 6), Expanded(child: Text(l10n.facePhotoSelected))])),
+              if (_facePhoto != null) Padding(padding: const EdgeInsets.only(top: 8), child: ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.file(File(_facePhoto!.path), height: 160, width: double.infinity, fit: BoxFit.cover))),
+            ],
+            const SizedBox(height: 20),
             if (isSamman) ...[
               const SizedBox(height: 20),
               Text(l10n.pratibhaStudentDetails, style: Theme.of(context).textTheme.titleMedium),
