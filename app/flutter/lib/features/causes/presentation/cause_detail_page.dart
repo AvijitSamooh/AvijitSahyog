@@ -23,13 +23,16 @@ class CauseDetailPage extends ConsumerWidget {
     final applicationType = switch (slug) {
       'education' || 'education-assistance' => 'EDUCATION_ASSISTANCE',
       'healthcare' || 'medical' => 'MEDICAL_HELP',
+      'pratibha-samman' || 'pratibha' => 'PRATIBHA_SAMMAN',
       _ => null,
     };
     final applicationLabel = applicationType == 'MEDICAL_HELP'
         ? l10n.applyMedicalHelp
         : applicationType == 'EDUCATION_ASSISTANCE'
             ? l10n.applyEducationHelp
-            : null;
+            : applicationType == 'PRATIBHA_SAMMAN'
+                ? l10n.applyPratibhaSamman
+                : null;
 
     return AppPageScaffold(
       title: Text(l10n.causeDetailsTitle),
@@ -92,18 +95,36 @@ class CauseDetailPage extends ConsumerWidget {
                     label: Text(l10n.supportThisCause),
                   ),
                   if (applicationType != null) ...[
-                    const SizedBox(height: 10),
-                    OutlinedButton.icon(
-                      key: ValueKey('cause_apply_$applicationType'),
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => HelpApplicationFormPage(
-                            type: applicationType,
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        key: ValueKey('cause_apply_$applicationType'),
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => HelpApplicationFormPage(
+                              type: applicationType,
+                            ),
                           ),
                         ),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFFF5A623),
+                          side: const BorderSide(color: Color(0xFFF5A623)),
+                          minimumSize: const Size.fromHeight(52),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 18,
+                            vertical: 14,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        icon: const Icon(Icons.assignment_rounded),
+                        label: Text(
+                          applicationLabel!,
+                          textAlign: TextAlign.center,
+                        ),
                       ),
-                      icon: const Icon(Icons.assignment_rounded),
-                      label: Text(applicationLabel!),
                     ),
                   ],
                 ],
