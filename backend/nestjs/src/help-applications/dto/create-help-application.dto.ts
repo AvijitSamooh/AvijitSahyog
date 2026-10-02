@@ -82,6 +82,9 @@ export class CreateHelpApplicationDto {
   @IsUUID('4')
   certificatePhotoMediaId?: string;
 
+  @IsUUID('4')
+  facePhotoMediaId!: string;
+
   @IsArray()
   @IsUUID('4', { each: true })
   mediaIds!: string[];
