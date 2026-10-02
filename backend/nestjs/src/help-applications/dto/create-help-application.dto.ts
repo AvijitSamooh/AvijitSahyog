@@ -1,4 +1,4 @@
-import { IsArray, IsDateString, IsEnum, IsNumber, IsOptional, IsString, IsUUID, Max, MaxLength, Min } from 'class-validator';
+import { IsArray, IsDateString, IsEnum, IsNumber, IsOptional, IsString, IsUUID, Matches, Max, MaxLength, Min } from 'class-validator';
 
 export enum HelpApplicationTypeDto {
   EDUCATION_ASSISTANCE = 'EDUCATION_ASSISTANCE',
@@ -87,6 +87,7 @@ export class CreateHelpApplicationDto {
   mediaIds!: string[];
 
   @IsArray()
-  @IsUUID('4', { each: true })
+  @IsString({ each: true })
+  @Matches(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, { each: true })
   acceptedRuleIds!: string[];
 }
