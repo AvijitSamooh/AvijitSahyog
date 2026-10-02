@@ -355,4 +355,83 @@ describe('HelpApplicationsService', () => {
       }),
     }));
   });
+
+  it('updates a non-final application, replaces media and resets review state', async () => {
+    prisma.helpApplication.findFirst.mockResolvedValue({
+      id: 'app-1',
+      applicantId: 'user-1',
+      type: 'MEDICAL_HELP',
+      status: 'UNDER_REVIEW',
+      requestedAmount: 10000,
+      media: [{ mediaId: 'old-media' }],
+    });
+    prisma.media.findMany.mockResolvedValue([{ id: 'new-media' }]);
+    prisma.media.findFirst.mockResolvedValue({ id: 'new-face' });
+    prisma.helpApplication.update.mockResolvedValue({
+      id: 'app-1',
+      type: 'MEDICAL_HELP',
+      status: 'SUBMITTED',
+      applicantName: 'Updated User',
+      mobileNumber: '9876543210',
+      email: null,
+      address: 'Updated Address',
+      city: 'Pune',
+      state: 'Maharashtra',
+      pincode: '411001',
+      requestedAmount: 15000,
+      approvedAmount: null,
+      rejectionReason: null,
+      clarification: 'Updated need',
+      media: [{ media: { id: 'new-media', storageKey: 'applications/new.webp', mimeType: 'image/webp' } }],
+      facePhotoMedia: { id: 'new-face', storageKey: 'applications/face.webp', mimeType: 'image/webp' },
+      certificatePhotoMedia: null,
+    });
+    const service = new HelpApplicationsService(prisma, applicationWindows, mediaService);
+
+    const result = await service.updateMine(identity, 'app-1', {
+      applicantName: 'Updated User',
+      mobileNumber: '9876543210',
+      address: 'Updated Address',
+      city: 'Pune',
+      state: 'Maharashtra',
+      pincode: '411001',
+      requestedAmount: 15000,
+      clarification: 'Updated need',
+      facePhotoMediaId: 'new-face',
+      mediaIds: ['new-media'],
+      acceptedRuleIds: [],
+    });
+
+    expect(result.status).toBe('SUBMITTED');
+    expect(prisma.helpApplicationVote.deleteMany).toHaveBeenCalledWith({ where: { applicationId: 'app-1' } });
+    expect(prisma.helpApplicationMedia.deleteMany).toHaveBeenCalledWith({ where: { applicationId: 'app-1' } });
+    expect(mediaService.deleteUserImage).toHaveBeenCalledWith('old-media', 'user-1');
+    expect(prisma.helpApplication.update).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({ facePhotoMediaId: 'new-face', status: 'SUBMITTED' }),
+    }));
+  });
+
+  it('rejects editing a final application', async () => {
+    prisma.helpApplication.findFirst.mockResolvedValue({
+      id: 'app-1',
+      applicantId: 'user-1',
+      type: 'MEDICAL_HELP',
+      status: 'APPROVED_FOR_DONATION',
+      media: [],
+    });
+    const service = new HelpApplicationsService(prisma, applicationWindows, mediaService);
+    await expect(service.updateMine(identity, 'app-1', {
+      applicantName: 'User',
+      mobileNumber: '9876543210',
+      address: 'Address',
+      city: 'Pune',
+      state: 'Maharashtra',
+      pincode: '411001',
+      requestedAmount: 1000,
+      facePhotoMediaId: 'face-1',
+      mediaIds: ['media-1'],
+      acceptedRuleIds: [],
+    })).rejects.toThrow('can no longer be edited');
+  });
+
 });
