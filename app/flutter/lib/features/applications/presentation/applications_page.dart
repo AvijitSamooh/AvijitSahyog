@@ -801,6 +801,14 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
                     child: Image.file(File(_certificatePhoto!.path), height: 160, width: double.infinity, fit: BoxFit.cover),
                   ),
                 ),
+              if (_certificatePhoto == null && widget.application?.certificatePhoto?.url != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.network(widget.application!.certificatePhoto!.url, height: 160, width: double.infinity, fit: BoxFit.cover),
+                  ),
+                ),
               TextFormField(
                 key: const ValueKey('pratibha_accomplishments'),
                 controller: _accomplishments,
@@ -856,18 +864,64 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
                 )),
               ],
             ),
+            if (_existingMedia.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: SizedBox(
+                  height: 108,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _existingMedia.length,
+                    separatorBuilder: (_, _) => const SizedBox(width: 8),
+                    itemBuilder: (_, index) {
+                      final media = _existingMedia[index];
+                      return Stack(
+                        children: [
+                          ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.network(media.url, width: 108, height: 108, fit: BoxFit.cover)),
+                          Positioned(
+                            right: 2,
+                            top: 2,
+                            child: IconButton.filledTonal(
+                              tooltip: l10n.deleteImage,
+                              icon: const Icon(Icons.close, size: 18),
+                              onPressed: _busy ? null : () => setState(() {
+                                _mediaIds.remove(media.id);
+                                _existingMedia.removeAt(index);
+                              }),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ),
             if (_selectedImages.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 12),
                 child: SizedBox(
-                  height: 92,
+                  height: 108,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     itemCount: _selectedImages.length,
                     separatorBuilder: (_, _) => const SizedBox(width: 8),
-                    itemBuilder: (_, index) => ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.file(File(_selectedImages[index].path), width: 92, height: 92, fit: BoxFit.cover),
+                    itemBuilder: (_, index) => Stack(
+                      children: [
+                        ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.file(File(_selectedImages[index].path), width: 108, height: 108, fit: BoxFit.cover)),
+                        Positioned(
+                          right: 2,
+                          top: 2,
+                          child: IconButton.filledTonal(
+                            tooltip: l10n.deleteImage,
+                            icon: const Icon(Icons.close, size: 18),
+                            onPressed: _busy ? null : () => setState(() {
+                              final id = _mediaIds.last;
+                              _mediaIds.remove(id);
+                              _selectedImages.removeAt(index);
+                            }),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
