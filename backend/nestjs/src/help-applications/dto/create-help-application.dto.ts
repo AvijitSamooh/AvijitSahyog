@@ -87,6 +87,6 @@ export class CreateHelpApplicationDto {
   mediaIds!: string[];
 
   @IsArray()
-  @IsUUID('4', { each: true })
+  @IsUUID('all', { each: true })
   acceptedRuleIds!: string[];
 }
