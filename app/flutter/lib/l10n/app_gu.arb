@@ -519,5 +519,15 @@
   "homeOrganisationTitle": "સંસ્થા વિશે",
   "homeOrganisationDetails": "અવિજિત સહયોગ, અવિજિત સમૂહનો ભાગ છે. સન્માન કાર્યક્રમો અવિજિત સર્વ કલ્યાણ સમિતિ (રજિસ્ટ્રેશન નં. 01/05/03/37787/21) હેઠળ યોજાય છે.",
   "homePurposeTitle": "અમારો ઉદ્દેશ",
-  "homePurposeText": "સમાજની સેવા, શિક્ષણનો પ્રસાર, સહયોગની ભાવના અને પ્રતિભાઓનું સન્માન — એ જ અવિજિત સહયોગનો ઉદ્દેશ છે."
+  "homePurposeText": "સમાજની સેવા, શિક્ષણનો પ્રસાર, સહયોગની ભાવના અને પ્રતિભાઓનું સન્માન — એ જ અવિજિત સહયોગનો ઉદ્દેશ છે.",
+  "applicationConfiguration": "અરજી કન્ફિગરેશન",
+  "applicationConfigurationSubtitle": "અરજી વિન્ડો અને નિયમો સંચાલિત કરો",
+  "applicationPhotoManifest": "નામ સાથે ફોટો યાદી",
+  "noApplicationPhotos": "કોઈ અરજી ફોટા ઉપલબ્ધ નથી.",
+  "facePhotoTitle": "સ્પષ્ટ ચહેરાનો ફોટો *",
+  "facePhotoHint": "સ્પષ્ટ, સામેથી લેવાયેલો ફોટો અપલોડ કરો. આ ફોટો અરજીની યાદીમાં દેખાશે.",
+  "facePhotoSelected": "ચહેરાનો ફોટો પસંદ થયો",
+  "facePhotoRequired": "કૃપા કરીને સ્પષ્ટ ચહેરાનો ફોટો આપો.",
+  "facePhotoUploadFailed": "ચહેરાનો ફોટો અપલોડ થઈ શક્યો નથી.",
+  "editApplication": "અરજી સંપાદિત કરો"
 }
