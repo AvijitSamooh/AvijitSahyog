@@ -246,7 +246,7 @@ void main() {
     expect(find.byType(CheckboxListTile), findsOneWidget);
     final checkbox = tester.widget<Checkbox>(find.byType(Checkbox));
     expect(
-      checkbox.fillColor?.resolve({MaterialState.selected}),
+      checkbox.fillColor?.resolve({WidgetState.selected}),
       Colors.green.shade600,
     );
     expect(
