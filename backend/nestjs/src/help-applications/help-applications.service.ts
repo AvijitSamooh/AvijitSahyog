@@ -223,6 +223,24 @@ export class HelpApplicationsService {
     return responses;
   }
 
+  async photoManifest(type?: string, status?: string) {
+    const items = await this.prisma.helpApplication.findMany({
+      where: { ...(type ? { type: type as any } : {}), ...(status ? { status: status as any } : {}) },
+      orderBy: [{ applicantName: 'asc' }, { createdAt: 'asc' }],
+      include: { facePhotoMedia: true, certificatePhotoMedia: true },
+    });
+    return items
+      .filter((item) => item.facePhotoMedia || item.certificatePhotoMedia)
+      .map((item) => ({
+        id: item.id,
+        name: item.applicantName ?? 'Applicant',
+        type: item.type,
+        status: item.status,
+        facePhoto: item.facePhotoMedia ? this.mediaResponse({ media: item.facePhotoMedia }) : null,
+        certificatePhoto: item.certificatePhotoMedia ? this.mediaResponse({ media: item.certificatePhotoMedia }) : null,
+      }));
+  }
+
   async vote(identity: FirebaseIdentity, id: string, dto: VoteHelpApplicationDto) {
     const admin = await this.admin(identity);
     const existing = await this.application(id);
