@@ -10,7 +10,7 @@ class AdminApplicationsPage extends ConsumerStatefulWidget {
   @override ConsumerState<AdminApplicationsPage> createState() => _AdminApplicationsPageState();
 }
 class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
-  String? _type; String? _status; bool _loading = true; String? _error; List<Map<String,dynamic>> _items = const []; Map<String,dynamic>? _summary; bool _topOnly = false; int _topLimit = 50;
+  String? _type; String? _status; bool _loading = true; String? _error; List<Map<String,dynamic>> _items = const []; Map<String,dynamic>? _summary; bool _topOnly = false; final int _topLimit = 50;
   @override void initState(){super.initState();_load();}
   Future<void> _load() async {
     if(mounted)setState((){_loading=true;_error=null;});
@@ -44,7 +44,7 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
       controller.dispose();
     }
     try{
-      await ref.read(helpApplicationsRepositoryProvider).review(item['id'] as String,{'decision':decision,'approvedAmount':?amount,'reason':?(reason?.trim().isNotEmpty==true?reason!.trim():null)});
+      await ref.read(helpApplicationsRepositoryProvider).review(item['id'] as String,{'decision':decision,'approvedAmount':amount,'reason':reason?.trim().isNotEmpty==true?reason!.trim():null});
       if(mounted){ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(l10n.reviewSaved)));await _load();}
     }catch(_){if(mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(l10n.applicationActionFailed)));}
   }
@@ -132,7 +132,7 @@ class AdminApplicationDetailsPage extends StatelessWidget {
   final Map<String,dynamic> item;
   @override Widget build(BuildContext context){
     final l10n=AppLocalizations.of(context)!;final face=item['facePhoto'] as Map<String,dynamic>?;final cert=item['certificatePhoto'] as Map<String,dynamic>?;final media=(item['media'] as List<dynamic>? ?? const []).cast<Map<String,dynamic>>();
-    final images=<Map<String,dynamic>>[?face,if(cert!=null&&cert['id']!=face?['id'])cert,...media];
+    final images=<Map<String,dynamic>>[if(face!=null)face,if(cert!=null&&cert['id']!=face?['id'])cert,...media];
     Widget field(String label,dynamic value){final s=value?.toString().trim()??'';if(s.isEmpty||s=='null')return const SizedBox.shrink();return Padding(padding:const EdgeInsets.only(bottom:8),child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[SizedBox(width:145,child:Text(label,style:Theme.of(context).textTheme.labelLarge)),Expanded(child:SelectableText(s))]));}
     return AppPageScaffold(title:Text(l10n.adminApplications),body:ListView(padding:const EdgeInsets.all(16),children:[
       if(face?['url']!=null)ClipRRect(borderRadius:BorderRadius.circular(16),child:Image.network(face!['url'].toString(),height:240,fit:BoxFit.cover)),
