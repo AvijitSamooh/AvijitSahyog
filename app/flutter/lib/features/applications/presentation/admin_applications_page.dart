@@ -74,7 +74,7 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
       else if(_error!=null)SliverFillRemaining(hasScrollBody:false,child:Center(child:Text(_error!)))
       else if(_items.isEmpty)SliverFillRemaining(hasScrollBody:false,child:Center(child:Text(l10n.noApplications)))
       else SliverPadding(padding:const EdgeInsets.fromLTRB(12,4,12,24),sliver:SliverList(delegate:SliverChildBuilderDelegate((context,index){
-        final item=_items[index];final face=item['facePhoto'] as Map<String,dynamic>?;final url=face?['url']?.toString();final name=(item['applicantName']??item['applicant']?['displayName']??item['applicant']?['email']??l10n.fullNameRequired).toString();final status=item['status'] as String???'';
+        final item=_items[index];final face=item['facePhoto'] as Map<String,dynamic>?;final url=face?['url']?.toString();final name=(item['applicantName']??item['applicant']?['displayName']??item['applicant']?['email']??l10n.fullNameRequired).toString();final status=item['status'] as String? ?? '';
         return Card(child:ListTile(contentPadding:const EdgeInsets.all(10),leading:url==null?const CircleAvatar(child:Icon(Icons.person_outline)):CircleAvatar(radius:30,backgroundImage:NetworkImage(url)),title:Text(name),subtitle:Text('${_typeLabel(l10n,item['type'] as String)} • ${_statusLabel(l10n,status)}'),onTap:()=>Navigator.of(context).push(MaterialPageRoute(builder:(_)=>AdminApplicationDetailsPage(item:item))),trailing:PopupMenuButton<String>(onSelected:(v){if(v=='vote')_vote(item);if(v=='review')_review(item);},itemBuilder:(_)=>[PopupMenuItem(value:'vote',child:Text(l10n.vote)),PopupMenuItem(value:'review',child:Text(l10n.reviewDecision))])));
       },childCount:_items.length))),
     ])));
@@ -85,13 +85,13 @@ class AdminApplicationDetailsPage extends StatelessWidget {
   const AdminApplicationDetailsPage({super.key,required this.item});
   final Map<String,dynamic> item;
   @override Widget build(BuildContext context){
-    final l10n=AppLocalizations.of(context)!;final face=item['facePhoto'] as Map<String,dynamic>?;final cert=item['certificatePhoto'] as Map<String,dynamic>?;final media=(item['media'] as List<dynamic>???const[]).cast<Map<String,dynamic>>();
+    final l10n=AppLocalizations.of(context)!;final face=item['facePhoto'] as Map<String,dynamic>?;final cert=item['certificatePhoto'] as Map<String,dynamic>?;final media=(item['media'] as List<dynamic>? ?? const []).cast<Map<String,dynamic>>();
     final images=<Map<String,dynamic>>[if(face!=null)face,if(cert!=null&&cert['id']!=face?['id'])cert,...media];
     Widget field(String label,dynamic value){final s=value?.toString().trim()??'';if(s.isEmpty||s=='null')return const SizedBox.shrink();return Padding(padding:const EdgeInsets.only(bottom:8),child:Row(crossAxisAlignment:CrossAxisAlignment.start,children:[SizedBox(width:145,child:Text(label,style:Theme.of(context).textTheme.labelLarge)),Expanded(child:SelectableText(s))]));}
     return AppPageScaffold(title:Text(l10n.adminApplications),body:ListView(padding:const EdgeInsets.all(16),children:[
       if(face?['url']!=null)ClipRRect(borderRadius:BorderRadius.circular(16),child:Image.network(face!['url'].toString(),height:240,fit:BoxFit.cover)),
       const SizedBox(height:16),Text(item['applicantName']?.toString()??'',style:Theme.of(context).textTheme.headlineSmall),const SizedBox(height:8),
-      field(l10n.applicationStatus,_statusLabel(l10n,item['status'] as String???'')),field(l10n.requestedAmount,item['requestedAmount']==null?null:'₹${item['requestedAmount']}'),field(l10n.approvedAmount,item['approvedAmount']==null?null:'₹${item['approvedAmount']}'),
+      field(l10n.applicationStatus,_statusLabel(l10n,item['status'] as String? ?? '')),field(l10n.requestedAmount,item['requestedAmount']==null?null:'₹${item['requestedAmount']}'),field(l10n.approvedAmount,item['approvedAmount']==null?null:'₹${item['approvedAmount']}'),
       field(l10n.mobileNumberRequired,item['mobileNumber']),field(l10n.emailOptional,item['email']),field(l10n.addressRequired,item['address']),field(l10n.cityRequired,item['city']),field(l10n.stateRequired,item['state']),field(l10n.pincodeRequired,item['pincode']),
       field(l10n.motherNameRequired,item['motherName']),field(l10n.fatherNameRequired,item['fatherName']),field(l10n.dateOfBirthRequired,item['dateOfBirth']),field(l10n.classStandardRequired,item['classStandard']),field(l10n.schoolInstituteRequired,item['schoolInstituteName']),field(l10n.otherAccomplishmentsOptional,item['accomplishments']),field(l10n.explainNeed,item['clarification']),field(l10n.rejectionReason,item['rejectionReason']),field(l10n.adminNote,item['adminNote']),
       const SizedBox(height:16),Text(l10n.supportingDocuments,style:Theme.of(context).textTheme.titleMedium),const SizedBox(height:10),
