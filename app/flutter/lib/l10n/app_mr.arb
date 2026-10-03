@@ -546,5 +546,10 @@
   "selectedCount": "निवडलेले {count}",
   "needsReviewCount": "पुनरावलोकन आवश्यक {count}",
   "rejectedCount": "नाकारलेले {count}",
-  "notSelectedCount": "निवडलेले नाही {count}"
+  "notSelectedCount": "निवडलेले नाही {count}",
+  "certificatePhotoExport": "प्रमाणपत्र फोटो निर्यात करा",
+  "certificatePhotoExportReady": "तयार प्रमाणपत्र फोटो: {available} / {total}",
+  "certificatePhotoExportMissing": "फोटो उपलब्ध नाहीत",
+  "certificatePhotoExportAllReady": "सर्व निवडलेल्या विद्यार्थ्यांचा प्रमाणपत्र फोटो उपलब्ध आहे.",
+  "downloadCertificatePhotos": "ZIP डाउनलोड करा"
 }
