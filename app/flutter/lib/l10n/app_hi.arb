@@ -548,7 +548,7 @@
   "rejectedCount": "अस्वीकृत {count}",
   "notSelectedCount": "चयनित नहीं {count}",
   "certificatePhotoExport": "प्रमाणपत्र फोटो निर्यात करें",
-  "certificatePhotoExportReady": "तैयार प्रमाणपत्र फोटो: {available} / {total}",
+  "certificatePhotoExportReady": "तैयार प्रमाणपत्र फोटो",
   "certificatePhotoExportMissing": "फोटो उपलब्ध नहीं",
   "certificatePhotoExportAllReady": "सभी चयनित छात्रों का प्रमाणपत्र फोटो उपलब्ध है।",
   "downloadCertificatePhotos": "ZIP डाउनलोड करें"
