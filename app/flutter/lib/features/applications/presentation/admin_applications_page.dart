@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/widgets/app_settings_menu.dart';
 import '../../../l10n/app_localizations.dart';
 import '../providers/help_applications_providers.dart';
+import '../../causes/providers/causes_providers.dart';
 
 class AdminApplicationsPage extends ConsumerStatefulWidget {
   const AdminApplicationsPage({super.key});
