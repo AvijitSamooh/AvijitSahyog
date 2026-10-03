@@ -41,8 +41,7 @@ void main() {
         overrides: [
           helpApplicationsRepositoryProvider.overrideWithValue(_FakeRepository()),
         ],
-      ),
-      child: AppShellScope(
+        child: AppShellScope(
         onLocaleChanged: (_) {},
         navigation: AppNavigationController(),
         child: MaterialApp(
