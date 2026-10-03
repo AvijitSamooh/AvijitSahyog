@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, StreamableFile, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, InternalServerErrorException, Param, Patch, Post, Query, Req, StreamableFile, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { Request } from 'express';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
@@ -178,7 +178,7 @@ export class CertificatePhotoExportController {
 
 function exportSecret(): string {
   const secret = process.env.EXPORT_TOKEN_SECRET || process.env.R2_SECRET_ACCESS_KEY;
-  if (!secret) throw new Error('EXPORT_TOKEN_SECRET or R2_SECRET_ACCESS_KEY must be configured.');
+  if (!secret) throw new InternalServerErrorException('EXPORT_TOKEN_SECRET or R2_SECRET_ACCESS_KEY must be configured.');
   return secret;
 }
 
@@ -187,18 +187,18 @@ function exportSignature(payload: string): string {
 }
 
 function verifyExportToken(token?: string): { type: string; status: string } {
-  if (!token) throw new Error('Export token is required.');
+  if (!token) throw new UnauthorizedException('Export token is required.');
   const separator = token.lastIndexOf('.');
-  if (separator <= 0) throw new Error('Invalid export token.');
+  if (separator <= 0) throw new UnauthorizedException('Invalid export token.');
   const payload = token.slice(0, separator);
   const signature = token.slice(separator + 1);
   const expected = exportSignature(payload);
   if (signature.length !== expected.length || !timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) {
-    throw new Error('Invalid export token.');
+    throw new UnauthorizedException('Invalid export token.');
   }
   const decoded = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8')) as { type?: string; status?: string; expiresAt?: number };
   if (!decoded.type || !decoded.status || !decoded.expiresAt || decoded.expiresAt < Date.now()) {
-    throw new Error('Export token has expired or is invalid.');
+    throw new UnauthorizedException('Export token has expired or is invalid.');
   }
   return { type: decoded.type, status: decoded.status };
 }
