@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/widgets/app_settings_menu.dart';
 import '../../../l10n/app_localizations.dart';
@@ -53,42 +54,68 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
       if(mounted){ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(l10n.reviewSaved)));await _load();}
     }catch(_){if(mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(l10n.applicationActionFailed)));}
   }
-  Future<void> _photoManifest() async {
+  Future<void> _certificatePhotoExport() async {
     final l10n = AppLocalizations.of(context)!;
     try {
-      final items = await ref.read(helpApplicationsRepositoryProvider).photoManifest(type: _type, status: _status);
+      final result = await ref.read(helpApplicationsRepositoryProvider).createCertificatePhotoExport(
+        type: 'PRATIBHA_SAMMAN',
+        status: 'CONSIDERED_FOR_SAMMAN',
+      );
       if (!mounted) return;
+      final missing = (result['missing'] as List<dynamic>? ?? const [])
+          .cast<Map<String, dynamic>>();
+      final available = result['available'] ?? 0;
+      final total = result['total'] ?? 0;
+      final downloadPath = result['downloadPath']?.toString();
       await showDialog<void>(
         context: context,
         builder: (_) => AlertDialog(
-          title: Text(l10n.applicationPhotoManifest),
+          title: Text(l10n.certificatePhotoExport),
           content: SizedBox(
-            width: 700,
-            child: items.isEmpty
-                ? Text(l10n.noApplicationPhotos)
-                : ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: items.length,
-                    separatorBuilder: (_, _) => const Divider(),
-                    itemBuilder: (_, i) {
-                      final item = items[i];
-                      final photo = item['facePhoto'] as Map<String, dynamic>?;
-                      final url = photo?['url']?.toString();
-                      return ListTile(
-                        leading: url == null ? const Icon(Icons.person_outline) : CircleAvatar(backgroundImage: NetworkImage(url)),
-                        title: Text(item['name']?.toString() ?? l10n.fullNameRequired),
-                        subtitle: SelectableText(url ?? ''),
-                      );
-                    },
-                  ),
+            width: 600,
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                Text('${l10n.certificatePhotoExportReady}: $available / $total'),
+                const SizedBox(height: 12),
+                if (missing.isNotEmpty) ...[
+                  Text(l10n.certificatePhotoExportMissing, style: Theme.of(context).textTheme.titleSmall),
+                  const SizedBox(height: 6),
+                  ...missing.map((item) => ListTile(
+                    dense: true,
+                    leading: const Icon(Icons.warning_amber_outlined),
+                    title: Text(item['name']?.toString() ?? l10n.fullNameRequired),
+                  )),
+                ] else
+                  Text(l10n.certificatePhotoExportAllReady),
+              ],
+            ),
           ),
-          actions: [FilledButton(onPressed: () => Navigator.pop(context), child: Text(l10n.close))],
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.close)),
+            if (downloadPath != null && available > 0)
+              FilledButton.icon(
+                icon: const Icon(Icons.download_outlined),
+                label: Text(l10n.downloadCertificatePhotos),
+                onPressed: () async {
+                  final baseUrl = ref.read(apiClientProvider).baseUrl;
+                  final launched = await launchUrl(
+                    Uri.parse('$baseUrl$downloadPath'),
+                    mode: LaunchMode.externalApplication,
+                  );
+                  if (mounted && !launched) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.applicationActionFailed)));
+                  }
+                },
+              ),
+          ],
         ),
       );
     } catch (_) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.applicationActionFailed)));
     }
   }
+
   List<Map<String,dynamic>> get _visibleItems => _topOnly ? _items.take(_topLimit).toList(growable: false) : _items;
 
   @override Widget build(BuildContext context){
@@ -117,7 +144,7 @@ class _AdminApplicationsPageState extends ConsumerState<AdminApplicationsPage> {
         const SizedBox(height:8),
         DropdownButtonFormField<String>(initialValue:_status,decoration:InputDecoration(labelText:l10n.applicationStatus),items:['SUBMITTED','UNDER_REVIEW','CLARIFICATION_REQUIRED','APPROVED_FOR_DONATION','REJECTED','CONSIDERED_FOR_SAMMAN','NOT_SELECTED'].map((s)=>DropdownMenuItem(value:s,child:Text(_statusLabel(l10n,s)))).toList(),onChanged:(v){setState(()=>_status=v);_load();}),
         const SizedBox(height:8),
-        Align(alignment:Alignment.centerRight,child:OutlinedButton.icon(key:const ValueKey('admin_application_photo_manifest'),onPressed:_photoManifest,icon:const Icon(Icons.photo_library_outlined),label:Text(l10n.applicationPhotoManifest))),
+        Align(alignment:Alignment.centerRight,child:OutlinedButton.icon(key:const ValueKey('admin_application_certificate_photo_export'),onPressed:_certificatePhotoExport,icon:const Icon(Icons.badge_outlined),label:Text(l10n.certificatePhotoExport))),
       ]))),
       if(_loading)const SliverFillRemaining(hasScrollBody:false,child:Center(child:CircularProgressIndicator()))
       else if(_error!=null)SliverFillRemaining(hasScrollBody:false,child:Center(child:Text(_error!)))
