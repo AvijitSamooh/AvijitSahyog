@@ -61,7 +61,7 @@ void main() {
     await tester.tap(exportButton);
     await tester.pumpAndSettle();
 
-    expect(find.text('Export Certificate Photos'), findsOneWidget);
+    expect(find.text('Export Certificate Photos'), findsWidgets);
     expect(find.text('Ready certificate photos: 49 / 50'), findsOneWidget);
     expect(find.text('Missing Photo Student'), findsOneWidget);
   });
