@@ -179,6 +179,9 @@ class HelpApplicationsRepository {
   Future<List<Map<String, dynamic>>> photoManifest({String? type, String? status}) =>
       client.getAdminApplicationPhotoManifest(type: type, status: status);
 
+  Future<Map<String, dynamic>> createCertificatePhotoExport({String? type, String? status}) =>
+      client.createCertificatePhotoExport(type: type, status: status);
+
   Future<void> vote(String id, int score, {String? comment}) =>
       client.voteHelpApplication(id, score, comment: comment);
 

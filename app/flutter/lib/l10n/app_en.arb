@@ -562,5 +562,10 @@
   "selectedCount": "Selected {count}",
   "needsReviewCount": "Needs review {count}",
   "rejectedCount": "Rejected {count}",
-  "notSelectedCount": "Not selected {count}"
+  "notSelectedCount": "Not selected {count}",
+  "certificatePhotoExport": "Export Certificate Photos",
+  "certificatePhotoExportReady": "Ready certificate photos",
+  "certificatePhotoExportMissing": "Photos missing",
+  "certificatePhotoExportAllReady": "All selected students have a certificate photo.",
+  "downloadCertificatePhotos": "Download ZIP"
 }

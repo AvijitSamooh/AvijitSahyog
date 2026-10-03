@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, InternalServerErrorException, Param, Patch, Post, Query, Req, StreamableFile, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 import { Request } from 'express';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { AdminGuard } from '../auth/admin.guard';
@@ -103,6 +104,22 @@ export class AdminHelpApplicationsController {
     return this.service.photoManifest(type, status);
   }
 
+  @Post('certificate-photo-export')
+  async certificatePhotoExport(@Query('type') type?: string, @Query('status') status?: string) {
+    const exportType = (type || 'PRATIBHA_SAMMAN') as HelpApplicationTypeDto;
+    const exportStatus = status || 'CONSIDERED_FOR_SAMMAN';
+    const summary = await this.service.certificatePhotoExportSummary(exportType, exportStatus);
+    const expiresAt = Date.now() + 15 * 60 * 1000;
+    const payload = Buffer.from(JSON.stringify({ type: exportType, status: exportStatus, expiresAt }), 'utf8').toString('base64url');
+    const signature = exportSignature(payload);
+    return {
+      ...summary,
+      expiresAt: new Date(expiresAt).toISOString(),
+      downloadPath: `/exports/certificate-photos?token=${payload}.${signature}`,
+      filename: `AvijitSahyog_Certificate_Photos_${new Date().getFullYear()}.zip`,
+    };
+  }
+
   @Post(':id/vote')
   vote(@Req() req: Request & AuthenticatedRequest, @Param('id') id: string, @Body() dto: VoteHelpApplicationDto) {
     return this.service.vote(req.user, id, dto);
@@ -141,4 +158,47 @@ export class AdminApplicationRulesController {
 
   @Delete(':id')
   remove(@Param('id') id: string) { return this.service.remove(id); }
+}
+
+@Controller('exports')
+export class CertificatePhotoExportController {
+  constructor(private readonly service: HelpApplicationsService) {}
+
+  @Get('certificate-photos')
+  async download(@Query('token') token?: string): Promise<StreamableFile> {
+    const payload = verifyExportToken(token);
+    const zip = await this.service.buildCertificatePhotoExport(payload.type, payload.status);
+    const filename = `AvijitSahyog_Certificate_Photos_${new Date().getFullYear()}.zip`;
+    return new StreamableFile(zip, {
+      type: 'application/zip',
+      disposition: `attachment; filename="${filename}"`,
+    });
+  }
+}
+
+function exportSecret(): string {
+  const secret = process.env.EXPORT_TOKEN_SECRET || process.env.R2_SECRET_ACCESS_KEY;
+  if (!secret) throw new InternalServerErrorException('EXPORT_TOKEN_SECRET or R2_SECRET_ACCESS_KEY must be configured.');
+  return secret;
+}
+
+function exportSignature(payload: string): string {
+  return createHmac('sha256', exportSecret()).update(payload).digest('base64url');
+}
+
+function verifyExportToken(token?: string): { type: HelpApplicationTypeDto; status: string } {
+  if (!token) throw new UnauthorizedException('Export token is required.');
+  const separator = token.lastIndexOf('.');
+  if (separator <= 0) throw new UnauthorizedException('Invalid export token.');
+  const payload = token.slice(0, separator);
+  const signature = token.slice(separator + 1);
+  const expected = exportSignature(payload);
+  if (signature.length !== expected.length || !timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) {
+    throw new UnauthorizedException('Invalid export token.');
+  }
+  const decoded = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8')) as { type?: string; status?: string; expiresAt?: number };
+  if (!decoded.type || !decoded.status || !decoded.expiresAt || decoded.expiresAt < Date.now()) {
+    throw new UnauthorizedException('Export token has expired or is invalid.');
+  }
+  return { type: decoded.type as HelpApplicationTypeDto, status: decoded.status };
 }

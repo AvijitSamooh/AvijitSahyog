@@ -76,9 +76,9 @@ Each administrator has one vote per application and can update that vote. The ad
 
 ## Media
 
-Authenticated users can upload JPEG, PNG and WebP evidence through the existing R2 media foundation. Uploaded media is linked to the application through explicit foreign-key relations.
+Authenticated users can upload JPEG, PNG and WebP evidence through the existing R2 media foundation. Uploads are validated from image bytes rather than trusting the multipart MIME type. Uploaded media is linked to the application through explicit foreign-key relations.
 
-The upload and submission steps are intentionally separate so storage failures do not create a partially persisted application record. An application cannot be submitted without at least one evidence image.
+The upload and submission steps are intentionally separate so storage failures do not create a partially persisted application record. Before R2 storage, every accepted image is auto-rotated, resized to at most 1600px on either axis, converted to WebP, and progressively re-encoded when the processed object exceeds 1.5 MB. The original camera file is never stored. An application cannot be submitted without at least one evidence image.
 
 ## API
 
@@ -97,6 +97,8 @@ Administrator endpoints:
 
 - GET /admin/applications
 - GET /admin/applications/photo-manifest
+- POST /admin/applications/certificate-photo-export (creates a short-lived certificate ZIP download)
+- GET /exports/certificate-photos?token=... (short-lived certificate ZIP download)
 - POST /admin/applications/:id/vote
 - PATCH /admin/applications/:id/review
 
@@ -162,7 +164,7 @@ Applicants can open any non-final application from history to view the complete 
 
 Every new application requires a clear face photo. The face photo is displayed on applicant history and administrator application cards. For Pratibha Samman, the certificate face photo is also used as the application face photo unless a separate certificate photo is supplied.
 
-The administrator portal separates **Applications** from **Application configuration** so application review/list browsing cannot accidentally open window/rule editing controls. The application list opens a full detail screen with all applicant fields and uploaded media, and provides a named photo manifest for sharing the face-photo URLs with the certificate-printing team.
+The administrator portal separates **Applications** from **Application configuration** so application review/list browsing cannot accidentally open window/rule editing controls. The application list opens a full detail screen with all applicant fields and uploaded media, and provides a **Certificate Photos** export workflow for the final Considered for Samman set. The workflow shows how many certificate photos are ready, flags missing photos, and downloads a ZIP containing numbered JPEG photos plus a CSV manifest for the certificate-printing team. The download URL is short-lived and does not create a second permanent copy in R2.
 
 
 ## Review queue and shortlisting

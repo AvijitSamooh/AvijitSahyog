@@ -1,6 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import {
   DeleteObjectCommand,
+  GetObjectCommand,
   HeadBucketCommand,
   PutObjectCommand,
   S3Client,
@@ -89,6 +90,20 @@ export class R2StorageService {
       throw new InternalServerErrorException(
         `Unable to upload image to Cloudflare R2: ${detail}`,
       );
+    }
+  }
+
+  async download(key: string): Promise<Buffer> {
+    try {
+      const response = await this.client.send(new GetObjectCommand({
+        Bucket: this.getBucketName(),
+        Key: key,
+      }));
+      if (!response.Body) throw new InternalServerErrorException('Image object is empty.');
+      return Buffer.from(await response.Body.transformToByteArray());
+    } catch (error) {
+      if (error instanceof InternalServerErrorException) throw error;
+      throw new InternalServerErrorException('Unable to download image from Cloudflare R2.');
     }
   }
 

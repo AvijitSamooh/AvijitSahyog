@@ -8,6 +8,8 @@ import { VoteHelpApplicationDto } from './dto/vote-help-application.dto';
 import { ApplicationWindowsService } from './application-windows.service';
 import { UpdateHelpApplicationDto } from './dto/update-help-application.dto';
 import { MediaService } from '../media/media.service';
+import { createZip } from './certificate-photo-export.util';
+import sharp from 'sharp';
 
 @Injectable()
 export class HelpApplicationsService {
@@ -270,6 +272,64 @@ export class HelpApplicationsService {
       }));
   }
 
+  async certificatePhotoExportSummary(type = HelpApplicationTypeDto.PRATIBHA_SAMMAN, status = 'CONSIDERED_FOR_SAMMAN') {
+    const items = await this.prisma.helpApplication.findMany({
+      where: { type: type as any, status: status as any },
+      orderBy: [{ applicantName: 'asc' }, { createdAt: 'asc' }],
+      include: { certificatePhotoMedia: true },
+    });
+    const missing = items
+      .filter((item) => !item.certificatePhotoMedia)
+      .map((item) => ({ id: item.id, name: item.applicantName ?? 'Applicant' }));
+    return {
+      total: items.length,
+      available: items.length - missing.length,
+      missing,
+      type,
+      status,
+    };
+  }
+
+  async buildCertificatePhotoExport(type = HelpApplicationTypeDto.PRATIBHA_SAMMAN, status = 'CONSIDERED_FOR_SAMMAN') {
+    const items = await this.prisma.helpApplication.findMany({
+      where: { type: type as any, status: status as any },
+      orderBy: [{ applicantName: 'asc' }, { createdAt: 'asc' }],
+      include: { certificatePhotoMedia: true },
+    });
+
+    const entries: Array<{ name: string; data: Buffer }> = [];
+    const manifest: string[] = ['Serial,Application ID,Applicant Name,Status,Photo Filename'];
+    let serial = 0;
+
+    for (const item of items) {
+      serial += 1;
+      const name = item.applicantName ?? 'Applicant';
+      if (!item.certificatePhotoMedia) {
+        manifest.push([serial, item.id, name, 'MISSING_PHOTO', ''].map(csv).join(','));
+        continue;
+      }
+      const outputName = `${String(serial).padStart(3, '0')}_${safeFileName(name)}.jpg`;
+      try {
+        const source = await this.mediaService.downloadImage(item.certificatePhotoMedia.storageKey);
+        const jpeg = await sharp(source)
+          .rotate()
+          .resize({ width: 1800, height: 1800, fit: 'inside', withoutEnlargement: true })
+          .jpeg({ quality: 92, mozjpeg: true })
+          .toBuffer();
+        entries.push({ name: outputName, data: jpeg });
+        manifest.push([serial, item.id, name, item.status, outputName].map(csv).join(','));
+      } catch (_) {
+        manifest.push([serial, item.id, name, 'PHOTO_READ_FAILED', ''].map(csv).join(','));
+      }
+    }
+
+    entries.push({
+      name: 'manifest.csv',
+      data: Buffer.from('\ufeff' + manifest.join('\\n') + '\\n', 'utf8'),
+    });
+    return createZip(entries);
+  }
+
   async vote(identity: FirebaseIdentity, id: string, dto: VoteHelpApplicationDto) {
     const admin = await this.admin(identity);
     const existing = await this.application(id);
@@ -527,3 +587,14 @@ export class HelpApplicationsService {
     return { ...this.toResponse(item), applicant: item.applicant ?? null, votes: (item.votes ?? []).map((v: any) => ({ id: v.id, adminId: v.adminId, adminName: v.admin?.displayName ?? null, score: v.score, comment: v.comment, updatedAt: v.updatedAt })), voteAverage: item.votes?.length ? item.votes.reduce((sum: number, v: any) => sum + v.score, 0) / item.votes.length : null };
   }
 }
+
+function csv(value: string | number): string {
+  const text = String(value).replace(/"/g, '""');
+  return `"${text}"`;
+}
+
+function safeFileName(value: string): string {
+  const cleaned = value.normalize('NFKC').replace(/[\\/:*?"<>|\r\n]+/g, ' ').trim().replace(/\s+/g, '_');
+  return (cleaned || 'Applicant').slice(0, 80);
+}
+

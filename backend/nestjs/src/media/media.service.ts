@@ -11,7 +11,8 @@ import { R2StorageService } from './r2-storage.service';
 
 const ALLOWED_IMAGE_FORMATS = new Set(['jpeg', 'png', 'webp']);
 const MAX_UPLOAD_SIZE = 10 * 1024 * 1024;
-const MAX_DIMENSION = 1920;
+const MAX_DIMENSION = 1600;
+const MAX_PROCESSED_SIZE = 1.5 * 1024 * 1024;
 
 @Injectable()
 export class MediaService {
@@ -48,7 +49,7 @@ export class MediaService {
         );
       }
 
-      const processedBuffer = await sharp(file.buffer)
+      let processedBuffer = await sharp(file.buffer)
         .rotate()
         .resize({
           width: MAX_DIMENSION,
@@ -58,6 +59,40 @@ export class MediaService {
         })
         .webp({ quality: 82 })
         .toBuffer();
+
+      // Do not let a camera-original-sized image become a large R2 object.
+      // Re-encode progressively only when needed so ordinary photos retain
+      // better visual quality while oversized outputs are bounded.
+      for (const quality of [76, 72, 68]) {
+        if (processedBuffer.length <= MAX_PROCESSED_SIZE) break;
+        processedBuffer = await sharp(file.buffer)
+          .rotate()
+          .resize({
+            width: MAX_DIMENSION,
+            height: MAX_DIMENSION,
+            fit: 'inside',
+            withoutEnlargement: true,
+          })
+          .webp({ quality })
+          .toBuffer();
+      }
+
+      if (processedBuffer.length > MAX_PROCESSED_SIZE) {
+        processedBuffer = await sharp(file.buffer)
+          .rotate()
+          .resize({
+            width: 1400,
+            height: 1400,
+            fit: 'inside',
+            withoutEnlargement: true,
+          })
+          .webp({ quality: 65 })
+          .toBuffer();
+      }
+
+      if (processedBuffer.length > MAX_PROCESSED_SIZE) {
+        throw new BadRequestException('Image could not be optimized below the 1.5 MB storage limit. Please choose a smaller image.');
+      }
 
       const metadata = await sharp(processedBuffer).metadata();
       const key = `${folder}/${randomUUID()}.webp`;
@@ -97,6 +132,10 @@ export class MediaService {
       );
     }
   }
+  async downloadImage(storageKey: string): Promise<Buffer> {
+    return this.r2StorageService.download(storageKey);
+  }
+
   async deleteUserImage(id: string, uploadedById: string) {
     const media = await this.prisma.media.findFirst({
       where: { id, uploadedById },

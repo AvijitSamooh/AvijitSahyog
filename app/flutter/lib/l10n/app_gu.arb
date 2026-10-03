@@ -546,5 +546,10 @@
   "selectedCount": "પસંદ કરેલ {count}",
   "needsReviewCount": "સમીક્ષા જરૂરી {count}",
   "rejectedCount": "નકારેલ {count}",
-  "notSelectedCount": "પસંદ કરેલ નથી"
+  "notSelectedCount": "પસંદ કરેલ નથી",
+  "certificatePhotoExport": "પ્રમાણપત્ર ફોટા નિકાસ કરો",
+  "certificatePhotoExportReady": "તૈયાર પ્રમાણપત્ર ફોટા",
+  "certificatePhotoExportMissing": "ફોટા ઉપલબ્ધ નથી",
+  "certificatePhotoExportAllReady": "બધા પસંદ કરેલા વિદ્યાર્થીઓનો પ્રમાણપત્ર ફોટો ઉપલબ્ધ છે.",
+  "downloadCertificatePhotos": "ZIP ડાઉનલોડ કરો"
 }
