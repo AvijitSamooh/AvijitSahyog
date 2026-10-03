@@ -138,8 +138,8 @@ describe('MediaService', () => {
       data: expect.objectContaining({
         storageKey: expect.stringMatching(/^uploads\/.+\.webp$/),
         mimeType: 'image/webp',
-        width: 1920,
-        height: 960,
+        width: 1600,
+        height: 800,
         fileSize: uploadedBuffer.length,
       }),
     });
