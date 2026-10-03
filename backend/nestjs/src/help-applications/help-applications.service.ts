@@ -302,13 +302,12 @@ export class HelpApplicationsService {
     let serial = 0;
 
     for (const item of items) {
+      serial += 1;
       const name = item.applicantName ?? 'Applicant';
       if (!item.certificatePhotoMedia) {
-        manifest.push([serial + 1, item.id, name, 'MISSING_PHOTO', ''].map(csv).join(','));
+        manifest.push([serial, item.id, name, 'MISSING_PHOTO', ''].map(csv).join(','));
         continue;
       }
-
-      serial += 1;
       const outputName = `${String(serial).padStart(3, '0')}_${safeFileName(name)}.jpg`;
       try {
         const source = await this.mediaService.downloadImage(item.certificatePhotoMedia.storageKey);
