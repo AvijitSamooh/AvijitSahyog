@@ -396,6 +396,18 @@ class ApiClient {
     return (jsonDecode(response.body) as List<dynamic>).cast<Map<String, dynamic>>();
   }
 
+  Future<Map<String, dynamic>> createCertificatePhotoExport({String? type, String? status}) async {
+    final uri = Uri.parse('$baseUrl/admin/applications/certificate-photo-export').replace(
+      queryParameters: {
+        if (type != null && type.isNotEmpty) 'type': type,
+        if (status != null && status.isNotEmpty) 'status': status,
+      },
+    );
+    final response = await _client.post(uri, headers: await _headers());
+    _ensureSuccess(response, 'Creating certificate photo export');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
   Future<void> voteHelpApplication(String id, int score, {String? comment}) async {
     final response = await _client.post(Uri.parse('$baseUrl/admin/applications/$id/vote'), headers: await _headers(json: true), body: jsonEncode({'score': score, 'comment': ?comment}));
     _ensureSuccess(response, 'Saving application vote');
