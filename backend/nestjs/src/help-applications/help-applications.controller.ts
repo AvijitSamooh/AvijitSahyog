@@ -106,7 +106,7 @@ export class AdminHelpApplicationsController {
 
   @Post('certificate-photo-export')
   async certificatePhotoExport(@Query('type') type?: string, @Query('status') status?: string) {
-    const exportType = type || 'PRATIBHA_SAMMAN';
+    const exportType = (type || 'PRATIBHA_SAMMAN') as HelpApplicationTypeDto;
     const exportStatus = status || 'CONSIDERED_FOR_SAMMAN';
     const summary = await this.service.certificatePhotoExportSummary(exportType, exportStatus);
     const expiresAt = Date.now() + 15 * 60 * 1000;
