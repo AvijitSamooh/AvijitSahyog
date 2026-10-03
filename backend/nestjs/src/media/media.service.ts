@@ -128,6 +128,10 @@ export class MediaService {
       );
     }
   }
+  async downloadImage(storageKey: string): Promise<Buffer> {
+    return this.r2StorageService.download(storageKey);
+  }
+
   async deleteUserImage(id: string, uploadedById: string) {
     const media = await this.prisma.media.findFirst({
       where: { id, uploadedById },
