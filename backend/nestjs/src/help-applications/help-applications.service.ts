@@ -587,7 +587,8 @@ export class HelpApplicationsService {
     return { ...this.toResponse(item), applicant: item.applicant ?? null, votes: (item.votes ?? []).map((v: any) => ({ id: v.id, adminId: v.adminId, adminName: v.admin?.displayName ?? null, score: v.score, comment: v.comment, updatedAt: v.updatedAt })), voteAverage: item.votes?.length ? item.votes.reduce((sum: number, v: any) => sum + v.score, 0) / item.votes.length : null };
   }
 }
-\nfunction csv(value: string | number): string {
+
+function csv(value: string | number): string {
   const text = String(value).replace(/"/g, '""');
   return `"${text}"`;
 }
