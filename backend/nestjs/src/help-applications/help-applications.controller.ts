@@ -186,7 +186,7 @@ function exportSignature(payload: string): string {
   return createHmac('sha256', exportSecret()).update(payload).digest('base64url');
 }
 
-function verifyExportToken(token?: string): { type: string; status: string } {
+function verifyExportToken(token?: string): { type: HelpApplicationTypeDto; status: string } {
   if (!token) throw new UnauthorizedException('Export token is required.');
   const separator = token.lastIndexOf('.');
   if (separator <= 0) throw new UnauthorizedException('Invalid export token.');
@@ -200,5 +200,5 @@ function verifyExportToken(token?: string): { type: string; status: string } {
   if (!decoded.type || !decoded.status || !decoded.expiresAt || decoded.expiresAt < Date.now()) {
     throw new UnauthorizedException('Export token has expired or is invalid.');
   }
-  return { type: decoded.type, status: decoded.status };
+  return { type: decoded.type as HelpApplicationTypeDto, status: decoded.status };
 }
