@@ -106,8 +106,8 @@ describe('MediaService', () => {
       storageKey: 'uploads/test.webp',
       mimeType: 'image/webp',
       fileSize: 123,
-      width: 1920,
-      height: 960,
+      width: 1600,
+      height: 800,
     };
 
     prisma.media.create.mockResolvedValue(persistedMedia);
@@ -131,8 +131,8 @@ describe('MediaService', () => {
     const metadata = await sharp(uploadedBuffer).metadata();
 
     expect(metadata.format).toBe('webp');
-    expect(metadata.width).toBe(1920);
-    expect(metadata.height).toBe(960);
+    expect(metadata.width).toBe(1600);
+    expect(metadata.height).toBe(800);
 
     expect(prisma.media.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
