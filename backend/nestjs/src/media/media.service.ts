@@ -90,6 +90,10 @@ export class MediaService {
           .toBuffer();
       }
 
+      if (processedBuffer.length > MAX_PROCESSED_SIZE) {
+        throw new BadRequestException('Image could not be optimized below the 1.5 MB storage limit. Please choose a smaller image.');
+      }
+
       const metadata = await sharp(processedBuffer).metadata();
       const key = `${folder}/${randomUUID()}.webp`;
 
