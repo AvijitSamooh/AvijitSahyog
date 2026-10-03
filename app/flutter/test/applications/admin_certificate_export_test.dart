@@ -52,6 +52,7 @@ void main() {
           home: const AdminApplicationsPage(),
         ),
       ),
+      ),
     );
     await tester.pumpAndSettle();
 
