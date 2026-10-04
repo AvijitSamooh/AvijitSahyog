@@ -567,5 +567,15 @@
   "certificatePhotoExportReady": "Ready certificate photos",
   "certificatePhotoExportMissing": "Photos missing",
   "certificatePhotoExportAllReady": "All selected students have a certificate photo.",
-  "downloadCertificatePhotos": "Download ZIP"
+  "downloadCertificatePhotos": "Download ZIP",
+  "platformDowntime": "Backend downtime",
+  "platformDowntimeSubtitle": "Enable, disable and configure the backend service window",
+  "platformDowntimeEnabled": "Enable downtime",
+  "platformDowntimeEnabledSubtitle": "Users can still sign in. Super Admin can always change this setting.",
+  "platformDowntimeStarts": "Downtime starts",
+  "platformDowntimeEnds": "Downtime ends",
+  "platformDowntimeMessage": "Downtime message",
+  "platformDowntimeMessageHint": "Optional message shown to users",
+  "platformDowntimeSave": "Save settings",
+  "platformDowntimeSaved": "Downtime settings saved."
 }
