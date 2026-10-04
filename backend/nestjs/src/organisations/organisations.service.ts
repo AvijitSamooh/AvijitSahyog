@@ -180,6 +180,7 @@ export class OrganisationsService {
       include: { translations: { include: { language: true } } },
     });
     this.cache.invalidate('organisations:');
+    await this.syncToFirestore(result.id);
     return result;
   }
 
@@ -253,6 +254,7 @@ export class OrganisationsService {
       });
     });
     this.cache.invalidate('organisations:');
+    await this.syncToFirestore(result.id);
     return result;
   }
   async updateCauses(id: string, causeIds: string[]) {
@@ -291,6 +293,7 @@ export class OrganisationsService {
       });
     });
     this.cache.invalidate('organisations:');
+    await this.syncToFirestore(result.id);
     return result;
   }
 
@@ -452,6 +455,63 @@ export class OrganisationsService {
     });
     this.cache.invalidate('organisations:');
     return result;
+  }
+
+  private async syncToFirestore(id: string) {
+    if (!this.firestoreOrganisations) return;
+
+    const organisation = await this.prisma.organisation.findUnique({
+      where: { id },
+      include: {
+        translations: { include: { language: true } },
+        causes: {
+          orderBy: { displayOrder: 'asc' },
+          select: { causeId: true, displayOrder: true, isActive: true },
+        },
+        media: {
+          orderBy: [{ purpose: 'asc' }, { isPrimary: 'desc' }, { displayOrder: 'asc' }],
+          select: {
+            mediaId: true,
+            purpose: true,
+            displayOrder: true,
+            isPrimary: true,
+          },
+        },
+      },
+    });
+
+    if (!organisation) {
+      await this.firestoreOrganisations.removeOrganisation(id);
+      return;
+    }
+
+    await this.firestoreOrganisations.syncOrganisation({
+      id: organisation.id,
+      slug: organisation.slug,
+      logoUrl: organisation.logoUrl,
+      websiteUrl: organisation.websiteUrl,
+      phone: organisation.phone,
+      mobileNumber: organisation.mobileNumber,
+      email: organisation.email,
+      address: organisation.address,
+      city: organisation.city,
+      state: organisation.state,
+      country: organisation.country,
+      latitude: organisation.latitude == null ? null : Number(organisation.latitude),
+      longitude: organisation.longitude == null ? null : Number(organisation.longitude),
+      isActive: organisation.isActive,
+      displayOrder: organisation.displayOrder,
+      translations: Object.fromEntries(
+        organisation.translations.map((item: any) => [
+          item.language.code,
+          { name: item.name, description: item.description },
+        ]),
+      ),
+      causeIds: organisation.causes.filter((item: any) => item.isActive).map((item: any) => item.causeId),
+      media: organisation.media,
+      createdAt: organisation.createdAt,
+      updatedAt: organisation.updatedAt,
+    });
   }
 
   private normalizeMobileNumber(value: string | undefined): string | null {
