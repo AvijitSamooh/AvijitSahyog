@@ -142,13 +142,15 @@ export class FirestoreCausesService {
 
     const snapshots = await Promise.all(
       chunks.map((chunk) =>
-        this.firebase.db.collection(collection).where('__name__', 'in', chunk).get(),
+        this.firebase.db.getAll(
+          ...chunk.map((id) => this.firebase.db.collection(collection).doc(id)),
+        ),
       ),
     );
 
     const byId = new Map<string, T>();
-    snapshots.flatMap((snapshot) => snapshot.docs).forEach((doc) => {
-      byId.set(doc.id, doc.data() as T);
+    snapshots.flatMap((snapshot) => snapshot).forEach((doc) => {
+      if (doc.exists) byId.set(doc.id, doc.data() as T);
     });
 
     return uniqueIds.map((id) => byId.get(id)).filter((item): item is T => Boolean(item));
@@ -193,11 +195,13 @@ export class FirestoreCausesService {
     );
     const snapshots = await Promise.all(
       chunks.map((chunk) =>
-        this.firebase.db.collection('media').where('__name__', 'in', chunk).get(),
+        this.firebase.db.getAll(
+          ...chunk.map((id) => this.firebase.db.collection('media').doc(id)),
+        ),
       ),
     );
     return snapshots.flatMap((snapshot) =>
-      snapshot.docs.map((doc) => doc.data() as MediaDocument),
+      snapshot.filter((doc) => doc.exists).map((doc) => doc.data() as MediaDocument),
     );
   }
 
