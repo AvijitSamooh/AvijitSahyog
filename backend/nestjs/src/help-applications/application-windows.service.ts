@@ -1,16 +1,21 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Optional } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { FirebaseIdentity } from '../auth/auth.types';
 import { HelpApplicationTypeDto } from './dto/create-help-application.dto';
 import { StartApplicationWindowDto } from './dto/application-window.dto';
+import { FirestoreApplicationWindowsService } from './firestore-application-windows.service';
 
 const APPLICATION_TYPES = Object.values(HelpApplicationTypeDto);
 
 @Injectable()
 export class ApplicationWindowsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional() private readonly firestoreWindows?: FirestoreApplicationWindowsService,
+  ) {}
 
   async list() {
+    if (this.firestoreWindows) return this.firestoreWindows.list();
     const now = new Date();
     const windows = await this.prisma.applicationWindow.findMany({
       orderBy: { type: 'asc' },
@@ -22,6 +27,7 @@ export class ApplicationWindowsService {
   }
 
   async start(identity: FirebaseIdentity, type: HelpApplicationTypeDto, dto: StartApplicationWindowDto) {
+    if (this.firestoreWindows) return this.firestoreWindows.start(identity, type, dto);
     const admin = await this.requireAdmin(identity);
     this.validateType(type);
     if (dto.type !== type) {
@@ -64,6 +70,7 @@ export class ApplicationWindowsService {
   }
 
   async close(identity: FirebaseIdentity, type: HelpApplicationTypeDto) {
+    if (this.firestoreWindows) return this.firestoreWindows.close(identity, type);
     const admin = await this.requireAdmin(identity);
     this.validateType(type);
     const existing = await this.prisma.applicationWindow.findUnique({ where: { type } });
@@ -80,6 +87,7 @@ export class ApplicationWindowsService {
   }
 
   async ensureAccepting(type: string) {
+    if (this.firestoreWindows) return this.firestoreWindows.ensureAccepting(type);
     this.validateType(type);
     const now = new Date();
     const window = await this.prisma.applicationWindow.findUnique({ where: { type } });
