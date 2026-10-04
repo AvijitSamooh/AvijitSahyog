@@ -65,8 +65,15 @@ export class PlatformDowntimeGuard implements CanActivate {
     const [endHour, endMinute] = end.split(':').map(Number);
     const startValue = startHour * 60 + startMinute;
     const endValue = endHour * 60 + endMinute;
-    const now = new Date();
-    const currentValue = now.getHours() * 60 + now.getMinutes();
+    const parts = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Kolkata',
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h23',
+    }).formatToParts(new Date());
+    const currentHour = Number(parts.find((part) => part.type === 'hour')?.value ?? 0);
+    const currentMinute = Number(parts.find((part) => part.type === 'minute')?.value ?? 0);
+    const currentValue = currentHour * 60 + currentMinute;
 
     if (startValue === endValue) return true;
     if (startValue > endValue) {
