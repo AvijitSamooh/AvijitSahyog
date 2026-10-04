@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Optional,
   Injectable,
   NotFoundException,
   InternalServerErrorException,
@@ -8,6 +9,7 @@ import { randomUUID } from 'crypto';
 import sharp from 'sharp';
 import { PrismaService } from '../prisma/prisma.service';
 import { R2StorageService } from './r2-storage.service';
+import { FirestoreMediaService } from './firestore-media.service';
 
 const ALLOWED_IMAGE_FORMATS = new Set(['jpeg', 'png', 'webp']);
 const MAX_UPLOAD_SIZE = 10 * 1024 * 1024;
@@ -19,6 +21,7 @@ export class MediaService {
   constructor(
     private readonly r2StorageService: R2StorageService,
     private readonly prisma: PrismaService,
+    @Optional() private readonly firestoreMedia?: FirestoreMediaService,
   ) {}
 
   async uploadImage(file: Express.Multer.File, folder = 'uploads', uploadedById?: string) {
@@ -104,7 +107,7 @@ export class MediaService {
       );
 
       try {
-        return await this.prisma.media.create({
+        const result = await this.prisma.media.create({
           data: {
             ...(uploadedById ? { uploadedById } : {}),
             storageKey: key,
@@ -114,8 +117,26 @@ export class MediaService {
             height: metadata.height ?? null,
           },
         });
+        try {
+          await this.firestoreMedia?.upsert({
+            id: result.id,
+            uploadedById: result.uploadedById ?? null,
+            storageKey: result.storageKey,
+            mimeType: result.mimeType,
+            fileSize: result.fileSize,
+            width: result.width,
+            height: result.height,
+            createdAt: result.createdAt,
+            updatedAt: result.updatedAt,
+          });
+        } catch (firestoreError) {
+          await this.prisma.media.delete({ where: { id: result.id } }).catch(() => undefined);
+          await this.r2StorageService.delete(key).catch(() => undefined);
+          throw firestoreError;
+        }
+        return result;
       } catch (error) {
-        await this.r2StorageService.delete(key);
+        await this.r2StorageService.delete(key).catch(() => undefined);
         throw error;
       }
     } catch (error) {
@@ -160,6 +181,7 @@ export class MediaService {
     }
     await this.r2StorageService.delete(media.storageKey);
     await this.prisma.media.delete({ where: { id: media.id } });
+    await this.firestoreMedia?.delete(media.id);
     return { id, deleted: true };
   }
 
