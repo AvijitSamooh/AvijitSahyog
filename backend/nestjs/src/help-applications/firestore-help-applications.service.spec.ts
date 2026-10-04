@@ -97,7 +97,7 @@ describe('FirestoreHelpApplicationsService coverage', () => {
     await expect(s.validateAcceptedRules(HelpApplicationTypeDto.MEDICAL_HELP,['r1'])).resolves.toHaveLength(1);
     deps.users.upsertFromIdentity.mockResolvedValueOnce({id:'u1',role:'USER'}).mockResolvedValueOnce({id:'u1',role:'SUPER_ADMIN'});
     await expect(s.admin(id)).rejects.toThrow(BadRequestException); await expect(s.admin(id)).resolves.toEqual(expect.objectContaining({role:'SUPER_ADMIN'}));
-    const ref=refs.get('helpApplications:x') || collections.get('helpApplications').doc('x');
+    const ref=refs.get('helpApplications:x') || db.collection('helpApplications').doc('x');
     ref.get.mockResolvedValue({exists:false}); await expect(s.application('x')).rejects.toThrow(NotFoundException);
     expect(await s.mediaResponse('m1')).toEqual(expect.objectContaining({url:'x.jpg'}));
     process.env.R2_PUBLIC_BASE_URL='https://cdn.example/';
@@ -111,7 +111,7 @@ describe('FirestoreHelpApplicationsService coverage', () => {
     jest.spyOn(s,'validateCertificatePhoto').mockResolvedValue(null); jest.spyOn(s,'toResponse').mockResolvedValue({ok:true});
     const dto:any={type:HelpApplicationTypeDto.MEDICAL_HELP,applicantName:' Alice ',mobileNumber:' 9876543210 ',email:' a@x ',address:' Address ',city:' Pune ',state:' MH ',pincode:'411001',requestedAmount:100,overallPercentage:88,mediaIds:['m1'],facePhotoMediaId:'face-1',acceptedRuleIds:['r1']};
     await expect(s.create(id,dto)).resolves.toEqual({ok:true});
-    const apps=collections.get('helpApplications'); apps.get.mockResolvedValue({docs:[{data:()=>base()},{data:()=>base({id:'app-2'})}]});
+    const apps=db.collection('helpApplications'); apps.get.mockResolvedValue({docs:[{data:()=>base()},{data:()=>base({id:'app-2'})}]});
     jest.spyOn(s,'toResponses').mockResolvedValue([{id:'app-1'}]); await expect(s.listMine(id)).resolves.toEqual([{id:'app-1'}]);
     jest.spyOn(s,'application').mockResolvedValue(base()); await expect(s.findMine(id,'app-1')).resolves.toEqual({ok:true});
     jest.spyOn(s,'application').mockResolvedValue(base({applicantId:'other'})); await expect(s.findMine(id,'app-1')).rejects.toThrow(NotFoundException);
@@ -132,7 +132,7 @@ describe('FirestoreHelpApplicationsService coverage', () => {
     const { service, db, collections, refs, deps } = makeService(); const s:any=service;
     const a=base({id:'a',applicantName:'Zed',overallPercentage:80,createdAt:new Date(2),submittedAt:new Date(2)});
     const b=base({id:'b',applicantName:'Amy',overallPercentage:95,createdAt:new Date(1),submittedAt:new Date(1),type:HelpApplicationTypeDto.PRATIBHA_SAMMAN,status:'CONSIDERED_FOR_SAMMAN',certificatePhotoMediaId:null});
-    const apps=collections.get('helpApplications'); apps.get.mockResolvedValue({docs:[{data:()=>a},{data:()=>b}]});
+    const apps=db.collection('helpApplications'); apps.get.mockResolvedValue({docs:[{data:()=>a},{data:()=>b}]});
     jest.spyOn(s,'toAdminResponses').mockResolvedValue([{...a,voteAverage:2},{...b,voteAverage:5}]);
     await expect(s.listForAdmin()).resolves.toHaveLength(2); await expect(s.listForAdmin(HelpApplicationTypeDto.PRATIBHA_SAMMAN)).resolves.toHaveLength(2);
     await expect(s.adminSummary()).resolves.toEqual(expect.objectContaining({total:2}));
@@ -144,7 +144,7 @@ describe('FirestoreHelpApplicationsService coverage', () => {
     deps.media.getById.mockRejectedValueOnce(new Error('read failed'));
     const zip=await s.buildCertificatePhotoExport(); expect(Buffer.isBuffer(zip)).toBe(true);
     const appRef=refs.get('helpApplications:app-1'); appRef.get.mockResolvedValue({exists:true,data:()=>base({status:'SUBMITTED'})});
-    const voteRef=refs.get('helpApplicationVotes:app-1_u1') || collections.get('helpApplicationVotes').doc('app-1_u1');
+    const voteRef=refs.get('helpApplicationVotes:app-1_u1') || db.collection('helpApplicationVotes').doc('app-1_u1');
     await expect(s.vote(id,'app-1',{score:5,comment:' good '} as any)).resolves.toEqual(expect.objectContaining({score:5,comment:'good'}));
     void db;
   });
@@ -164,14 +164,14 @@ describe('FirestoreHelpApplicationsService coverage', () => {
     await expect(s.review('a',{decision:HelpApplicationDecisionDto.APPROVE,approvedAmount:50} as any)).rejects.toThrow(BadRequestException);
     await expect(s.review('a',{decision:HelpApplicationDecisionDto.CONSIDER_FOR_SAMMAN,reason:'yes'} as any)).resolves.toEqual({ok:true});
     await expect(s.review('a',{decision:HelpApplicationDecisionDto.NOT_SELECTED,reason:'no'} as any)).resolves.toEqual({ok:true});
-    const appRef=refs.get('helpApplications:a') || collections.get('helpApplications').doc('a'); appRef.get.mockResolvedValue({exists:false});
+    const appRef=refs.get('helpApplications:a') || db.collection('helpApplications').doc('a'); appRef.get.mockResolvedValue({exists:false});
     await expect(s.updateStatus('a','REJECTED',null,'reason')).rejects.toThrow(NotFoundException);
     appRef.get.mockResolvedValue({exists:true,data:()=>base({id:'a',type:HelpApplicationTypeDto.MEDICAL_HELP})});
     await expect(s.updateStatus('a','REJECTED',null,'reason',' note ')).resolves.toBeDefined();
-    const causes=collections.get('causes'); causes.get.mockResolvedValue({empty:true,docs:[]});
+    const causes=db.collection('causes'); causes.get.mockResolvedValue({empty:true,docs:[]});
     await expect(s.publishBeneficiary(base({type:HelpApplicationTypeDto.PRATIBHA_SAMMAN}))).rejects.toThrow(BadRequestException);
     causes.get.mockResolvedValue({empty:false,docs:[{id:'c',data:()=>({id:'c'})}]});
-    const beneficiaries=collections.get('beneficiaries'); beneficiaries.get.mockResolvedValue({empty:true,docs:[]});
+    const beneficiaries=db.collection('beneficiaries'); beneficiaries.get.mockResolvedValue({empty:true,docs:[]});
     await expect(s.publishBeneficiary(base({type:HelpApplicationTypeDto.PRATIBHA_SAMMAN,certificatePhotoMediaId:'c1',classStandard:'10',schoolInstituteName:'S',accomplishments:'A',adminNote:'N'}))).resolves.toBeUndefined();
     expect(deps.beneficiaries.syncBeneficiary).toHaveBeenCalled();
   });
