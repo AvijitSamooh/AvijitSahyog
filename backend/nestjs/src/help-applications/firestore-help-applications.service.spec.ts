@@ -143,14 +143,14 @@ describe('FirestoreHelpApplicationsService coverage', () => {
     jest.spyOn(s,'filtered').mockResolvedValue([base({id:'m',certificatePhotoMediaId:null}),base({id:'f',certificatePhotoMediaId:'bad'})]);
     deps.media.getById.mockRejectedValueOnce(new Error('read failed'));
     const zip=await s.buildCertificatePhotoExport(); expect(Buffer.isBuffer(zip)).toBe(true);
-    const appRef=refs.get('helpApplications:app-1'); appRef.get.mockResolvedValue({exists:true,data:()=>base({status:'SUBMITTED'})});
-    const voteRef=refs.get('helpApplicationVotes:app-1_u1') || db.collection('helpApplicationVotes').doc('app-1_u1');
+    const appRef=db.collection('helpApplications').doc('app-1'); appRef.get.mockResolvedValue({exists:true,data:()=>base({status:'SUBMITTED'})});
+    const voteRef=db.collection('helpApplicationVotes').doc('app-1_u1');
     await expect(s.vote(id,'app-1',{score:5,comment:' good '} as any)).resolves.toEqual(expect.objectContaining({score:5,comment:'good'}));
     void db;
   });
 
   it('covers review decisions and status/publication helpers', async () => {
-    const { service, collections, refs, deps } = makeService(); const s:any=service;
+    const { service, db, collections, refs, deps } = makeService(); const s:any=service;
     jest.spyOn(s,'application').mockResolvedValue(base({type:HelpApplicationTypeDto.MEDICAL_HELP,requestedAmount:100}));
     jest.spyOn(s,'updateStatus').mockResolvedValue({ok:true});
     await expect(s.review('a',{decision:HelpApplicationDecisionDto.APPROVE,approvedAmount:50} as any)).resolves.toEqual({ok:true});
@@ -164,7 +164,7 @@ describe('FirestoreHelpApplicationsService coverage', () => {
     await expect(s.review('a',{decision:HelpApplicationDecisionDto.APPROVE,approvedAmount:50} as any)).rejects.toThrow(BadRequestException);
     await expect(s.review('a',{decision:HelpApplicationDecisionDto.CONSIDER_FOR_SAMMAN,reason:'yes'} as any)).resolves.toEqual({ok:true});
     await expect(s.review('a',{decision:HelpApplicationDecisionDto.NOT_SELECTED,reason:'no'} as any)).resolves.toEqual({ok:true});
-    const appRef=refs.get('helpApplications:a') || db.collection('helpApplications').doc('a'); appRef.get.mockResolvedValue({exists:false});
+    const appRef=db.collection('helpApplications').doc('a'); appRef.get.mockResolvedValue({exists:false});
     await expect(s.updateStatus('a','REJECTED',null,'reason')).rejects.toThrow(NotFoundException);
     appRef.get.mockResolvedValue({exists:true,data:()=>base({id:'a',type:HelpApplicationTypeDto.MEDICAL_HELP})});
     await expect(s.updateStatus('a','REJECTED',null,'reason',' note ')).resolves.toBeDefined();
