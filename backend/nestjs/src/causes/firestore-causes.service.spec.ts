@@ -3,7 +3,18 @@ import { FirestoreCausesService } from './firestore-causes.service';
 
 describe('FirestoreCausesService', () => {
   function makeDb(data: Record<string, any[]>) {
+    const documents = new Map<string, any>(
+      Object.entries(data).flatMap(([_, values]) => values.map((value) => [value.id, value])),
+    );
+
     return {
+      getAll: jest.fn((...refs: any[]) =>
+        Promise.resolve(refs.map((ref) => ({
+          id: ref.id,
+          exists: documents.has(ref.id),
+          data: () => documents.get(ref.id),
+        }))),
+      ),
       collection: jest.fn((name: string) => ({
         where: jest.fn().mockReturnThis(),
         orderBy: jest.fn().mockReturnThis(),
