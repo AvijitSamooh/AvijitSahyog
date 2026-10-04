@@ -1,4 +1,5 @@
 import { Timestamp } from 'firebase-admin/firestore';
+import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
 import { FirestoreUsersService, searchTokensFor } from './firestore-users.service';
 
 describe('FirestoreUsersService', () => {
