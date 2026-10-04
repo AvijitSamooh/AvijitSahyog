@@ -10,6 +10,6 @@ import { FirestoreOrganisationsService } from './firestore-organisations.service
 @Module({
   imports: [AuthModule, FirebaseModule],
   controllers: [OrganisationsController, AdminOrganisationsController],
-  providers: [OrganisationsService, FirestoreOrganisationsService],
+  providers: [FirestoreOrganisationsService, { provide: OrganisationsService, useExisting: FirestoreOrganisationsService }],
 })
 export class OrganisationsModule {}
