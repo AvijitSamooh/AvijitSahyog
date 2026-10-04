@@ -1,17 +1,25 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Optional } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import type { CreateBeneficiaryDto } from './dto/create-beneficiary.dto';
 import type { UpdateBeneficiaryDto } from './dto/update-beneficiary.dto';
 import type { AttachBeneficiaryMediaDto } from './dto/attach-beneficiary-media.dto';
 import type { UpdateBeneficiaryMediaDto } from './dto/update-beneficiary-media.dto';
+import { FirestoreBeneficiariesService } from './firestore-beneficiaries.service';
 
 type Query = { causeId?: string; year?: number; search?: string; sort?: string };
 
 @Injectable()
 export class BeneficiariesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional() private readonly firestoreBeneficiaries?: FirestoreBeneficiariesService,
+  ) {}
 
   async findAll(query: Query) {
+    if (this.firestoreBeneficiaries) {
+      return this.firestoreBeneficiaries.findAll(query);
+    }
+
     const orderBy = this.orderBy(query.sort);
     const beneficiaries = await this.prisma.beneficiary.findMany({
       where: {
@@ -27,6 +35,10 @@ export class BeneficiariesService {
   }
 
   async findOne(id: string) {
+    if (this.firestoreBeneficiaries) {
+      return this.firestoreBeneficiaries.findOne(id);
+    }
+
     const beneficiary = await this.prisma.beneficiary.findFirst({
       where: { id, isActive: true },
       include: { cause: true, organisation: true, media: { orderBy: [{ purpose: 'asc' }, { isPrimary: 'desc' }, { displayOrder: 'asc' }], include: { media: true } } },
@@ -194,6 +206,47 @@ export class BeneficiariesService {
   async setActive(id: string, isActive: boolean) {
     await this.findOneForAdmin(id);
     return this.prisma.beneficiary.update({ where: { id }, data: { isActive } });
+  }
+
+  private async syncToFirestore(id: string) {
+    if (!this.firestoreBeneficiaries) return;
+
+    const beneficiary = await this.prisma.beneficiary.findUnique({
+      where: { id },
+      include: {
+        media: {
+          orderBy: [{ purpose: 'asc' }, { isPrimary: 'desc' }, { displayOrder: 'asc' }],
+          select: {
+            mediaId: true,
+            purpose: true,
+            displayOrder: true,
+            isPrimary: true,
+          },
+        },
+      },
+    });
+
+    if (!beneficiary) {
+      await this.firestoreBeneficiaries.removeBeneficiary(id);
+      return;
+    }
+
+    await this.firestoreBeneficiaries.syncBeneficiary({
+      id: beneficiary.id,
+      sourceApplicationId: beneficiary.sourceApplicationId,
+      name: beneficiary.name,
+      photoUrl: beneficiary.photoUrl,
+      story: beneficiary.story,
+      supportedYear: beneficiary.supportedYear,
+      contributionAmount: beneficiary.contributionAmount.toString(),
+      causeId: beneficiary.causeId,
+      organisationId: beneficiary.organisationId,
+      isActive: beneficiary.isActive,
+      displayOrder: beneficiary.displayOrder,
+      media: beneficiary.media,
+      createdAt: beneficiary.createdAt,
+      updatedAt: beneficiary.updatedAt,
+    });
   }
 
   private validate(dto: CreateBeneficiaryDto | UpdateBeneficiaryDto, partial = false) {
