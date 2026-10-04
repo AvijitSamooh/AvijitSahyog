@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { FirestorePlatformHealthService } from './firestore-platform-health.service';
 
 export type PlatformHealthEventType =
   | 'HTTP_ERROR'
@@ -21,10 +22,17 @@ export type RecordHealthEventInput = {
 export class PlatformHealthService {
   private readonly startedAt = new Date();
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional() private readonly firestoreHealth?: FirestorePlatformHealthService,
+  ) {}
 
   async recordEvent(input: RecordHealthEventInput): Promise<void> {
     try {
+      if (this.firestoreHealth) {
+        await this.firestoreHealth.recordEvent(input);
+        return;
+      }
       await this.prisma.$executeRaw`
         INSERT INTO "PlatformHealthEvent"
           ("type", "statusCode", "route", "method", "message", "metadata")
