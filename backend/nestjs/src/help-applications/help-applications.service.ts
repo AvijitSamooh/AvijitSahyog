@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Optional } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { FirebaseIdentity } from '../auth/auth.types';
 import { FirestoreUsersService } from '../users/firestore-users.service';
@@ -19,8 +19,8 @@ export class HelpApplicationsService {
     private readonly prisma: PrismaService,
     private readonly applicationWindows: ApplicationWindowsService,
     private readonly mediaService: MediaService,
-    private readonly users: FirestoreUsersService,
-    private readonly applicationRules: ApplicationRulesService,
+    @Optional() private readonly users?: FirestoreUsersService,
+    @Optional() private readonly applicationRules?: ApplicationRulesService,
   ) {}
 
   async create(identity: FirebaseIdentity, dto: CreateHelpApplicationDto) {
@@ -546,7 +546,12 @@ export class HelpApplicationsService {
   }
 
   private async user(identity: FirebaseIdentity) {
-    return this.users.upsertFromIdentity(identity);
+    if (this.users) return this.users.upsertFromIdentity(identity);
+    return this.prisma.user.upsert({
+      where: { firebaseUid: identity.uid },
+      create: { firebaseUid: identity.uid, email: identity.email, displayName: identity.displayName, photoUrl: identity.photoUrl },
+      update: { email: identity.email, displayName: identity.displayName, photoUrl: identity.photoUrl },
+    });
   }
 
   private async admin(identity: FirebaseIdentity) {
@@ -556,7 +561,19 @@ export class HelpApplicationsService {
   }
 
   private async validateAcceptedRules(type: HelpApplicationTypeDto, acceptedRuleIds: string[]) {
-    const rules = await this.applicationRules.listForAcceptance(type);
+    const rules = this.applicationRules
+      ? await this.applicationRules.listForAcceptance(type)
+      : await this.prisma.applicationRule.findMany({
+          where: { type, isActive: true },
+          select: {
+            id: true,
+            translations: {
+              where: { language: { code: 'en' } },
+              select: { text: true },
+              take: 1,
+            },
+          },
+        }).then((items) => items.map((rule) => ({ id: rule.id, text: rule.translations[0]?.text ?? '' })));
     const expected = new Set(rules.map((rule) => rule.id));
     const accepted = new Set(acceptedRuleIds ?? []);
     if (accepted.size !== expected.size || [...expected].some((id) => !accepted.has(id))) {
