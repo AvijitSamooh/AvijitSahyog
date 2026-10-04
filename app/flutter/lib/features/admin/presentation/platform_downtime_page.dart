@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/admin_dashboard_providers.dart';
+import '../../../l10n/app_localizations.dart';
 
 class PlatformDowntimePage extends ConsumerStatefulWidget {
   const PlatformDowntimePage({super.key});
@@ -96,8 +97,9 @@ class _PlatformDowntimePageState extends ConsumerState<PlatformDowntimePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Backend downtime')),
+      appBar: AppBar(title: Text(l10n.platformDowntime)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
@@ -105,10 +107,8 @@ class _PlatformDowntimePageState extends ConsumerState<PlatformDowntimePage> {
               children: [
                 Card(
                   child: SwitchListTile(
-                    title: const Text('Enable downtime'),
-                    subtitle: const Text(
-                      'Users can still sign in. Super Admin can always change this setting.',
-                    ),
+                    title: Text(l10n.platformDowntimeEnabled),
+                    subtitle: Text(l10n.platformDowntimeEnabledSubtitle),
                     value: _enabled,
                     onChanged: _saving ? null : (value) => setState(() => _enabled = value),
                   ),
@@ -118,14 +118,14 @@ class _PlatformDowntimePageState extends ConsumerState<PlatformDowntimePage> {
                   child: Column(
                     children: [
                       ListTile(
-                        title: const Text('Downtime starts'),
+                        title: Text(l10n.platformDowntimeStarts),
                         subtitle: Text(_start),
                         trailing: const Icon(Icons.schedule_rounded),
                         onTap: _saving ? null : () => _pickTime(start: true),
                       ),
                       const Divider(height: 1),
                       ListTile(
-                        title: const Text('Downtime ends'),
+                        title: Text(l10n.platformDowntimeEnds),
                         subtitle: Text(_end),
                         trailing: const Icon(Icons.schedule_rounded),
                         onTap: _saving ? null : () => _pickTime(start: false),
@@ -139,16 +139,13 @@ class _PlatformDowntimePageState extends ConsumerState<PlatformDowntimePage> {
                   maxLength: 300,
                   maxLines: 3,
                   decoration: const InputDecoration(
-                    labelText: 'Downtime message',
-                    hintText: 'Optional message shown to users',
+                    labelText: l10n.platformDowntimeMessage,
+                    hintText: l10n.platformDowntimeMessageHint,
                     border: OutlineInputBorder(),
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'The setting is stored in Firestore and is not embedded into the app build. '
-                  'Login and this configuration endpoint remain available while downtime is active.',
-                ),
+                Text(l10n.platformDowntimeSubtitle),
                 const SizedBox(height: 20),
                 FilledButton.icon(
                   onPressed: _saving ? null : _save,
@@ -159,7 +156,7 @@ class _PlatformDowntimePageState extends ConsumerState<PlatformDowntimePage> {
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : const Icon(Icons.save_rounded),
-                  label: const Text('Save settings'),
+                  label: Text(l10n.platformDowntimeSave),
                 ),
               ],
             ),
