@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { CausesModule } from './causes/causes.module';
 import { DonationsModule } from './donations/donations.module';
 import { OrganisationsModule } from './organisations/organisations.module';
-import { PrismaModule } from './prisma/prisma.module';
 import { FirebaseModule } from './firebase/firebase.module';
 import { BeneficiariesModule } from './beneficiaries/beneficiaries.module';
 import { AuthModule } from './auth/auth.module';
@@ -17,7 +16,6 @@ import { HelpApplicationsModule } from './help-applications/help-applications.mo
 
 @Module({
   imports: [
-    PrismaModule,
     FirebaseModule,
     AuthModule,
     AnalyticsModule,
