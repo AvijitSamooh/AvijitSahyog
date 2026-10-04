@@ -19,25 +19,6 @@ jobs:
       run:
         working-directory: backend/nestjs
 
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_USER: ci
-          POSTGRES_PASSWORD: ci
-          POSTGRES_DB: ci
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -U ci -d ci"
-          --health-interval=5s
-          --health-timeout=5s
-          --health-retries=20
-
-    env:
-      DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
-      DIRECT_URL: postgresql://ci:ci@localhost:5432/ci
-
     steps:
       - uses: actions/checkout@v4
 
@@ -52,15 +33,6 @@ jobs:
         # The lockfile is regenerated in the developer environment as part of the migration;
         # use npm install here so CI can validate the branch while that lockfile update is in flight.
         run: npm install --no-audit --no-fund
-
-      - name: Validate Prisma schema
-        run: npx prisma validate
-
-      - name: Generate Prisma client
-        run: npx prisma generate
-
-      - name: Apply Prisma migrations
-        run: npx prisma migrate deploy
 
       - name: Build
         run: npm run build
