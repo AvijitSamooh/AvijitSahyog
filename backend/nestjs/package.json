@@ -17,12 +17,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
-    "firestore:migrate-users": "ts-node prisma/migrate-users-to-firestore.ts",
-    "firestore:migrate-discovery": "ts-node prisma/migrate-discovery-to-firestore.ts",
-    "firestore:migrate-application-config": "ts-node scripts/migrate-application-config-to-firestore.ts",
-    "firestore:migrate-donations": "ts-node scripts/migrate-donations-to-firestore.ts",
-    "firestore:migrate-analytics": "ts-node scripts/migrate-analytics-to-firestore"
+    "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1126.0",
