@@ -10,6 +10,6 @@ import { FirestoreMediaService } from './firestore-media.service';
   imports: [AuthModule, FirebaseModule],
   controllers: [MediaController, UserMediaController],
   providers: [MediaService, R2StorageService, FirestoreMediaService],
-  exports: [MediaService, R2StorageService],
+  exports: [MediaService, R2StorageService, FirestoreMediaService],
 })
 export class MediaModule {}
