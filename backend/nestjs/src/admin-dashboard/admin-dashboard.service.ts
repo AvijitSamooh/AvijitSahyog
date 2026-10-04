@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
+import { FirebaseService } from '../firebase/firebase.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { MemoryCache } from '../common/memory-cache';
 
@@ -6,9 +7,27 @@ import { MemoryCache } from '../common/memory-cache';
 export class AdminDashboardService {
   private readonly cache = new MemoryCache();
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService, @Optional() private readonly firebase?: FirebaseService) {}
 
   async getSummary() {
+    if (this.firebase) {
+      const countCollection = async (collection: string) => {
+        const [total, active] = await Promise.all([
+          this.firebase!.db.collection(collection).count().get(),
+          this.firebase!.db.collection(collection).where('isActive', '==', true).count().get(),
+        ]);
+        const totalCount = total.data().count;
+        const activeCount = active.data().count;
+        return { total: totalCount, active: activeCount, inactive: totalCount - activeCount };
+      };
+      const [causes, organisations, beneficiaries] = await Promise.all([
+        countCollection('causes'),
+        countCollection('organisations'),
+        countCollection('beneficiaries'),
+      ]);
+      return { causes, organisations, beneficiaries };
+    }
+
     const [causes, organisations, beneficiaries] = await Promise.all([
       this.count(this.prisma.cause),
       this.count(this.prisma.organisation),
