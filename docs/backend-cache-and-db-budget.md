@@ -2,18 +2,18 @@
 
 ## Goals
 
-AvijitSahyog should minimize Neon database work without weakening business correctness. Read-heavy reference content should remain available during the configured backend downtime window.
+AvijitSahyog should minimize Firestore read/write work without weakening business correctness. Read-heavy reference content should remain available during the configured backend downtime window.
 
 ## Implemented strategy
 
 ### Analytics writes
 - Flutter keeps Firebase Analytics as the detailed analytics sink.
 - Backend mirroring is queued in memory and sent in batches of up to 25 events.
-- The API accepts at most 50 events per request and persists the whole batch with one Prisma `createMany` operation.
+- The API accepts at most 50 events per request and persists the whole batch with one Firestore batch write.
 - The client flushes on batch size or after a short timer.
 - The queue is bounded so analytics cannot grow without limit in process memory.
 
-This changes the common path from one HTTP request + one INSERT per event to one HTTP request + one INSERT operation per batch.
+This changes the common path from one HTTP request + one INSERT per event to one HTTP request + one Firestore batch write per batch.
 
 ### Reference-data memory cache
 
@@ -55,8 +55,8 @@ This prevents repeated admin refreshes from repeatedly executing the expensive A
 
 After deployment, query volume should be checked for:
 1. AnalyticsEvent INSERT rate.
-2. Cause/organisation/rule SELECT frequency.
+2. Cause/organisation/rule read frequency.
 3. Admin dashboard AnalyticsEvent query frequency.
 4. Help-application list payload size and pagination.
 
-If Neon pressure remains high, the next architectural step is pre-aggregated analytics rather than adding more indexes to AnalyticsEvent.
+If Firestore usage remains high, the next architectural step is pre-aggregated analytics rather than adding more indexes to AnalyticsEvent.
