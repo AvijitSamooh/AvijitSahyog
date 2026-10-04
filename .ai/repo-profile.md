@@ -23,8 +23,8 @@ When sources conflict, stop and surface the conflict rather than silently choosi
 ## Technical profile
 - Client: Flutter/Dart/Riverpod/localization
 - Backend: NestJS/Node.js/TypeScript/REST
-- Database: PostgreSQL/Prisma
-- Infrastructure: Vercel, Render, Neon, GitHub Actions
+- Database: Cloud Firestore
+- Infrastructure: Vercel, Render, Cloudflare R2, Firebase, GitHub Actions
 - Payments: UPI-oriented, backend authoritative
 - Repository has both Flutter UI and backend targets.
 
