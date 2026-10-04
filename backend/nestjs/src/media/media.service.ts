@@ -18,7 +18,12 @@ export class MediaService {
     if(!file)throw new BadRequestException('Image file is required.');
     if(file.size>MAX_UPLOAD_SIZE)throw new BadRequestException('Image must be 10 MB or smaller.');
     try{
-      const meta=await sharp(file.buffer).metadata();
+      let meta: sharp.Metadata;
+      try {
+        meta = await sharp(file.buffer).metadata();
+      } catch {
+        throw new BadRequestException('The uploaded file is not a valid supported image.');
+      }
       if(!meta.format||!ALLOWED_IMAGE_FORMATS.has(meta.format))throw new BadRequestException('Only JPEG, PNG, and WebP images are allowed.');
       let processed=await this.encode(file.buffer,MAX_DIMENSION,82);
       for(const quality of [76,72,68]){if(processed.length<=MAX_PROCESSED_SIZE)break;processed=await this.encode(file.buffer,MAX_DIMENSION,quality);}
