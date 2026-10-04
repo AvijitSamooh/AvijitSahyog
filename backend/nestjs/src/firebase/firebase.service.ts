@@ -1,5 +1,5 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
-import { cert, getApps, initializeApp, App } from 'firebase-admin/app';
+import { App, AppOptions, cert, deleteApp, getApps, initializeApp } from 'firebase-admin/app';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
 
 @Injectable()
@@ -13,19 +13,19 @@ export class FirebaseService implements OnModuleDestroy {
     this.db = getFirestore(this.app);
   }
 
-  private credentials() {
+  private credentials(): AppOptions | undefined {
     const projectId = process.env.FIREBASE_PROJECT_ID;
     const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
     const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
 
     if (projectId && clientEmail && privateKey) {
-      return cert({ projectId, clientEmail, privateKey });
+      return { credential: cert({ projectId, clientEmail, privateKey }) };
     }
 
     return undefined;
   }
 
   async onModuleDestroy() {
-    await this.app.delete();
+    await deleteApp(this.app);
   }
 }
