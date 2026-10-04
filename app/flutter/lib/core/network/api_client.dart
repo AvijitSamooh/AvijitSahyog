@@ -77,7 +77,9 @@ class ApiClient {
       }),
     );
     _ensureSuccess(response, 'Saving downtime settings');
-    return jsonDecode(response.body) as Map<String, dynamic>;
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    BackendServiceAvailability.applyRemote(data);
+    return data;
   }
 
   Future<List<Map<String, dynamic>>> getCauses(String languageCode) async {
