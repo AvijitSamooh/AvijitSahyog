@@ -37,6 +37,7 @@ describe('FirestoreCausesService',()=>{
     causes.doc.mockImplementation((id:string)=> id==='c1'?ref:{id,get:jest.fn().mockResolvedValue({exists:true}),set:jest.fn(),update:jest.fn()});
     causes.get.mockResolvedValue({docs:[{data:()=>cause({parentId:'old'})}]});
     jest.spyOn(service,'findOneForAdmin').mockResolvedValue(cause({parentId:'old'}));
+    causes.get.mockResolvedValue({empty:true,docs:[]});
     await expect(service.update('c1',{slug:'new',parentId:'new-parent',displayOrder:3,isActive:false,translations:[{languageCode:'en',name:'New'}]})).resolves.toBeDefined();
     causes.get.mockResolvedValueOnce({empty:false,docs:[{id:'other'}]}); await expect(service.update('c1',{slug:'other'})).rejects.toThrow(ConflictException);
     ref.get.mockResolvedValue({exists:true,data:()=>cause({parentId:null})}); causes.get.mockResolvedValue({docs:[{data:()=>cause({parentId:null})}]});
