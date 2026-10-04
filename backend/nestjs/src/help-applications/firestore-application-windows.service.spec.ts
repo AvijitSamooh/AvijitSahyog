@@ -4,7 +4,7 @@ import { FirestoreApplicationWindowsService } from './firestore-application-wind
 import { HelpApplicationTypeDto } from './dto/create-help-application.dto';
 
 describe('FirestoreApplicationWindowsService',()=>{
-  const type=HelpApplicationTypeDto.EDUCATION_ASSISTANCE;const admin={id:'a1',role:'ADMIN'};const identity={uid:'u1'} as any;
+  const type='EDUCATION_ASSISTANCE' as HelpApplicationTypeDto;const admin={id:'a1',role:'ADMIN'};const identity={uid:'u1'} as any;
   function makeDb(data:any){const ref:any={get:jest.fn().mockResolvedValue({exists:Boolean(data),data:()=>data}),set:jest.fn(),update:jest.fn()};const query:any={get:jest.fn().mockResolvedValue({docs:data?[{id:type,data:()=>data}]:[]})};const db:any={collection:jest.fn(()=>({...query,doc:jest.fn(()=>ref)}))};return{db,ref};}
   it('lists windows and computes status',async()=>{const data={type,startsAt:Timestamp.fromDate(new Date(Date.now()-3600000)),registrationEndsAt:null,eventAt:null,closedAt:null,updatedById:'a1',updatedAt:Timestamp.now()};const {db}=makeDb(data);const users:any={getByFirebaseUid:jest.fn().mockResolvedValue(admin)};const result=await new FirestoreApplicationWindowsService({db} as any,users).list();expect(result.windows[0]).toEqual(expect.objectContaining({status:'OPEN',canApply:true}));});
   it('starts a window for an admin',async()=>{const {db,ref}=makeDb(null);const users:any={getByFirebaseUid:jest.fn().mockResolvedValue(admin)};const s=new FirestoreApplicationWindowsService({db} as any,users);const result=await s.start(identity,type,{type,startsAt:new Date(Date.now()-1000).toISOString()} as any);expect(result.status).toBe('OPEN');expect(ref.set).toHaveBeenCalled();});
