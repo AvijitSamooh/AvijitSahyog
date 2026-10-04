@@ -3,7 +3,8 @@ import { FirebaseService } from './firebase.service';
 jest.mock('firebase-admin/app', () => ({
   cert: jest.fn((value) => value),
   getApps: jest.fn(() => []),
-  initializeApp: jest.fn(() => ({ delete: jest.fn().mockResolvedValue(undefined) })),
+  initializeApp: jest.fn(() => ({})),
+  deleteApp: jest.fn().mockResolvedValue(undefined),
 }));
 
 jest.mock('firebase-admin/firestore', () => ({
