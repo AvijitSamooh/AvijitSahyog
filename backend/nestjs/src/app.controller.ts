@@ -1,11 +1,11 @@
 import { Controller, Get, ServiceUnavailableException } from '@nestjs/common';
-import { PrismaService } from './prisma/prisma.service';
+import { FirebaseService } from './firebase/firebase.service';
 
 @Controller('health')
 export class AppController {
   private readonly startedAt = new Date();
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly firebase: FirebaseService) {}
 
   /**
    * Liveness endpoint.
@@ -38,7 +38,7 @@ export class AppController {
   @Get('ready')
   async getReadiness() {
     try {
-      await this.prisma.$queryRaw`SELECT 1`;
+      await this.firebase.db.collection('platformSettings').doc('downtime').get();
       return {
         status: 'ok',
         service: 'avijit-sahyog-api',
