@@ -51,7 +51,7 @@ class AuthController extends StateNotifier<AuthState> {
     } on AuthNotConfiguredException {
       state = const AuthState.error('authNotConfigured');
     } on AuthDiagnosticException catch (error) {
-      state = AuthState.error('authDiagnostic:' + error.message);
+      state = AuthState.error('authDiagnostic:${error.message}');
     } catch (_) {
       state = const AuthState.error('authSignInFailed');
     }
