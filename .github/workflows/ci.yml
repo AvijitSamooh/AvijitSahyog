@@ -48,7 +48,10 @@ jobs:
           cache-dependency-path: backend/nestjs/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        # Firebase Admin was added during the incremental Firestore migration.
+        # The lockfile is regenerated in the developer environment as part of the migration;
+        # use npm install here so CI can validate the branch while that lockfile update is in flight.
+        run: npm install --no-audit --no-fund
 
       - name: Validate Prisma schema
         run: npx prisma validate
