@@ -1,61 +1,13 @@
-# Development Iteration Plan
-
-## Working Method
-
-We will develop in small vertical slices.
-
-Each iteration should leave the repository in a runnable state.
-
-### Branching
-
--   `main` --- stable
--   `develop` --- integration branch if needed
--   `feature/<short-name>` --- feature work
--   `fix/<short-name>` --- fixes
-
-Prefer small pull requests with one coherent objective.
-
-------------------------------------------------------------------------
-
-------------------------------------------------------------------------
-
 # Active / Pending Work
-
-This section is the source of truth when asking **“what is pending?”**. Update it whenever work starts, a PR is opened, merged, closed, or changes scope.
 
 ## In Progress
 
+- [ ] PostgreSQL to Firestore migration — user identity, roles, admin authorization and role-audit history are now implemented on Firestore; remaining domain migrations and production cutover are pending.
 - [ ] Split Education into Education Assistance and Pratibha Samman — production migration recovery/deployment verification remains.
 
 ## Recently Completed
 
-- [x] High-volume application review workflow — mandatory overall percentage, review summary counts, percentage-ordered Top 50 working view, and review reset after applicant edits/resubmission.
-- [x] Help & Recognition Applications — Education Assistance, Medical Help and Pratibha Samman applicant/reviewer workflows, including user entry point, submission/history, evidence upload and admin review actions.
-- [x] Direct assistance entry points — Education and Healthcare cause details now link directly to the relevant need/application flow.
-- [x] Safe organisation removal — organisations with historical donation allocations or beneficiary records are deactivated instead of returning a deletion conflict.
-
-
-## Pending Next
-
-- [ ] Add workflow-level regression coverage to future multi-step admin/content flows as they are changed.
-
-## Planned Roadmap
-
-- [ ] Iteration 5 — Donation Allocation Engine
-- [ ] Iteration 6 — Donation Planner
-- [ ] Iteration 7 — Donation History + Receipt Foundation
-- [ ] Iteration 11 — Production Hardening
-- [ ] Iteration 12 — Payment Enablement
-- [ ] Iteration 13 — Receipt Delivery + Notifications
-- [ ] Iteration 14 — Reconciliation
-- [ ] Iteration 15 — UPI AutoPay
-
-## Recently Completed
-
-- [x] Organisation slug generation moved server-side; manual admin slug entry removed.
-- [x] Unified local UI/backend validation script added and documented.
-- [x] Admin organisation/beneficiary workflows now report media-upload partial failures accurately and preserve backend error details.
-- [x] Multi-step workflow and partial-failure testing discipline added to Copilot instructions.
+- [x] Firestore user/authorization slice — Firebase-authenticated user records, admin/super-admin guards, admin user management, role audit history, and idempotent PostgreSQL-to-Firestore backfill.
 
 # Iteration 0 --- Foundation
 
