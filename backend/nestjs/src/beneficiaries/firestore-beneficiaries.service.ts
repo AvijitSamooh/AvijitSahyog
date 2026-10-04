@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { randomUUID } from 'node:crypto';
 import { FirebaseService } from '../firebase/firebase.service';
 
 interface MediaDocument {
@@ -67,6 +68,16 @@ export class FirestoreBeneficiariesService {
     await this.firebase.db.collection('beneficiaries').doc(id).delete();
   }
 
+  async findAllForAdmin(){return (await this.firebase.db.collection('beneficiaries').orderBy('supportedYear','desc').orderBy('displayOrder','asc').get()).docs.map(d=>d.data());}
+  async findOneForAdmin(id:string){const d=await this.firebase.db.collection('beneficiaries').doc(id).get();if(!d.exists)throw new NotFoundException('Beneficiary not found.');return d.data();}
+  async create(dto:any){const id=crypto.randomUUID();const now=new Date();const doc:any={id,sourceApplicationId:null,name:dto.name,photoUrl:dto.photoUrl??null,story:dto.story??null,supportedYear:dto.supportedYear??new Date().getFullYear(),contributionAmount:String(dto.contributionAmount??'0'),causeId:dto.causeId,organisationId:dto.organisationId??null,isActive:dto.isActive??true,displayOrder:dto.displayOrder??0,media:[],createdAt:now,updatedAt:now};await this.firebase.db.collection('beneficiaries').doc(id).set(doc);return doc;}
+  async update(id:string,dto:any){await this.findOneForAdmin(id);const next={...dto,updatedAt:new Date()};delete next.id;await this.firebase.db.collection('beneficiaries').doc(id).set(next,{merge:true});return this.findOneForAdmin(id);}
+  async listMedia(id:string){const x=await this.findOneForAdmin(id) as any;const media=await this.getByIds<MediaDocument>('media',(x.media??[]).map((m:any)=>m.mediaId));const byId=new Map(media.map(m=>[m.id,m]));return (x.media??[]).map((m:any)=>({...m,media:byId.get(m.mediaId)}));}
+  async attachMedia(id:string,dto:any){const x=await this.findOneForAdmin(id) as any;const media=await this.firebase.db.collection('media').doc(dto.mediaId).get();if(!media.exists)throw new NotFoundException('Media not found.');const relations=[...(x.media??[])];if(dto.isPrimary)relations.forEach((m:any)=>{if(m.purpose===(dto.purpose??'GALLERY'))m.isPrimary=false;});relations.push({mediaId:dto.mediaId,purpose:dto.purpose??'GALLERY',displayOrder:dto.displayOrder??0,isPrimary:dto.isPrimary??false});await this.firebase.db.collection('beneficiaries').doc(id).update({media:relations,updatedAt:new Date()});return this.listMedia(id);}
+  async updateMedia(id:string,mediaId:string,dto:any){const x=await this.findOneForAdmin(id) as any;const relations=(x.media??[]).map((m:any)=>m.mediaId===mediaId?{...m,...dto}:m);await this.firebase.db.collection('beneficiaries').doc(id).update({media:relations,updatedAt:new Date()});return this.listMedia(id);}
+  async removeMedia(id:string,mediaId:string){const x=await this.findOneForAdmin(id) as any;await this.firebase.db.collection('beneficiaries').doc(id).update({media:(x.media??[]).filter((m:any)=>m.mediaId!==mediaId),updatedAt:new Date()});return{id,mediaId,deleted:true};}
+  async remove(id:string){await this.findOneForAdmin(id);await this.firebase.db.collection('beneficiaries').doc(id).delete();return{id,deleted:true};}
+  async setActive(id:string,isActive:boolean){await this.findOneForAdmin(id);await this.firebase.db.collection('beneficiaries').doc(id).update({isActive,updatedAt:new Date()});return this.findOneForAdmin(id);}
   async findAll(query: {
     causeId?: string;
     year?: number;
