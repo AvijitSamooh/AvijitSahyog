@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 
-import { PrismaService } from '../prisma/prisma.service';
+import { FirestoreUsersService } from '../users/firestore-users.service';
 import { AuthenticatedRequest } from './auth.types';
 import { FirebaseAuthGuard } from './firebase-auth.guard';
 
@@ -14,7 +14,7 @@ import { FirebaseAuthGuard } from './firebase-auth.guard';
 export class SuperAdminGuard implements CanActivate {
   constructor(
     private readonly firebaseAuthGuard: FirebaseAuthGuard,
-    private readonly prisma: PrismaService,
+    private readonly users: FirestoreUsersService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -24,10 +24,7 @@ export class SuperAdminGuard implements CanActivate {
       .switchToHttp()
       .getRequest<Request & AuthenticatedRequest>();
 
-    const user = await this.prisma.user.findUnique({
-      where: { firebaseUid: request.user.uid },
-      select: { role: true },
-    });
+    const user = await this.users.getByFirebaseUid(request.user.uid);
 
     if (user?.role !== 'SUPER_ADMIN') {
       throw new ForbiddenException('Super administrator access is required.');
