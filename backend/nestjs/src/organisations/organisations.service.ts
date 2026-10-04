@@ -327,7 +327,7 @@ export class OrganisationsService {
     const displayOrder = dto.displayOrder ?? 0;
     const isPrimary = dto.isPrimary ?? false;
 
-    return this.prisma.$transaction(async (tx: any) => {
+    const result = await this.prisma.$transaction(async (tx: any) => {
       if (isPrimary) {
         await tx.organisationMedia.updateMany({
           where: { organisationId: id, purpose, isPrimary: true },
@@ -339,6 +339,8 @@ export class OrganisationsService {
         include: { media: true },
       });
     });
+    await this.syncToFirestore(id);
+    return result;
   }
 
   async updateMedia(id: string, mediaId: string, dto: UpdateOrganisationMediaDto) {
@@ -350,7 +352,7 @@ export class OrganisationsService {
     if (!existing) throw new NotFoundException('Media is not attached to this organisation.');
 
     const purpose = dto.purpose ?? existing.purpose;
-    return this.prisma.$transaction(async (tx: any) => {
+    const result = await this.prisma.$transaction(async (tx: any) => {
       if (dto.isPrimary === true) {
         await tx.organisationMedia.updateMany({
           where: { organisationId: id, purpose, isPrimary: true, NOT: { mediaId } },
@@ -367,6 +369,8 @@ export class OrganisationsService {
         include: { media: true },
       });
     });
+    await this.syncToFirestore(id);
+    return result;
   }
 
   async removeMedia(id: string, mediaId: string) {
@@ -376,9 +380,11 @@ export class OrganisationsService {
       select: { id: true },
     });
     if (!existing) throw new NotFoundException('Media is not attached to this organisation.');
-    return this.prisma.organisationMedia.delete({
+    const result = await this.prisma.organisationMedia.delete({
       where: { organisationId_mediaId: { organisationId: id, mediaId } },
     });
+    await this.syncToFirestore(id);
+    return result;
   }
 
   async removeOrDeactivate(id: string, firebaseUid: string) {
@@ -402,7 +408,7 @@ export class OrganisationsService {
       organisation.translations[0]?.name ??
       organisation.slug;
 
-    return this.prisma.$transaction(async (tx: any) => {
+    const result = await this.prisma.$transaction(async (tx: any) {
       if (allocationCount > 0 || beneficiaryCount > 0) {
         await tx.organisation.update({
           where: { id },
@@ -445,6 +451,13 @@ export class OrganisationsService {
 
       return { id, deleted: true, deactivated: false };
     });
+    if (result.deleted) {
+      await this.firestoreOrganisations?.removeOrganisation(id);
+    } else {
+      await this.syncToFirestore(id);
+    }
+    this.cache.invalidate('organisations:');
+    return result;
   }
 
   async setActive(id: string, isActive: boolean) {
@@ -454,6 +467,7 @@ export class OrganisationsService {
       data: { isActive },
     });
     this.cache.invalidate('organisations:');
+    await this.syncToFirestore(result.id);
     return result;
   }
 
