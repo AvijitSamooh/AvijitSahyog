@@ -42,7 +42,7 @@ describe('FirestoreCausesService',()=>{
     causes.get.mockResolvedValueOnce({empty:false,docs:[{id:'other'}]}); await expect(service.update('c1',{slug:'other'})).rejects.toThrow(ConflictException);
     ref.get.mockResolvedValue({exists:true,data:()=>cause({parentId:null})}); causes.get.mockResolvedValue({docs:[{data:()=>cause({parentId:null})}]});
     await expect(service.update('c1',{parentId:'c1'})).rejects.toThrow(BadRequestException);
-    ref.get.mockResolvedValue({exists:true,data:()=>cause({parentId:null})}); causes.doc.mockImplementation((id:string)=>({id,get:jest.fn().mockResolvedValue({exists:false}),set:jest.fn(),update:jest.fn()}));
+    ref.get.mockResolvedValue({exists:true,data:()=>cause({parentId:null})}); causes.doc.mockImplementation((id:string)=> id==='c1'?ref:{id,get:jest.fn().mockResolvedValue({exists:false}),set:jest.fn(),update:jest.fn()});
     await expect(service.update('c1',{parentId:'missing'})).rejects.toThrow(BadRequestException);
     void causes;
   });
