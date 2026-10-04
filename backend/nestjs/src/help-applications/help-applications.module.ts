@@ -8,10 +8,18 @@ import { ApplicationWindowsService } from './application-windows.service';
 import { ApplicationRulesService } from './application-rules.service';
 import { FirestoreApplicationRulesService } from './firestore-application-rules.service';
 import { FirestoreApplicationWindowsService } from './firestore-application-windows.service';
+import { FirestoreHelpApplicationsService } from './firestore-help-applications.service';
 
 @Module({
   imports: [AuthModule, FirebaseModule, MediaModule],
   controllers: [ApplicationWindowsController, AdminApplicationWindowsController, HelpApplicationsController, AdminHelpApplicationsController, ApplicationRulesController, AdminApplicationRulesController, CertificatePhotoExportController],
-  providers: [ApplicationWindowsService, FirestoreApplicationWindowsService, ApplicationRulesService, FirestoreApplicationRulesService, HelpApplicationsService],
+  providers: [
+    FirestoreApplicationWindowsService,
+    FirestoreApplicationRulesService,
+    FirestoreHelpApplicationsService,
+    { provide: ApplicationWindowsService, useExisting: FirestoreApplicationWindowsService },
+    { provide: ApplicationRulesService, useExisting: FirestoreApplicationRulesService },
+    { provide: HelpApplicationsService, useExisting: FirestoreHelpApplicationsService },
+  ],
 })
 export class HelpApplicationsModule {}
