@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { randomUUID } from 'node:crypto';
 import { FirebaseService } from '../firebase/firebase.service';
 import { HelpApplicationTypeDto } from './dto/create-help-application.dto';
 import { CreateApplicationRuleDto, SUPPORTED_RULE_LANGUAGES, UpdateApplicationRuleDto, validateRuleTranslations } from './dto/application-rule.dto';
@@ -66,7 +67,7 @@ export class FirestoreApplicationRulesService {
 
   async create(dto: CreateApplicationRuleDto) {
     const translations = this.validate(dto.translations);
-    const id = crypto.randomUUID();
+    const id = randomUUID();
     const document: RuleDocument = {
       id,
       type: dto.type,
