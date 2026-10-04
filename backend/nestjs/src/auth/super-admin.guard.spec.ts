@@ -1,13 +1,12 @@
 import { ForbiddenException } from '@nestjs/common';
-
 import { SuperAdminGuard } from './super-admin.guard';
 
 describe('SuperAdminGuard', () => {
   const firebaseAuthGuard = { canActivate: jest.fn() };
-  const prisma = { user: { findUnique: jest.fn() } };
+  const users = { getByFirebaseUid: jest.fn() };
   const guard = new SuperAdminGuard(
     firebaseAuthGuard as never,
-    prisma as never,
+    users as never,
   );
 
   beforeEach(() => jest.clearAllMocks());
@@ -21,14 +20,14 @@ describe('SuperAdminGuard', () => {
 
   it('allows a super administrator', async () => {
     firebaseAuthGuard.canActivate.mockResolvedValue(true);
-    prisma.user.findUnique.mockResolvedValue({ role: 'SUPER_ADMIN' });
+    users.getByFirebaseUid.mockResolvedValue({ role: 'SUPER_ADMIN' });
 
     await expect(guard.canActivate(context())).resolves.toBe(true);
   });
 
   it.each(['ADMIN', 'USER'])('rejects %s users', async (role) => {
     firebaseAuthGuard.canActivate.mockResolvedValue(true);
-    prisma.user.findUnique.mockResolvedValue({ role });
+    users.getByFirebaseUid.mockResolvedValue({ role });
 
     await expect(guard.canActivate(context())).rejects.toBeInstanceOf(
       ForbiddenException,
