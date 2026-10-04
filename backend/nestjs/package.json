@@ -26,7 +26,8 @@
     "firestore:migrate-discovery": "ts-node prisma/migrate-discovery-to-firestore.ts",
     "firestore:migrate-application-config": "ts-node scripts/migrate-application-config-to-firestore.ts",
     "firestore:migrate-donations": "ts-node scripts/migrate-donations-to-firestore.ts",
-    "firestore:migrate-analytics": "ts-node scripts/migrate-analytics-to-firestore"
+    "firestore:migrate-analytics": "ts-node scripts/migrate-analytics-to-firestore",
+    "firestore:migrate-platform-health": "ts-node scripts/migrate-platform-health-to-firestore"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1126.0",
