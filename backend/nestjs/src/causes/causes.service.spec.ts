@@ -7,13 +7,13 @@ describe('CausesService', () => {
     language: { findMany: jest.Mock };
     cause: { findMany: jest.Mock; findFirst: jest.Mock; findUnique: jest.Mock; create: jest.Mock };
   };
-  let firestoreCauses: { findAll: jest.Mock; findOne: jest.Mock };
+  let firestoreCauses: { findAll: jest.Mock; findOne: jest.Mock; syncCauses: jest.Mock };
 
   beforeEach(() => {
     prisma = {
       language: { findMany: jest.fn() },
       cause: {
-        findMany: jest.fn(),
+        findMany: jest.fn().mockResolvedValue([]),
         findFirst: jest.fn(),
         findUnique: jest.fn(),
         create: jest.fn(),
@@ -22,6 +22,7 @@ describe('CausesService', () => {
     firestoreCauses = {
       findAll: jest.fn(),
       findOne: jest.fn(),
+      syncCauses: jest.fn().mockResolvedValue(undefined),
     };
 
     service = new CausesService(prisma as never, firestoreCauses as never);
