@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AuthModule } from '../auth/auth.module';
 import { FirebaseModule } from '../firebase/firebase.module';
 import { MediaModule } from '../media/media.module';
+import { BeneficiariesModule } from '../beneficiaries/beneficiaries.module';
 import { ApplicationWindowsController, AdminApplicationWindowsController, HelpApplicationsController, AdminHelpApplicationsController, ApplicationRulesController, AdminApplicationRulesController, CertificatePhotoExportController } from './help-applications.controller';
 import { HelpApplicationsService } from './help-applications.service';
 import { ApplicationWindowsService } from './application-windows.service';
@@ -11,7 +12,7 @@ import { FirestoreApplicationWindowsService } from './firestore-application-wind
 import { FirestoreHelpApplicationsService } from './firestore-help-applications.service';
 
 @Module({
-  imports: [AuthModule, FirebaseModule, MediaModule],
+  imports: [AuthModule, FirebaseModule, MediaModule, BeneficiariesModule],
   controllers: [ApplicationWindowsController, AdminApplicationWindowsController, HelpApplicationsController, AdminHelpApplicationsController, ApplicationRulesController, AdminApplicationRulesController, CertificatePhotoExportController],
   providers: [
     FirestoreApplicationWindowsService,
