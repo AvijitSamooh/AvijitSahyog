@@ -4,12 +4,12 @@ import { MediaService } from './media.service';
 
 describe('MediaService', () => {
   let service: MediaService;
-  let r2: { upload: jest.Mock; delete: jest.Mock };
+  let r2: { upload: jest.Mock; delete: jest.Mock; download: jest.Mock };
   let firestore: { upsert: jest.Mock; getById: jest.Mock; delete: jest.Mock };
   let firebase: { db: { collection: jest.Mock } };
 
   beforeEach(() => {
-    r2 = { upload: jest.fn(), delete: jest.fn() };
+    r2 = { upload: jest.fn(), delete: jest.fn(), download: jest.fn().mockResolvedValue(Buffer.from('x')) };
     firestore = { upsert: jest.fn(), getById: jest.fn(), delete: jest.fn() };
     const query = {
       count: jest.fn(() => ({ get: jest.fn().mockResolvedValue({ data: () => ({ count: 0 }) }) })),
@@ -104,5 +104,17 @@ describe('MediaService', () => {
     r2.upload.mockRejectedValue(new Error('R2 unavailable'));
     await expect(service.uploadImage(createFile({ buffer: input, size: input.length }))).rejects.toBeInstanceOf(InternalServerErrorException);
     expect(firestore.upsert).not.toHaveBeenCalled();
+  });
+  it('covers download and deletion ownership/reference guards', async () => {
+    const media:any={id:'m1',uploadedById:'u1',storageKey:'uploads/m1.webp'};
+    firestore.getById.mockResolvedValue(media);
+    await expect(service.downloadImage('uploads/m1.webp')).resolves.toEqual(Buffer.from('x'));
+    await expect(service.deleteUserImage('m1','u2')).rejects.toThrow();
+    await expect(service.deleteUserImage('m1','u1')).resolves.toEqual({id:'m1',deleted:true});
+    expect(r2.delete).toHaveBeenCalledWith('uploads/m1.webp'); expect(firestore.delete).toHaveBeenCalledWith('m1');
+    const query = { count: jest.fn(() => ({ get: jest.fn().mockResolvedValue({data:()=>({count:2})}) })) };
+    firebase.db.collection.mockReturnValue({where:jest.fn(()=>query)});
+    firestore.getById.mockResolvedValue(media);
+    await expect(service.deleteUserImage('m1','u1')).rejects.toThrow(BadRequestException);
   });
 });

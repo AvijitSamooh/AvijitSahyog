@@ -36,7 +36,7 @@ jobs:
 
         run: npm run build
 
-      - name: Unit tests with coverage
+      - name: Unit tests with coverage thresholds
         run: npm run test:cov -- --runInBand
 
       - name: Application dependency-injection smoke test

@@ -1,0 +1,8 @@
+import { Timestamp } from 'firebase-admin/firestore';
+import { FirestorePlatformHealthService } from './firestore-platform-health.service';
+
+describe('FirestorePlatformHealthService',()=>{
+  it('pings downtime settings',async()=>{const get=jest.fn().mockResolvedValue({});const db:any={collection:jest.fn(()=>({doc:jest.fn(()=>({get}))}))};await new FirestorePlatformHealthService({db} as any).ping();expect(get).toHaveBeenCalled();});
+  it('lists recent events and normalizes fields',async()=>{const created=Timestamp.now();const snap={docs:[{id:'e1',data:()=>({type:'ERROR',statusCode:503,route:'/a?x=1',method:'GET',message:'down',createdAt:created})}]};const db:any={collection:jest.fn(()=>({where:jest.fn().mockReturnThis(),orderBy:jest.fn().mockReturnThis(),limit:jest.fn().mockReturnThis(),get:jest.fn().mockResolvedValue(snap)}))};const result=await new FirestorePlatformHealthService({db} as any).listRecent(7);expect(result[0]).toEqual(expect.objectContaining({id:'e1',statusCode:503,route:'/a?x=1',createdAt:expect.any(Date)}));});
+  it('records and normalizes a health event',async()=>{const set=jest.fn();const ref={id:'e1',set};const db:any={collection:jest.fn(()=>({doc:jest.fn(()=>ref)}))};await new FirestorePlatformHealthService({db} as any).recordEvent({type:'ERROR',statusCode:500,route:'/x?a=1',method:'GET',message:'a  b',metadata:{x:1}} as any);expect(set).toHaveBeenCalledWith(expect.objectContaining({id:'e1',route:'/x',message:'a b',statusCode:500}),);});
+});

@@ -168,7 +168,6 @@ The backend target runs:
 
 ```bash
 npm ci
-npm run prisma:generate
 npm run build
 npm test
 ```
