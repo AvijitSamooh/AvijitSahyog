@@ -28,7 +28,6 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
   Locale? _locale;
   Timer? _serviceWindowTimer;
   bool _serviceWindowActive = BackendServiceAvailability.isDowntime;
-  bool _serviceWindowMessageVisible = false;
   final _navigation = AppNavigationController();
 
   @override
@@ -74,11 +73,6 @@ class _AvijitSahyogAppState extends State<AvijitSahyogApp> {
   }
 
   ThemeData _buildTheme() => AppTheme.light();
-  void _showServiceUnavailableMessage() {
-    if (!_serviceWindowMessageVisible) {
-      setState(() => _serviceWindowMessageVisible = true);
-    }
-  }
 
   Widget _buildServiceWindowOverlay(BuildContext context) {
     if (!_serviceWindowActive) return const SizedBox.shrink();
