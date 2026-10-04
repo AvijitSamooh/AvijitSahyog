@@ -54,6 +54,34 @@ class ApiClient {
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
+  Future<Map<String, dynamic>> getPlatformDowntime() async {
+    final response = await _client.get(Uri.parse('$baseUrl/platform-downtime'));
+    _ensureSuccess(response, 'Loading downtime settings');
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> updatePlatformDowntime({
+    required bool enabled,
+    required String startTime,
+    required String endTime,
+    String? message,
+  }) async {
+    final response = await _client.patch(
+      Uri.parse('$baseUrl/platform-downtime'),
+      headers: await _headers(json: true),
+      body: jsonEncode({
+        'enabled': enabled,
+        'startTime': startTime,
+        'endTime': endTime,
+        'message': message,
+      }),
+    );
+    _ensureSuccess(response, 'Saving downtime settings');
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    BackendServiceAvailability.applyRemote(data);
+    return data;
+  }
+
   Future<List<Map<String, dynamic>>> getCauses(String languageCode) async {
     final uri = Uri.parse('$baseUrl/causes').replace(queryParameters: {'language': languageCode});
     final response = await _client.get(uri);
@@ -450,7 +478,7 @@ class _ActivityHttpClient extends http.BaseClient {
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) {
-    BackendServiceAvailability.ensureAvailable();
+    BackendServiceAvailability.ensureAvailable(path: request.url.path);
     final future = _inner.send(request);
     // Pull-to-refresh and initial data loads should not block the UI. The
     // global activity indicator is intended for user-triggered mutations.

@@ -551,5 +551,15 @@
   "certificatePhotoExportReady": "तयार प्रमाणपत्र फोटो",
   "certificatePhotoExportMissing": "फोटो उपलब्ध नाहीत",
   "certificatePhotoExportAllReady": "सर्व निवडलेल्या विद्यार्थ्यांचा प्रमाणपत्र फोटो उपलब्ध आहे.",
-  "downloadCertificatePhotos": "ZIP डाउनलोड करा"
+  "downloadCertificatePhotos": "ZIP डाउनलोड करा",
+  "platformDowntime": "बॅकएंड डाउनटाइम",
+  "platformDowntimeSubtitle": "बॅकएंड सेवा विंडो सक्षम, अक्षम आणि कॉन्फिगर करा",
+  "platformDowntimeEnabled": "डाउनटाइम सक्षम करा",
+  "platformDowntimeEnabledSubtitle": "वापरकर्ते साइन इन करू शकतात. सुपर अॅडमिन ही सेटिंग कधीही बदलू शकतो.",
+  "platformDowntimeStarts": "डाउनटाइम सुरू",
+  "platformDowntimeEnds": "डाउनटाइम समाप्त",
+  "platformDowntimeMessage": "डाउनटाइम संदेश",
+  "platformDowntimeMessageHint": "वापरकर्त्यांना दाखवला जाणारा पर्यायी संदेश",
+  "platformDowntimeSave": "सेटिंग जतन करा",
+  "platformDowntimeSaved": "डाउनटाइम सेटिंग जतन केली."
 }

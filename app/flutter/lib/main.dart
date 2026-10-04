@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app.dart';
 import 'core/health/client_health_reporter.dart';
+import 'core/service_window.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -12,6 +13,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await BackendServiceAvailability.loadRemote(const String.fromEnvironment('API_BASE_URL', defaultValue: 'http://localhost:3000'));
 
   final reporter = ClientHealthReporter();
   FlutterError.onError = (details) {

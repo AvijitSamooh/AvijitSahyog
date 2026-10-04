@@ -1,7 +1,2 @@
-import { OrganisationMediaPurpose } from '@prisma/client';
-
-export interface UpdateOrganisationMediaDto {
-  purpose?: OrganisationMediaPurpose;
-  displayOrder?: number;
-  isPrimary?: boolean;
-}
+import type { OrganisationMediaPurpose } from './attach-organisation-media.dto';
+export interface UpdateOrganisationMediaDto { purpose?:OrganisationMediaPurpose; displayOrder?:number; isPrimary?:boolean; }

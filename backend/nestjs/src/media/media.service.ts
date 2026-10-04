@@ -1,166 +1,65 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-  InternalServerErrorException,
-} from '@nestjs/common';
-import { randomUUID } from 'crypto';
+import { BadRequestException, Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import { randomUUID } from 'node:crypto';
 import sharp from 'sharp';
-import { PrismaService } from '../prisma/prisma.service';
+import { FirestoreMediaService } from './firestore-media.service';
+import { FirebaseService } from '../firebase/firebase.service';
 import { R2StorageService } from './r2-storage.service';
 
-const ALLOWED_IMAGE_FORMATS = new Set(['jpeg', 'png', 'webp']);
+const ALLOWED_IMAGE_FORMATS = new Set(['jpeg','png','webp']);
 const MAX_UPLOAD_SIZE = 10 * 1024 * 1024;
 const MAX_DIMENSION = 1600;
 const MAX_PROCESSED_SIZE = 1.5 * 1024 * 1024;
 
 @Injectable()
 export class MediaService {
-  constructor(
-    private readonly r2StorageService: R2StorageService,
-    private readonly prisma: PrismaService,
-  ) {}
+  constructor(private readonly r2:R2StorageService, private readonly firestore:FirestoreMediaService, private readonly firebase:FirebaseService) {}
 
-  async uploadImage(file: Express.Multer.File, folder = 'uploads', uploadedById?: string) {
-    if (!file) {
-      throw new BadRequestException('Image file is required.');
-    }
-
-    if (file.size > MAX_UPLOAD_SIZE) {
-      throw new BadRequestException('Image must be 10 MB or smaller.');
-    }
-
-    try {
-      let inputMetadata: sharp.Metadata;
+  async uploadImage(file:Express.Multer.File,folder='uploads',uploadedById?:string){
+    if(!file)throw new BadRequestException('Image file is required.');
+    if(file.size>MAX_UPLOAD_SIZE)throw new BadRequestException('Image must be 10 MB or smaller.');
+    try{
+      let meta: sharp.Metadata;
       try {
-        inputMetadata = await sharp(file.buffer).metadata();
-      } catch (_) {
-        throw new BadRequestException(
-          'Only JPEG, PNG, and WebP images are allowed.',
-        );
+        meta = await sharp(file.buffer).metadata();
+      } catch {
+        throw new BadRequestException('The uploaded file is not a valid supported image.');
       }
-
-      if (
-        !inputMetadata.format ||
-        !ALLOWED_IMAGE_FORMATS.has(inputMetadata.format)
-      ) {
-        throw new BadRequestException(
-          'Only JPEG, PNG, and WebP images are allowed.',
-        );
-      }
-
-      let processedBuffer = await sharp(file.buffer)
-        .rotate()
-        .resize({
-          width: MAX_DIMENSION,
-          height: MAX_DIMENSION,
-          fit: 'inside',
-          withoutEnlargement: true,
-        })
-        .webp({ quality: 82 })
-        .toBuffer();
-
-      // Do not let a camera-original-sized image become a large R2 object.
-      // Re-encode progressively only when needed so ordinary photos retain
-      // better visual quality while oversized outputs are bounded.
-      for (const quality of [76, 72, 68]) {
-        if (processedBuffer.length <= MAX_PROCESSED_SIZE) break;
-        processedBuffer = await sharp(file.buffer)
-          .rotate()
-          .resize({
-            width: MAX_DIMENSION,
-            height: MAX_DIMENSION,
-            fit: 'inside',
-            withoutEnlargement: true,
-          })
-          .webp({ quality })
-          .toBuffer();
-      }
-
-      if (processedBuffer.length > MAX_PROCESSED_SIZE) {
-        processedBuffer = await sharp(file.buffer)
-          .rotate()
-          .resize({
-            width: 1400,
-            height: 1400,
-            fit: 'inside',
-            withoutEnlargement: true,
-          })
-          .webp({ quality: 65 })
-          .toBuffer();
-      }
-
-      if (processedBuffer.length > MAX_PROCESSED_SIZE) {
-        throw new BadRequestException('Image could not be optimized below the 1.5 MB storage limit. Please choose a smaller image.');
-      }
-
-      const metadata = await sharp(processedBuffer).metadata();
-      const key = `${folder}/${randomUUID()}.webp`;
-
-      await this.r2StorageService.upload(
-        key,
-        processedBuffer,
-        'image/webp',
-      );
-
-      try {
-        return await this.prisma.media.create({
-          data: {
-            ...(uploadedById ? { uploadedById } : {}),
-            storageKey: key,
-            mimeType: 'image/webp',
-            fileSize: processedBuffer.length,
-            width: metadata.width ?? null,
-            height: metadata.height ?? null,
-          },
-        });
-      } catch (error) {
-        await this.r2StorageService.delete(key);
-        throw error;
-      }
-    } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw error;
-      }
-
-      if (error instanceof InternalServerErrorException) {
-        throw error;
-      }
-
-      throw new InternalServerErrorException(
-        'Unable to process and upload image.',
-      );
-    }
-  }
-  async downloadImage(storageKey: string): Promise<Buffer> {
-    return this.r2StorageService.download(storageKey);
+      if(!meta.format||!ALLOWED_IMAGE_FORMATS.has(meta.format))throw new BadRequestException('Only JPEG, PNG, and WebP images are allowed.');
+      let processed=await this.encode(file.buffer,MAX_DIMENSION,82);
+      for(const quality of [76,72,68]){if(processed.length<=MAX_PROCESSED_SIZE)break;processed=await this.encode(file.buffer,MAX_DIMENSION,quality);}
+      if(processed.length>MAX_PROCESSED_SIZE)processed=await this.encode(file.buffer,1400,65);
+      if(processed.length>MAX_PROCESSED_SIZE)throw new BadRequestException('Image could not be optimized below the 1.5 MB storage limit. Please choose a smaller image.');
+      const outputMeta=await sharp(processed).metadata(); const id=randomUUID(); const key=`${folder}/${id}.webp`;
+      await this.r2.upload(key,processed,'image/webp');
+      try{
+        const now=new Date();
+        const result=await this.firestore.upsert({id,uploadedById:uploadedById??null,storageKey:key,mimeType:'image/webp',fileSize:processed.length,width:outputMeta.width??null,height:outputMeta.height??null,createdAt:now,updatedAt:now});
+        return result;
+      }catch(error){await this.r2.delete(key).catch(()=>undefined);throw error;}
+    }catch(error){if(error instanceof BadRequestException)throw error;if(error instanceof InternalServerErrorException)return error;throw new InternalServerErrorException('Unable to process and upload image.');}
   }
 
-  async deleteUserImage(id: string, uploadedById: string) {
-    const media = await this.prisma.media.findFirst({
-      where: { id, uploadedById },
-      select: {
-        id: true,
-        storageKey: true,
-        _count: {
-          select: {
-            organisationMedia: true,
-            beneficiaryMedia: true,
-            helpApplicationMedia: true,
-            certificatePhotoApplications: true,
-            facePhotoApplications: true,
-          },
-        },
-      },
-    });
-    if (!media) throw new NotFoundException('Image not found.');
-    const refs = Object.values(media._count).reduce((sum, count) => sum + count, 0);
-    if (refs > 0) {
-      throw new BadRequestException('This image is still attached to an application and cannot be deleted.');
-    }
-    await this.r2StorageService.delete(media.storageKey);
-    await this.prisma.media.delete({ where: { id: media.id } });
-    return { id, deleted: true };
+  async downloadImage(storageKey:string){return this.r2.download(storageKey);}
+
+  async deleteUserImage(id:string,uploadedById:string){
+    const media=await this.firestore.getById(id);
+    if(media.uploadedById!==uploadedById)throw new NotFoundException('Image not found.');
+    const refs=await this.referenceCount(id);
+    if(refs>0)throw new BadRequestException('This image is still attached to an application and cannot be deleted.');
+    await this.r2.delete(media.storageKey); await this.firestore.delete(id); return{id,deleted:true};
   }
 
+  private async referenceCount(id:string){
+    const checks=await Promise.all([
+      this.firebaseCount('organisations',id),this.firebaseCount('beneficiaries',id),this.firebaseCount('helpApplications',id),
+    ]);
+    return checks.reduce((a,b)=>a+b,0);
+  }
+  private async firebaseCount(collection:string,id:string){
+    const snap=await this.firebase.db.collection(collection).where('media','array-contains',id).count().get().catch(()=>null);
+    if(snap)return snap.data().count;
+    const direct=await this.firestore['firebase'].db.collection(collection).get();
+    return direct.docs.filter(d=>JSON.stringify(d.data()).includes(id)).length;
+  }
+  private async encode(buffer:Buffer,width:number,quality:number){return sharp(buffer).rotate().resize({width,height:width,fit:'inside',withoutEnlargement:true}).webp({quality}).toBuffer();}
 }

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from '../prisma/prisma.module';
+import { FirebaseModule } from '../firebase/firebase.module';
 import { AnalyticsController } from './analytics.controller';
 import { AnalyticsService } from './analytics.service';
-@Module({ imports: [PrismaModule], controllers: [AnalyticsController], providers: [AnalyticsService], exports: [AnalyticsService] })
+import { FirestoreAnalyticsService } from './firestore-analytics.service';
+@Module({ imports:[FirebaseModule], controllers:[AnalyticsController], providers:[FirestoreAnalyticsService,{provide:AnalyticsService,useExisting:FirestoreAnalyticsService}], exports:[AnalyticsService] })
 export class AnalyticsModule {}
