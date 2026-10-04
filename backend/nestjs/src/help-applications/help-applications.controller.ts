@@ -177,8 +177,8 @@ export class CertificatePhotoExportController {
 }
 
 function exportSecret(): string {
-  const secret = process.env.EXPORT_TOKEN_SECRET || process.env.R2_SECRET_ACCESS_KEY;
-  if (!secret) throw new InternalServerErrorException('EXPORT_TOKEN_SECRET or R2_SECRET_ACCESS_KEY must be configured.');
+  const secret = process.env.EXPORT_TOKEN_SECRET;
+  if (!secret) throw new InternalServerErrorException('EXPORT_TOKEN_SECRET must be configured.');
   return secret;
 }
 
