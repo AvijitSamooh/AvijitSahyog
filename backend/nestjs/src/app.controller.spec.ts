@@ -1,21 +1,23 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
-import { PrismaService } from './prisma/prisma.service';
+import { FirebaseService } from './firebase/firebase.service';
 
 describe('AppController', () => {
   let appController: AppController;
-  let queryRaw: jest.Mock;
+  let get: jest.Mock;
 
   beforeEach(async () => {
-    queryRaw = jest.fn().mockResolvedValue([{ '?column?': 1 }]);
+    get = jest.fn().mockResolvedValue({ exists: true });
 
     const app: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
       providers: [
         {
-          provide: PrismaService,
+          provide: FirebaseService,
           useValue: {
-            $queryRaw: queryRaw,
+            db: {
+              collection: jest.fn(() => ({ doc: jest.fn(() => ({ get })) })),
+            },
           },
         },
       ],
@@ -41,7 +43,7 @@ describe('AppController', () => {
         },
       });
       expect(health.uptimeSeconds).toBeGreaterThanOrEqual(0);
-      expect(queryRaw).not.toHaveBeenCalled();
+      expect(get).not.toHaveBeenCalled();
     });
   });
 
@@ -52,11 +54,11 @@ describe('AppController', () => {
         service: 'avijit-sahyog-api',
         database: 'ok',
       });
-      expect(queryRaw).toHaveBeenCalledTimes(1);
+      expect(get).toHaveBeenCalledTimes(1);
     });
 
     it('returns service unavailable when the database check fails', async () => {
-      queryRaw.mockRejectedValue(new Error('database unavailable'));
+      get.mockRejectedValue(new Error('datastore unavailable'));
 
       await expect(appController.getReadiness()).rejects.toMatchObject({
         response: {
