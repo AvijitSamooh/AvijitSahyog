@@ -96,4 +96,6 @@ describe('FirestoreCausesService', () => {
 
     await expect(service.findOne('missing', 'en')).rejects.toBeInstanceOf(NotFoundException);
   });
+  it('covers remaining cause mapping helpers', async () => { const s:any=new FirestoreCausesService({db: {getAll:jest.fn().mockResolvedValue([]),collection:jest.fn(()=>({doc:jest.fn((id)=>({id}))}) )}} as any); const org:any={id:'o',slug:'org',isActive:true,displayOrder:1,translations:{en:{name:'O'}},media:[]}; expect(s.displayOrderForOrganisation([org],'o')).toBe(1); expect(s.displayOrderForOrganisation([],'x')).toBe(Number.MAX_SAFE_INTEGER); expect(s.translation(undefined,'en')).toEqual({name:null,description:null}); expect(s.mediaUrl({storageKey:'x'})).toBe('x'); expect(s.primaryMediaUrl([],'LOGO')).toBeNull(); expect(s.galleryMedia([],'GALLERY')).toEqual([]); await expect(s.getByIds('causes',[])).resolves.toEqual([]); await expect(s.getMediaByIds([])).resolves.toEqual([]); await expect(s.organisationResponse({...org,logoUrl:null,websiteUrl:null,phone:null,mobileNumber:null,email:null,address:null,city:null,state:null,country:'IN',latitude:null,longitude:null} ,'en')).resolves.toEqual(expect.objectContaining({id:'o'})); });
+
 });
