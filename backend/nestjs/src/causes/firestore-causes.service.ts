@@ -53,6 +53,25 @@ interface MediaDocument {
 export class FirestoreCausesService {
   constructor(private readonly firebase: FirebaseService) {}
 
+  async syncCauses(documents: Array<{
+    id: string;
+    slug: string;
+    parentId: string | null;
+    isActive: boolean;
+    displayOrder: number;
+    translations: Record<string, Translation>;
+    childIds: string[];
+    organisationIds: string[];
+    createdAt: Date;
+    updatedAt: Date;
+  }>) {
+    const batch = this.firebase.db.batch();
+    for (const cause of documents) {
+      batch.set(this.firebase.db.collection('causes').doc(cause.id), cause, { merge: true });
+    }
+    await batch.commit();
+  }
+
   async findAll(languageCode: string) {
     const snapshot = await this.firebase.db
       .collection('causes')
