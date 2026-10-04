@@ -476,7 +476,7 @@ class _ActivityHttpClient extends http.BaseClient {
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) {
-    BackendServiceAvailability.ensureAvailable();
+    BackendServiceAvailability.ensureAvailable(path: request.url.path);
     final future = _inner.send(request);
     // Pull-to-refresh and initial data loads should not block the UI. The
     // global activity indicator is intended for user-triggered mutations.
