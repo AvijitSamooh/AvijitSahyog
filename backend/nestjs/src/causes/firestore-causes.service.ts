@@ -1,4 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { randomUUID } from 'node:crypto';
+import { FieldValue } from 'firebase-admin/firestore';
 import { FirebaseService } from '../firebase/firebase.service';
 
 interface Translation {
@@ -73,6 +75,46 @@ export class FirestoreCausesService {
     }
     await batch.commit();
   }
+
+  async findAllForAdmin() {
+    const snapshot = await this.firebase.db.collection('causes').orderBy('displayOrder','asc').get();
+    const all=snapshot.docs.map(d=>d.data() as CauseDocument);
+    const byId=new Map(all.map(x=>[x.id,x]));
+    return all.map(cause=>this.adminResponse(cause,byId));
+  }
+
+  async findOneForAdmin(id:string) {
+    const snap=await this.firebase.db.collection('causes').doc(id).get();
+    if(!snap.exists) throw new NotFoundException(`Cause '${id}' not found`);
+    const all=(await this.firebase.db.collection('causes').get()).docs.map(d=>d.data() as CauseDocument);
+    return this.adminResponse(snap.data() as CauseDocument,new Map(all.map(x=>[x.id,x])));
+  }
+
+  async create(dto:any) {
+    this.validateAdminTranslations(dto.translations);
+    const duplicate=await this.firebase.db.collection('causes').where('slug','==',dto.slug).limit(1).get();
+    if(!duplicate.empty) throw new ConflictException(`Cause slug '${dto.slug}' already exists`);
+    if(dto.parentId && !(await this.firebase.db.collection('causes').doc(dto.parentId).get()).exists) throw new BadRequestException('Parent cause does not exist.');
+    const id=randomUUID(), now=new Date();
+    const doc:any={id,slug:dto.slug,parentId:dto.parentId??null,isActive:dto.isActive??true,displayOrder:dto.displayOrder??0,translations:Object.fromEntries(dto.translations.map((t:any)=>[t.languageCode,{name:t.name,description:t.description??null}])),childIds:[],organisationIds:[],createdAt:now,updatedAt:now};
+    if(doc.parentId){await this.firebase.db.collection('causes').doc(doc.parentId).set({childIds:FieldValue.arrayUnion(id),updatedAt:now},{merge:true});}
+    await this.firebase.db.collection('causes').doc(id).set(doc);
+    return this.adminResponse(doc,new Map([[id,doc]]));
+  }
+
+  async update(id:string,dto:any) {
+    const existing=await this.findOneForAdmin(id); const ref=this.firebase.db.collection('causes').doc(id); const current=(await ref.get()).data() as CauseDocument;
+    if(dto.slug && dto.slug!==current.slug){const duplicate=await this.firebase.db.collection('causes').where('slug','==',dto.slug).limit(1).get();if(!duplicate.empty&&duplicate.docs[0].id!==id)throw new ConflictException(`Cause slug '${dto.slug}' already exists`);}
+    if(dto.parentId!==undefined&&dto.parentId!==current.parentId){if(dto.parentId===id)throw new BadRequestException('A cause cannot be its own parent.');if(dto.parentId&&!(await this.firebase.db.collection('causes').doc(dto.parentId).get()).exists)throw new BadRequestException('Parent cause does not exist.');}
+    const now=new Date(); const next:any={...current,...(dto.slug!==undefined?{slug:dto.slug}:{}),(dto.parentId!==undefined?{parentId:dto.parentId}:{}),(dto.displayOrder!==undefined?{displayOrder:dto.displayOrder}:{}),(dto.isActive!==undefined?{isActive:dto.isActive}:{}),...(dto.translations?{translations:Object.fromEntries(dto.translations.map((t:any)=>[t.languageCode,{name:t.name,description:t.description??null}]) )}:{}),updatedAt:now};
+    const batch=this.firebase.db.batch();
+    if(dto.parentId!==undefined&&dto.parentId!==current.parentId){if(current.parentId)batch.update(this.firebase.db.collection('causes').doc(current.parentId),{childIds:FieldValue.arrayRemove(id),updatedAt:now});if(dto.parentId)batch.update(this.firebase.db.collection('causes').doc(dto.parentId),{childIds:FieldValue.arrayUnion(id),updatedAt:now});}
+    batch.set(ref,next); await batch.commit(); return this.findOneForAdmin(id);
+  }
+
+  async setActive(id:string,isActive:boolean){const ref=this.firebase.db.collection('causes').doc(id);const snap=await ref.get();if(!snap.exists)throw new NotFoundException(`Cause '${id}' not found`);await ref.update({isActive,updatedAt:new Date()});return this.findOneForAdmin(id);}
+  private validateAdminTranslations(translations:any[]){if(!translations?.length)throw new BadRequestException('At least one translation is required.');if(new Set(translations.map(x=>x.languageCode)).size!==translations.length)throw new BadRequestException('Each language may only appear once.');if(translations.some(x=>!x.name?.trim()))throw new BadRequestException('Translation names are required.');}
+  private adminResponse(cause:CauseDocument,byId:Map<string,CauseDocument>){return {...cause,translations:Object.entries(cause.translations??{}).map(([language,t])=>({language,text:t.name??'',name:t.name??'',description:t.description??null})),parent:cause.parentId?{id:cause.parentId,slug:byId.get(cause.parentId)?.slug??null}:null,children:(cause.childIds??[]).map(id=>byId.get(id)).filter(Boolean).sort((a:any,b:any)=>a.displayOrder-b.displayOrder).map((x:any)=>this.adminResponse(x,byId))};}
 
   async findAll(languageCode: string) {
     const snapshot = await this.firebase.db
