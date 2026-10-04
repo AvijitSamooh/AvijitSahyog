@@ -1,13 +1,13 @@
 import { BadRequestException } from '@nestjs/common';
 import { Timestamp } from 'firebase-admin/firestore';
-import { FirestoreAnalyticsService } from '../analytics/firestore-analytics.service';
-import { FirestoreDonationsService } from '../donations/firestore-donations.service';
-import { FirestoreApplicationRulesService } from '../help-applications/firestore-application-rules.service';
-import { FirestoreApplicationWindowsService } from '../help-applications/firestore-application-windows.service';
-import { FirestoreBeneficiariesService } from '../beneficiaries/firestore-beneficiaries.service';
-import { FirestoreHelpApplicationsService } from '../help-applications/firestore-help-applications.service';
-import { HelpApplicationTypeDto } from '../help-applications/dto/create-help-application.dto';
-import { AdminDashboardService } from '../admin-dashboard/admin-dashboard.service';
+import { FirestoreAnalyticsService } from './analytics/firestore-analytics.service';
+import { FirestoreDonationsService } from './donations/firestore-donations.service';
+import { FirestoreApplicationRulesService } from './help-applications/firestore-application-rules.service';
+import { FirestoreApplicationWindowsService } from './help-applications/firestore-application-windows.service';
+import { FirestoreBeneficiariesService } from './beneficiaries/firestore-beneficiaries.service';
+import { FirestoreHelpApplicationsService } from './help-applications/firestore-help-applications.service';
+import { HelpApplicationTypeDto } from './help-applications/dto/create-help-application.dto';
+import { AdminDashboardService } from './admin-dashboard/admin-dashboard.service';
 
 function ref(id='doc-1') {
   return { id, set: jest.fn(), update: jest.fn(), delete: jest.fn(), get: jest.fn() };
