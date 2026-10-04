@@ -22,7 +22,9 @@ export class PlatformDowntimeGuard implements CanActivate {
     const path = request.path;
 
     if (
-      path === '/health' ||
+      path.startsWith('/health') ||
+      path === '/platform-health' ||
+      path.startsWith('/platform-health/') ||
       path.startsWith('/auth/') ||
       path === '/platform-downtime'
     ) {
