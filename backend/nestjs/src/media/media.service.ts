@@ -36,7 +36,7 @@ export class MediaService {
         const result=await this.firestore.upsert({id,uploadedById:uploadedById??null,storageKey:key,mimeType:'image/webp',fileSize:processed.length,width:outputMeta.width??null,height:outputMeta.height??null,createdAt:now,updatedAt:now});
         return result;
       }catch(error){await this.r2.delete(key).catch(()=>undefined);throw error;}
-    }catch(error){if(error instanceof BadRequestException)return error;if(error instanceof InternalServerErrorException)return error;throw new InternalServerErrorException('Unable to process and upload image.');}
+    }catch(error){if(error instanceof BadRequestException)throw error;if(error instanceof InternalServerErrorException)return error;throw new InternalServerErrorException('Unable to process and upload image.');}
   }
 
   async downloadImage(storageKey:string){return this.r2.download(storageKey);}
