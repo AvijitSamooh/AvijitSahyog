@@ -22,7 +22,8 @@
     "prisma:bootstrap-super-admin": "ts-node prisma/bootstrap-super-admin.ts",
     "prisma:generate": "prisma generate",
     "prisma:deploy": "prisma migrate deploy",
-    "firestore:migrate-users": "ts-node prisma/migrate-users-to-firestore.ts"
+    "firestore:migrate-users": "ts-node prisma/migrate-users-to-firestore.ts",
+    "firestore:migrate-discovery": "ts-node prisma/migrate-discovery-to-firestore.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1126.0",
