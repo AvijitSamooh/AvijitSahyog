@@ -82,8 +82,8 @@ class _AdminPortalPageState extends ConsumerState<AdminPortalPage> {
               const SizedBox(height: 12),
               _AdminSectionCard(
                 icon: Icons.power_settings_new_rounded,
-                title: 'Backend downtime',
-                subtitle: 'Enable, disable and configure the backend service window',
+                title: l10n.platformDowntime,
+                subtitle: l10n.platformDowntimeSubtitle,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const PlatformDowntimePage()),
                 ),
