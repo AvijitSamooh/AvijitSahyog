@@ -7,6 +7,7 @@ import { PlatformHealthExceptionFilter } from './platform-health.exception-filte
 import { PlatformHealthService } from './platform-health.service';
 import { PlatformDowntimeController } from './platform-downtime.controller';
 import { PlatformDowntimeService } from './platform-downtime.service';
+import { PlatformDowntimeGuard } from './platform-downtime.guard';
 
 @Module({
   imports: [PrismaModule, AuthModule],
@@ -14,6 +15,10 @@ import { PlatformDowntimeService } from './platform-downtime.service';
   providers: [
     PlatformHealthService,
     PlatformDowntimeService,
+    {
+      provide: APP_GUARD,
+      useClass: PlatformDowntimeGuard,
+    },
     {
       provide: APP_FILTER,
       useFactory: (health: PlatformHealthService) => new PlatformHealthExceptionFilter(health),
