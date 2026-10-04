@@ -4,7 +4,7 @@ import { FirebaseService } from '../firebase/firebase.service';
 import { HelpApplicationTypeDto } from './dto/create-help-application.dto';
 import { CreateApplicationRuleDto, SUPPORTED_RULE_LANGUAGES, UpdateApplicationRuleDto, validateRuleTranslations } from './dto/application-rule.dto';
 
-interface RuleDocument {
+export interface RuleDocument {
   id: string;
   type: HelpApplicationTypeDto;
   displayOrder: number;
