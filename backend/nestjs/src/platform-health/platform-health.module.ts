@@ -5,12 +5,15 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { PlatformHealthController } from './platform-health.controller';
 import { PlatformHealthExceptionFilter } from './platform-health.exception-filter';
 import { PlatformHealthService } from './platform-health.service';
+import { PlatformDowntimeController } from './platform-downtime.controller';
+import { PlatformDowntimeService } from './platform-downtime.service';
 
 @Module({
   imports: [PrismaModule, AuthModule],
-  controllers: [PlatformHealthController],
+  controllers: [PlatformHealthController, PlatformDowntimeController],
   providers: [
     PlatformHealthService,
+    PlatformDowntimeService,
     {
       provide: APP_FILTER,
       useFactory: (health: PlatformHealthService) => new PlatformHealthExceptionFilter(health),
