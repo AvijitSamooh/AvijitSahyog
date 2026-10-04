@@ -1,0 +1,14 @@
+import { NotFoundException } from '@nestjs/common';
+import { FirestoreApplicationRulesService } from './firestore-application-rules.service';
+import { HelpApplicationTypeDto } from './dto/create-help-application.dto';
+
+describe('FirestoreApplicationRulesService',()=>{
+  const type=HelpApplicationTypeDto.HELP;
+  function makeDb(data:any={id:'r1',type,displayOrder:1,isActive:true,translations:{en:'Rule',hi:'नियम'}}){const ref:any={get:jest.fn().mockResolvedValue({exists:true,data:()=>data}),set:jest.fn(),update:jest.fn()};const query:any={where:jest.fn().mockReturnThis(),orderBy:jest.fn().mockReturnThis(),get:jest.fn().mockResolvedValue({docs:[{id:data.id,data:()=>data}]})};const db:any={collection:jest.fn(()=>({...query,doc:jest.fn(()=>ref)}))};return{db,ref};}
+  it('lists rules with requested language and falls back to English',async()=>{const {db}=makeDb();const s=new FirestoreApplicationRulesService({db} as any);await expect(s.list(type,'hi')).resolves.toEqual([{id:'r1',type,displayOrder:1,text:'नियम'}]);await expect(s.list(type,'xx')).resolves.toEqual([{id:'r1',type,displayOrder:1,text:'Rule'}]);});
+  it('lists admin rules and acceptance rules',async()=>{const {db}=makeDb();const s=new FirestoreApplicationRulesService({db} as any);expect(await s.listAdmin(type)).toEqual([expect.objectContaining({isActive:true,translations:expect.arrayContaining([{language:'en',text:'Rule'}])})]);expect(await s.listForAcceptance(type)).toEqual([{id:'r1',text:'Rule'}]);});
+  it('creates and syncs a rule',async()=>{const {db,ref}=makeDb();const s=new FirestoreApplicationRulesService({db} as any);const result=await s.create({type,displayOrder:2,isActive:true,translations:[{language:'en',text:'New'}]} as any);expect(result.id).toEqual(expect.any(String));expect(ref.set).toHaveBeenCalled();});
+  it('updates an existing rule',async()=>{const {db,ref}=makeDb();const s=new FirestoreApplicationRulesService({db} as any);const result=await s.update('r1',{displayOrder:3,translations:[{language:'en',text:'Updated'}]} as any);expect(result.displayOrder).toBe(3);expect(ref.set).toHaveBeenCalled();});
+  it('rejects and removes missing rules',async()=>{const {db}=makeDb({});const ref:any={get:jest.fn().mockResolvedValue({exists:false}),update:jest.fn()};db.collection.mockReturnValue({doc:jest.fn(()=>ref)});const s=new FirestoreApplicationRulesService({db} as any);await expect(s.update('x',{translations:[{language:'en',text:'x'}]} as any)).rejects.toBeInstanceOf(NotFoundException);await expect(s.remove('x')).rejects.toBeInstanceOf(NotFoundException);});
+  it('deactivates an existing rule',async()=>{const {db,ref}=makeDb();const s=new FirestoreApplicationRulesService({db} as any);await expect(s.remove('r1')).resolves.toEqual({id:'r1',deleted:true});expect(ref.update).toHaveBeenCalledWith({isActive:false});});
+});
