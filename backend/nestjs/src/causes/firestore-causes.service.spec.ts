@@ -19,6 +19,7 @@ describe('FirestoreCausesService', () => {
         where: jest.fn().mockReturnThis(),
         orderBy: jest.fn().mockReturnThis(),
         limit: jest.fn().mockReturnThis(),
+        doc: jest.fn((id: string) => ({ id })),
         get: jest.fn().mockResolvedValue({
           empty: !(data[name]?.length),
           docs: (data[name] ?? []).map((value) => ({
