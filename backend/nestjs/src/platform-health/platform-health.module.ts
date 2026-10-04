@@ -8,6 +8,7 @@ import { PlatformHealthService } from './platform-health.service';
 import { PlatformDowntimeController } from './platform-downtime.controller';
 import { PlatformDowntimeService } from './platform-downtime.service';
 import { PlatformDowntimeGuard } from './platform-downtime.guard';
+import { FirestorePlatformHealthService } from './firestore-platform-health.service';
 
 @Module({
   imports: [PrismaModule, AuthModule],
@@ -15,6 +16,7 @@ import { PlatformDowntimeGuard } from './platform-downtime.guard';
   providers: [
     PlatformHealthService,
     PlatformDowntimeService,
+    FirestorePlatformHealthService,
     {
       provide: APP_GUARD,
       useClass: PlatformDowntimeGuard,
