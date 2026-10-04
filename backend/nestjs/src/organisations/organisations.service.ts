@@ -408,7 +408,7 @@ export class OrganisationsService {
       organisation.translations[0]?.name ??
       organisation.slug;
 
-    const result = await this.prisma.$transaction(async (tx: any) {
+    const result = await this.prisma.$transaction(async (tx: any) => {
       if (allocationCount > 0 || beneficiaryCount > 0) {
         await tx.organisation.update({
           where: { id },
