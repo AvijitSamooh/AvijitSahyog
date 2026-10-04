@@ -19,10 +19,14 @@ class ServiceWindow {
   final String? message;
 
   factory ServiceWindow.fromEnvironment() {
-    const enabled = bool.fromEnvironment('BACKEND_SERVICE_WINDOW_ENABLED', defaultValue: false);
-    const startLabel = String.fromEnvironment('BACKEND_SERVICE_OFFLINE_START', defaultValue: '21:00');
-    const endLabel = String.fromEnvironment('BACKEND_SERVICE_OFFLINE_END', defaultValue: '08:00');
-    return ServiceWindow.fromLabels(enabled: enabled, startLabel: startLabel, endLabel: endLabel);
+    // Runtime configuration is authoritative. The initial client state is
+    // deliberately available so login/startup is never blocked before the
+    // backend can be queried.
+    return ServiceWindow.fromLabels(
+      enabled: false,
+      startLabel: '21:00',
+      endLabel: '08:00',
+    );
   }
 
   factory ServiceWindow.fromLabels({
