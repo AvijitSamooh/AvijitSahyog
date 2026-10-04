@@ -1,6 +1,7 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Optional } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ANALYTICS_EVENT_NAMES, AnalyticsEventName } from './analytics.constants';
+import { FirestoreAnalyticsService } from './firestore-analytics.service';
 
 export const MAX_ANALYTICS_BATCH_SIZE = 50;
 
@@ -18,7 +19,10 @@ export type TrackAnalyticsEventInput = {
 
 @Injectable()
 export class AnalyticsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional() private readonly firestoreAnalytics?: FirestoreAnalyticsService,
+  ) {}
 
   async track(input: TrackAnalyticsEventInput) {
     await this.trackBatch([input]);
@@ -32,6 +36,11 @@ export class AnalyticsService {
 
     for (const input of inputs) {
       this.validate(input);
+    }
+
+    if (this.firestoreAnalytics) {
+      await this.firestoreAnalytics.trackBatch(inputs);
+      return;
     }
 
     await this.prisma.analyticsEvent.createMany({
