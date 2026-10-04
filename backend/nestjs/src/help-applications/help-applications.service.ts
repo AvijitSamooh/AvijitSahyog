@@ -1,11 +1,13 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { FirebaseIdentity } from '../auth/auth.types';
+import { FirestoreUsersService } from '../users/firestore-users.service';
 import { CreateHelpApplicationDto, HelpApplicationTypeDto } from './dto/create-help-application.dto';
 import { ResubmitHelpApplicationDto } from './dto/resubmit-help-application.dto';
 import { ReviewHelpApplicationDto, HelpApplicationDecisionDto } from './dto/review-help-application.dto';
 import { VoteHelpApplicationDto } from './dto/vote-help-application.dto';
 import { ApplicationWindowsService } from './application-windows.service';
+import { ApplicationRulesService } from './application-rules.service';
 import { UpdateHelpApplicationDto } from './dto/update-help-application.dto';
 import { MediaService } from '../media/media.service';
 import { createZip } from './certificate-photo-export.util';
@@ -17,6 +19,8 @@ export class HelpApplicationsService {
     private readonly prisma: PrismaService,
     private readonly applicationWindows: ApplicationWindowsService,
     private readonly mediaService: MediaService,
+    private readonly users: FirestoreUsersService,
+    private readonly applicationRules: ApplicationRulesService,
   ) {}
 
   async create(identity: FirebaseIdentity, dto: CreateHelpApplicationDto) {
@@ -542,11 +546,7 @@ export class HelpApplicationsService {
   }
 
   private async user(identity: FirebaseIdentity) {
-    return this.prisma.user.upsert({
-      where: { firebaseUid: identity.uid },
-      create: { firebaseUid: identity.uid, email: identity.email, displayName: identity.displayName, photoUrl: identity.photoUrl },
-      update: { email: identity.email, displayName: identity.displayName, photoUrl: identity.photoUrl },
-    });
+    return this.users.upsertFromIdentity(identity);
   }
 
   private async admin(identity: FirebaseIdentity) {
@@ -556,16 +556,13 @@ export class HelpApplicationsService {
   }
 
   private async validateAcceptedRules(type: HelpApplicationTypeDto, acceptedRuleIds: string[]) {
-    const rules = await this.prisma.applicationRule.findMany({
-      where: { type, isActive: true },
-      select: { id: true, translations: { where: { language: { code: 'en' } }, select: { text: true }, take: 1 } },
-    });
+    const rules = await this.applicationRules.listForAcceptance(type);
     const expected = new Set(rules.map((rule) => rule.id));
     const accepted = new Set(acceptedRuleIds ?? []);
     if (accepted.size !== expected.size || [...expected].some((id) => !accepted.has(id))) {
       throw new BadRequestException('Please acknowledge every current application rule before submitting.');
     }
-    return rules.map((rule) => ({ id: rule.id, text: rule.translations[0]?.text ?? '' }));
+    return rules;
   }
 
   private async application(id: string) {
