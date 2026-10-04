@@ -47,3 +47,7 @@ Relational join tables will be embedded or represented as references/subcollecti
 - Financial records are treated as append-only after payment confirmation.
 - No production PostgreSQL deletion occurs in the initial migration.
 \n\n## Discovery backfill\n\nThe first discovery migration command is:\n\n`npm run firestore:migrate-discovery`\n\nIt copies languages, causes, organisations, beneficiaries and media metadata using the existing PostgreSQL IDs. Cause/organisation translations and relationships are embedded in their documents so public reads can later avoid relational joins. Media objects remain in Cloudflare R2; only their metadata is copied to Firestore.\n\nThis command is idempotent, does not delete PostgreSQL data, and fails unless the source and target document counts reconcile.\n
+
+## Post-cutover status
+
+The runtime cutover is complete. PostgreSQL/Prisma source migration scripts were intentionally removed after Firestore became authoritative. Historical source-to-Firestore migration is a one-time operational prerequisite; this document is retained as architecture/history, not as an active migration command reference.
