@@ -60,7 +60,7 @@ export class PlatformDowntimeService {
   }
 
   private validateTime(value: string): string {
-    const match = /^(\\d{2}):(\\d{2})$/.exec(value.trim());
+    const match = /^(\d{2}):(\d{2})$/.exec(value.trim());
     if (!match) throw new BadRequestException('Time must use HH:mm format.');
     const hour = Number(match[1]);
     const minute = Number(match[2]);
