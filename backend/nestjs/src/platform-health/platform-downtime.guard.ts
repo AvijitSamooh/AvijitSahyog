@@ -31,7 +31,15 @@ export class PlatformDowntimeGuard implements CanActivate {
       return true;
     }
 
-    const settings = await this.downtime.get();
+    let settings;
+    try {
+      settings = await this.downtime.get();
+    } catch (_) {
+      // Fail open if the control-plane datastore is unavailable. This keeps
+      // login and recovery/admin access possible during a Firestore incident.
+      return true;
+    }
+
     if (!settings.enabled || !this.isInsideWindow(settings.startTime, settings.endTime)) {
       return true;
     }
