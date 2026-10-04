@@ -14,6 +14,7 @@ import 'admin_causes_page.dart';
 import 'admin_organisations_page.dart';
 import 'admin_users_page.dart';
 import 'platform_health_page.dart';
+import 'platform_downtime_page.dart';
 
 class AdminPortalPage extends ConsumerStatefulWidget {
   const AdminPortalPage({super.key});
@@ -76,6 +77,15 @@ class _AdminPortalPageState extends ConsumerState<AdminPortalPage> {
                 subtitle: l10n.adminPlatformHealthSubtitle,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const PlatformHealthPage()),
+                ),
+              ),
+              const SizedBox(height: 12),
+              _AdminSectionCard(
+                icon: Icons.power_settings_new_rounded,
+                title: 'Backend downtime',
+                subtitle: 'Enable, disable and configure the backend service window',
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const PlatformDowntimePage()),
                 ),
               ),
               const SizedBox(height: 12),
