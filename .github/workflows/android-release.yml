@@ -30,9 +30,6 @@ concurrency:
 
 env:
   RELEASE_VALIDATION: ${{ github.event.inputs.validation || 'full' }}
-  BACKEND_SERVICE_WINDOW_ENABLED: ${{ vars.BACKEND_SERVICE_WINDOW_ENABLED || 'true' }}
-  BACKEND_SERVICE_WINDOW_START: ${{ vars.BACKEND_SERVICE_OFFLINE_START || '21:00' }}
-  BACKEND_SERVICE_WINDOW_END: ${{ vars.BACKEND_SERVICE_OFFLINE_END || '08:00' }}
 
 jobs:
   build-android:
@@ -94,13 +91,6 @@ jobs:
           flutter analyze
           flutter test --dart-define=BACKEND_SERVICE_WINDOW_ENABLED=false
 
-      - name: Verify service window configuration
-        if: ${{ env.RELEASE_VALIDATION == 'full' }}
-        run: |
-          flutter test test/core/service_window_test.dart \
-            --dart-define=BACKEND_SERVICE_WINDOW_ENABLED="$BACKEND_SERVICE_WINDOW_ENABLED" \
-            --dart-define=BACKEND_SERVICE_OFFLINE_START="$BACKEND_SERVICE_WINDOW_START" \
-            --dart-define=BACKEND_SERVICE_OFFLINE_END="$BACKEND_SERVICE_WINDOW_END"
       - name: Decode Android upload keystore
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -159,29 +149,7 @@ jobs:
       - name: Build signed app bundle
         id: build_aab
         run: |
-          # The production configuration is an overnight OFFLINE window.
-          # Protect the release from accidentally reversed repository variables
-          # (for example 08:00 -> 21:00, which would disable the app during the day).
-          if [ "$BACKEND_SERVICE_WINDOW_ENABLED" = "true" ]; then
-            START_MINUTES=$((10#${BACKEND_SERVICE_WINDOW_START%%:*} * 60 + 10#${BACKEND_SERVICE_WINDOW_START##*:}))
-            END_MINUTES=$((10#${BACKEND_SERVICE_WINDOW_END%%:*} * 60 + 10#${BACKEND_SERVICE_WINDOW_END##*:}))
-            if [ "$START_MINUTES" -lt "$END_MINUTES" ]; then
-              echo "::warning::Offline window was configured in the wrong direction ($BACKEND_SERVICE_WINDOW_START -> $BACKEND_SERVICE_WINDOW_END). Reversing it for production."
-              ORIGINAL_START="$BACKEND_SERVICE_WINDOW_START"
-              BACKEND_SERVICE_WINDOW_START="$BACKEND_SERVICE_WINDOW_END"
-              BACKEND_SERVICE_WINDOW_END="$ORIGINAL_START"
-            fi
-          fi
-
-          echo "Effective backend offline window: $BACKEND_SERVICE_WINDOW_START -> $BACKEND_SERVICE_WINDOW_END"
-
-          flutter build appbundle --release \
-            --build-name="$RELEASE_VERSION" \
-            --build-number="$PLAY_VERSION_CODE" \
-            --dart-define=API_BASE_URL=${{ vars.API_BASE_URL }} \
-            --dart-define=BACKEND_SERVICE_WINDOW_ENABLED="$BACKEND_SERVICE_WINDOW_ENABLED" \
-            --dart-define=BACKEND_SERVICE_OFFLINE_START="$BACKEND_SERVICE_WINDOW_START" \
-            --dart-define=BACKEND_SERVICE_OFFLINE_END="$BACKEND_SERVICE_WINDOW_END"
+          flutter build appbundle --release             --build-name="$RELEASE_VERSION"             --build-number="$PLAY_VERSION_CODE"             --dart-define=API_BASE_URL=${{ vars.API_BASE_URL }}
 
       - name: Assert release manifest excludes Advertising ID
         run: |
