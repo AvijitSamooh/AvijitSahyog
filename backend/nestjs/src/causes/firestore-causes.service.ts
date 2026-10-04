@@ -20,6 +20,8 @@ interface CauseDocument {
 interface OrganisationDocument {
   id: string;
   slug: string;
+  displayOrder: number;
+  isActive: boolean;
   logoUrl?: string | null;
   websiteUrl?: string | null;
   phone?: string | null;
@@ -82,7 +84,7 @@ export class FirestoreCausesService {
 
     const causes = snapshot.docs.map((doc) => doc.data() as CauseDocument);
     const childIds = causes.flatMap((cause) => cause.childIds ?? []);
-    const children = await this.getByIds('causes', childIds);
+    const children = await this.getByIds<CauseDocument>('causes', childIds);
 
     return causes.map((cause) => ({
       id: cause.id,
@@ -117,8 +119,8 @@ export class FirestoreCausesService {
 
     const cause = snapshot.docs[0].data() as CauseDocument;
     const [children, organisations] = await Promise.all([
-      this.getByIds('causes', cause.childIds ?? []),
-      this.getByIds('organisations', cause.organisationIds ?? []),
+      this.getByIds<CauseDocument>('causes', cause.childIds ?? []),
+      this.getByIds<OrganisationDocument>('organisations', cause.organisationIds ?? []),
     ]);
 
     const activeChildren = children
