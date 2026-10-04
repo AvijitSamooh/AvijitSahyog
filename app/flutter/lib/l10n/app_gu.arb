@@ -551,5 +551,15 @@
   "certificatePhotoExportReady": "તૈયાર પ્રમાણપત્ર ફોટા",
   "certificatePhotoExportMissing": "ફોટા ઉપલબ્ધ નથી",
   "certificatePhotoExportAllReady": "બધા પસંદ કરેલા વિદ્યાર્થીઓનો પ્રમાણપત્ર ફોટો ઉપલબ્ધ છે.",
-  "downloadCertificatePhotos": "ZIP ડાઉનલોડ કરો"
+  "downloadCertificatePhotos": "ZIP ડાઉનલોડ કરો",
+  "platformDowntime": "બેકએન્ડ ડાઉનટાઇમ",
+  "platformDowntimeSubtitle": "બેકએન્ડ સેવા વિન્ડોને સક્ષમ, અક્ષમ અને ગોઠવો",
+  "platformDowntimeEnabled": "ડાઉનટાઇમ સક્ષમ કરો",
+  "platformDowntimeEnabledSubtitle": "વપરાશકર્તાઓ સાઇન ઇન કરી શકે છે. સુપર એડમિન આ સેટિંગ હંમેશા બદલી શકે છે.",
+  "platformDowntimeStarts": "ડાઉનટાઇમ શરૂ",
+  "platformDowntimeEnds": "ડાઉનટાઇમ સમાપ્ત",
+  "platformDowntimeMessage": "ડાઉનટાઇમ સંદેશ",
+  "platformDowntimeMessageHint": "વપરાશકર્તાઓને બતાવવાનો વૈકલ્પિક સંદેશ",
+  "platformDowntimeSave": "સેટિંગ સાચવો",
+  "platformDowntimeSaved": "ડાઉનટાઇમ સેટિંગ સાચવાઈ ગઈ."
 }
