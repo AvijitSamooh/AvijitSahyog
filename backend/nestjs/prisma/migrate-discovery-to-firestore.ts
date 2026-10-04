@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { cert, getApps, initializeApp } from 'firebase-admin/app';
-import { Timestamp } from 'firebase-admin/firestore';
+import { Timestamp, type Firestore } from 'firebase-admin/firestore';
 
 const BATCH_SIZE = 400;
 
@@ -32,7 +32,7 @@ function translationsByLanguage(items: Array<{ language: { code: string }; name?
 }
 
 async function writeBatches(
-  db: FirebaseFirestore.Firestore,
+  db: Firestore,
   collection: string,
   documents: Array<{ id: string; data: Record<string, unknown> }>,
 ) {
@@ -45,7 +45,7 @@ async function writeBatches(
   }
 }
 
-async function count(db: FirebaseFirestore.Firestore, collection: string) {
+async function count(db: Firestore, collection: string) {
   return (await db.collection(collection).count().get()).data().count;
 }
 
