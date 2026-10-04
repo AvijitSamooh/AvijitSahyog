@@ -20,7 +20,7 @@ describe('FirestoreOrganisationsService', () => {
   });
 
   it('covers public reads, admin reads and missing cases',async()=>{
-    const orgs=collections.get('organisations');
+    const orgs=firebase.db.collection('organisations');
     orgs.get.mockResolvedValueOnce({docs:[{data:()=>org()}]});
     firebase.db.getAll.mockResolvedValueOnce([{id:'c1',exists:true,data:()=>({id:'c1',slug:'cause',isActive:true,displayOrder:1,translations:{en:{name:'Cause'}}})}]);
     await expect(service.findAll('en')).resolves.toEqual([expect.objectContaining({name:'Help',causes:[expect.objectContaining({id:'c1'})]})]);
@@ -33,7 +33,7 @@ describe('FirestoreOrganisationsService', () => {
   });
 
   it('covers CRUD, cause and media administration',async()=>{
-    const orgs=collections.get('organisations');
+    const orgs=firebase.db.collection('organisations');
     const ref:any={id:'org-1',get:jest.fn().mockResolvedValue({exists:true,data:()=>org()}),set:jest.fn(),update:jest.fn(),delete:jest.fn()};
     orgs.doc.mockReturnValue(ref); orgs.get.mockResolvedValue({exists:true,empty:true,docs:[]});
     await service.syncOrganisation({...org(),createdAt:new Date(),updatedAt:new Date()}); await service.removeOrganisation('org-1');
@@ -44,7 +44,7 @@ describe('FirestoreOrganisationsService', () => {
     orgs.get.mockResolvedValue({exists:false}); await expect(service.update('missing',{})).rejects.toThrow(NotFoundException);
     orgs.get.mockResolvedValue({exists:true,data:()=>org()}); await expect(service.updateCauses('org-1',['c1','c1','c2'])).resolves.toEqual(expect.objectContaining({id:'org-1'}));
     orgs.get.mockResolvedValue({exists:false}); await expect(service.updateCauses('missing',['c1'])).rejects.toThrow(NotFoundException);
-    const media=collections.get('media'); const mediaRef:any={id:'m1',get:jest.fn().mockResolvedValue({exists:true,data:()=>({id:'m1',storageKey:'a.jpg',mimeType:'image/jpeg',width:10,height:20})})}; media.doc.mockReturnValue(mediaRef);
+    const media=firebase.db.collection('media'); const mediaRef:any={id:'m1',get:jest.fn().mockResolvedValue({exists:true,data:()=>({id:'m1',storageKey:'a.jpg',mimeType:'image/jpeg',width:10,height:20})})}; media.doc.mockReturnValue(mediaRef);
     firebase.db.getAll.mockResolvedValue([{id:'m1',exists:true,data:()=>({id:'m1',storageKey:'a.jpg',mimeType:'image/jpeg',width:10,height:20})}]);
     ref.get.mockResolvedValue({exists:true,data:()=>org({media:[{mediaId:'m1',purpose:'GALLERY',displayOrder:0,isPrimary:false}]})});
     await expect(service.listMedia('org-1')).resolves.toEqual([expect.objectContaining({media:expect.objectContaining({id:'m1'})})]);
@@ -59,10 +59,10 @@ describe('FirestoreOrganisationsService', () => {
   });
 
   it('covers lifecycle toggles and mapping helpers',async()=>{
-    const orgs=collections.get('organisations'); const ref:any={id:'org-1',get:jest.fn().mockResolvedValue({exists:true,data:()=>org()}),set:jest.fn(),update:jest.fn(),delete:jest.fn()}; orgs.doc.mockReturnValue(ref);
-    collections.get('beneficiaries').get.mockResolvedValue({empty:false,docs:[{}]});
+    const orgs=firebase.db.collection('organisations'); const ref:any={id:'org-1',get:jest.fn().mockResolvedValue({exists:true,data:()=>org()}),set:jest.fn(),update:jest.fn(),delete:jest.fn()}; orgs.doc.mockReturnValue(ref);
+    firebase.db.collection('beneficiaries').get.mockResolvedValue({empty:false,docs:[{}]});
     await expect(service.removeOrDeactivate('org-1')).resolves.toEqual(expect.objectContaining({deactivated:true}));
-    collections.get('beneficiaries').get.mockResolvedValue({empty:true,docs:[]}); collections.get('donationAllocations').get.mockResolvedValue({empty:true,docs:[]});
+    firebase.db.collection('beneficiaries').get.mockResolvedValue({empty:true,docs:[]}); firebase.db.collection('donationAllocations').get.mockResolvedValue({empty:true,docs:[]});
     await expect(service.removeOrDeactivate('org-1')).resolves.toEqual(expect.objectContaining({deleted:true}));
     jest.spyOn(service,'findOneForAdmin').mockResolvedValue(org());
     await expect(service.setActive('org-1',false)).resolves.toEqual(org());
