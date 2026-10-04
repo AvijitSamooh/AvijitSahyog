@@ -25,7 +25,6 @@ function Invoke-BackendValidation {
     Push-Location (Join-Path $RepoRoot 'backend/nestjs')
     try {
         npm ci
-        npm run prisma:generate
         npm run build
         npm test
     } finally { Pop-Location }
