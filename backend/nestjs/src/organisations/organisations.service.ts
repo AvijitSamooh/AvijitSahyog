@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Optional,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -10,6 +11,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import type { AttachOrganisationMediaDto } from './dto/attach-organisation-media.dto';
 import type { UpdateOrganisationMediaDto } from './dto/update-organisation-media.dto';
 import { MemoryCache } from '../common/memory-cache';
+import { FirestoreOrganisationsService } from './firestore-organisations.service';
 
 @Injectable()
 export class OrganisationsService {
@@ -17,12 +19,17 @@ export class OrganisationsService {
   private static readonly FRESH_MS = 10 * 60 * 1000;
   private static readonly STALE_MS = 24 * 60 * 60 * 1000;
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional() private readonly firestoreOrganisations?: FirestoreOrganisationsService,
+  ) {}
 
   async findAll(languageCode = 'en') {
-    const organisations = await this.cache.getOrLoad(
-      `organisations:list:${languageCode}`,
-      async () => this.prisma.organisation.findMany({
+    if (this.firestoreOrganisations) {
+      return this.firestoreOrganisations.findAll(languageCode);
+    }
+
+    return this.prisma.organisation.findMany({
       where: { isActive: true },
       orderBy: { displayOrder: 'asc' },
       include: {
@@ -30,12 +37,12 @@ export class OrganisationsService {
           where: { language: { code: { in: [languageCode, 'en'] } } },
           include: { language: true },
         },
-        media: { orderBy: [{ purpose: 'asc' }, { isPrimary: 'desc' }, { displayOrder: 'asc' }], include: { media: true } },
+        media: {
+          orderBy: [{ purpose: 'asc' }, { isPrimary: 'desc' }, { displayOrder: 'asc' }],
+          include: { media: true },
+        },
         causes: {
-          where: {
-            isActive: true,
-            cause: { isActive: true },
-          },
+          where: { isActive: true, cause: { isActive: true } },
           orderBy: { displayOrder: 'asc' },
           include: {
             cause: {
@@ -49,38 +56,37 @@ export class OrganisationsService {
           },
         },
       },
-      }),
-      OrganisationsService.FRESH_MS,
-      OrganisationsService.STALE_MS,
-    );
-
-    return organisations.map((organisation) => ({
-      ...this.baseResponse(organisation, languageCode),
-      causes: organisation.causes.map(({ cause }) => ({
-        id: cause.id,
-        slug: cause.slug,
-        displayOrder: cause.displayOrder,
-        ...this.translation(cause.translations, languageCode),
+    }).then((organisations) =>
+      organisations.map((organisation) => ({
+        ...this.baseResponse(organisation, languageCode),
+        causes: organisation.causes.map(({ cause }) => ({
+          id: cause.id,
+          slug: cause.slug,
+          displayOrder: cause.displayOrder,
+          ...this.translation(cause.translations, languageCode),
+        })),
       })),
-    }));
+    );
   }
 
   async findOne(slug: string, languageCode = 'en') {
-    const organisation = await this.cache.getOrLoad(
-      `organisations:detail:${slug}:${languageCode}`,
-      async () => this.prisma.organisation.findFirst({
+    if (this.firestoreOrganisations) {
+      return this.firestoreOrganisations.findOne(slug, languageCode);
+    }
+
+    const organisation = await this.prisma.organisation.findFirst({
       where: { slug, isActive: true },
       include: {
         translations: {
           where: { language: { code: { in: [languageCode, 'en'] } } },
           include: { language: true },
         },
-        media: { orderBy: [{ purpose: 'asc' }, { isPrimary: 'desc' }, { displayOrder: 'asc' }], include: { media: true } },
+        media: {
+          orderBy: [{ purpose: 'asc' }, { isPrimary: 'desc' }, { displayOrder: 'asc' }],
+          include: { media: true },
+        },
         causes: {
-          where: {
-            isActive: true,
-            cause: { isActive: true },
-          },
+          where: { isActive: true, cause: { isActive: true } },
           orderBy: { displayOrder: 'asc' },
           include: {
             cause: {
@@ -94,10 +100,7 @@ export class OrganisationsService {
           },
         },
       },
-      }),
-      OrganisationsService.FRESH_MS,
-      OrganisationsService.STALE_MS,
-    );
+    });
 
     if (!organisation) {
       throw new NotFoundException(`Organisation '${slug}' not found`);
