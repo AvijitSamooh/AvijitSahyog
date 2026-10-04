@@ -105,37 +105,22 @@ flutter build web --dart-define=API_BASE_URL=https://YOUR_RENDER_API_URL
 
 The production API URL will be configured in Vercel and the Android release pipeline; it is intentionally not hard-coded in source.
 
-### Configurable backend service window
+### Backend service downtime
 
-The Flutter client supports an environment-configured nightly backend service window. The default is **9:00 PM to 8:00 AM local device time**.
+Backend downtime is controlled at runtime by a **SUPER_ADMIN** and persisted in Firestore.
 
-During the window:
+During an enabled downtime window:
 
-- already available/static content remains visible;
-- taps are intercepted with a localized service-unavailable message;
-- NestJS API requests are blocked before an HTTP request is sent;
-- authentication backend resolution, analytics mirroring and client health telemetry are also suppressed;
-- the window can be disabled without changing application code.
+- Firebase login remains available;
+- Super Admin authentication and the downtime control endpoint remain available;
+- Super Admin can enable/disable downtime and change the start/end time from the admin portal;
+- ordinary backend requests are rejected server-side with a 503 downtime response;
+- previously cached/static client content can remain visible;
+- the Flutter client refreshes the downtime configuration periodically, so a new app build is not required to change the schedule.
 
-The build-time variables are:
+The current backend schedule is evaluated using **India Standard Time (Asia/Kolkata)**. The setting is stored under the Firestore `platformSettings/downtime` document.
 
-- `BACKEND_SERVICE_WINDOW_ENABLED` — `true` or `false`; defaults to `true`
-- `BACKEND_SERVICE_OFFLINE_START` — `HH:mm`; defaults to `21:00`
-- `BACKEND_SERVICE_OFFLINE_END` — `HH:mm`; defaults to `08:00`
-
-The Android release workflow maps these explicitly to the Flutter `BACKEND_SERVICE_WINDOW_START/END` defines. The `OFFLINE_*` names make it clear that the configured interval is the **unavailable** window, not the available window. If these repository variables are absent, the build defaults to 9:00 PM–8:00 AM.
-
-For clarity, do not configure the offline window as `08:00` → `21:00`; that would intentionally describe the daytime interval. The expected nightly values are `21:00` → `08:00`. GitHub configuration variables are intended for non-secret build configuration and are exposed through the `vars` context.
-
-To disable the nightly restriction for an environment, set:
-
-```text
-BACKEND_SERVICE_WINDOW_ENABLED=false
-```
-
-Changing these values affects the next build/deployment; an already-installed compiled Flutter app keeps the values that were embedded into that build.
-
-For a web deployment, pass the same values as `--dart-define` arguments in the Vercel Flutter build command.
+The old build-time `BACKEND_SERVICE_WINDOW_ENABLED`, `BACKEND_SERVICE_OFFLINE_START` and `BACKEND_SERVICE_OFFLINE_END` values are now only legacy compatibility fallbacks and should be removed from deployment configuration after this migration is fully cut over.
 
 ### Application acceptance windows
 
