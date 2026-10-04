@@ -61,7 +61,14 @@ describe('FirestoreUsersService', () => {
       set: jest.fn(),
       update: jest.fn(),
     };
-    const db = { runTransaction: jest.fn(async (callback: any) => callback(transaction)), collection: jest.fn() };
+    const collection = {
+      where: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockReturnThis(),
+    };
+    const db = {
+      runTransaction: jest.fn(async (callback: any) => callback(transaction)),
+      collection: jest.fn().mockReturnValue(collection),
+    };
     const service = new FirestoreUsersService({ db } as any);
 
     const result = await service.upsertFromIdentity({
