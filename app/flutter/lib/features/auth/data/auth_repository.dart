@@ -17,6 +17,17 @@ class AuthNotConfiguredException implements Exception {
   const AuthNotConfiguredException();
 }
 
+/// Temporary safe diagnostic surfaced only from the sign-in flow.
+/// Never include tokens, credentials, or personally identifying data here.
+class AuthDiagnosticException implements Exception {
+  const AuthDiagnosticException(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
+}
+
 class FirebaseAuthRepository implements AuthRepository {
   FirebaseAuthRepository({
     this.firebaseAuth,
@@ -60,7 +71,9 @@ class FirebaseAuthRepository implements AuthRepository {
 
       final user = result.user;
       if (user == null) {
-        throw StateError('Firebase did not return an authenticated user.');
+        throw const AuthDiagnosticException(
+          'Firebase error: no authenticated user was returned.',
+        );
       }
 
       return await _resolveBackendUser(user);
@@ -68,7 +81,26 @@ class FirebaseAuthRepository implements AuthRepository {
       if (error.code == 'operation-not-allowed') {
         throw const AuthNotConfiguredException();
       }
-      rethrow;
+      throw AuthDiagnosticException(
+        'Firebase error: code=' +
+            error.code +
+            '; message=' +
+            (error.message ?? 'none'),
+      );
+    } on GoogleSignInException catch (error) {
+      throw AuthDiagnosticException(
+        'Google Sign-In error: code=' +
+            error.code.name +
+            '; description=' +
+            (error.description ?? 'none'),
+      );
+    } catch (error) {
+      throw AuthDiagnosticException(
+        'Sign-In error: ' +
+            error.runtimeType.toString() +
+            ': ' +
+            error.toString(),
+      );
     }
   }
 
@@ -88,7 +120,9 @@ class FirebaseAuthRepository implements AuthRepository {
     BackendServiceAvailability.ensureAvailable();
     final token = await firebaseUser.getIdToken();
     if (token == null || token.isEmpty) {
-      throw StateError('Firebase returned an empty ID token.');
+      throw const AuthDiagnosticException(
+        'Firebase error: empty ID token returned.',
+      );
     }
 
     final response = await _httpClient.get(
@@ -97,7 +131,11 @@ class FirebaseAuthRepository implements AuthRepository {
     );
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw StateError('Backend authentication failed.');
+      throw AuthDiagnosticException(
+        'Backend authentication failed: HTTP ' +
+            response.statusCode.toString() +
+            '.',
+      );
     }
 
     final json = jsonDecode(response.body) as Map<String, dynamic>;
