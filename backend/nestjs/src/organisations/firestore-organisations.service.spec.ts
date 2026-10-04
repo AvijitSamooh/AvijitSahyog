@@ -69,4 +69,6 @@ describe('FirestoreOrganisationsService', () => {
       expect.objectContaining({ name: 'Help' }),
     );
   });
+  it('covers remaining organisation media helpers', async () => { const s:any=new FirestoreOrganisationsService({db:{getAll:jest.fn().mockResolvedValue([])}} as any); process.env.R2_PUBLIC_BASE_URL='https://cdn/'; expect(s.mediaUrl({storageKey:'x'})).toBe('https://cdn/x'); expect(s.translation(undefined,'en')).toEqual({name:null,description:null}); expect(s.primaryMediaUrl([],'LOGO')).toBeNull(); expect(s.galleryMedia([],'GALLERY')).toEqual([]); await expect(s.getByIds('media',[])).resolves.toEqual([]); });
+
 });
