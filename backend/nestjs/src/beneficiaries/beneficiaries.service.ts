@@ -66,7 +66,7 @@ export class BeneficiariesService {
   async create(dto: CreateBeneficiaryDto) {
     this.validate(dto);
     await this.validateRelationships(dto.causeId, dto.organisationId);
-    return this.prisma.beneficiary.create({
+    const result = await this.prisma.beneficiary.create({
       data: {
         name: dto.name.trim(),
         photoUrl: dto.photoUrl,
@@ -79,6 +79,8 @@ export class BeneficiariesService {
       },
       include: { cause: { select: { id: true, slug: true } }, organisation: { select: { id: true, slug: true } } },
     });
+    await this.syncToFirestore(result.id);
+    return result;
   }
 
   async update(id: string, dto: UpdateBeneficiaryDto) {
@@ -93,7 +95,7 @@ export class BeneficiariesService {
             : dto.organisationId,
       );
     }
-    return this.prisma.beneficiary.update({
+    const result = await this.prisma.beneficiary.update({
       where: { id },
       data: {
         ...(dto.name !== undefined ? { name: dto.name.trim() } : {}),
@@ -108,6 +110,8 @@ export class BeneficiariesService {
       },
       include: { cause: { select: { id: true, slug: true } }, organisation: { select: { id: true, slug: true } } },
     });
+    await this.syncToFirestore(result.id);
+    return result;
   }
 
 
@@ -137,7 +141,7 @@ export class BeneficiariesService {
     const displayOrder = dto.displayOrder ?? 0;
     const isPrimary = dto.isPrimary ?? false;
 
-    return this.prisma.$transaction(async (tx: any) => {
+    const result = await this.prisma.$transaction(async (tx: any) => {
       if (isPrimary) {
         await tx.beneficiaryMedia.updateMany({
           where: { beneficiaryId: id, purpose, isPrimary: true },
@@ -149,6 +153,8 @@ export class BeneficiariesService {
         include: { media: true },
       });
     });
+    await this.syncToFirestore(id);
+    return result;
   }
 
   async updateMedia(id: string, mediaId: string, dto: UpdateBeneficiaryMediaDto) {
@@ -160,7 +166,7 @@ export class BeneficiariesService {
     if (!existing) throw new NotFoundException('Media is not attached to this beneficiary.');
 
     const purpose = dto.purpose ?? existing.purpose;
-    return this.prisma.$transaction(async (tx: any) => {
+    const result = await this.prisma.$transaction(async (tx: any) => {
       if (dto.isPrimary === true) {
         await tx.beneficiaryMedia.updateMany({
           where: { beneficiaryId: id, purpose, isPrimary: true, NOT: { mediaId } },
@@ -177,6 +183,8 @@ export class BeneficiariesService {
         include: { media: true },
       });
     });
+    await this.syncToFirestore(id);
+    return result;
   }
 
   async removeMedia(id: string, mediaId: string) {
@@ -186,9 +194,11 @@ export class BeneficiariesService {
       select: { id: true },
     });
     if (!existing) throw new NotFoundException('Media is not attached to this beneficiary.');
-    return this.prisma.beneficiaryMedia.delete({
+    const result = await this.prisma.beneficiaryMedia.delete({
       where: { beneficiaryId_mediaId: { beneficiaryId: id, mediaId } },
     });
+    await this.syncToFirestore(id);
+    return result;
   }
 
   async remove(id: string) {
@@ -197,15 +207,19 @@ export class BeneficiariesService {
     // Delete the join rows explicitly before the beneficiary. This keeps the
     // operation reliable even when an environment has an older database
     // constraint that has not yet picked up the cascade from the migration.
-    return this.prisma.$transaction(async (tx: any) => {
+    const result = await this.prisma.$transaction(async (tx: any) => {
       await tx.beneficiaryMedia.deleteMany({ where: { beneficiaryId: id } });
       return tx.beneficiary.delete({ where: { id } });
     });
+    await this.firestoreBeneficiaries?.removeBeneficiary(id);
+    return result;
   }
 
   async setActive(id: string, isActive: boolean) {
     await this.findOneForAdmin(id);
-    return this.prisma.beneficiary.update({ where: { id }, data: { isActive } });
+    const result = await this.prisma.beneficiary.update({ where: { id }, data: { isActive } });
+    await this.syncToFirestore(result.id);
+    return result;
   }
 
   private async syncToFirestore(id: string) {
