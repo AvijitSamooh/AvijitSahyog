@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, NotFoundException, InternalServerError
 import { randomUUID } from 'node:crypto';
 import sharp from 'sharp';
 import { FirestoreMediaService } from './firestore-media.service';
+import { FirebaseService } from '../firebase/firebase.service';
 import { R2StorageService } from './r2-storage.service';
 
 const ALLOWED_IMAGE_FORMATS = new Set(['jpeg','png','webp']);
@@ -11,7 +12,7 @@ const MAX_PROCESSED_SIZE = 1.5 * 1024 * 1024;
 
 @Injectable()
 export class MediaService {
-  constructor(private readonly r2:R2StorageService, private readonly firestore:FirestoreMediaService) {}
+  constructor(private readonly r2:R2StorageService, private readonly firestore:FirestoreMediaService, private readonly firebase:FirebaseService) {}
 
   async uploadImage(file:Express.Multer.File,folder='uploads',uploadedById?:string){
     if(!file)throw new BadRequestException('Image file is required.');
@@ -50,7 +51,7 @@ export class MediaService {
     return checks.reduce((a,b)=>a+b,0);
   }
   private async firebaseCount(collection:string,id:string){
-    const snap=await this.firestore['firebase'].db.collection(collection).where('media','array-contains',id).count().get().catch(()=>null);
+    const snap=await this.firebase.db.collection(collection).where('media','array-contains',id).count().get().catch(()=>null);
     if(snap)return snap.data().count;
     const direct=await this.firestore['firebase'].db.collection(collection).get();
     return direct.docs.filter(d=>JSON.stringify(d.data()).includes(id)).length;
