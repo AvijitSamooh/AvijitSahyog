@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Optional } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { HelpApplicationTypeDto } from './dto/create-help-application.dto';
 import { CreateApplicationRuleDto, SUPPORTED_RULE_LANGUAGES, UpdateApplicationRuleDto, validateRuleTranslations } from './dto/application-rule.dto';
 import { MemoryCache } from '../common/memory-cache';
+import { FirestoreApplicationRulesService } from './firestore-application-rules.service';
 
 @Injectable()
 export class ApplicationRulesService {
@@ -10,16 +11,23 @@ export class ApplicationRulesService {
   private static readonly FRESH_MS = 10 * 60 * 1000;
   private static readonly STALE_MS = 24 * 60 * 60 * 1000;
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional() private readonly firestoreRules?: FirestoreApplicationRulesService,
+  ) {}
 
   async list(type: HelpApplicationTypeDto, language = 'en') {
+    if (this.firestoreRules) {
+      return this.firestoreRules.list(type, language);
+    }
+
     const requested = SUPPORTED_RULE_LANGUAGES.includes(language as any) ? language : 'en';
     const rules = await this.cache.getOrLoad(
       `rules:${type}`,
       async () => this.prisma.applicationRule.findMany({
-      where: { type, isActive: true },
-      orderBy: { displayOrder: 'asc' },
-      include: { translations: { include: { language: true } } },
+        where: { type, isActive: true },
+        orderBy: { displayOrder: 'asc' },
+        include: { translations: { include: { language: true } } },
       }),
       ApplicationRulesService.FRESH_MS,
       ApplicationRulesService.STALE_MS,
@@ -29,6 +37,12 @@ export class ApplicationRulesService {
         rule.translations.find((item) => item.language.code === 'en');
       return { id: rule.id, type: rule.type, displayOrder: rule.displayOrder, text: translation?.text ?? '' };
     });
+  }
+
+  async listForAcceptance(type: HelpApplicationTypeDto) {
+    if (this.firestoreRules) return this.firestoreRules.listForAcceptance(type);
+    const rules = await this.list(type, 'en');
+    return rules.map((rule) => ({ id: rule.id, text: rule.text }));
   }
 
   async listAdmin(type: HelpApplicationTypeDto) {
@@ -60,6 +74,7 @@ export class ApplicationRulesService {
       include: { translations: { include: { language: true } } },
     });
     this.cache.invalidate('rules:');
+    await this.syncToFirestore(result.id);
     return result;
   }
 
@@ -82,6 +97,7 @@ export class ApplicationRulesService {
       include: { translations: { include: { language: true } } },
     });
     this.cache.invalidate('rules:');
+    await this.syncToFirestore(result.id);
     return result;
   }
 
@@ -90,6 +106,25 @@ export class ApplicationRulesService {
     if (!existing) throw new NotFoundException('Application rule not found.');
     await this.prisma.applicationRule.update({ where: { id }, data: { isActive: false } });
     this.cache.invalidate('rules:');
+    if (this.firestoreRules) await this.firestoreRules.remove(id);
     return { id, deleted: true };
+  }
+
+  private async syncToFirestore(id: string) {
+    if (!this.firestoreRules) return;
+    const rule = await this.prisma.applicationRule.findUnique({
+      where: { id },
+      include: { translations: { include: { language: true } } },
+    });
+    if (!rule) return;
+    await this.firestoreRules.syncRule({
+      id: rule.id,
+      type: rule.type as HelpApplicationTypeDto,
+      displayOrder: rule.displayOrder,
+      isActive: rule.isActive,
+      translations: Object.fromEntries(rule.translations.map((item: any) => [item.language.code, item.text])),
+      createdAt: rule.createdAt,
+      updatedAt: rule.updatedAt,
+    });
   }
 }
