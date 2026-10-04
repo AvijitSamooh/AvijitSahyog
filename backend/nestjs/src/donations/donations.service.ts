@@ -1,13 +1,18 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Optional } from '@nestjs/common';
 import { Decimal } from '@prisma/client/runtime/library';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateDonationDto } from './dto/create-donation.dto';
+import { FirestoreDonationsService } from './firestore-donations.service';
 
 @Injectable()
 export class DonationsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional() private readonly firestoreDonations?: FirestoreDonationsService,
+  ) {}
 
   async create(input: CreateDonationDto) {
+    if (this.firestoreDonations) return this.firestoreDonations.create(input);
     const amount = this.decimal(input.amount, 'Donation amount');
     const currency = input.currency ?? 'INR';
 
@@ -64,6 +69,7 @@ export class DonationsService {
   }
 
   async findOne(id: string) {
+    if (this.firestoreDonations) return this.firestoreDonations.findOne(id);
     const donation = await this.prisma.donation.findUnique({
       where: { id },
       include: {
