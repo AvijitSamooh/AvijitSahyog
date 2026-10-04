@@ -179,3 +179,4 @@ describe('CausesService', () => {
     await service.findAll('en');
     expect(firestoreCauses.findAll).toHaveBeenCalledTimes(2);
   });
+});
