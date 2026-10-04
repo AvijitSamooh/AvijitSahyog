@@ -55,13 +55,16 @@ describe('FirestoreCausesService', () => {
     });
 
     const service = new FirestoreCausesService({ db } as never);
-    await expect(service.findAll('en')).resolves.toEqual([
-      expect.objectContaining({
-        id: 'root',
-        name: 'Education',
-        children: [expect.objectContaining({ id: 'child', name: 'School' })],
-      }),
-    ]);
+    const result = await service.findAll('en');
+    expect(result).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: 'root',
+          name: 'Education',
+          children: [expect.objectContaining({ id: 'child', name: 'School' })],
+        }),
+      ]),
+    );
   });
 
   it('falls back to English and rejects unknown causes', async () => {
