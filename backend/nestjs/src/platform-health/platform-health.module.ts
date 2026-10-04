@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { AuthModule } from '../auth/auth.module';
+import { FirebaseModule } from '../firebase/firebase.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { PlatformHealthController } from './platform-health.controller';
 import { PlatformHealthExceptionFilter } from './platform-health.exception-filter';
@@ -11,7 +12,7 @@ import { PlatformDowntimeGuard } from './platform-downtime.guard';
 import { FirestorePlatformHealthService } from './firestore-platform-health.service';
 
 @Module({
-  imports: [PrismaModule, AuthModule],
+  imports: [PrismaModule, FirebaseModule, AuthModule],
   controllers: [PlatformHealthController, PlatformDowntimeController],
   providers: [
     PlatformHealthService,
