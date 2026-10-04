@@ -3,7 +3,7 @@ import { FirestoreApplicationRulesService } from './firestore-application-rules.
 import { HelpApplicationTypeDto } from './dto/create-help-application.dto';
 
 describe('FirestoreApplicationRulesService',()=>{
-  const type=HelpApplicationTypeDto.HELP;
+  const type=HelpApplicationTypeDto.EDUCATION_ASSISTANCE;
   function makeDb(data:any={id:'r1',type,displayOrder:1,isActive:true,translations:{en:'Rule',hi:'नियम'}}){const ref:any={get:jest.fn().mockResolvedValue({exists:true,data:()=>data}),set:jest.fn(),update:jest.fn()};const query:any={where:jest.fn().mockReturnThis(),orderBy:jest.fn().mockReturnThis(),get:jest.fn().mockResolvedValue({docs:[{id:data.id,data:()=>data}]})};const db:any={collection:jest.fn(()=>({...query,doc:jest.fn(()=>ref)}))};return{db,ref};}
   it('lists rules with requested language and falls back to English',async()=>{const {db}=makeDb();const s=new FirestoreApplicationRulesService({db} as any);await expect(s.list(type,'hi')).resolves.toEqual([{id:'r1',type,displayOrder:1,text:'नियम'}]);await expect(s.list(type,'xx')).resolves.toEqual([{id:'r1',type,displayOrder:1,text:'Rule'}]);});
   it('lists admin rules and acceptance rules',async()=>{const {db}=makeDb();const s=new FirestoreApplicationRulesService({db} as any);expect(await s.listAdmin(type)).toEqual([expect.objectContaining({isActive:true,translations:expect.arrayContaining([{language:'en',text:'Rule'}])})]);expect(await s.listForAcceptance(type)).toEqual([{id:'r1',text:'Rule'}]);});
