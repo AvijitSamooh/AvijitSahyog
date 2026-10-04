@@ -7,6 +7,10 @@ import type { PlatformHealthEventType, RecordHealthEventInput } from './platform
 export class FirestorePlatformHealthService {
   constructor(private readonly firebase: FirebaseService) {}
 
+  async ping(){ await this.firebase.db.collection('platformSettings').doc('downtime').get(); }
+
+  async listRecent(days:number){ const since=new Date(Date.now()-days*86400000); const snap=await this.firebase.db.collection('platformHealthEvents').where('createdAt','>=',since).orderBy('createdAt','desc').limit(5000).get(); return snap.docs.map(d=>{const x=d.data(); return {id:d.id,type:String(x.type??''),statusCode:x.statusCode==null?null:Number(x.statusCode),route:x.route==null?null:String(x.route),method:x.method==null?null:String(x.method),message:x.message==null?null:String(x.message),createdAt:x.createdAt?.toDate?.()??new Date(String(x.createdAt))};}); }
+
   async recordEvent(input: RecordHealthEventInput) {
     const ref = this.firebase.db.collection('platformHealthEvents').doc();
     await ref.set({
