@@ -35,7 +35,7 @@ describe('FirestoreOrganisationsService', () => {
   it('covers CRUD, cause and media administration',async()=>{
     const orgs=firebase.db.collection('organisations');
     const ref:any={id:'org-1',get:jest.fn().mockResolvedValue({exists:true,data:()=>org()}),set:jest.fn(),update:jest.fn(),delete:jest.fn()};
-    orgs.doc.mockReturnValue(ref); orgs.get.mockResolvedValue({exists:true,empty:true,docs:[]});
+    orgs.doc.mockImplementation((id:string)=>id==='missing'?{id,get:jest.fn().mockResolvedValue({exists:false}),set:jest.fn(),update:jest.fn(),delete:jest.fn()}:ref); orgs.get.mockResolvedValue({exists:true,empty:true,docs:[]});
     await service.syncOrganisation({...org(),createdAt:new Date(),updatedAt:new Date()}); await service.removeOrganisation('org-1');
     await expect(service.findOneForAdmin('org-1')).resolves.toEqual(org());
     await expect(service.create({translations:[{languageCode:'en',name:'New Org'}]})).resolves.toEqual(expect.objectContaining({slug:'new-org'}));
