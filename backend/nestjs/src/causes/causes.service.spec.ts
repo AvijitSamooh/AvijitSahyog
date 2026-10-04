@@ -48,54 +48,36 @@ describe('CausesService', () => {
   });
 
   it('prefers the requested language and falls back to English', async () => {
-    prisma.cause.findMany.mockResolvedValue([
+    firestoreCauses.findAll.mockResolvedValueOnce([
       {
         id: 'cause-1',
         slug: 'jeev-daya',
+        parentId: null,
         displayOrder: 1,
-        translations: [
-          {
-            name: 'जीव दया',
-            description: 'हिंदी विवरण',
-            language: { code: 'hi' },
-          },
-          {
-            name: 'Jeev Daya',
-            description: 'English description',
-            language: { code: 'en' },
-          },
-        ],
+        name: 'जीव दया',
+        description: 'हिंदी विवरण',
+        children: [],
+      },
+    ]).mockResolvedValueOnce([
+      {
+        id: 'cause-1',
+        slug: 'jeev-daya',
+        parentId: null,
+        displayOrder: 1,
+        name: 'Jeev Daya',
+        description: 'English description',
+        children: [],
       },
     ]);
 
     await expect(service.findAll('hi')).resolves.toEqual([
-      expect.objectContaining({
-        name: 'जीव दया',
-        description: 'हिंदी विवरण',
-      }),
+      expect.objectContaining({ name: 'जीव दया', description: 'हिंदी विवरण' }),
     ]);
-
-    prisma.cause.findMany.mockResolvedValue([
-      {
-        id: 'cause-1',
-        slug: 'jeev-daya',
-        displayOrder: 1,
-        translations: [
-          {
-            name: 'Jeev Daya',
-            description: 'English description',
-            language: { code: 'en' },
-          },
-        ],
-      },
-    ]);
-
     await expect(service.findAll('mr')).resolves.toEqual([
-      expect.objectContaining({
-        name: 'Jeev Daya',
-        description: 'English description',
-      }),
+      expect.objectContaining({ name: 'Jeev Daya', description: 'English description' }),
     ]);
+    expect(firestoreCauses.findAll).toHaveBeenNthCalledWith(1, 'hi');
+    expect(firestoreCauses.findAll).toHaveBeenNthCalledWith(2, 'mr');
   });
 
   it('returns a cause from Firestore with translated organisation data', async () => {
@@ -138,13 +120,16 @@ describe('CausesService', () => {
 
     await expect(service.findOne('does-not-exist')).rejects.toBeInstanceOf(NotFoundException);
   });
-  it('caches cause lists and avoids repeated database reads', async () => {
-    prisma.cause.findMany.mockResolvedValue([
+  it('caches cause lists and avoids repeated Firestore reads', async () => {
+    firestoreCauses.findAll.mockResolvedValue([
       {
         id: 'cause-1',
         slug: 'jeev-daya',
+        parentId: null,
         displayOrder: 1,
-        translations: [{ name: 'Jeev Daya', description: 'Animal welfare', language: { code: 'en' } }],
+        name: 'Jeev Daya',
+        description: 'Animal welfare',
+        children: [],
       },
     ]);
 
@@ -152,16 +137,19 @@ describe('CausesService', () => {
     const second = await service.findAll('en');
 
     expect(second).toEqual(first);
-    expect(prisma.cause.findMany).toHaveBeenCalledTimes(1);
+    expect(firestoreCauses.findAll).toHaveBeenCalledTimes(1);
   });
 
   it('invalidates the cache after a cause write', async () => {
-    prisma.cause.findMany.mockResolvedValue([
+    firestoreCauses.findAll.mockResolvedValue([
       {
         id: 'cause-1',
         slug: 'jeev-daya',
+        parentId: null,
         displayOrder: 1,
-        translations: [{ name: 'Jeev Daya', description: 'Old', language: { code: 'en' } }],
+        name: 'Old',
+        description: 'Old',
+        children: [],
       },
     ]);
     await service.findAll('en');
@@ -175,17 +163,18 @@ describe('CausesService', () => {
       translations: [{ languageCode: 'en', name: 'New Cause', description: 'New' }],
     } as any);
 
-    prisma.cause.findMany.mockResolvedValue([
+    firestoreCauses.findAll.mockResolvedValue([
       {
         id: 'cause-3',
         slug: 'updated',
+        parentId: null,
         displayOrder: 1,
-        translations: [{ name: 'Updated', description: 'Updated', language: { code: 'en' } }],
+        name: 'Updated',
+        description: 'Updated',
+        children: [],
       },
     ]);
 
     await service.findAll('en');
-    expect(prisma.cause.findMany).toHaveBeenCalledTimes(2);
+    expect(firestoreCauses.findAll).toHaveBeenCalledTimes(2);
   });
-
-});
