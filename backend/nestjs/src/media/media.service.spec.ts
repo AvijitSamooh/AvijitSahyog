@@ -108,7 +108,7 @@ describe('MediaService', () => {
   it('covers download and deletion ownership/reference guards', async () => {
     const media:any={id:'m1',uploadedById:'u1',storageKey:'uploads/m1.webp'};
     firestore.getById.mockResolvedValue(media);
-    await expect(service.downloadImage('uploads/m1.webp')).resolves.toBeUndefined();
+    await expect(service.downloadImage('uploads/m1.webp')).resolves.toEqual(Buffer.from('x'));
     await expect(service.deleteUserImage('m1','u2')).rejects.toThrow();
     await expect(service.deleteUserImage('m1','u1')).resolves.toEqual({id:'m1',deleted:true});
     expect(r2.delete).toHaveBeenCalledWith('uploads/m1.webp'); expect(firestore.delete).toHaveBeenCalledWith('m1');
