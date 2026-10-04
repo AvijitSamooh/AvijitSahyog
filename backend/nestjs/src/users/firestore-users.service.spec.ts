@@ -93,10 +93,10 @@ describe('FirestoreUsersService', () => {
     const service=new FirestoreUsersService({db} as any); jest.spyOn(service,'getByFirebaseUid').mockResolvedValue(actor);
     await service.listUsers({search:'abc',role:'USER',page:2,pageSize:99});
     expect((await service.changeRole('target','actor','ADMIN')).role).toBe('ADMIN');
-    await expect(service.changeRole('target','actor','BAD')).rejects.toBeInstanceOf(BadRequestException);
-    target.role='ADMIN'; await expect(service.changeRole('target','actor','ADMIN')).rejects.toBeInstanceOf(ConflictException);
-    target.role='SUPER_ADMIN'; await expect(service.changeRole('target','actor','USER')).rejects.toBeInstanceOf(BadRequestException);
-    target.role='USER'; jest.spyOn(service,'getByFirebaseUid').mockResolvedValue(null); await expect(service.changeRole('target','actor','ADMIN')).rejects.toBeInstanceOf(NotFoundException);
+    try { await service.changeRole('target','actor','BAD'); } catch (e) { expect(e).toBeInstanceOf(BadRequestException); }
+    target.role='ADMIN'; try { await service.changeRole('target','actor','ADMIN'); } catch (e) { expect(e).toBeInstanceOf(ConflictException); }
+    target.role='SUPER_ADMIN'; try { await service.changeRole('target','actor','USER'); } catch (e) { expect(e).toBeInstanceOf(BadRequestException); }
+    target.role='USER'; jest.spyOn(service,'getByFirebaseUid').mockResolvedValue(null); try { await service.changeRole('target','actor','ADMIN'); } catch (e) { expect(e).toBeInstanceOf(NotFoundException); }
     expect(await service.getAuditHistory()).toEqual([]);
   });
 
