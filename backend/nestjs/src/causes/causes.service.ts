@@ -123,6 +123,7 @@ export class CausesService {
         translations: { include: { language: true } },
       },
     });
+    await this.syncFirestoreCauses();
     this.cache.invalidate('causes:');
     return result;
   }
@@ -190,6 +191,7 @@ export class CausesService {
         },
       });
     });
+    await this.syncFirestoreCauses();
     this.cache.invalidate('causes:');
     return result;
   }
@@ -201,8 +203,44 @@ export class CausesService {
       where: { id },
       data: { isActive },
     });
+    await this.syncFirestoreCauses();
     this.cache.invalidate('causes:');
     return result;
+  }
+
+  private async syncFirestoreCauses() {
+    const causes = await this.prisma.cause.findMany({
+      orderBy: { displayOrder: 'asc' },
+      include: {
+        translations: { include: { language: true } },
+        children: { select: { id: true } },
+        organisations: {
+          where: { isActive: true },
+          orderBy: { displayOrder: 'asc' },
+          select: { organisationId: true },
+        },
+      },
+    });
+
+    await this.firestoreCauses.syncCauses(
+      causes.map((cause) => ({
+        id: cause.id,
+        slug: cause.slug,
+        parentId: cause.parentId,
+        isActive: cause.isActive,
+        displayOrder: cause.displayOrder,
+        translations: Object.fromEntries(
+          cause.translations.map((translation) => [
+            translation.language.code,
+            { name: translation.name, description: translation.description },
+          ]),
+        ),
+        childIds: cause.children.map((child) => child.id),
+        organisationIds: cause.organisations.map((link) => link.organisationId),
+        createdAt: cause.createdAt,
+        updatedAt: cause.updatedAt,
+      })),
+    );
   }
 
   private validateTranslations(
