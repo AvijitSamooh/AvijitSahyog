@@ -105,4 +105,16 @@ describe('MediaService', () => {
     await expect(service.uploadImage(createFile({ buffer: input, size: input.length }))).rejects.toBeInstanceOf(InternalServerErrorException);
     expect(firestore.upsert).not.toHaveBeenCalled();
   });
+  it('covers download and deletion ownership/reference guards', async () => {
+    const media:any={id:'m1',uploadedById:'u1',storageKey:'uploads/m1.webp'};
+    firestore.getById.mockResolvedValue(media);
+    await expect(service.downloadImage('uploads/m1.webp')).resolves.toBeUndefined();
+    await expect(service.deleteUserImage('m1','u2')).rejects.toThrow();
+    await expect(service.deleteUserImage('m1','u1')).resolves.toEqual({id:'m1',deleted:true});
+    expect(r2.delete).toHaveBeenCalledWith('uploads/m1.webp'); expect(firestore.delete).toHaveBeenCalledWith('m1');
+    const query = { count: jest.fn(() => ({ get: jest.fn().mockResolvedValue({data:()=>({count:2})}) })) };
+    firebase.db.collection.mockReturnValue({where:jest.fn(()=>query)});
+    firestore.getById.mockResolvedValue(media);
+    await expect(service.deleteUserImage('m1','u1')).rejects.toThrow(BadRequestException);
+  });
 });
