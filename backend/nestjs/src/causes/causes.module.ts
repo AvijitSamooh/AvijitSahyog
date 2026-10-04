@@ -10,6 +10,6 @@ import { FirestoreCausesService } from './firestore-causes.service';
 @Module({
   imports: [AuthModule, FirebaseModule],
   controllers: [CausesController, AdminCausesController],
-  providers: [CausesService, FirestoreCausesService],
+  providers: [FirestoreCausesService, { provide: CausesService, useExisting: FirestoreCausesService }],
 })
 export class CausesModule {}
