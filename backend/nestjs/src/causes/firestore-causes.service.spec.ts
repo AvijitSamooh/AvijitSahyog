@@ -12,7 +12,7 @@ describe('FirestoreCausesService',()=>{
   });
 
   it('covers sync/admin/create/setActive and validation',async()=>{
-    const causes=collections.get('causes');
+    const causes=firebase.db.collection('causes');
     await service.syncCauses([cause({id:'c1',createdAt:new Date(),updatedAt:new Date()})]);
     causes.get.mockResolvedValue({docs:[{data:()=>cause()}]}); await expect(service.findAllForAdmin()).resolves.toHaveLength(1);
     causes.doc.mockImplementation((id:string)=>({id,get:jest.fn().mockResolvedValue({exists:false}),set:jest.fn(),update:jest.fn()}));
@@ -33,7 +33,7 @@ describe('FirestoreCausesService',()=>{
   });
 
   it('covers updates, parent relations and conflicts',async()=>{
-    const causes=collections.get('causes'); const ref:any={id:'c1',get:jest.fn().mockResolvedValue({exists:true,data:()=>cause({parentId:'old'})}),set:jest.fn(),update:jest.fn()};
+    const causes=firebase.db.collection('causes'); const ref:any={id:'c1',get:jest.fn().mockResolvedValue({exists:true,data:()=>cause({parentId:'old'})}),set:jest.fn(),update:jest.fn()};
     causes.doc.mockImplementation((id:string)=> id==='c1'?ref:{id,get:jest.fn().mockResolvedValue({exists:true}),set:jest.fn(),update:jest.fn()});
     causes.get.mockResolvedValue({docs:[{data:()=>cause({parentId:'old'})}]});
     await expect(service.update('c1',{slug:'new',parentId:'new-parent',displayOrder:3,isActive:false,translations:[{languageCode:'en',name:'New'}]})).resolves.toBeDefined();
@@ -46,15 +46,15 @@ describe('FirestoreCausesService',()=>{
   });
 
   it('covers public cause mapping, organisations, media and chunking',async()=>{
-    const causes=collections.get('causes');
+    const causes=firebase.db.collection('causes');
     const root=cause({childIds:['c2','inactive']}); const child=cause({id:'c2',slug:'child',parentId:'c1',displayOrder:2,translations:{en:{name:'Child'}}}); const inactive=cause({id:'inactive',isActive:false,parentId:'c1'});
     causes.get.mockResolvedValueOnce({docs:[{data:()=>root}]});
     firebase.db.getAll.mockResolvedValueOnce([{id:'c2',exists:true,data:()=>child},{id:'inactive',exists:true,data:()=>inactive}]);
     await expect(service.findAll('en')).resolves.toEqual([expect.objectContaining({children:[expect.objectContaining({id:'c2'})]})]);
     causes.get.mockResolvedValueOnce({empty:false,docs:[{data:()=>root}]});
     firebase.db.getAll.mockImplementation(async(...refs:any[])=>refs.map(r=>({id:r.id,exists:true,data:()=>r.id==='c2'?child:({id:'o1',slug:'org',isActive:true,displayOrder:1,causeIds:['c1'],translations:{en:{name:'Org'}},media:[{mediaId:'m1',purpose:'LOGO',displayOrder:0,isPrimary:true},{mediaId:'m2',purpose:'GALLERY',displayOrder:1,isPrimary:false}]})})));
-    collections.get('organisations').get.mockResolvedValue({docs:[]});
-    collections.get('media').get.mockResolvedValue({docs:[]});
+    firebase.db.collection('organisations').get.mockResolvedValue({docs:[]});
+    firebase.db.collection('media').get.mockResolvedValue({docs:[]});
     await expect(service.findOne('root','en')).resolves.toEqual(expect.objectContaining({id:'c1'}));
     causes.get.mockResolvedValueOnce({empty:true,docs:[]}); await expect(service.findOne('missing','en')).rejects.toThrow(NotFoundException);
     expect(service.displayOrderForOrganisation([{id:'o',displayOrder:3}],'x')).toBe(Number.MAX_SAFE_INTEGER);
