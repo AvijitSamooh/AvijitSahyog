@@ -164,7 +164,7 @@ describe('FirestoreHelpApplicationsService coverage', () => {
     await expect(s.review('a',{decision:HelpApplicationDecisionDto.APPROVE,approvedAmount:50} as any)).rejects.toThrow(BadRequestException);
     await expect(s.review('a',{decision:HelpApplicationDecisionDto.CONSIDER_FOR_SAMMAN,reason:'yes'} as any)).resolves.toEqual({ok:true});
     await expect(s.review('a',{decision:HelpApplicationDecisionDto.NOT_SELECTED,reason:'no'} as any)).resolves.toEqual({ok:true});
-    const appRef=db.collection('helpApplications').doc('a'); appRef.get.mockResolvedValue({exists:false});
+    s.updateStatus.mockRestore(); const appRef=db.collection('helpApplications').doc('a'); appRef.get.mockResolvedValue({exists:false});
     await expect(s.updateStatus('a','REJECTED',null,'reason')).rejects.toThrow(NotFoundException);
     appRef.get.mockResolvedValue({exists:true,data:()=>base({id:'a',type:HelpApplicationTypeDto.MEDICAL_HELP})});
     await expect(s.updateStatus('a','REJECTED',null,'reason',' note ')).resolves.toBeDefined();
