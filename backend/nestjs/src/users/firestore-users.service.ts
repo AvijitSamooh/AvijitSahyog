@@ -26,6 +26,17 @@ export interface UserListQuery {
   pageSize?: number;
 }
 
+interface AuditRecord {
+  id: string;
+  action: string;
+  actorUserId: string;
+  targetUserId: string | null;
+  fromRole: UserRole | null;
+  toRole: UserRole | null;
+  metadata: Record<string, unknown> | null;
+  createdAt: Date;
+}
+
 const USERS_COLLECTION = 'users';
 const AUDIT_COLLECTION = 'auditLogs';
 const MAX_SEARCH_PREFIX_LENGTH = 32;
@@ -225,11 +236,20 @@ export class FirestoreUsersService {
       .get();
 
     const userIds = new Set<string>();
-    const audits = snapshot.docs.map((doc) => {
+    const audits: AuditRecord[] = snapshot.docs.map((doc) => {
       const data = doc.data();
       if (data.actorUserId) userIds.add(data.actorUserId);
       if (data.targetUserId) userIds.add(data.targetUserId);
-      return { id: doc.id, ...data, createdAt: toDate(data.createdAt) };
+      return {
+        id: doc.id,
+        action: String(data.action),
+        actorUserId: String(data.actorUserId),
+        targetUserId: data.targetUserId ? String(data.targetUserId) : null,
+        fromRole: (data.fromRole ?? null) as UserRole | null,
+        toRole: (data.toRole ?? null) as UserRole | null,
+        metadata: (data.metadata ?? null) as Record<string, unknown> | null,
+        createdAt: toDate(data.createdAt),
+      };
     });
 
     const users = await Promise.all([...userIds].map((id) => this.getById(id)));
