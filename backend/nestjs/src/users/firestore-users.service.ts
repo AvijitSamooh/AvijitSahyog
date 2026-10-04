@@ -1,5 +1,5 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { Timestamp } from 'firebase-admin/firestore';
+import { Timestamp, type DocumentSnapshot, type Query } from 'firebase-admin/firestore';
 import { randomUUID } from 'node:crypto';
 import { FirebaseService } from '../firebase/firebase.service';
 import { FirebaseIdentity } from '../auth/auth.types';
@@ -54,7 +54,7 @@ function toDate(value: unknown): Date {
   return new Date(String(value));
 }
 
-function fromSnapshot(snapshot: FirebaseFirestore.DocumentSnapshot): FirestoreUser {
+function fromSnapshot(snapshot: DocumentSnapshot): FirestoreUser {
   const data = snapshot.data() as Omit<FirestoreUser, 'id' | 'createdAt' | 'updatedAt'> & {
     createdAt: FirebaseFirestore.Timestamp | Date;
     updatedAt: FirebaseFirestore.Timestamp | Date;
@@ -138,7 +138,7 @@ export class FirestoreUsersService {
     const search = query.search?.trim().toLowerCase();
     const role = query.role === 'USER' || query.role === 'ADMIN' ? query.role : undefined;
 
-    let base = this.firebase.db.collection(USERS_COLLECTION) as FirebaseFirestore.Query;
+    let base: Query = this.firebase.db.collection(USERS_COLLECTION);
     if (role) base = base.where('role', '==', role);
 
     if (search) {
