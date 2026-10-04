@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/admin_dashboard_providers.dart';
+import '../providers/admin_causes_providers.dart';
 import '../../../l10n/app_localizations.dart';
 
 class PlatformDowntimePage extends ConsumerStatefulWidget {
@@ -138,10 +138,10 @@ class _PlatformDowntimePageState extends ConsumerState<PlatformDowntimePage> {
                   controller: _messageController,
                   maxLength: 300,
                   maxLines: 3,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: l10n.platformDowntimeMessage,
                     hintText: l10n.platformDowntimeMessageHint,
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
                   ),
                 ),
                 const SizedBox(height: 8),
