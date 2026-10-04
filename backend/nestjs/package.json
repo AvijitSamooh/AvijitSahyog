@@ -72,6 +72,17 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "coverageThreshold": {
+      "global": {
+        "lines": 70
+      },
+      "src/**/firestore-*.service.ts": {
+        "lines": 80
+      },
+      "src/donations/firestore-donations.service.ts": {
+        "lines": 90
+      }
+    }
   }
 }
