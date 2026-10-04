@@ -1,13 +1,13 @@
 import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
-  const prisma = { user: { upsert: jest.fn() } } as any;
-  const service = new AuthService(prisma);
+  const users = { upsertFromIdentity: jest.fn() };
+  const service = new AuthService(users as never);
 
   beforeEach(() => jest.clearAllMocks());
 
   it('creates or updates the internal user from a verified Firebase identity', async () => {
-    prisma.user.upsert.mockResolvedValue({
+    users.upsertFromIdentity.mockResolvedValue({
       id: 'user-1',
       email: 'user@example.com',
       displayName: 'Test User',
@@ -20,11 +20,19 @@ describe('AuthService', () => {
       uid: 'firebase-user-1',
       email: 'user@example.com',
       displayName: 'Test User',
-    })).resolves.toEqual(expect.objectContaining({ role: 'USER' }));
+    })).resolves.toEqual({
+      id: 'user-1',
+      email: 'user@example.com',
+      displayName: 'Test User',
+      photoUrl: null,
+      role: 'USER',
+      preferredLanguage: null,
+    });
 
-    expect(prisma.user.upsert).toHaveBeenCalledWith(expect.objectContaining({
-      where: { firebaseUid: 'firebase-user-1' },
-      create: expect.objectContaining({ firebaseUid: 'firebase-user-1' }),
-    }));
+    expect(users.upsertFromIdentity).toHaveBeenCalledWith({
+      uid: 'firebase-user-1',
+      email: 'user@example.com',
+      displayName: 'Test User',
+    });
   });
 });
