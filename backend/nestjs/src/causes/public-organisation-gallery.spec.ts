@@ -56,7 +56,32 @@ describe('CausesService organisation gallery response', () => {
       },
     };
 
-    const service = new CausesService(prisma as never);
+    const firestoreCauses = {
+      findAll: jest.fn(),
+      findOne: jest.fn().mockResolvedValue({
+        id: 'cause-1',
+        slug: 'education',
+        parentId: null,
+        displayOrder: 1,
+        name: 'Education',
+        description: 'Support education.',
+        children: [],
+        organisations: [
+          {
+            id: 'org-1',
+            slug: 'seva-trust',
+            logoUrl: 'https://images.example.com/org/logo.webp',
+            gallery: [
+              { id: 'gallery-1', url: 'https://images.example.com/org/one.webp', mimeType: 'image/webp', width: 100, height: 100 },
+              { id: 'gallery-2', url: 'https://images.example.com/org/two.webp', mimeType: 'image/webp', width: 200, height: 200 },
+            ],
+            city: 'Pune',
+          },
+        ],
+      }),
+      syncCauses: jest.fn(),
+    };
+    const service = new CausesService(prisma as never, firestoreCauses as never);
     const originalBase = process.env.R2_PUBLIC_BASE_URL;
     process.env.R2_PUBLIC_BASE_URL = 'https://images.example.com';
 
