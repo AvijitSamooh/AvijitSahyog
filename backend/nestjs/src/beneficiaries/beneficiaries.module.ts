@@ -11,5 +11,6 @@ import { FirestoreBeneficiariesService } from './firestore-beneficiaries.service
   imports: [AuthModule, FirebaseModule],
   controllers: [BeneficiariesController, AdminBeneficiariesController],
   providers: [FirestoreBeneficiariesService, { provide: BeneficiariesService, useExisting: FirestoreBeneficiariesService }],
+  exports: [FirestoreBeneficiariesService, BeneficiariesService],
 })
 export class BeneficiariesModule {}
