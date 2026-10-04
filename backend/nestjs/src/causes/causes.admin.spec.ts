@@ -9,20 +9,23 @@ import { CausesService } from './causes.service';
 describe('CausesService admin operations', () => {
   let service: CausesService;
   let prisma: any;
+  let firestoreCauses: any;
 
   beforeEach(() => {
+    firestoreCauses = { syncCauses: jest.fn().mockResolvedValue(undefined) };
     prisma = {
       cause: {
         findUnique: jest.fn(),
         create: jest.fn(),
         update: jest.fn(),
+        findMany: jest.fn().mockResolvedValue([]),
       },
       language: {
         findMany: jest.fn(),
       },
       $transaction: jest.fn(),
     };
-    service = new CausesService(prisma);
+    service = new CausesService(prisma, firestoreCauses);
   });
 
   it('creates a cause with translations for active languages', async () => {
