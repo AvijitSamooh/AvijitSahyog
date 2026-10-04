@@ -8,6 +8,7 @@ import { CreateCauseDto } from './dto/create-cause.dto';
 import { UpdateCauseDto } from './dto/update-cause.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { MemoryCache } from '../common/memory-cache';
+import { FirestoreCausesService } from './firestore-causes.service';
 
 @Injectable()
 export class CausesService {
@@ -15,109 +16,26 @@ export class CausesService {
   private static readonly FRESH_MS = 10 * 60 * 1000;
   private static readonly STALE_MS = 24 * 60 * 60 * 1000;
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly firestoreCauses: FirestoreCausesService,
+  ) {}
 
   async findAll(languageCode = 'en') {
-    const causes = await this.cache.getOrLoad(
+    return this.cache.getOrLoad(
       `causes:list:${languageCode}`,
-      async () => this.prisma.cause.findMany({
-      where: { isActive: true, parentId: null },
-      orderBy: { displayOrder: 'asc' },
-      include: {
-        translations: {
-          where: { language: { code: { in: [languageCode, 'en'] } } },
-          include: { language: true },
-        },
-        children: {
-          where: { isActive: true },
-          orderBy: { displayOrder: 'asc' },
-          include: {
-            translations: {
-              where: { language: { code: { in: [languageCode, 'en'] } } },
-              include: { language: true },
-            },
-          },
-        },
-      },
-      }),
+      () => this.firestoreCauses.findAll(languageCode),
       CausesService.FRESH_MS,
       CausesService.STALE_MS,
-    );
-
-    return causes.map((cause) => this.toResponse(cause, languageCode));
-  }
+    );  }
 
   async findOne(slug: string, languageCode = 'en') {
-    const cause = await this.cache.getOrLoad(
+    return this.cache.getOrLoad(
       `causes:detail:${slug}:${languageCode}`,
-      async () => this.prisma.cause.findFirst({
-      where: { slug, isActive: true },
-      include: {
-        translations: {
-          where: { language: { code: { in: [languageCode, 'en'] } } },
-          include: { language: true },
-        },
-        children: {
-          where: { isActive: true },
-          orderBy: { displayOrder: 'asc' },
-          include: {
-            translations: {
-              where: { language: { code: { in: [languageCode, 'en'] } } },
-              include: { language: true },
-            },
-          },
-        },
-        organisations: {
-          where: {
-            isActive: true,
-            organisation: { isActive: true },
-          },
-          orderBy: { displayOrder: 'asc' },
-          include: {
-            organisation: {
-              include: {
-                translations: {
-                  where: { language: { code: { in: [languageCode, 'en'] } } },
-                  include: { language: true },
-                },
-                media: {
-                  orderBy: [{ purpose: 'asc' }, { isPrimary: 'desc' }, { displayOrder: 'asc' }],
-                  include: { media: true },
-                },
-              },
-            },
-          },
-        },
-      },
-      }),
+      () => this.firestoreCauses.findOne(slug, languageCode),
       CausesService.FRESH_MS,
       CausesService.STALE_MS,
     );
-
-    if (!cause) {
-      throw new NotFoundException(`Cause '${slug}' not found`);
-    }
-
-    return {
-      ...this.toResponse(cause, languageCode),
-      organisations: cause.organisations.map(({ organisation }) => ({
-        id: organisation.id,
-        slug: organisation.slug,
-        logoUrl: this.organisationLogoUrl(organisation) ?? organisation.logoUrl,
-        gallery: this.organisationGallery(organisation),
-        websiteUrl: organisation.websiteUrl,
-        phone: organisation.phone,
-        mobileNumber: organisation.mobileNumber,
-        email: organisation.email,
-        address: organisation.address,
-        city: organisation.city,
-        state: organisation.state,
-        country: organisation.country,
-        latitude: organisation.latitude == null ? null : Number(organisation.latitude),
-        longitude: organisation.longitude == null ? null : Number(organisation.longitude),
-        ...this.translation(organisation.translations, languageCode),
-      })),
-    };
   }
 
   async findAllForAdmin() {
