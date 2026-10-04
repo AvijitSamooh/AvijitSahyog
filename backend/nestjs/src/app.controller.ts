@@ -10,8 +10,8 @@ export class AppController {
   /**
    * Liveness endpoint.
    *
-   * This endpoint intentionally does not touch Postgres so infrastructure
-   * health checks (for example Render) do not keep the Neon compute active.
+   * This endpoint intentionally does not touch Firestore so infrastructure
+   * health checks remain lightweight and do not require a datastore read.
    */
   @Get()
   getHealth() {
@@ -30,10 +30,7 @@ export class AppController {
   }
 
   /**
-   * Readiness endpoint.
-   *
-   * Use this when a caller explicitly needs to verify database readiness.
-   * Unlike /health, this endpoint intentionally performs a database query.
+   * Readiness endpoint explicitly verifies Firestore availability.
    */
   @Get('ready')
   async getReadiness() {
