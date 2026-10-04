@@ -15,29 +15,40 @@ const DOCUMENT = 'downtime';
 
 @Injectable()
 export class PlatformDowntimeService {
+  private cached?: { value: PlatformDowntime; expiresAt: number };
+  private static readonly CACHE_MS = 30_000;
+
   constructor(private readonly firebase: FirebaseService) {}
 
   async get(): Promise<PlatformDowntime> {
+    if (this.cached && this.cached.expiresAt > Date.now()) {
+      return this.cached.value;
+    }
+
     const snapshot = await this.firebase.db.collection(COLLECTION).doc(DOCUMENT).get();
     if (!snapshot.exists) {
-      return {
+      const value = {
         enabled: false,
         startTime: '21:00',
         endTime: '08:00',
         message: null,
         updatedAt: null,
       };
+      this.cached = { value, expiresAt: Date.now() + PlatformDowntimeService.CACHE_MS };
+      return value;
     }
 
     const data = snapshot.data() ?? {};
     const updatedAt = data.updatedAt instanceof Timestamp ? data.updatedAt.toDate().toISOString() : null;
-    return {
+    const value = {
       enabled: data.enabled === true,
       startTime: this.validateTime(String(data.startTime ?? '21:00')),
       endTime: this.validateTime(String(data.endTime ?? '08:00')),
       message: data.message == null ? null : String(data.message),
       updatedAt,
     };
+    this.cached = { value, expiresAt: Date.now() + PlatformDowntimeService.CACHE_MS };
+    return value;
   }
 
   async update(input: {
@@ -56,6 +67,7 @@ export class PlatformDowntimeService {
     };
 
     await this.firebase.db.collection(COLLECTION).doc(DOCUMENT).set(next, { merge: true });
+    this.cached = undefined;
     return this.get();
   }
 
