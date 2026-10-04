@@ -5,6 +5,7 @@ import { CausesModule } from './causes/causes.module';
 import { DonationsModule } from './donations/donations.module';
 import { OrganisationsModule } from './organisations/organisations.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { FirebaseModule } from './firebase/firebase.module';
 import { BeneficiariesModule } from './beneficiaries/beneficiaries.module';
 import { AuthModule } from './auth/auth.module';
 import { AdminDashboardModule } from './admin-dashboard/admin-dashboard.module';
@@ -15,7 +16,21 @@ import { PlatformHealthModule } from './platform-health/platform-health.module';
 import { HelpApplicationsModule } from './help-applications/help-applications.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, AnalyticsModule, PlatformHealthModule, HelpApplicationsModule, CausesModule, OrganisationsModule, DonationsModule, BeneficiariesModule, AdminDashboardModule, MediaModule, AdminUsersModule],
+  imports: [
+    PrismaModule,
+    FirebaseModule,
+    AuthModule,
+    AnalyticsModule,
+    PlatformHealthModule,
+    HelpApplicationsModule,
+    CausesModule,
+    OrganisationsModule,
+    DonationsModule,
+    BeneficiariesModule,
+    AdminDashboardModule,
+    MediaModule,
+    AdminUsersModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
