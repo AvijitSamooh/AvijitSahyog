@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
-import '../../../core/service_window.dart';
 import '../models/advanced_analytics_summary.dart';
 
 class AdvancedAnalyticsRepository {
@@ -9,7 +8,6 @@ class AdvancedAnalyticsRepository {
   final http.Client _client;
 
   Future<AdvancedAnalyticsSummary> getSummary() async {
-    BackendServiceAvailability.ensureAvailable();
     final baseUrl = const String.fromEnvironment('API_BASE_URL', defaultValue: 'http://localhost:3000').replaceFirst(RegExp(r'/$'), '');
     final user = FirebaseAuth.instance.currentUser;
     final token = user == null ? null : await user.getIdToken();
