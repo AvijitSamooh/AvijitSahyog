@@ -58,9 +58,10 @@ describe('AppController', () => {
     });
 
     it('returns safe Firebase diagnostics when the database check fails', async () => {
-      const error = Object.assign(new Error('datastore unavailable: secret details'), {
-        code: 'permission-denied',
-      });
+      const error = Object.assign(
+        new Error('datastore unavailable: secret details'),
+        { code: 'permission-denied' },
+      );
       get.mockRejectedValue(error);
 
       await expect(appController.getReadiness()).rejects.toMatchObject({
@@ -70,12 +71,22 @@ describe('AppController', () => {
           database: 'error',
           errorCode: 'permission-denied',
           errorType: 'Error',
+          errorMessage: 'datastore unavailable: secret details',
         },
         status: 503,
       });
+    });
 
-      await expect(appController.getReadiness()).rejects.not.toMatchObject({
-        response: { message: expect.stringContaining('secret details') },
+    it('redacts private keys from the diagnostic message', async () => {
+      const error = new Error(
+        'credentials -----BEGIN PRIVATE KEY-----abc-----END PRIVATE KEY-----',
+      );
+      get.mockRejectedValue(error);
+
+      await expect(appController.getReadiness()).rejects.toMatchObject({
+        response: {
+          errorMessage: 'credentials [redacted-key]',
+        },
       });
     });
   });
