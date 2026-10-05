@@ -18,11 +18,14 @@ class LoginPage extends ConsumerWidget {
         Navigator.of(context).pop();
       }
       if (next.errorMessage != null && context.mounted) {
-        final message = switch (next.errorMessage) {
-          'authNotConfigured' => l10n.authNotConfigured,
-          'authSignOutFailed' => l10n.authSignOutFailed,
-          _ => l10n.authSignInFailed,
-        };
+        final error = next.errorMessage!;
+        final message = error.startsWith('authDiagnostic:')
+            ? error.substring('authDiagnostic:'.length)
+            : switch (error) {
+                'authNotConfigured' => l10n.authNotConfigured,
+                'authSignOutFailed' => l10n.authSignOutFailed,
+                _ => l10n.authSignInFailed,
+              };
         showDialog<void>(
           context: context,
           builder: (dialogContext) => AlertDialog(
