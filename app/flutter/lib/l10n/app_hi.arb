@@ -561,5 +561,12 @@
   "platformDowntimeMessage": "डाउनटाइम संदेश",
   "platformDowntimeMessageHint": "उपयोगकर्ताओं को दिखाया जाने वाला वैकल्पिक संदेश",
   "platformDowntimeSave": "सेटिंग सहेजें",
-  "platformDowntimeSaved": "डाउनटाइम सेटिंग सहेजी गई।"
+  "platformDowntimeSaved": "डाउनटाइम सेटिंग सहेजी गई।",
+  "pratibhaDocumentRequirement": "आधार और मार्कशीट अनिवार्य हैं। दोनों के बिना आवेदन जमा नहीं किया जा सकता। आप अन्य सहायक दस्तावेज़ भी अपलोड कर सकते हैं।",
+  "documentType": "दस्तावेज़ का प्रकार",
+  "aadhaar": "आधार",
+  "marksheet": "मार्कशीट",
+  "otherDocument": "अन्य",
+  "oneAadhaarMarksheetRequired": "एक आधार और एक मार्कशीट अनिवार्य है।",
+  "pratibhaMinimumPercentage": "{classStandard}वीं के लिए न्यूनतम {minimum}% आवश्यक है।"
 }
