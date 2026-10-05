@@ -57,16 +57,25 @@ describe('AppController', () => {
       expect(get).toHaveBeenCalledTimes(1);
     });
 
-    it('returns service unavailable when the database check fails', async () => {
-      get.mockRejectedValue(new Error('datastore unavailable'));
+    it('returns safe Firebase diagnostics when the database check fails', async () => {
+      const error = Object.assign(new Error('datastore unavailable: secret details'), {
+        code: 'permission-denied',
+      });
+      get.mockRejectedValue(error);
 
       await expect(appController.getReadiness()).rejects.toMatchObject({
         response: {
           status: 'error',
           service: 'avijit-sahyog-api',
           database: 'error',
+          errorCode: 'permission-denied',
+          errorType: 'Error',
         },
         status: 503,
+      });
+
+      await expect(appController.getReadiness()).rejects.not.toMatchObject({
+        response: { message: expect.stringContaining('secret details') },
       });
     });
   });
