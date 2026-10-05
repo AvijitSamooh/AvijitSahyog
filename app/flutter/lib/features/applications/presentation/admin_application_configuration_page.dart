@@ -40,11 +40,6 @@ class _AdminApplicationConfigurationPageState extends ConsumerState<AdminApplica
     try{await ref.read(helpApplicationsRepositoryProvider).closeApplicationWindow(type);ref.invalidate(applicationWindowsProvider);if(mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(l10n.applicationWindowClosed)));}
     catch(_){if(mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(l10n.applicationWindowSaveFailed)));}
   }
-  Future<void> _delete(Map<String,dynamic> rule) async {
-    final confirmed=await showDialog<bool>(context:context,builder:(c)=>AlertDialog(title:const Text('Delete rule?'),content:const Text('This rule will no longer be shown to applicants.'),actions:[TextButton(onPressed:()=>Navigator.pop(c,false),child:const Text('Cancel')),FilledButton(onPressed:()=>Navigator.pop(c,true),child:const Text('Delete'))]));
-    if(confirmed!=true)return;
-    try{await ref.read(helpApplicationsRepositoryProvider).deleteAdminApplicationRule(rule['id'] as String);await _load();}catch(_){if(mounted)ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:Text('Unable to delete rule.')));}
-  }
   @override Widget build(BuildContext context){
     final l10n=AppLocalizations.of(context)!;final windows=ref.watch(applicationWindowsProvider);
     return AppPageScaffold(title:Text(l10n.applicationConfiguration),body:ListView(padding:const EdgeInsets.all(12),children:[
@@ -63,6 +58,11 @@ class _ApplicationRulesConfigurationState extends ConsumerState<_ApplicationRule
   String _type='PRATIBHA_SAMMAN';List<Map<String,dynamic>> _rules=const[];bool _loading=true;
   @override void initState(){super.initState();_load();}
   Future<void> _load()async{setState(()=>_loading=true);try{final r=await ref.read(helpApplicationsRepositoryProvider).adminApplicationRules(_type);if(mounted)setState((){_rules=r.where((x)=>x['isActive']!=false).toList(growable:false);_loading=false;});}catch(_){if(mounted)setState(()=>_loading=false);}}
+  Future<void> _delete(Map<String,dynamic> rule) async {
+    final confirmed=await showDialog<bool>(context:context,builder:(c)=>AlertDialog(title:const Text('Delete rule?'),content:const Text('This rule will no longer be shown to applicants.'),actions:[TextButton(onPressed:()=>Navigator.pop(c,false),child:const Text('Cancel')),FilledButton(onPressed:()=>Navigator.pop(c,true),child:const Text('Delete'))]));
+    if(confirmed!=true)return;
+    try{await ref.read(helpApplicationsRepositoryProvider).deleteAdminApplicationRule(rule['id'] as String);await _load();}catch(_){if(mounted)ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:Text('Unable to delete rule.')));}
+  }
   Future<void> _edit([Map<String,dynamic>? rule])async{
     final l10n=AppLocalizations.of(context)!;final t=<String,TextEditingController>{};
     for(final lang in ['en','hi','mr','gu']){String value='';for(final raw in (rule?['translations'] as List<dynamic>? ?? const [])){final m=raw as Map<String,dynamic>;if(m['language']==lang)value=m['text']?.toString()??'';}t[lang]=TextEditingController(text:value);}
