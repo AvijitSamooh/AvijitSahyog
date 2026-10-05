@@ -15,7 +15,7 @@ describe('FirestoreHelpApplicationsService coverage', () => {
     schoolInstituteName: null, accomplishments: null, certificatePhotoMediaId: null,
     facePhotoMediaId: 'face-1', adminNote: null, submittedAt: Timestamp.now(),
     reviewedAt: null, createdAt: Timestamp.now(), updatedAt: Timestamp.now(),
-    media: [{ mediaId: 'm1' }], ruleAcceptances: [{ ruleId: 'r1', ruleText: 'Rule' }],
+    media: [{ mediaId: 'm1', documentType: 'OTHER' }], ruleAcceptances: [{ ruleId: 'r1', ruleText: 'Rule' }],
     ...overrides,
   });
 
@@ -62,16 +62,16 @@ describe('FirestoreHelpApplicationsService coverage', () => {
     const { service } = makeService(); const s: any = service;
     s.validateApplicantDetails({ applicantName:'Alice', mobileNumber:'9876543210', address:'Long', city:'Pune', state:'MH', pincode:'411001' });
     s.validateSubmission(HelpApplicationTypeDto.MEDICAL_HELP, 100, ['m1']);
-    s.validateSubmission(HelpApplicationTypeDto.PRATIBHA_SAMMAN, undefined, ['m1']);
+    s.validateSubmission(HelpApplicationTypeDto.PRATIBHA_SAMMAN, undefined, ['m1'], [{ mediaId:'a1', documentType:'AADHAAR' }, { mediaId:'m1', documentType:'MARKSHEET' }] as any);
     s.validatePratibhaDetails(HelpApplicationTypeDto.MEDICAL_HELP, {});
     s.validatePratibhaDetails(HelpApplicationTypeDto.PRATIBHA_SAMMAN, {
-      motherName:'M', fatherName:'F', dateOfBirth:'2008-01-01', classStandard:'10', schoolInstituteName:'School', certificatePhotoMediaId:'c1'
+      motherName:'M', fatherName:'F', dateOfBirth:'2008-01-01', classStandard:'10', schoolInstituteName:'School', certificatePhotoMediaId:'c1', overallPercentage:85
     });
     expect(() => s.validateApplicantDetails({applicantName:'',mobileNumber:'1',address:'',city:'',state:'',pincode:'x'})).toThrow(BadRequestException);
     expect(() => s.validateSubmission(HelpApplicationTypeDto.MEDICAL_HELP, 0, [])).toThrow(BadRequestException);
     expect(() => s.validatePratibhaDetails(HelpApplicationTypeDto.PRATIBHA_SAMMAN, {})).toThrow(BadRequestException);
     expect(() => s.validatePratibhaDetails(HelpApplicationTypeDto.PRATIBHA_SAMMAN, {
-      motherName:'M',fatherName:'F',dateOfBirth:'bad',classStandard:'10',schoolInstituteName:'S',certificatePhotoMediaId:'c'
+      motherName:'M',fatherName:'F',dateOfBirth:'bad',classStandard:'10',schoolInstituteName:'S',certificatePhotoMediaId:'c',overallPercentage:85
     })).toThrow(BadRequestException);
     const r = await s.toResponse(base()); expect(r.media[0].id).toBe('m1');
     expect(s.baseResponse(base()).id).toBe('app-1');
@@ -87,7 +87,7 @@ describe('FirestoreHelpApplicationsService coverage', () => {
     await expect(s.validateMedia(new Array(11).fill('m'), 'u1')).rejects.toThrow(BadRequestException);
     collections.set('media', { doc: jest.fn((x:string)=>({get:jest.fn().mockResolvedValue({exists:true,data:()=>({uploadedById:x==='m1'?'u1':'other'})})})) });
     await expect(s.validateMedia(['m1','m2'], 'u1')).rejects.toThrow(BadRequestException);
-    await expect(s.validateMedia(['m1'], 'u1')).resolves.toEqual(['m1']);
+    await expect(s.validateMedia(['m1'], 'u1')).resolves.toEqual([{mediaId:'m1',documentType:'OTHER'}]);
     await expect(s.validateFacePhoto(undefined,'u1')).rejects.toThrow(BadRequestException);
     await expect(s.validateFacePhoto('m1','u1')).resolves.toBe('m1');
     await expect(s.validateCertificatePhoto(HelpApplicationTypeDto.MEDICAL_HELP,undefined,'u1')).resolves.toBeNull();
@@ -107,7 +107,7 @@ describe('FirestoreHelpApplicationsService coverage', () => {
   it('covers create/list/find/update/delete/resubmit flows', async () => {
     const { service, db, deps, collections, refs } = makeService(); const s:any=service;
     jest.spyOn(s,'user').mockResolvedValue({id:'u1'}); jest.spyOn(s,'validateAcceptedRules').mockResolvedValue([{id:'r1',text:'Rule'}]);
-    jest.spyOn(s,'validateMedia').mockResolvedValue(['m1']); jest.spyOn(s,'validateFacePhoto').mockResolvedValue('face-1');
+    jest.spyOn(s,'validateMedia').mockResolvedValue([{mediaId:'m1',documentType:'OTHER'}]); jest.spyOn(s,'validateFacePhoto').mockResolvedValue('face-1');
     jest.spyOn(s,'validateCertificatePhoto').mockResolvedValue(null); jest.spyOn(s,'toResponse').mockResolvedValue({ok:true});
     const dto:any={type:HelpApplicationTypeDto.MEDICAL_HELP,applicantName:' Alice ',mobileNumber:' 9876543210 ',email:' a@x ',address:' Address ',city:' Pune ',state:' MH ',pincode:'411001',requestedAmount:100,overallPercentage:88,mediaIds:['m1'],facePhotoMediaId:'face-1',acceptedRuleIds:['r1']};
     await expect(s.create(id,dto)).resolves.toEqual({ok:true});
@@ -125,6 +125,10 @@ describe('FirestoreHelpApplicationsService coverage', () => {
     jest.spyOn(s,'application').mockResolvedValue(base({status:'REJECTED'})); await expect(s.resubmit(id,'app-1',{requestedAmount:110,mediaIds:['m1'],certificatePhotoMediaId:null,acceptedRuleIds:['r1'],clarification:'fixed'} as any)).resolves.toEqual({ok:true});
     jest.spyOn(s,'application').mockResolvedValue(base({status:'SUBMITTED'})); await expect(s.resubmit(id,'app-1',{requestedAmount:110,mediaIds:['m1'],acceptedRuleIds:['r1'],clarification:'x'} as any)).rejects.toThrow(BadRequestException);
     jest.spyOn(s,'application').mockResolvedValue(base({applicantId:'other'})); await expect(s.deleteMine(id,'app-1')).rejects.toThrow(NotFoundException);
+    expect(() => s.validatePratibhaDetails(HelpApplicationTypeDto.PRATIBHA_SAMMAN,{motherName:'M',fatherName:'F',dateOfBirth:'2008-01-01',classStandard:'10',schoolInstituteName:'S',certificatePhotoMediaId:'c',overallPercentage:84})).toThrow(BadRequestException);
+    expect(() => s.validatePratibhaDetails(HelpApplicationTypeDto.PRATIBHA_SAMMAN,{motherName:'M',fatherName:'F',dateOfBirth:'2008-01-01',classStandard:'12',schoolInstituteName:'S',certificatePhotoMediaId:'c',overallPercentage:79})).toThrow(BadRequestException);
+    expect(() => s.validatePratibhaDetails(HelpApplicationTypeDto.PRATIBHA_SAMMAN,{motherName:'M',fatherName:'F',dateOfBirth:'2008-01-01',classStandard:'11',schoolInstituteName:'S',certificatePhotoMediaId:'c',overallPercentage:90})).toThrow(BadRequestException);
+    expect(() => s.validateSubmission(HelpApplicationTypeDto.PRATIBHA_SAMMAN,undefined,['m1'],[{mediaId:'a1',documentType:'AADHAAR'}] as any)).toThrow(BadRequestException);
     void db;
   });
 
