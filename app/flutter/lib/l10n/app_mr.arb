@@ -561,5 +561,12 @@
   "platformDowntimeMessage": "डाउनटाइम संदेश",
   "platformDowntimeMessageHint": "वापरकर्त्यांना दाखवला जाणारा पर्यायी संदेश",
   "platformDowntimeSave": "सेटिंग जतन करा",
-  "platformDowntimeSaved": "डाउनटाइम सेटिंग जतन केली."
+  "platformDowntimeSaved": "डाउनटाइम सेटिंग जतन केली.",
+  "pratibhaDocumentRequirement": "आधार आणि मार्कशीट अनिवार्य आहेत. दोन्हीशिवाय अर्ज सादर करता येणार नाही. इतर सहाय्यक कागदपत्रेही अपलोड करता येतील.",
+  "documentType": "कागदपत्राचा प्रकार",
+  "aadhaar": "आधार",
+  "marksheet": "मार्कशीट",
+  "otherDocument": "इतर",
+  "oneAadhaarMarksheetRequired": "एक आधार आणि एक मार्कशीट अनिवार्य आहे.",
+  "pratibhaMinimumPercentage": "{classStandard}वीसाठी किमान {minimum}% आवश्यक आहे."
 }
