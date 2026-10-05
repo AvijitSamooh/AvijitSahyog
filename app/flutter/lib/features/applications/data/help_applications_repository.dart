@@ -13,6 +13,7 @@ class HelpApplicationsRepository {
     required double? requestedAmount,
     required double overallPercentage,
     required List<String> mediaIds,
+    List<Map<String, String>>? documents,
     required String applicantName,
     required String mobileNumber,
     String? email,
@@ -44,6 +45,7 @@ class HelpApplicationsRepository {
       'requestedAmount': ?requestedAmount,
       'overallPercentage': overallPercentage,
       'mediaIds': mediaIds,
+      if (documents != null) 'documents': documents,
       'acceptedRuleIds': acceptedRuleIds,
       'clarification': ?(trimmedClarification?.isNotEmpty == true ? trimmedClarification : null),
       'motherName': ?(motherName?.trim().isNotEmpty == true ? motherName!.trim() : null),
@@ -109,6 +111,7 @@ class HelpApplicationsRepository {
     required String id,
     required String clarification,
     required List<String> mediaIds,
+    List<Map<String, String>>? documents,
     required List<String> acceptedRuleIds,
     required double overallPercentage,
     double? requestedAmount,
@@ -123,6 +126,7 @@ class HelpApplicationsRepository {
     return HelpApplication.fromJson(await client.resubmitHelpApplication(id, {
       'clarification': clarification,
       'mediaIds': mediaIds,
+      if (documents != null) 'documents': documents,
       'acceptedRuleIds': acceptedRuleIds,
       'requestedAmount': ?requestedAmount,
       'overallPercentage': overallPercentage,
@@ -138,7 +142,7 @@ class HelpApplicationsRepository {
 
   Future<void> delete(String id) => client.deleteMyHelpApplication(id);
 
-  Future<HelpApplication> update({required String id, required String type, required String applicantName, required String mobileNumber, String? email, required String address, required String city, required String state, required String pincode, required double overallPercentage, double? requestedAmount, String? clarification, String? motherName, String? fatherName, DateTime? dateOfBirth, String? classStandard, String? schoolInstituteName, String? accomplishments, String? certificatePhotoMediaId, required String facePhotoMediaId, required List<String> mediaIds, required List<String> acceptedRuleIds}) async {
+  Future<HelpApplication> update({required String id, required String type, required String applicantName, required String mobileNumber, String? email, required String address, required String city, required String state, required String pincode, required double overallPercentage, double? requestedAmount, String? clarification, String? motherName, String? fatherName, DateTime? dateOfBirth, String? classStandard, String? schoolInstituteName, String? accomplishments, String? certificatePhotoMediaId, required String facePhotoMediaId, required List<String> mediaIds, List<Map<String, String>>? documents, required List<String> acceptedRuleIds}) async {
     return HelpApplication.fromJson(await client.updateMyHelpApplication(id, {
       'applicantName': applicantName.trim(),
       'mobileNumber': mobileNumber.trim(),
@@ -159,6 +163,7 @@ class HelpApplicationsRepository {
       'certificatePhotoMediaId': ?certificatePhotoMediaId,
       'facePhotoMediaId': facePhotoMediaId,
       'mediaIds': mediaIds,
+      if (documents != null) 'documents': documents,
       'acceptedRuleIds': acceptedRuleIds,
     }));
   }
