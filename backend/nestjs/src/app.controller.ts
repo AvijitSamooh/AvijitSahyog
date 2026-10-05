@@ -8,12 +8,6 @@ export class AppController {
 
   constructor(private readonly firebase: FirebaseService) {}
 
-  /**
-   * Liveness endpoint.
-   *
-   * This endpoint intentionally does not touch Firestore so infrastructure
-   * health checks remain lightweight and do not require a datastore read.
-   */
   @Get()
   getHealth() {
     return {
@@ -33,9 +27,9 @@ export class AppController {
   /**
    * Readiness endpoint explicitly verifies Firestore availability.
    *
-   * The response exposes only a safe Firebase error code/type, never the
-   * exception message, credentials, tokens or document data. This makes
-   * production configuration failures diagnosable without leaking secrets.
+   * On failure, expose only a bounded/redacted diagnostic string. This is
+   * temporary operational detail for diagnosing production Firebase setup;
+   * credentials, tokens and private keys are never returned.
    */
   @Get('ready')
   async getReadiness() {
@@ -47,16 +41,27 @@ export class AppController {
         database: 'ok',
       };
     } catch (error) {
-      const firebaseError = error as { code?: unknown };
+      const firebaseError = error as { code?: unknown; message?: unknown };
       const errorCode =
         typeof firebaseError.code === 'string'
           ? firebaseError.code
           : 'unknown';
       const errorType =
         error instanceof Error ? error.constructor.name : 'UnknownError';
+      const rawMessage =
+        typeof firebaseError.message === 'string'
+          ? firebaseError.message
+          : 'unknown';
+      const errorMessage = rawMessage
+        .replace(
+          /-----BEGIN PRIVATE KEY-----[\s\S]*?-----END PRIVATE KEY-----/g,
+          '[redacted-key]',
+        )
+        .replace(/Bearer\s+[^\s]+/gi, 'Bearer [redacted]')
+        .slice(0, 240);
 
       this.logger.error(
-        `Firestore readiness check failed: code=${errorCode}; type=${errorType}`,
+        `Firestore readiness check failed: code=${errorCode}; type=${errorType}; message=${errorMessage}`,
       );
 
       throw new ServiceUnavailableException({
@@ -65,6 +70,7 @@ export class AppController {
         database: 'error',
         errorCode,
         errorType,
+        errorMessage,
       });
     }
   }
