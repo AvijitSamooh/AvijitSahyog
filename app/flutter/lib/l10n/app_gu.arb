@@ -561,5 +561,12 @@
   "platformDowntimeMessage": "ડાઉનટાઇમ સંદેશ",
   "platformDowntimeMessageHint": "વપરાશકર્તાઓને બતાવવાનો વૈકલ્પિક સંદેશ",
   "platformDowntimeSave": "સેટિંગ સાચવો",
-  "platformDowntimeSaved": "ડાઉનટાઇમ સેટિંગ સાચવાઈ ગઈ."
+  "platformDowntimeSaved": "ડાઉનટાઇમ સેટિંગ સાચવાઈ ગઈ.",
+  "pratibhaDocumentRequirement": "આધાર અને માર્કશીટ ફરજિયાત છે. બંને વિના અરજી સબમિટ કરી શકાશે નહીં. અન્ય સહાયક દસ્તાવેજો પણ અપલોડ કરી શકો છો.",
+  "documentType": "દસ્તાવેજનો પ્રકાર",
+  "aadhaar": "આધાર",
+  "marksheet": "માર્કશીટ",
+  "otherDocument": "અન્ય",
+  "oneAadhaarMarksheetRequired": "એક આધાર અને એક માર્કશીટ ફરજિયાત છે.",
+  "pratibhaMinimumPercentage": "{classStandard} માટે ઓછામાં ઓછા {minimum}% જરૂરી છે."
 }
