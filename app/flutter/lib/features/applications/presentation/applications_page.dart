@@ -503,7 +503,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
       final aadhaar = _documentTypes.values.where((v) => v == 'AADHAAR').length;
       final marksheet = _documentTypes.values.where((v) => v == 'MARKSHEET').length;
       if (aadhaar != 1 || marksheet != 1) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('One Aadhaar and one marksheet are mandatory.')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.oneAadhaarMarksheetRequired)));
         return;
       }
     }
@@ -882,7 +882,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
                 if (isSamman) {
                   final minimum = _classStandard.text == '10' ? 85 : 80;
                   if ((_classStandard.text == '10' || _classStandard.text == '12') && parsed < minimum) {
-                    return 'Minimum $minimum% is required for ${_classStandard.text}th.';
+                    return l10n.pratibhaMinimumPercentage(minimum, _classStandard.text);
                   }
                 }
                 return null;
@@ -915,14 +915,14 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
             const SizedBox(height: 20),
             Text(l10n.supportingDocuments, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
-            Text(isSamman ? 'Aadhaar and marksheet are mandatory. Missing either document will cause the application to be rejected. You may upload multiple other supporting documents.' : l10n.supportingDocumentsHint, style: Theme.of(context).textTheme.bodySmall),
+            Text(isSamman ? l10n.pratibhaDocumentRequirement : l10n.supportingDocumentsHint, style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: 10),
             if (isSamman) ...[
               DropdownButtonFormField<String>(
                 key: const ValueKey('pratibha_document_type'),
                 initialValue: _selectedDocumentType,
-                decoration: const InputDecoration(labelText: 'Document type', prefixIcon: Icon(Icons.description_outlined)),
-                items: ['AADHAAR', 'MARKSHEET', 'OTHER'].map((type) => DropdownMenuItem(value: type, child: Text(_documentTypeLabel(type)))).toList(),
+                decoration: InputDecoration(labelText: l10n.documentType, prefixIcon: const Icon(Icons.description_outlined)),
+                items: const ['AADHAAR', 'MARKSHEET', 'OTHER'].map((type) => DropdownMenuItem(value: type, child: Text(type == 'AADHAAR' ? 'Aadhaar' : type == 'MARKSHEET' ? 'Marksheet' : 'Other'))).toList(),
                 onChanged: _busy ? null : (value) => setState(() => _selectedDocumentType = value ?? 'OTHER'),
               ),
               const SizedBox(height: 8),
