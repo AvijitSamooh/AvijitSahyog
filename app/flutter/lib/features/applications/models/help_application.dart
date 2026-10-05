@@ -1,15 +1,17 @@
 class HelpApplicationMedia {
-  const HelpApplicationMedia({required this.id, required this.url, this.mimeType});
+  const HelpApplicationMedia({required this.id, required this.url, this.mimeType, this.documentType});
 
   final String id;
   final String url;
   final String? mimeType;
+  final String? documentType;
 
   factory HelpApplicationMedia.fromJson(Map<String, dynamic> json) =>
       HelpApplicationMedia(
         id: json['id'] as String,
         url: json['url'] as String,
         mimeType: json['mimeType'] as String?,
+        documentType: json['documentType'] as String?,
       );
 }
 
