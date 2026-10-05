@@ -82,24 +82,16 @@ class FirebaseAuthRepository implements AuthRepository {
         throw const AuthNotConfiguredException();
       }
       throw AuthDiagnosticException(
-        'Firebase error: code=' +
-            error.code +
-            '; message=' +
-            (error.message ?? 'none'),
+        'Firebase error: code=${error.code}; message=${error.message ?? 'none'}',
       );
     } on GoogleSignInException catch (error) {
       throw AuthDiagnosticException(
-        'Google Sign-In error: code=' +
-            error.code.name +
-            '; description=' +
-            (error.description ?? 'none'),
+        'Google Sign-In error: code=${error.code.name}; '
+        'description=${error.description ?? 'none'}',
       );
     } catch (error) {
       throw AuthDiagnosticException(
-        'Sign-In error: ' +
-            error.runtimeType.toString() +
-            ': ' +
-            error.toString(),
+        'Sign-In error: ${error.runtimeType}: $error',
       );
     }
   }
@@ -132,9 +124,7 @@ class FirebaseAuthRepository implements AuthRepository {
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw AuthDiagnosticException(
-        'Backend authentication failed: HTTP ' +
-            response.statusCode.toString() +
-            '.',
+        'Backend authentication failed: HTTP ${response.statusCode}.',
       );
     }
 
