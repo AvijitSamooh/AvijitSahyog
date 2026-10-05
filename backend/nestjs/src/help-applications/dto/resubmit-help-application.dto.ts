@@ -1,4 +1,5 @@
 import { IsArray, IsDateString, IsNumber, IsOptional, IsString, IsUUID, Matches, Max, MaxLength, Min } from 'class-validator';
+import { ApplicationDocumentDto } from './application-document.dto';
 
 export class ResubmitHelpApplicationDto {
   @IsNumber({ maxDecimalPlaces: 2 })
@@ -18,6 +19,10 @@ export class ResubmitHelpApplicationDto {
   @IsArray()
   @IsUUID('4', { each: true })
   mediaIds!: string[];
+
+  @IsOptional()
+  @IsArray()
+  documents?: ApplicationDocumentDto[];
 
   @IsArray()
   @IsString({ each: true })
