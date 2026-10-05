@@ -40,6 +40,20 @@ void main() {
     expect(controller.state.isAuthenticated, isTrue);
   });
 
+  test('keeps an authenticated session when a background refresh fails', () async {
+    final controller = AuthController(
+      _FakeAuthRepository(restoredUser: user, failRestore: true),
+    );
+
+    // The initial restore may fail, so establish the authenticated state
+    // explicitly before exercising the background refresh path.
+    controller.state = const AuthState.authenticated(user);
+    await controller.refreshSession();
+
+    expect(controller.state.user, user);
+    expect(controller.state.isAuthenticated, isTrue);
+  });
+
   test('returns to guest state after sign out', () async {
     final controller = AuthController(
       _FakeAuthRepository(restoredUser: user),
@@ -53,13 +67,17 @@ void main() {
 }
 
 class _FakeAuthRepository implements AuthRepository {
-  _FakeAuthRepository({this.restoredUser, this.signInUser});
+  _FakeAuthRepository({this.restoredUser, this.signInUser, this.failRestore = false});
 
   final AppUser? restoredUser;
   final AppUser? signInUser;
+  final bool failRestore;
 
   @override
-  Future<AppUser?> restoreSession() async => restoredUser;
+  Future<AppUser?> restoreSession() async {
+    if (failRestore) throw StateError('temporary backend failure');
+    return restoredUser;
+  }
 
   @override
   Future<AppUser> signInWithGoogle() async {
