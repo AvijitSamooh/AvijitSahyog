@@ -577,5 +577,12 @@
   "platformDowntimeMessage": "Downtime message",
   "platformDowntimeMessageHint": "Optional message shown to users",
   "platformDowntimeSave": "Save settings",
-  "platformDowntimeSaved": "Downtime settings saved."
+  "platformDowntimeSaved": "Downtime settings saved.",
+  "pratibhaDocumentRequirement": "Aadhaar and marksheet are mandatory. The application cannot be submitted without both. You may upload multiple other supporting documents.",
+  "documentType": "Document type",
+  "aadhaar": "Aadhaar",
+  "marksheet": "Marksheet",
+  "otherDocument": "Other",
+  "oneAadhaarMarksheetRequired": "One Aadhaar and one marksheet are mandatory.",
+  "pratibhaMinimumPercentage": "Minimum {minimum}% is required for {classStandard}th."
 }
