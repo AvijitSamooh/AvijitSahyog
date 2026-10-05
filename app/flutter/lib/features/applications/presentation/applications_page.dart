@@ -263,6 +263,8 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
   final _accomplishments = TextEditingController();
   final _picker = ImagePicker();
   final List<String> _mediaIds = [];
+  final Map<String, String> _documentTypes = {};
+  String _selectedDocumentType = 'OTHER';
   final List<XFile> _selectedImages = [];
   final List<String> _selectedImageIds = [];
   String? _certificatePhotoMediaId;
@@ -299,6 +301,9 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     _facePhotoMediaId = existing?.facePhotoMediaId ?? existing?.certificatePhotoMediaId;
     if (existing != null) {
       _mediaIds.addAll(existing.media.map((m) => m.id));
+      for (final media in existing.media) {
+        _documentTypes[media.id] = media.documentType ?? 'OTHER';
+      }
       _existingMedia.addAll(existing.media);
     }
     _dob = existing?.dateOfBirth;
@@ -312,24 +317,41 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     super.dispose();
   }
 
-  Future<void> _pickImages() async {
+  String _documentTypeLabel(String type) => switch (type) {
+        'AADHAAR' => 'Aadhaar',
+        'MARKSHEET' => 'Marksheet',
+        _ => 'Other',
+      };
+
+  bool _hasDocumentType(String type) => _documentTypes.values.where((v) => v == type).length == 1;
+
+  Future<void> _pickImages({String documentType = 'OTHER'}) async {
     final remaining = 10 - _mediaIds.length;
     if (remaining <= 0 || _busy) return;
     try {
       final images = await _picker.pickMultiImage(imageQuality: 82, maxWidth: 1920);
       if (images.isEmpty) return;
-      await _uploadImages(images.take(remaining).toList());
+      final allowed = documentType == 'OTHER' ? remaining : (_hasDocumentType(documentType) ? 0 : 1);
+      if (allowed <= 0) {
+        if (mounted) _showError('$documentType is already uploaded.');
+        return;
+      }
+      await _uploadImages(images.take(allowed).toList(), documentType: documentType);
     } catch (error) {
       if (mounted) _showError('Unable to select images: $error');
     }
   }
 
-  Future<void> _takePhoto() async {
+  Future<void> _takePhoto({String documentType = 'OTHER'}) async {
     if (_mediaIds.length >= 10 || _busy) return;
+    if (documentType != 'OTHER' && _hasDocumentType(documentType)) {
+      _showError('$documentType is already uploaded.');
+      return;
+    }
     try {
       final image = await _picker.pickImage(source: ImageSource.camera, imageQuality: 82, maxWidth: 1920);
       if (image == null) return;
-      await _uploadImages([image]);
+      await _uploadImages([image], documentType: documentType);
     } catch (error) {
       if (mounted) _showError('Unable to capture image: $error');
     }
@@ -398,7 +420,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     }
   }
 
-  Future<void> _uploadImages(List<XFile> images) async {
+  Future<void> _uploadImages(List<XFile> images, {String documentType = 'OTHER'}) async {
     if (images.isEmpty || _busy) return;
     setState(() {
       _busy = true;
@@ -411,6 +433,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
         try {
           final id = await repo.uploadImage(image.path);
           _mediaIds.add(id);
+          _documentTypes[id] = documentType;
           _selectedImages.add(image);
           if (mounted) {
             setState(() => _uploadCompleted++);
@@ -475,6 +498,14 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.overallPercentageInvalid)));
       return;
     }
+    if (isSamman) {
+      final aadhaar = _documentTypes.values.where((v) => v == 'AADHAAR').length;
+      final marksheet = _documentTypes.values.where((v) => v == 'MARKSHEET').length;
+      if (aadhaar != 1 || marksheet != 1) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('One Aadhaar and one marksheet are mandatory.')));
+        return;
+      }
+    }
     if (_mediaIds.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.imagesRequired)));
       return;
@@ -495,9 +526,9 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     try {
       final repo = ref.read(helpApplicationsRepositoryProvider);
       if (widget.application == null) {
-        await repo.create(type: widget.type, requestedAmount: amount, overallPercentage: overallPercentage, applicantName: _name.text, mobileNumber: _mobile.text, email: _email.text, address: _address.text, city: _city.text, state: _state.text, pincode: _pincode.text, motherName: isSamman ? _motherName.text : null, fatherName: isSamman ? _fatherName.text : null, dateOfBirth: isSamman ? _dob : null, classStandard: isSamman ? _classStandard.text : null, schoolInstituteName: isSamman ? _schoolInstituteName.text : null, accomplishments: isSamman ? _accomplishments.text : null, certificatePhotoMediaId: isSamman ? _certificatePhotoMediaId : null, facePhotoMediaId: _facePhotoMediaId!, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false), clarification: _clarification.text);
+        await repo.create(type: widget.type, requestedAmount: amount, overallPercentage: overallPercentage, applicantName: _name.text, mobileNumber: _mobile.text, email: _email.text, address: _address.text, city: _city.text, state: _state.text, pincode: _pincode.text, motherName: isSamman ? _motherName.text : null, fatherName: isSamman ? _fatherName.text : null, dateOfBirth: isSamman ? _dob : null, classStandard: isSamman ? _classStandard.text : null, schoolInstituteName: isSamman ? _schoolInstituteName.text : null, accomplishments: isSamman ? _accomplishments.text : null, certificatePhotoMediaId: isSamman ? _certificatePhotoMediaId : null, facePhotoMediaId: _facePhotoMediaId!, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false), clarification: _clarification.text, documents: _mediaIds.map((id) => {'mediaId': id, 'documentType': _documentTypes[id] ?? 'OTHER'}).toList(growable: false));
       } else {
-        await repo.update(id: widget.application!.id, type: widget.type, overallPercentage: overallPercentage, applicantName: _name.text, mobileNumber: _mobile.text, email: _email.text, address: _address.text, city: _city.text, state: _state.text, pincode: _pincode.text, requestedAmount: amount, clarification: _clarification.text, motherName: isSamman ? _motherName.text : null, fatherName: isSamman ? _fatherName.text : null, dateOfBirth: isSamman ? _dob : null, classStandard: isSamman ? _classStandard.text : null, schoolInstituteName: isSamman ? _schoolInstituteName.text : null, accomplishments: isSamman ? _accomplishments.text : null, certificatePhotoMediaId: isSamman ? _certificatePhotoMediaId : null, facePhotoMediaId: _facePhotoMediaId!, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false));
+        await repo.update(id: widget.application!.id, type: widget.type, overallPercentage: overallPercentage, applicantName: _name.text, mobileNumber: _mobile.text, email: _email.text, address: _address.text, city: _city.text, state: _state.text, pincode: _pincode.text, requestedAmount: amount, clarification: _clarification.text, motherName: isSamman ? _motherName.text : null, fatherName: isSamman ? _fatherName.text : null, dateOfBirth: isSamman ? _dob : null, classStandard: isSamman ? _classStandard.text : null, schoolInstituteName: isSamman ? _schoolInstituteName.text : null, accomplishments: isSamman ? _accomplishments.text : null, certificatePhotoMediaId: isSamman ? _certificatePhotoMediaId : null, facePhotoMediaId: _facePhotoMediaId!, mediaIds: _mediaIds, acceptedRuleIds: _acceptedRuleIds.toList(growable: false), documents: _mediaIds.map((id) => {'mediaId': id, 'documentType': _documentTypes[id] ?? 'OTHER'}).toList(growable: false));
       }
       ref.invalidate(myHelpApplicationsProvider);
       if (mounted) {
@@ -753,10 +784,15 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
                   ),
                 ),
               ),
-              TextFormField(
+              DropdownButtonFormField<String>(
                 key: const ValueKey('pratibha_class_standard'),
-                controller: _classStandard,
+                initialValue: _classStandard.text.isEmpty ? null : _classStandard.text,
                 decoration: InputDecoration(labelText: l10n.classStandardRequired, prefixIcon: const Icon(Icons.school_outlined)),
+                items: const [
+                  DropdownMenuItem(value: '10', child: Text('10th')),
+                  DropdownMenuItem(value: '12', child: Text('12th')),
+                ],
+                onChanged: _busy ? null : (value) => setState(() => _classStandard.text = value ?? ''),
                 validator: (v) => _required(v, l10n.classStandardRequired),
               ),
               TextFormField(
@@ -873,20 +909,30 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
             const SizedBox(height: 20),
             Text(l10n.supportingDocuments, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
-            Text(l10n.supportingDocumentsHint, style: Theme.of(context).textTheme.bodySmall),
+            Text(isSamman ? 'Aadhaar and marksheet are mandatory. Missing either document will cause the application to be rejected. You may upload multiple other supporting documents.' : l10n.supportingDocumentsHint, style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: 10),
+            if (isSamman) ...[
+              DropdownButtonFormField<String>(
+                key: const ValueKey('pratibha_document_type'),
+                initialValue: _selectedDocumentType,
+                decoration: const InputDecoration(labelText: 'Document type', prefixIcon: Icon(Icons.description_outlined)),
+                items: ['AADHAAR', 'MARKSHEET', 'OTHER'].map((type) => DropdownMenuItem(value: type, child: Text(_documentTypeLabel(type)))).toList(),
+                onChanged: _busy ? null : (value) => setState(() => _selectedDocumentType = value ?? 'OTHER'),
+              ),
+              const SizedBox(height: 8),
+            ],
             Row(
               children: [
                 Expanded(child: OutlinedButton.icon(
                   key: const ValueKey('application_gallery'),
-                  onPressed: _busy || _mediaIds.length >= 10 ? null : _pickImages,
+                  onPressed: _busy || _mediaIds.length >= 10 ? null : () => _pickImages(documentType: isSamman ? _selectedDocumentType : 'OTHER'),
                   icon: const Icon(Icons.photo_library_outlined),
                   label: Text(l10n.gallery),
                 )),
                 const SizedBox(width: 10),
                 Expanded(child: OutlinedButton.icon(
                   key: const ValueKey('application_camera'),
-                  onPressed: _busy || _mediaIds.length >= 10 ? null : _takePhoto,
+                  onPressed: _busy || _mediaIds.length >= 10 ? null : () => _takePhoto(documentType: isSamman ? _selectedDocumentType : 'OTHER'),
                   icon: const Icon(Icons.camera_alt_outlined),
                   label: Text(l10n.camera),
                 )),
