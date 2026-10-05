@@ -435,6 +435,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
           _mediaIds.add(id);
           _documentTypes[id] = documentType;
           _selectedImages.add(image);
+          _selectedImageIds.add(id);
           if (mounted) {
             setState(() => _uploadCompleted++);
           }
@@ -877,9 +878,14 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
                 final required = _required(value, l10n.overallPercentage);
                 if (required != null) return required;
                 final parsed = double.tryParse(value!.trim());
-                return parsed != null && parsed >= 0 && parsed <= 100
-                    ? null
-                    : l10n.overallPercentageInvalid;
+                if (parsed == null || parsed < 0 || parsed > 100) return l10n.overallPercentageInvalid;
+                if (isSamman) {
+                  final minimum = _classStandard.text == '10' ? 85 : 80;
+                  if ((_classStandard.text == '10' || _classStandard.text == '12') && parsed < minimum) {
+                    return 'Minimum $minimum% is required for ${_classStandard.text}th.';
+                  }
+                }
+                return null;
               },
             ),
             const SizedBox(height: 12),
@@ -960,6 +966,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
                               icon: const Icon(Icons.close, size: 18),
                               onPressed: _busy ? null : () => setState(() {
                                 _mediaIds.remove(media.id);
+                                _documentTypes.remove(media.id);
                                 _existingMedia.removeAt(index);
                               }),
                             ),
@@ -991,6 +998,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
                             onPressed: _busy ? null : () => setState(() {
                               final id = _selectedImageIds.removeAt(index);
                               _mediaIds.remove(id);
+                              _documentTypes.remove(id);
                               _selectedImages.removeAt(index);
                             }),
                           ),
