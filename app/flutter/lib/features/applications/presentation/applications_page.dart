@@ -317,12 +317,6 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
     super.dispose();
   }
 
-  String _documentTypeLabel(String type) => switch (type) {
-        'AADHAAR' => 'Aadhaar',
-        'MARKSHEET' => 'Marksheet',
-        _ => 'Other',
-      };
-
   bool _hasDocumentType(String type) => _documentTypes.values.where((v) => v == type).length == 1;
 
   Future<void> _pickImages({String documentType = 'OTHER'}) async {
@@ -922,7 +916,7 @@ class _HelpApplicationFormPageState extends ConsumerState<HelpApplicationFormPag
                 key: const ValueKey('pratibha_document_type'),
                 initialValue: _selectedDocumentType,
                 decoration: InputDecoration(labelText: l10n.documentType, prefixIcon: const Icon(Icons.description_outlined)),
-                items: const ['AADHAAR', 'MARKSHEET', 'OTHER'].map((type) => DropdownMenuItem(value: type, child: Text(type == 'AADHAAR' ? 'Aadhaar' : type == 'MARKSHEET' ? 'Marksheet' : 'Other'))).toList(),
+                items: ['AADHAAR', 'MARKSHEET', 'OTHER'].map((type) => DropdownMenuItem(value: type, child: Text(type == 'AADHAAR' ? l10n.aadhaar : type == 'MARKSHEET' ? l10n.marksheet : l10n.otherDocument))).toList(),
                 onChanged: _busy ? null : (value) => setState(() => _selectedDocumentType = value ?? 'OTHER'),
               ),
               const SizedBox(height: 8),
