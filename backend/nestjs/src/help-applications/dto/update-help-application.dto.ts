@@ -1,4 +1,5 @@
 import { IsArray, IsDateString, IsNumber, IsOptional, IsString, IsUUID, Matches, Max, MaxLength, Min } from 'class-validator';
+import { ApplicationDocumentDto } from './application-document.dto';
 
 export class UpdateHelpApplicationDto {
   @IsString()
@@ -84,6 +85,10 @@ export class UpdateHelpApplicationDto {
   @IsArray()
   @IsUUID('4', { each: true })
   mediaIds!: string[];
+
+  @IsOptional()
+  @IsArray()
+  documents?: ApplicationDocumentDto[];
 
   @IsArray()
   @IsString({ each: true })
