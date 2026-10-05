@@ -1,4 +1,5 @@
 import { IsArray, IsDateString, IsEnum, IsNumber, IsOptional, IsString, IsUUID, Matches, Max, MaxLength, Min } from 'class-validator';
+import { ApplicationDocumentDto } from './application-document.dto';
 
 export enum HelpApplicationTypeDto {
   EDUCATION_ASSISTANCE = 'EDUCATION_ASSISTANCE',
@@ -93,6 +94,10 @@ export class CreateHelpApplicationDto {
   @IsArray()
   @IsUUID('4', { each: true })
   mediaIds!: string[];
+
+  @IsOptional()
+  @IsArray()
+  documents?: ApplicationDocumentDto[];
 
   @IsArray()
   @IsString({ each: true })
