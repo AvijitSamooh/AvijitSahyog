@@ -80,16 +80,6 @@ class ServiceWindow {
   }
 }
 
-class BackendServiceUnavailableException implements Exception {
-  const BackendServiceUnavailableException(this.window);
-  final ServiceWindow window;
-
-  @override
-  String toString() => window.message?.isNotEmpty == true
-      ? window.message!
-      : 'Backend service is unavailable from ${window.startLabel} to ${window.endLabel}.';
-}
-
 class BackendServiceAvailability {
   BackendServiceAvailability._();
 
@@ -124,14 +114,6 @@ class BackendServiceAvailability {
       endLabel: data['endTime']?.toString() ?? '08:00',
       message: data['message']?.toString(),
     );
-  }
-
-  static void ensureAvailable({String? path}) {
-    if (!isDowntime) return;
-    final normalized = path ?? '';
-    // Authentication and the downtime control plane must remain reachable.
-    if (normalized.startsWith('/auth/') || normalized == '/platform-downtime') return;
-    throw BackendServiceUnavailableException(_window);
   }
 
   static String get startLabel => _window.startLabel;
