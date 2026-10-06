@@ -43,7 +43,7 @@ void main() {
 
   test('keeps an authenticated session when a background refresh fails', () async {
     final controller = AuthController(
-      _FakeAuthRepository(restoredUser: user, failNextRestore: true),
+      _FakeAuthRepository(restoredUser: user, failSecondRestore: true),
     );
 
     await Future<void>.delayed(Duration.zero);
@@ -68,16 +68,17 @@ void main() {
 }
 
 class _FakeAuthRepository implements AuthRepository {
-  _FakeAuthRepository({this.restoredUser, this.signInUser, this.failNextRestore = false});
+  _FakeAuthRepository({this.restoredUser, this.signInUser, this.failSecondRestore = false});
 
   final AppUser? restoredUser;
   final AppUser? signInUser;
-  bool failNextRestore;
+  final bool failSecondRestore;
+  int restoreCalls = 0;
 
   @override
   Future<AppUser?> restoreSession() async {
-    if (failNextRestore) {
-      failNextRestore = false;
+    restoreCalls += 1;
+    if (failSecondRestore && restoreCalls == 2) {
       throw StateError('temporary backend failure');
     }
     return restoredUser;
