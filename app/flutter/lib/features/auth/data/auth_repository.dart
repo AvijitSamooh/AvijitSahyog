@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 
-import '../../../core/service_window.dart';
 import '../models/app_user.dart';
 
 abstract class AuthRepository {
@@ -109,7 +108,9 @@ class FirebaseAuthRepository implements AuthRepository {
   }
 
   Future<AppUser> _resolveBackendUser(User firebaseUser) async {
-    BackendServiceAvailability.ensureAvailable();
+    // /auth/me remains available during downtime so an existing Firebase
+    // session can always be restored. The backend decides which requests
+    // are allowed during the service window, including SUPER_ADMIN access.
     final token = await firebaseUser.getIdToken();
     if (token == null || token.isEmpty) {
       throw const AuthDiagnosticException(
