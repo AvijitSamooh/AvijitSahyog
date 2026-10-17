@@ -19,7 +19,7 @@ void main() {
     await tester.pump();
 
     expect(find.text('Avijit Samuh'), findsOneWidget);
-    expect(find.text('Avijit Sahyog'), findsOneWidget);
+    expect(find.text('Avijit Sarthi'), findsOneWidget);
     expect(find.text('Acharya Shri Vidyasagar Ji Maharaj'), findsOneWidget);
     expect(find.text('Muni Shri Ajitsagar Ji Maharaj'), findsOneWidget);
   });
