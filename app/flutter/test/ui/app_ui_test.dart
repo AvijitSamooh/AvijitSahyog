@@ -172,7 +172,7 @@ void main() {
 
     expect(find.byType(AvijitSahyogApp), findsOneWidget);
     expect(find.byType(Image), findsWidgets);
-    expect(find.text('Avijit Sahyog'), findsOneWidget);
+    expect(find.text('Avijit Sarthi'), findsOneWidget);
     expect(find.text('Service'), findsOneWidget);
     expect(find.text('Education'), findsOneWidget);
     expect(find.text('Cooperation'), findsOneWidget);
