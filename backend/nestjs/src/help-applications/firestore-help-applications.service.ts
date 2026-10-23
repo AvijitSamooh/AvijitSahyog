@@ -55,7 +55,15 @@ export class FirestoreHelpApplicationsService {
     return this.toResponse(item);
   }
 
-  async listMine(identity:FirebaseIdentity){ const u=await this.user(identity); const s=await this.firebase.db.collection('helpApplications').where('applicantId','==',u.id).orderBy('createdAt','desc').get(); return this.toResponses(s.docs.map(d=>d.data() as ApplicationDocument)); }
+  async listMine(identity:FirebaseIdentity){
+    const u=await this.user(identity);
+    // Legacy applications may not have createdAt and ordering this query in Firestore
+    // can require a composite index. Query by owner only, then sort defensively in memory.
+    const s=await this.firebase.db.collection('helpApplications').where('applicantId','==',u.id).get();
+    const items=s.docs.map(d=>({ ...d.data(), id: d.id } as ApplicationDocument));
+    items.sort((a,b)=>this.date(b.createdAt ?? b.submittedAt)-this.date(a.createdAt ?? a.submittedAt));
+    return this.toResponses(items);
+  }
   async findMine(identity:FirebaseIdentity,id:string){ const u=await this.user(identity); const item=await this.application(id); if(item.applicantId!==u.id) throw new NotFoundException('Application not found.'); return this.toResponse(item); }
 
   async updateMine(identity:FirebaseIdentity,id:string,dto:UpdateHelpApplicationDto){

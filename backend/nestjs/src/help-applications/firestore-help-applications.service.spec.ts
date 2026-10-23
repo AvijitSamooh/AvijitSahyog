@@ -104,6 +104,23 @@ describe('FirestoreHelpApplicationsService coverage', () => {
     expect((await s.mediaResponse('m1')).url).toBe('https://cdn.example/x.jpg'); delete process.env.R2_PUBLIC_BASE_URL;
   });
 
+  it('lists legacy applications without requiring createdAt ordering or a composite index', async () => {
+    const { service, db, collections } = makeService(); const s: any = service;
+    jest.spyOn(s, 'user').mockResolvedValue({ id: 'u1' });
+    const apps = db.collection('helpApplications');
+    const older = { ...base({ id: undefined, createdAt: undefined, submittedAt: Timestamp.fromDate(new Date('2024-01-01T00:00:00Z')) }) };
+    const newer = { ...base({ id: undefined, createdAt: Timestamp.fromDate(new Date('2025-01-01T00:00:00Z')), submittedAt: Timestamp.fromDate(new Date('2025-01-01T00:00:00Z')) }) };
+    apps.get.mockResolvedValue({ docs: [
+      { id: 'legacy-old', data: () => older },
+      { id: 'legacy-new', data: () => newer },
+    ] });
+    jest.spyOn(s, 'toResponses').mockImplementation(async (items: any[]) => items);
+    const result = await s.listMine(id);
+    expect(apps.orderBy).not.toHaveBeenCalled();
+    expect(result.map((item: any) => item.id)).toEqual(['legacy-new', 'legacy-old']);
+    expect(collections.has('helpApplications')).toBe(true);
+  });
+
   it('covers create/list/find/update/delete/resubmit flows', async () => {
     const { service, db, deps, collections, refs } = makeService(); const s:any=service;
     jest.spyOn(s,'user').mockResolvedValue({id:'u1'}); jest.spyOn(s,'validateAcceptedRules').mockResolvedValue([{id:'r1',text:'Rule'}]);
