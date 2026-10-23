@@ -146,10 +146,38 @@ jobs:
           echo "Publishing versionName: $RELEASE_VERSION"
           echo "Publishing versionCode: $PLAY_VERSION_CODE"
 
+      - name: Validate production backend URL
+        env:
+          API_BASE_URL: ${{ vars.API_BASE_URL }}
+        run: |
+          if [ -z "${API_BASE_URL//[[:space:]]/}" ]; then
+            echo "::error::Missing GitHub Actions repository variable API_BASE_URL. Set it to the deployed HTTPS backend origin before publishing."
+            exit 1
+          fi
+          case "$API_BASE_URL" in
+            https://*) ;;
+            *)
+              echo "::error::API_BASE_URL must use HTTPS for production. Current value must not be localhost or an HTTP URL."
+              exit 1
+              ;;
+          esac
+          case "$API_BASE_URL" in
+            *localhost*|*127.0.0.1*|*0.0.0.0*)
+              echo "::error::API_BASE_URL points to a local address, not the deployed backend."
+              exit 1
+              ;;
+          esac
+          echo "Production backend URL is configured (value intentionally not printed)."
+
       - name: Build signed app bundle
         id: build_aab
+        env:
+          API_BASE_URL: ${{ vars.API_BASE_URL }}
         run: |
-          flutter build appbundle --release             --build-name="$RELEASE_VERSION"             --build-number="$PLAY_VERSION_CODE"             --dart-define=API_BASE_URL=${{ vars.API_BASE_URL }}
+          flutter build appbundle --release \
+            --build-name="$RELEASE_VERSION" \
+            --build-number="$PLAY_VERSION_CODE" \
+            --dart-define="API_BASE_URL=$API_BASE_URL"
 
       - name: Assert release manifest excludes Advertising ID
         run: |
