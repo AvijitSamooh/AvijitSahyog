@@ -117,14 +117,19 @@ export class FirestoreCausesService {
   private adminResponse(cause:CauseDocument,byId:Map<string,CauseDocument>){return {...cause,translations:Object.entries(cause.translations??{}).map(([language,t])=>({language,text:t.name??'',name:t.name??'',description:t.description??null})),parent:cause.parentId?{id:cause.parentId,slug:byId.get(cause.parentId)?.slug??null}:null,children:(cause.childIds??[]).map(id=>byId.get(id)).filter(Boolean).sort((a:any,b:any)=>a.displayOrder-b.displayOrder).map((x:any)=>this.adminResponse(x,byId))};}
 
   async findAll(languageCode: string) {
+    // Keep the public feed query to a single-field filter. This avoids a
+    // composite-index dependency during deployments where Firestore indexes
+    // have not yet finished building; ordering and parent filtering are cheap
+    // in-memory operations for the public cause catalogue.
     const snapshot = await this.firebase.db
       .collection('causes')
       .where('isActive', '==', true)
-      .where('parentId', '==', null)
-      .orderBy('displayOrder', 'asc')
       .get();
 
-    const causes = snapshot.docs.map((doc) => doc.data() as CauseDocument);
+    const causes = snapshot.docs
+      .map((doc) => doc.data() as CauseDocument)
+      .filter((cause) => cause.parentId == null)
+      .sort((a, b) => a.displayOrder - b.displayOrder);
     const childIds = causes.flatMap((cause) => cause.childIds ?? []);
     const children = await this.getByIds<CauseDocument>('causes', childIds);
 

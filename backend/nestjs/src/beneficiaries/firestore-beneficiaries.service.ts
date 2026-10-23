@@ -84,11 +84,12 @@ export class FirestoreBeneficiariesService {
     search?: string;
     sort?: string;
   }) {
+    // Use only the single-field active filter here. Sort the public feed
+    // in memory so it does not depend on a composite index being deployed
+    // before the API release.
     const snapshot = await this.firebase.db
       .collection('beneficiaries')
       .where('isActive', '==', true)
-      .orderBy('supportedYear', 'desc')
-      .orderBy('displayOrder', 'asc')
       .get();
 
     let items = snapshot.docs.map((doc) => doc.data() as BeneficiaryDocument);
