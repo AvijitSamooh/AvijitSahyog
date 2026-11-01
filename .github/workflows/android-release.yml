@@ -187,8 +187,6 @@ jobs:
           echo "Release merged manifest does not declare AD_ID permission."
 
       - name: Upload AAB artifact
-        id: upload_aab_artifact
-        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: avijit-sahyog-release-aab-${{ env.PLAY_VERSION_CODE }}
