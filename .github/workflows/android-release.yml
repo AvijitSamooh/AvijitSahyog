@@ -11,6 +11,13 @@ on:
         options:
           - full
           - fast
+  workflow_call:
+    inputs:
+      validation:
+        description: Validation level when called by the release controller
+        required: false
+        default: full
+        type: string
 
 permissions:
   contents: read
@@ -21,7 +28,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  RELEASE_VALIDATION: ${{ github.event.inputs.validation || 'full' }}
+  RELEASE_VALIDATION: ${{ inputs.validation || github.event.inputs.validation || 'full' }}
 
 jobs:
   build-android:
