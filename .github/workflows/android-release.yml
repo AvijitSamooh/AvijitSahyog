@@ -11,14 +11,6 @@ on:
         options:
           - full
           - fast
-  schedule:
-    - cron: '30 14 * * *'
-  push:
-    tags:
-      - 'v*'
-  pull_request:
-    types: [closed]
-    branches: [master]
 
 permissions:
   contents: read
@@ -34,7 +26,7 @@ env:
 jobs:
   build-android:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.merged == true }}
-    name: Build and Publish Android App Bundle
+    name: Build Android App Bundle only
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -195,8 +187,6 @@ jobs:
           echo "Release merged manifest does not declare AD_ID permission."
 
       - name: Upload AAB artifact
-        id: upload_aab_artifact
-        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: avijit-sahyog-release-aab-${{ env.PLAY_VERSION_CODE }}
@@ -204,13 +194,3 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-      - name: Publish to Google Play Internal and Closed Testing
-        if: ${{ success() && steps.build_aab.outcome == 'success' }}
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
-          packageName: com.avijitsamooh.avijitsahyog
-          releaseFiles: app/flutter/build/app/outputs/bundle/release/app-release.aab
-          tracks: internal,alpha
-          status: completed
-          releaseName: CI build ${{ env.PLAY_VERSION_CODE }}
