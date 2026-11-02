@@ -16,31 +16,20 @@ services:
       - key: NODE_ENV
         value: production
 
-      # Required Firebase Admin service-account credentials for Authentication and Firestore.
+      # Required Firebase Admin service-account credentials for Authentication, Firestore and Storage.
       - key: FIREBASE_PROJECT_ID
         sync: false
       - key: FIREBASE_CLIENT_EMAIL
         sync: false
       - key: FIREBASE_PRIVATE_KEY
         sync: false
+      # Required Firebase Storage bucket name, e.g. project-id.firebasestorage.app or project-id.appspot.com
+      - key: FIREBASE_STORAGE_BUCKET
+        sync: false
+
       # Browser origins allowed to call the API; configure as expected by the app.
       - key: CORS_ORIGINS
         sync: false
-
-      # Required Cloudflare R2 configuration for media uploads/downloads.
-      - key: R2_ENDPOINT
-        sync: false
-      - key: R2_ACCOUNT_ID
-        sync: false
-      - key: R2_ACCESS_KEY_ID
-        sync: false
-      - key: R2_SECRET_ACCESS_KEY
-        sync: false
-      - key: R2_BUCKET_NAME
-        sync: false
-      # Optional public URL/base domain for serving uploaded media.
-      - key: R2_PUBLIC_BASE_URL
-        value: ""
 
       # Required secret used to sign/validate export tokens.
       - key: EXPORT_TOKEN_SECRET
