@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: avijit-sarthi-api
+    runtime: node
+    plan: free
+    rootDir: backend/nestjs
+    buildCommand: npm ci --no-audit --no-fund && npm run build
+    startCommand: npm run start:prod
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: NODE_ENV
+        value: production
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: FIREBASE_CLIENT_EMAIL
+        sync: false
+      - key: FIREBASE_PRIVATE_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: R2_ACCOUNT_ID
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_BUCKET_NAME
+        sync: false
+      - key: R2_PUBLIC_BASE_URL
+        sync: false
+      - key: EXPORT_TOKEN_SECRET
+        sync: false
